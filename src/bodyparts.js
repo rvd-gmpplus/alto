@@ -363,11 +363,11 @@ function bodLampTex() {
     g.fillStyle = q; g.beginPath(); g.arc(0, 0, 1, 0, PI * 2); g.fill(); g.restore();
   };
   [[0.27, 0.30, 0.16, 0.20, 0.30], [0.72, 0.34, 0.15, 0.22, -0.38], [0.50, 0.62, 0.20, 0.17, 0.26], [0.18, 0.66, 0.12, 0.20, -0.40], [0.82, 0.70, 0.13, 0.18, 0.24],
-    [0.38, 0.80, 0.18, 0.12, -0.34], [0.63, 0.20, 0.12, 0.14, 0.26], [0.10, 0.28, 0.08, 0.26, -0.26], [0.92, 0.40, 0.08, 0.24, -0.30], [0.55, 0.88, 0.22, 0.10, -0.40]].forEach(b => blob(...b));
+    [0.38, 0.80, 0.18, 0.12, -0.42], [0.63, 0.20, 0.12, 0.14, 0.26], [0.10, 0.28, 0.10, 0.28, -0.40], [0.92, 0.40, 0.10, 0.26, -0.42], [0.55, 0.88, 0.22, 0.10, -0.40], [0.80, 0.18, 0.10, 0.12, -0.34], [0.28, 0.52, 0.09, 0.14, -0.30]].forEach(b => blob(...b));
   // schaduwband in het onderste derde en donkere ringen aan de zijkanten (de bak loopt steil op)
-  const sg = g.createLinearGradient(0, by + ih * 0.55, 0, by + ih); sg.addColorStop(0, 'rgba(8,9,10,0)'); sg.addColorStop(1, 'rgba(8,9,10,0.78)');
+  const sg = g.createLinearGradient(0, by + ih * 0.42, 0, by + ih); sg.addColorStop(0, 'rgba(8,9,10,0)'); sg.addColorStop(1, 'rgba(8,9,10,0.9)');
   g.fillStyle = sg; g.fillRect(bx, by, iw, ih);
-  const sg2 = g.createLinearGradient(bx, 0, bx + iw, 0); sg2.addColorStop(0, 'rgba(8,9,10,0.55)'); sg2.addColorStop(0.16, 'rgba(8,9,10,0)'); sg2.addColorStop(0.84, 'rgba(8,9,10,0)'); sg2.addColorStop(1, 'rgba(8,9,10,0.55)');
+  const sg2 = g.createLinearGradient(bx, 0, bx + iw, 0); sg2.addColorStop(0, 'rgba(8,9,10,0.7)'); sg2.addColorStop(0.2, 'rgba(8,9,10,0)'); sg2.addColorStop(0.8, 'rgba(8,9,10,0)'); sg2.addColorStop(1, 'rgba(8,9,10,0.7)');
   g.fillStyle = sg2; g.fillRect(bx, by, iw, ih);
   // heldere zone rond de lamp: de bak vangt hier het licht van de gloeidraad
   const hz = g.createRadialGradient(W * 0.46, H * 0.44, 4, W * 0.46, H * 0.44, W * 0.2); hz.addColorStop(0, 'rgba(250,252,255,0.78)'); hz.addColorStop(1, 'rgba(250,252,255,0)');
