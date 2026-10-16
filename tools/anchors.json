@@ -12,6 +12,45 @@
   "Brandstofsysteem",
   "Elektrisch systeem"
  ],
+ "body": [
+  "Carrosseriekooi",
+  "Vloer en dorpels",
+  "Voorbouw",
+  "Achterbouw",
+  "Zijwanden en dak",
+  "Motorkap",
+  "Motorkapsteun",
+  "Achterklep",
+  "Gasveer links",
+  "Gasveer rechts",
+  "Voorbumper",
+  "Achterbumper",
+  "Portier links",
+  "Portier rechts",
+  "Buitenspiegel links",
+  "Buitenspiegel rechts",
+  "Koplamp links",
+  "Koplamp rechts",
+  "Achterlicht links",
+  "Achterlicht rechts",
+  "Voorruit",
+  "Ruitenwissers",
+  "Grille en voorpaneel",
+  "Kentekenvlak achter",
+  "Tankvulopening",
+  "Tankklep",
+  "Dakrail links",
+  "Dakrail rechts",
+  "Hoekruit links",
+  "Hoekruit rechts",
+  "Bodemplaat",
+  "Dakpaneel",
+  "Waterkast",
+  "Schutbord",
+  "Frontmodule",
+  "Knipperlicht voor links",
+  "Knipperlicht voor rechts"
+ ],
  "root_children_order": [
   "Carrosserie",
   "Interieur",
@@ -28,16 +67,357 @@
   "Wielen",
   "Remsysteem"
  ],
- "contains": [],
- "content": {},
- "openers": [],
+ "contains": [
+  [
+   "Carrosserie",
+   "Carrosseriekooi"
+  ],
+  [
+   "Carrosserie",
+   "Motorkap"
+  ],
+  [
+   "Carrosserie",
+   "Achterklep"
+  ],
+  [
+   "Carrosserie",
+   "Voorbumper"
+  ],
+  [
+   "Carrosserie",
+   "Achterbumper"
+  ],
+  [
+   "Carrosserie",
+   "Portier links"
+  ],
+  [
+   "Carrosserie",
+   "Portier rechts"
+  ],
+  [
+   "Carrosserie",
+   "Voorruit"
+  ],
+  [
+   "Carrosserie",
+   "Koplamp links"
+  ],
+  [
+   "Carrosserie",
+   "Koplamp rechts"
+  ],
+  [
+   "Carrosserie",
+   "Achterlicht links"
+  ],
+  [
+   "Carrosserie",
+   "Achterlicht rechts"
+  ],
+  [
+   "Carrosserie",
+   "Grille en voorpaneel"
+  ],
+  [
+   "Carrosserie",
+   "Kentekenvlak achter"
+  ],
+  [
+   "Carrosserie",
+   "Ruitenwissers"
+  ],
+  [
+   "Carrosserie",
+   "Tankvulopening"
+  ],
+  [
+   "Carrosserie",
+   "Dakrail links"
+  ],
+  [
+   "Carrosserie",
+   "Dakrail rechts"
+  ],
+  [
+   "Carrosseriekooi",
+   "Vloer en dorpels"
+  ],
+  [
+   "Carrosseriekooi",
+   "Voorbouw"
+  ],
+  [
+   "Carrosseriekooi",
+   "Achterbouw"
+  ],
+  [
+   "Carrosseriekooi",
+   "Zijwanden en dak"
+  ],
+  [
+   "Zijwanden en dak",
+   "Dakpaneel"
+  ],
+  [
+   "Zijwanden en dak",
+   "Waterkast"
+  ],
+  [
+   "Zijwanden en dak",
+   "Hoekruit links"
+  ],
+  [
+   "Zijwanden en dak",
+   "Hoekruit rechts"
+  ],
+  [
+   "Vloer en dorpels",
+   "Bodemplaat"
+  ],
+  [
+   "Voorbouw",
+   "Schutbord"
+  ],
+  [
+   "Voorbouw",
+   "Frontmodule"
+  ],
+  [
+   "Motorkap",
+   "Motorkapsteun"
+  ],
+  [
+   "Achterklep",
+   "Gasveer links"
+  ],
+  [
+   "Achterklep",
+   "Gasveer rechts"
+  ],
+  [
+   "Portier links",
+   "Buitenspiegel links"
+  ],
+  [
+   "Portier rechts",
+   "Buitenspiegel rechts"
+  ],
+  [
+   "Tankvulopening",
+   "Tankklep"
+  ],
+  [
+   "Voorbumper",
+   "Knipperlicht voor links"
+  ],
+  [
+   "Voorbumper",
+   "Knipperlicht voor rechts"
+  ],
+  [
+   "Aandrijflijn",
+   "Motor G10BB"
+  ],
+  [
+   "Aandrijflijn",
+   "Handbak 5-versnellingen"
+  ],
+  [
+   "Aandrijflijn",
+   "Aandrijfassen"
+  ],
+  [
+   "Aandrijflijn",
+   "Startmotor"
+  ],
+  [
+   "Motor G10BB",
+   "Motorblok"
+  ],
+  [
+   "Motor G10BB",
+   "Krukmechanisme"
+  ],
+  [
+   "Motor G10BB",
+   "Cilinderkop"
+  ],
+  [
+   "Motor G10BB",
+   "Distributie"
+  ],
+  [
+   "Motor G10BB",
+   "Hulpaandrijving"
+  ],
+  [
+   "Motor G10BB",
+   "Smering"
+  ],
+  [
+   "Motor G10BB",
+   "Inlaatspruitstuk"
+  ],
+  [
+   "Motor G10BB",
+   "Uitlaatspruitstuk"
+  ],
+  [
+   "Handbak 5-versnellingen",
+   "Koppeling"
+  ],
+  [
+   "Handbak 5-versnellingen",
+   "Differentieel"
+  ],
+  [
+   "Aandrijfassen",
+   "Aandrijfas links"
+  ],
+  [
+   "Aandrijfassen",
+   "Aandrijfas rechts"
+  ],
+  [
+   "Interieur",
+   "Dashboard"
+  ],
+  [
+   "Interieur",
+   "Middenconsole"
+  ],
+  [
+   "Interieur",
+   "Stoelen"
+  ],
+  [
+   "Stoelen",
+   "Bestuurdersstoel"
+  ],
+  [
+   "Stoelen",
+   "Passagiersstoel"
+  ],
+  [
+   "Stoelen",
+   "Achterbank"
+  ],
+  [
+   "Vooras en stuurinrichting",
+   "Stuurinrichting"
+  ],
+  [
+   "Stuurinrichting",
+   "Stuurwiel"
+  ],
+  [
+   "Vooras en stuurinrichting",
+   "Wielophanging linksvoor"
+  ],
+  [
+   "Vooras en stuurinrichting",
+   "Wielophanging rechtsvoor"
+  ],
+  [
+   "Achteras",
+   "Wielophanging linksachter"
+  ],
+  [
+   "Achteras",
+   "Wielophanging rechtsachter"
+  ],
+  [
+   "Wielen",
+   "Wiel linksvoor"
+  ],
+  [
+   "Wielen",
+   "Wiel rechtsvoor"
+  ],
+  [
+   "Wielen",
+   "Wiel linksachter"
+  ],
+  [
+   "Wielen",
+   "Wiel rechtsachter"
+  ],
+  [
+   "Remsysteem",
+   "Handrem"
+  ],
+  [
+   "Koeling en luchtinlaat",
+   "Radiateur"
+  ],
+  [
+   "Koeling en luchtinlaat",
+   "Luchtfilter"
+  ],
+  [
+   "Uitlaatsysteem",
+   "Katalysator"
+  ],
+  [
+   "Brandstofsysteem",
+   "Brandstoftank"
+  ],
+  [
+   "Elektrisch systeem",
+   "Accu"
+  ]
+ ],
+ "content": {
+  "Carrosserie": [
+   {
+    "re": ".",
+    "min": 200,
+    "parts": true
+   }
+  ],
+  "Motorkap": [
+   {
+    "re": "^Kapscharnier ",
+    "min": 2,
+    "groups": true
+   }
+  ],
+  "Achterklep": [
+   {
+    "re": "^Gasveer ",
+    "min": 2,
+    "groups": true
+   }
+  ]
+ },
+ "openers": [
+  "Suzuki Alto/Carrosserie/Motorkap",
+  "Suzuki Alto/Carrosserie/Achterklep",
+  "Suzuki Alto/Carrosserie/Portier links",
+  "Suzuki Alto/Carrosserie/Portier links/Zijruit",
+  "Suzuki Alto/Carrosserie/Portier links/Buitenspiegel links",
+  "Suzuki Alto/Carrosserie/Portier rechts",
+  "Suzuki Alto/Carrosserie/Portier rechts/Zijruit",
+  "Suzuki Alto/Carrosserie/Portier rechts/Buitenspiegel rechts",
+  "Suzuki Alto/Carrosserie/Tankvulopening/Tankklep"
+ ],
  "preset_ids": [
   "assembled",
   "main",
   "tour"
  ],
  "triangle_budgets": {
-  "_uitleg": "driehoeken per hoofdgroep (tri.py --gate)",
-  "totaal": 700000
+  "_uitleg": "driehoeken per hoofdgroep (tri.py --gate): het totaal van 400.000 is verdeeld naar verhouding van laguna3 (190.000 van 719.000 voor de carrosserie, enzovoort), op honderdtallen afgerond; zie docs/contract.md paragraaf 8. Alleen-lezen voor domeineigenaars; wijzigen alleen met een reden in docs/onderzoek/beslissingen.md. Tekenopdrachten gemonteerd (met bundelen) onder 1.500: itest controle 11.",
+  "totaal": 400000,
+  "Aandrijflijn": 133500,
+  "Carrosserie": 105700,
+  "Onderstel": 69500,
+  "Interieur": 52900,
+  "Koeling en luchtinlaat": 13900,
+  "Uitlaatsysteem": 11100,
+  "Brandstofsysteem": 6700,
+  "Elektrisch systeem": 6700
  }
 }
