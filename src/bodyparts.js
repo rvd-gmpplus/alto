@@ -14,9 +14,11 @@ std('bodChrome', 0xa9b0b7, 1, 0.06, { envMapIntensity: 2.1 });
 std('bodHoney', 0x131519, 0.1, 0.6, { envMapIntensity: 0.4 });           // honingraatgrille
 std('bodMirror', 0xb4bec6, 1, 0.04, { envMapIntensity: 1.1 });
 std('bodSeal', 0x151618, 0, 0.9);
+std('bodEmblem', 0x2b2e33, 0.6, 0.35);                                       // embleem 2001: donker metallic
 std('bodPlate', 0xffffff, 0.05, 0.42);                                     // Nederlandse plaat: geel met zwarte rand, blauwe EU-strook en streepjes (map volgt in bodPlateTex)
 std('bodLamp', 0xffffff, 0.35, 0.3);                                       // binnenkant van de koplamp: twee verchroomde reflectorbakken (map volgt in bodLampTex)
-phys('bodLens', { color: 0xe4edf5, metalness: 0, roughness: 0.03, transparent: true, opacity: 0.14, depthWrite: false, envMapIntensity: 1.5, clearcoat: 1, clearcoatRoughness: 0.02 });   // helder koplampglas, dunner dan lensClear zodat de reflectoren zichtbaar blijven
+phys('bodLens', { color: 0xe4edf5, metalness: 0, roughness: 0.03, transparent: true, opacity: 0.10, depthWrite: false, envMapIntensity: 0.6, clearcoat: 0.5, clearcoatRoughness: 0.04, side: THREE.FrontSide });   // helder koplampglas: aan de buitenkant gezien (FrontSide), dunner dan lensClear zodat de reflector zichtbaar blijft
+phys('bodLensRib', { color: 0xe4edf5, metalness: 0, roughness: 0.03, transparent: true, opacity: 0.10, depthWrite: false, envMapIntensity: 0.6, clearcoat: 0.5, clearcoatRoughness: 0.04, side: THREE.FrontSide });   // hoofdlens met ribbelnormaal (prismaglas); de map volgt in bodHeadlamp
 std('bodRefl', 0x7b8087, 0.7, 0.5);                                    // reflectorschaal achter helder glas (donkerder dan spiegelend chroom)
 const bodBoth = f => [1, -1].map(f);
 const bodSn = s => sideName(s);
@@ -52,7 +54,23 @@ const bodZFe = 1.54, bodZLh = 1.60;                // achterrand koplamp (voorsc
 const bodYBF = 0.50, bodYBR = 0.575;                // bovenrand van de voor- en achterbumper op de flank
 const bodZT0 = -1.62;                              // voorrand achterlicht en bumperhoek achter
 const bodZHB = 0.917;                              // achterrand motorkap
-const bodHoodX = z => 0.62 - 0.07 * sstep((z - 1.2) / 0.4);   // halve breedte van de motorkap
+// Motorkap: halve breedte, met een afgeronde voorhoek (straal bodHoodR) in bovenaanzicht; de rand loopt via een kwartcirkel naar de voorrand bij bodZLh
+const bodHoodR = 0.07;
+const bodHoodX0 = z => 0.62 - 0.07 * sstep((z - 1.2) / 0.4);
+const bodHoodX = z => {
+  const z0 = bodZLh - bodHoodR; if (z <= z0) return bodHoodX0(z);
+  const dz = Math.min(z - z0, bodHoodR); return bodHoodX0(z0) - bodHoodR + Math.sqrt(bodHoodR * bodHoodR - dz * dz);
+};
+// extra onderverdeling voor de voorhoek van de kap: gelijke hoekstappen, dus gelijke boogstappen
+const bodHoodArcZ = (n = 14) => Array.from({ length: n }, (_, k) => bodZLh - bodHoodR + bodHoodR * Math.sin((k + 1) / n * HALF)).filter(z => z < bodZLh - 1e-4);
+/* ---------- gedeelde grenzen van de voorkant (links; rechts gespiegeld) ----------
+   De echte voorkant is één band van ca. 130 mm: koplamp, lichaamskleurig paneel met een smalle gaasstrook, koplamp. Alle onderdelen van die band
+   (lamp, paneel, grille, bumper, scherm, kap) lezen hun grenzen uit deze constanten, zodat er geen naden met eigen getallen ontstaan. */
+const bodXP = 0.355;                              // halve breedte van het paneel: grens paneel en lamp
+const bodXG = 0.325;                              // halve breedte van de gaasopening
+const bodYG0 = 0.635, bodYG1 = 0.715;             // onder- en bovenrand van de gaasopening (80 mm hoog)
+const bodYBT = z => 0.50 + 0.11 * sstep((z - 1.43) / 0.23);   // bovenrand bumper = onderrand lamp, paneel en scherm: 0,50 tot z 1,43, 0,551 bij 1,54, 0,591 bij 1,60, 0,610 op de neus
+const bodTuck = 0.005;                            // het onderliggende deel loopt zoveel onder het bovenliggende
 const bodArchLo = (z, az, yOut) => (Math.abs(z - az) <= ARCH ? archS(z) : sAtY(z, yOut(z)));   // onderrand van een paneel boven de boog
 // kas: bovenrand zijruit, onderrand voorruit en achterruit (zijkant), schuine achterrand van de hoekruit
 const bodQGl = z => Math.max(bodQy(z, YT(z) + 0.013) + 1e-4, bodQy(z, bodGh(z).ye - 0.03));
@@ -86,7 +104,7 @@ function bodSkinParts() {
   const kids = [];
   // voorscherm: van de portierspleet tot de koplamp, boven de wielboog, met de strook langs de motorkap
   const fenderHi = z => bodSAtX(z, bodHoodX(z) + 0.004);
-  const fenderLo = z => bodArchLo(z, AXF, zz => (zz > AXF ? bodYBF + 0.003 : bodYSill + 0.004));
+  const fenderLo = z => bodArchLo(z, AXF, zz => (zz > AXF ? bodYBT(zz) + 0.003 : bodYSill + 0.004));
   const fender = s => P(`Voorscherm ${bodSn(s)}`, lowSide(s, bodZDF + 0.004, bodZFe, 44, z => [fenderLo(z), fenderHi(z)], 18, ARCH_BREAKS), MAT.paint,
     { d: 'Voorscherm van plaatstaal met de uitsparing voor het voorwiel, gelakt in het rood. Zit met bouten aan de A-stijl, de veerpoottoren en de voorkopplaat.', ex: [s * 0.46, 0.06, 0.1] });
   // achterscherm: van de portierspleet tot het achterlicht, boven de wielboog, tot de schouderlijn
@@ -157,7 +175,7 @@ function bodStructure() {
     ...both(s => P(`Veerpoottoren ${sn(s)}`, merge([G.cyl('y', 0.05, 0.07, 0.2, 24, true), xf(G.cyl('y', 0.05, 0.05, 0.006, 24), [0, 0.1, 0])]), MAT.paintIn, { d: 'Bevestigingspunt van de veerpoot in de carrosserie.', p: [s * 0.50, 0.66, AXF], ex: [s * 0.1, 0.06, 0] })),
     // onder y 0,58 loopt het schutbord alleen tot de wielkastwanden (|x| 0,50): daarbuiten zit het voorwiel (de band stak erdoorheen)
     P('Schutbord', cache('bodSchutbord', () => roundPlate([[-0.5, -0.3], [0.5, -0.3], [0.5, -0.02], [0.69, -0.02], [0.69, 0.3], [-0.69, 0.3], [-0.69, -0.02], [-0.5, -0.02]], 0.012, 0.004, 0.004)), MAT.paintIn, { d: 'Scheidingswand tussen motorruimte en interieur met doorvoeren voor stuurkolom, pedalen en kabelboom.', p: [0, 0.60, 0.86], ex: [0, 0, -0.08] }),
-    P('Frontmodule', merge([xf(G.box(1.04, 0.05, 0.05), [0, 0.67, 0]), xf(G.box(1.0, 0.05, 0.05), [0, 0.33, 0]), xf(G.box(0.05, 0.36, 0.05), [0.5, 0.5, 0]), xf(G.box(0.05, 0.36, 0.05), [-0.5, 0.5, 0]), xf(G.box(0.05, 0.3, 0.05), [0, 0.5, 0])]), MAT.plastic, { d: 'Kunststof en stalen voorkopplaat die radiateur, koplampen en motorkapslot draagt.', p: [0, 0, 1.60], ex: [0, 0.04, 0.12] }),
+    P('Frontmodule', merge([xf(G.box(0.84, 0.05, 0.05), [0, 0.67, 0]), xf(G.box(1.0, 0.05, 0.05), [0, 0.33, 0]), xf(G.box(0.05, 0.36, 0.05), [0.5, 0.5, 0]), xf(G.box(0.05, 0.36, 0.05), [-0.5, 0.5, 0]), xf(G.box(0.05, 0.3, 0.05), [0, 0.5, 0])]), MAT.plastic, { d: 'Kunststof en stalen voorkopplaat die radiateur, koplampen en motorkapslot draagt.', p: [0, 0, 1.575], ex: [0, 0.04, 0.12] }),
     P('Motorkapslot', merge([G.rbox(0.07, 0.05, 0.04, 0.008), xf(G.rbox(0.02, 0.04, 0.015, 0.004), [0.04, 0.01, 0.015])]), MAT.darkSteel, { d: 'Slot op de voorkopplaat waarin de slotbeugel van de motorkap grijpt; ontgrendeling met een kabel vanuit het interieur.', p: [0, 0.682, 1.55], ex: [0, 0.06, 0.06] }),   // boven de bovenste waterkast van de radiateur (y 0,655); op y 0,625 zat het slot erin
     P('Bumperbalk voor', tube([-0.55, -0.35, -0.17, 0, 0.17, 0.35, 0.55].map(x => [x, 0.40, 1.655 - 0.12 * x * x]), 0.032, 24, 8), MAT.steel, { d: 'Gebogen stalen botsbalk achter de voorbumper.', ex: [0, 0, 0.1] }),
     ...both(s => bodWheelHousePart(s, true)),
@@ -189,12 +207,30 @@ const bodStRot = (() => {
   const ax = r0.clone().cross(r1).normalize();
   return { r0, ax: [ax.x, ax.y, ax.z], ang: Math.acos(clamp(r0.dot(r1), -1, 1)) };
 })();
+// Kaprand: terugslag (flens) langs de voorrand, de afgeronde voorhoeken en de zijranden vanaf z 1,2; 18 mm diep, schuin naar binnen en 6 mm naar achteren
+function bodHoodRim() {
+  const R = bodHoodR, z0 = bodZLh - R, xc = bodHoodX0(z0) - R, arc = 10, nf = 12, zE = bodZLh - 0.0003;
+  const L = [];   // linkerhelft van de zijrand (achter) naar de voorrand: [x, z, uitwaartse x, uitwaartse z]
+  for (let k = 0; k <= 8; k++) { const z = 1.2 + (z0 - 1.2) * k / 8; L.push([bodHoodX(z), z, 1, 0]); }
+  for (let k = 1; k <= arc; k++) { const th = k / arc * HALF; L.push([xc + R * Math.cos(th), Math.min(zE, z0 + R * Math.sin(th)), Math.cos(th), Math.sin(th)]); }
+  const mid = []; for (let k = 1; k < nf; k++) mid.push([xc - 2 * xc * k / nf, zE, 0, 1]);
+  const R2 = L.map(([x, z, ox, oz]) => [-x, z, -ox, oz]).reverse();
+  const pts = [...L, ...mid, ...R2].map(([x, z, ox, oz]) => { const sv = bodSAtX(z, Math.abs(x)); return { z, p: x >= 0 ? sv : 2 - sv, ox, oz }; });
+  const N = pts.length - 1;
+  return patch((u, v) => {
+    const i = Math.min(N - 1, Math.floor(u)), f = u - i, a = pts[i], b = pts[i + 1];
+    const z = lerp(a.z, b.z, f), pp = lerp(a.p, b.p, f), ox = lerp(a.ox, b.ox, f), oz = lerp(a.oz, b.oz, f);
+    const q = bodLow(z, pp, 0.018 * v);
+    return [q[0] - ox * 0.006 * v, q[1], q[2] - oz * 0.006 * v];
+  }, 0, N, N, () => [0, 1], 2);
+}
 function bodHoodParts() {
   const hs = z => bodSAtX(z, bodHoodX(z)), both = bodBoth, sn = bodSn;
-  const deckIn = (z0, z1, off, da, nu = 24) => bodDeck(z0, z1, nu, z => Math.min(0.995, hs(z) + da), 8, [], off);
+  const deckIn = (z0, z1, off, da, nu = 24) => bodDeck(z0, z1, nu, z => Math.min(0.995, hs(z) + da), 8, bodHoodArcZ(8), off);
   return A('Motorkap', { d: 'Motorkap van plaatstaal met binnenframe, isolatiemat, scharnieren, slotbeugel en sproeiers. Scharniert aan de achterrand en wordt met een steunstang open gehouden.', ex: [0, 0.52, 0.3],
     open: { type: 'hinge', pivot: bodHoodPv, axis: [1, 0, 0], angle: bodHoodAng, min: 55 * PI / 180, label: 'Motorkap', look: { dir: [0.5, 0.55, 1], nodes: ['Motorkap'] } } }, [
-    P('Buitenpaneel motorkap', bodDeck(bodZHB, bodZLh - 0.0003, 44, hs, 14, bodDense(1.4, bodZLh, 6)), MAT.paint, { d: 'Buitenhuid van de motorkap in het rood, licht bol over de breedte.', ex: [0, 0.14, 0] }),
+    P('Buitenpaneel motorkap', bodDeck(bodZHB, bodZLh - 0.0003, 44, hs, 14, bodDense(1.4, bodZLh, 6).concat(bodHoodArcZ(14))), MAT.paint, { d: 'Buitenhuid van de motorkap in het rood, licht bol over de breedte.', ex: [0, 0.14, 0] }),
+    P('Kaprand', bodHoodRim(), MAT.bodSeal, { d: 'Zwarte afdichtrand: de terugslag van de kapbuitenhuid langs de voorrand, de voorhoeken en de zijranden. Hij maakt de naad met scherm, lamp en paneel donker en houdt de kap massief.', ex: [0, 0.04, 0.02] }),
     P('Binnenframe motorkap', deckIn(bodZHB + 0.02, bodZLh - 0.02, 0.03, 0.012), MAT.paintIn, { d: 'Verstevigend binnenframe met de bevestigingspunten van de scharnieren en de slotbeugel.', ex: [0, 0.03, 0] }),
     P('Motorkapisolatie', deckIn(bodZHB + 0.09, bodZLh - 0.12, 0.04, 0.05, 16), MAT.carpet, { d: 'Geluids- en hitte-isolatiemat aan de onderzijde.', ex: [0, -0.1, 0] }),
     ...both(s => A(`Kapscharnier ${sn(s)}`, { d: 'Scharnier achteraan de motorkap: een arm aan het binnenframe en een voet op de carrosserie. De draaias is in dit model de achterrand van de kap (schematisch).', ex: [s * 0.08, -0.04, -0.06] }, [
@@ -213,19 +249,79 @@ function bodHoodParts() {
     ])),
   ]);
 }
-// Koplamp: wrap-around eenheid op de hoek van de neus; flank (z 1,54 tot 1,60) en het stuk op het voorvlak (z > 1,60)
-const bodHLlo = z => sAtY(z, bodYBF + 0.004), bodHLhi1 = z => bodSAtX(z, bodHoodX(z) + 0.004), bodHLhi2 = z => bodSAtX(z, 0.285);
-const bodHLreg = (s, off, f0 = 0, f1 = 1, inset = 0) => merge([
-  lowSide(s, bodZFe + 0.002, bodZLh, 8, z => [lerp(bodHLlo(z), bodHLhi1(z), f0), lerp(bodHLlo(z), bodHLhi1(z), f1) - inset], 6, [], off),
-  lowSide(s, bodZLh, ZF - 0.0005, 16, z => [lerp(bodHLlo(z), bodHLhi2(z), f0) + inset * 0, lerp(bodHLlo(z), bodHLhi2(z), f1) - inset], 8, [], off)]);
+// Koplamp: wrap-around eenheid op de hoek van de neus. Flank (z 1,534 tot de kapvoorrand, onder scherm en kap) en het stuk op het voorvlak (z > 1,60).
+// Onderrand = bumperbovenrand (bodYBT), binnenrand = paneel (bodXP); alle randen lopen 6 tot 8 mm onder het bovenliggende deel (kap, scherm, paneel, bumper),
+// zodat er geen kier ontstaat (regel R1). Het glas ligt 4 mm onder de huid, het paneel 2,5 mm.
+const bodLampZ0 = bodZFe - 0.006, bodLampIn = 0.004, bodZH = bodZLh - 0.0003;
+const bodLLo = (z, d = -0.004) => sAtY(z, bodYBT(z) + d);                  // onderrand ten opzichte van de bumperbovenrand
+const bodLHi1 = z => bodSAtX(z, bodHoodX(z) - 0.008);                       // bovenrand flank: 8 mm onder de kap
+const bodLHi2 = z => bodSAtX(z, bodXP - 0.008);                             // binnenrand neus: 8 mm onder het paneel
+const bodLSpl = z => bodSAtX(z, bodSec(z).xe - 0.012);                      // scheiding hoofdlens en hoekkap, op de dekrand
+const bodLampZE = (() => { let z = bodZH; while (z < ZF - 0.01 && bodLHi2(z) - bodLLo(z, 0.002) > 0.006) z += 0.001; return z - 0.001; })();   // einde lens op de neus: onderrand snijdt binnenrand
+const bodLampZC = (() => { let z = bodZH; while (z < bodLampZE && bodLSpl(z) - 0.0025 - bodLLo(z, 0.002) > 0.004) z += 0.001; return z; })();    // einde hoekkap op de neus
+const bodLmLo = z => Math.max(bodLLo(z, 0.002), bodLSpl(z) + 0.0025);
+const bodLmHi = z => Math.max(bodLmLo(z) + 0.0005, bodLHi2(z));
+const bodLcLo = z => bodLLo(z, 0.002);
+const bodLcHi = z => Math.max(bodLcLo(z) + 0.0005, bodLSpl(z) - 0.0025);
+// stuk van de onderbak aan zijde sd tussen de s-grenzen lo(z) en hi(z); t loopt van 0 (lo) tot 1 (hi); inw(z, t, q) is de verschuiving naar binnen
+function bodReg(sd, z0, z1, nu, nv, lo, hi, inw = 0, breaks = []) {
+  return patch((z, t) => { const a = lo(z), sv = a + (hi(z) - a) * t; return bodLow(z, sd > 0 ? sv : 2 - sv, typeof inw === 'function' ? inw(z, t, (z - z0) / (z1 - z0)) : inw); }, z0, z1, nu, () => [0, 1], nv, breaks);
+}
+// wand langs een rand: pt(u) geeft [z, s]; de diepte loopt van d0 tot d1
+function bodWall(sd, pt, u0, u1, nu, d0, d1, nv = 3) {
+  return patch((u, d) => { const [z, sv] = pt(u); return bodLow(z, sd > 0 ? sv : 2 - sv, d); }, u0, u1, nu, () => [d0, d1], nv);
+}
+// zet de wikkeling zo dat de normalen naar buiten wijzen (nodig voor een FrontSide-lens): vergelijk met de richting weg van het midden van de voorbouw
+function bodOutward(g) {
+  const p = g.attributes.position, n = g.attributes.normal; let d = 0;
+  for (let i = 0; i < p.count; i++) d += n.getX(i) * p.getX(i) + n.getY(i) * (p.getY(i) - 0.45) + n.getZ(i) * (p.getZ(i) - 1.2);
+  if (d < 0) { const ix = g.index; for (let i = 0; i < ix.count; i += 3) { const b = ix.getX(i + 1); ix.setX(i + 1, ix.getX(i + 2)); ix.setX(i + 2, b); } g.computeVertexNormals(); }
+  return g;
+}
+// uv voor het glas: u over |x| (6 mm per herhaling, twee ribbels), v over y
+function bodLensUV(g) {
+  const p = g.attributes.position, uv = new Float32Array(p.count * 2);
+  for (let i = 0; i < p.count; i++) { uv[2 * i] = Math.abs(p.getX(i)) / 0.006; uv[2 * i + 1] = p.getY(i) / 0.05; }
+  g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); return g;
+}
+// ribbelnormaal van het prismaglas: sinus over de breedte, twee ribbels per herhaling
+function bodLensRibTex() {
+  const W = 64, H = 4, c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d'), im = g.createImageData(W, H);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const a = Math.sin(x / W * PI * 4) * 0.55, l = Math.hypot(a, 1), k = (y * W + x) * 4;
+    im.data[k] = Math.round((a / l * 0.5 + 0.5) * 255); im.data[k + 1] = 128; im.data[k + 2] = Math.round((1 / l * 0.5 + 0.5) * 255); im.data[k + 3] = 255;
+  }
+  g.putImageData(im, 0, 0);
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; return t;
+}
+const bodRefBowl = (z, t, q) => 0.011 + 0.019 * Math.pow(Math.sin(PI * clamp(t, 0, 1)), 0.6) * Math.pow(Math.sin(PI * clamp(q, 0, 1)), 0.5);
 function bodHeadlamp(s) {
   if (!MAT.bodLamp.map) { MAT.bodLamp.map = bodLampTex(); MAT.bodLamp.needsUpdate = true; }
-  const n = bodSn(s), at = (z, f, inw) => { const sv = lerp(bodHLlo(z), bodHLhi2(z), f), [x, y] = halfPt(z, sv), nn = bodN(z, sv); return [s * (x - nn[0] * inw), y - nn[1] * inw, z - nn[2] * inw]; };
-  const bulb = at(1.66, 0.45, 0.06);
-  return A(`Koplamp ${n}`, { d: 'Rechthoekige koplamp met helder glas, om de hoek van de neus gewikkeld naar het scherm, met halogeenlamp en reflector.', ex: [s * 0.32, 0.1, 0.55] }, [
-    P('Afdekglas', bodHLreg(s, 0.0), MAT.bodLens, { d: 'Heldere afdekking van polycarbonaat die het voorvlak en de hoek van het scherm volgt.', ex: [s * 0.1, 0.04, 0.2] }),
-    P('Reflector', bodPlanarUV(bodHLreg(s, 0.03, 0.08, 0.92, 0.01), 0.247, 0.652, 0.481, 0.722), MAT.bodLamp, { d: 'Verchroomde reflectorschaal achter het glas met twee ronde reflectorbakken (dim- en grootlicht, schematisch).', ex: [0, 0, 0.06] }),
-    P('Lamphuis', bodHLreg(s, 0.07), MAT.plastic, { d: 'Kunststof lamphuis waarin de lamp en reflector zijn gemonteerd.', ex: [0, 0, -0.03] }),
+  if (!MAT.bodLensRib.normalMap) { MAT.bodLensRib.normalMap = bodLensRibTex(); MAT.bodLensRib.normalScale.set(0.6, 0.6); MAT.bodLensRib.needsUpdate = true; }
+  const n = bodSn(s), sd = s, Z0 = bodLampZ0, ZE = bodLampZE, ZC = bodLampZC;
+  const mainLens = bodOutward(bodLensUV(bodReg(sd, bodZH, ZE, 14, 8, bodLmLo, bodLmHi, bodLampIn)));
+  const capLens = merge([bodReg(sd, Z0, bodZH, 8, 8, bodLcLo, z => Math.max(bodLcLo(z) + 0.001, bodLHi1(z)), bodLampIn), bodReg(sd, bodZH, ZC, 8, 8, bodLcLo, bodLcHi, bodLampIn)].map(bodOutward));
+  const refl = bodPlanarUV(bodReg(sd, bodZH, ZE, 14, 10, bodLmLo, bodLmHi, bodRefBowl), 0.34, 0.60, 0.60, 0.745);
+  // hoekreflector: een zilveren vlak onder de hoekkap met een kleine schotel (positielicht)
+  const zD = 1.578, sD = lerp(bodLcLo(zD), bodLHi1(zD) - 0.03, 0.42), pD = bodLow(zD, bodPp(sd, sD), 0.012), nD = bodN(zD, sD);
+  const dish = G.lathe('x', [[0, -0.012], [0.008, -0.0105], [0.016, -0.0072], [0.023, -0.0030], [0.028, 0]], 20, 'bodHLdish').clone().applyQuaternion(quatFromTo(V3(1, 0, 0), V3(sd * nD[0], nD[1], nD[2]))).translate(pD[0], pD[1], pD[2]);
+  const cornerRefl = merge([bodReg(sd, Z0, bodZH, 8, 8, bodLcLo, z => Math.max(bodLcLo(z) + 0.001, bodLHi1(z)), 0.012), bodReg(sd, bodZH, ZC, 8, 8, bodLcLo, bodLcHi, 0.012), dish]);
+  // Lamprand: 6 mm brede zwarte scheiding tussen hoofdlens en hoekkap, vlak met het glas
+  const rim = bodReg(sd, bodZH, ZC + 0.006, 8, 2, z => bodLSpl(z) - 0.0030, z => bodLSpl(z) + 0.0030, bodLampIn - 0.0004);
+  // Lamphuis: gesloten kuip (vloer op 70 mm, vier wanden) zodat het zicht door het glas nooit op frontmodule, koelblok of waterkast valt
+  const lo = z => bodLLo(z, -0.004), hi2 = z => Math.max(lo(z) + 0.0005, bodLHi2(z)), D = 0.07;
+  const housing = merge([
+    bodReg(sd, Z0, bodZH, 8, 8, lo, bodLHi1, D), bodReg(sd, bodZH, ZE, 14, 8, lo, hi2, D),
+    bodWall(sd, z => [z, lo(z)], Z0, ZE, 24, 0.004, D), bodWall(sd, z => [z, bodLHi1(z)], Z0, bodZH, 8, 0.004, D), bodWall(sd, z => [z, hi2(z)], bodZH, ZE, 14, 0.004, D),
+    bodWall(sd, t => [bodZH, lerp(bodLHi1(bodZH), hi2(bodZH), t)], 0, 1, 4, 0.004, D), bodWall(sd, t => [Z0, lerp(lo(Z0), bodLHi1(Z0), t)], 0, 1, 6, 0.004, D)]);
+  const bulb = bodLow(1.645, bodPp(sd, lerp(bodLmLo(1.645), bodLmHi(1.645), 0.5)), 0.06);
+  return A(`Koplamp ${n}`, { d: 'Rechthoekige koplamp met helder glas, om de hoek van de neus gewikkeld naar het scherm: een hoofdlens met ribbels, een gladde hoekkap, een zilveren reflector en een zwart huis. De onderrand volgt de bumper, de kap en het scherm lopen erover.', ex: [s * 0.32, 0.1, 0.55] }, [
+    P('Afdekglas', mainLens, MAT.bodLensRib, { d: 'Heldere hoofdlens van polycarbonaat met fijne verticale ribbels (prismaglas), vlak met het voorpaneel en onder de kap en de bumperrand geschoven.', ex: [s * 0.1, 0.04, 0.2] }),
+    P('Hoekkap', capLens, MAT.bodLens, { d: 'Gladde heldere hoekkap die om de voorhoek van het scherm loopt (positielicht, schematisch), met een zwarte scheiding naar de hoofdlens.', ex: [s * 0.14, 0.04, 0.12] }),
+    P('Reflector', refl, MAT.bodLamp, { d: 'Zilveren reflectorschaal met facetten achter de hoofdlens: een groot parabolisch vlak met de lamp midden boven (dim- en grootlicht, schematisch).', ex: [0, 0, 0.06] }),
+    P('Hoekreflector', cornerRefl, MAT.bodRefl, { d: 'Zilveren vlak met een kleine ronde schotel achter de hoekkap (positielicht, aannemelijk; niet bevestigd).', ex: [s * 0.04, 0, 0.03] }),
+    P('Lamprand', rim, MAT.bodBlack, { d: 'Zwarte scheiding van ongeveer 6 mm tussen de hoofdlens en de hoekkap (echte lamp: 8 tot 10 mm, geschat).', ex: [s * 0.1, 0.04, 0.2] }),
+    P('Lamphuis', housing, MAT.plastic, { d: 'Zwart kunststof lamphuis: een gesloten kuip met vier wanden waarin de lamp en reflector zijn gemonteerd.', ex: [0, 0, -0.03] }),
     P('Lampfitting', G.cyl('z', 0.022, 0.022, 0.05, 14), MAT.plastic, { d: 'Fitting met stekker voor de halogeenlamp (H4, plaats schematisch).', p: [bulb[0], bulb[1], bulb[2] - 0.03], ex: [0, 0.03, -0.1] }),
     P('Halogeenlamp', G.cyl('z', 0.011, 0.011, 0.06, 12), MAT.ceramic, { d: 'Halogeenlamp voor dim- en grootlicht (type niet voor deze auto geverifieerd).', p: [bulb[0], bulb[1], bulb[2] + 0.0], ex: [0, 0.04, 0.05] }),
     P('Stofkap lamp', G.lathe('z', [[0, 0.02], [0.035, 0.02], [0.04, 0], [0.035, -0.004]], 16, 'bodHLcap'), MAT.rubber, { d: 'Rubberen kap op de achterzijde van de lamp.', p: [bulb[0], bulb[1], bulb[2] - 0.06], r: [PI, 0, 0], ex: [0, 0.02, -0.14] }),
@@ -245,20 +341,24 @@ function bodPlateTex() {
   g.fillStyle = '#111214'; for (let k = 0; k < 6; k++) g.fillRect(185 + k * 138 + (k >= 3 ? 24 : 0), H / 2 - 11, 92, 22);
   const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; return t;
 }
-// Binnenkant van de koplamp (links, van binnen naar buiten): twee ronde verchroomde reflectorbakken met een lamp, in een donkere kuip met chroomrand.
+// Binnenkant van de koplamp (hoofdlens): één groot parabolisch reflectorvlak met zilveren facetten (6 x 3 trapezia), de lamp midden boven en een
+// donkere buitenrand van 5 procent. Geen chroomrand in de textuur: die rekt op een wikkelend vlak uit tot een zwevende bocht.
 function bodLampTex() {
   const W = 512, H = 256, c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
-  g.fillStyle = '#0d0e10'; g.fillRect(0, 0, W, H);
-  const fr = g.createLinearGradient(0, 0, 0, H); fr.addColorStop(0, '#e4e8ec'); fr.addColorStop(0.5, '#8d949b'); fr.addColorStop(1, '#c9ced3');
-  g.strokeStyle = fr; g.lineWidth = 10; g.strokeRect(14, 14, 420, H - 28);
-  g.fillStyle = '#17191c'; g.fillRect(19, 19, 410, H - 38);
-  for (const cx of [128, 322]) {
-    const rg = g.createRadialGradient(cx - 14, 112, 6, cx, 128, 96); rg.addColorStop(0, '#fbfcfd'); rg.addColorStop(0.45, '#b9c0c7'); rg.addColorStop(1, '#4b5158');
-    g.beginPath(); g.arc(cx, 128, 94, 0, PI * 2); g.fillStyle = rg; g.fill();
-    g.strokeStyle = '#2a2d31'; g.lineWidth = 5; for (const r of [94, 70, 46]) { g.beginPath(); g.arc(cx, 128, r, 0, PI * 2); g.stroke(); }
-    const bg = g.createRadialGradient(cx, 128, 2, cx, 128, 26); bg.addColorStop(0, '#fffbe6'); bg.addColorStop(0.6, '#f6e7a0'); bg.addColorStop(1, '#3b3a32');
-    g.beginPath(); g.arc(cx, 128, 24, 0, PI * 2); g.fillStyle = bg; g.fill();
+  g.fillStyle = '#0c0d0f'; g.fillRect(0, 0, W, H);
+  const bx = W * 0.05, by = H * 0.06, iw = W - 2 * bx, ih = H - 2 * by;
+  const rg = g.createRadialGradient(W * 0.5, H * 0.36, 8, W * 0.5, H * 0.5, W * 0.62); rg.addColorStop(0, '#e9edf0'); rg.addColorStop(0.5, '#a9b1b8'); rg.addColorStop(1, '#4f575f');
+  g.fillStyle = rg; g.fillRect(bx, by, iw, ih);
+  const cols = 6, rows = 3, shade = [[0.16, -0.12, 0.18, -0.16, 0.10, -0.14], [-0.10, 0.20, -0.14, 0.22, -0.18, 0.12], [0.12, -0.18, 0.16, -0.10, 0.18, -0.20]];
+  for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+    const x0 = bx + iw * i / cols, x1 = bx + iw * (i + 1) / cols, y0 = by + ih * j / rows, y1 = by + ih * (j + 1) / rows, k = shade[j][i];
+    g.fillStyle = k > 0 ? `rgba(255,255,255,${k})` : `rgba(20,26,32,${-k})`; g.fillRect(x0, y0, x1 - x0, y1 - y0);
   }
+  g.strokeStyle = 'rgba(60,66,72,0.55)'; g.lineWidth = 2;
+  for (let i = 1; i < cols; i++) { g.beginPath(); g.moveTo(bx + iw * i / cols, by); g.lineTo(bx + iw * i / cols, by + ih); g.stroke(); }
+  for (let j = 1; j < rows; j++) { g.beginPath(); g.moveTo(bx, by + ih * j / rows); g.lineTo(bx + iw, by + ih * j / rows); g.stroke(); }
+  const bg = g.createRadialGradient(W * 0.5, H * 0.3, 2, W * 0.5, H * 0.3, 24); bg.addColorStop(0, '#fffbe8'); bg.addColorStop(0.5, '#f1e4a8'); bg.addColorStop(1, 'rgba(60,58,50,0)');
+  g.fillStyle = bg; g.beginPath(); g.arc(W * 0.5, H * 0.3, 24, 0, PI * 2); g.fill();
   const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; return t;
 }
 // uv uit de plaats: u van x0 (binnen) naar x1 (buiten) op |x|, v van y0 naar y1 (voor wikkelende vlakken die geen eigen uv hebben)
@@ -267,34 +367,72 @@ function bodPlanarUV(g, x0, x1, y0, y1) {
   for (let i = 0; i < p.count; i++) { uv[2 * i] = clamp((Math.abs(p.getX(i)) - x0) / (x1 - x0), 0, 1); uv[2 * i + 1] = clamp((p.getY(i) - y0) / (y1 - y0), 0, 1); }
   g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); return g;
 }
+// Gaas van de grille: zeshoekig raster dat naadloos herhaalt (4 cellen over de breedte, 7 rijparen over de hoogte), donkere lijnen op een zwarte ondergrond
 function bodHoneyTex() {
-  const c = document.createElement('canvas'); c.width = 256; c.height = 256; const g = c.getContext('2d');
-  g.fillStyle = '#0b0c0e'; g.fillRect(0, 0, 256, 256); g.strokeStyle = '#8a9099'; g.lineWidth = 4; const r = 22, h = r * Math.sqrt(3);
-  for (let row = -1; row < 12; row++) for (let col = -1; col < 8; col++) {
+  const W = 256, c = document.createElement('canvas'); c.width = W; c.height = W; const g = c.getContext('2d');
+  g.fillStyle = '#0b0c0e'; g.fillRect(0, 0, W, W); g.strokeStyle = '#5d636b'; g.lineWidth = 3;
+  const r = W / 12, h = W / 7, ky = h / (r * Math.sqrt(3));
+  for (let row = -1; row < 16; row++) for (let col = -1; col < 6; col++) {
     const cx = col * r * 3 + (row % 2 ? r * 1.5 : 0), cy = row * h / 2;
-    g.beginPath(); for (let k = 0; k < 6; k++) { const a = PI / 3 * k; g.lineTo(cx + r * Math.cos(a), cy + r * Math.sin(a)); } g.closePath(); g.stroke();
+    g.beginPath(); for (let k = 0; k < 6; k++) { const a = PI / 3 * k; g.lineTo(cx + r * Math.cos(a), cy + ky * r * Math.sin(a)); } g.closePath(); g.stroke();
   }
-  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; return t;
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; return t;
 }
-const bodSTri = (g, k) => { const p = g.attributes.position, uv = new Float32Array(p.count * 2); for (let i = 0; i < p.count; i++) { uv[2 * i] = p.getX(i) * k; uv[2 * i + 1] = (p.getY(i) + p.getZ(i) * 0.5) * k; } g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); return g; };
+// uv van het gaas: u over x, v over de lengte langs de neushelling (ca. 55 graden), k herhalingen per meter (cel ca. 9,5 mm bij k 17,5)
+const bodHoneyUV = (g, k) => { const p = g.attributes.position, uv = new Float32Array(p.count * 2); for (let i = 0; i < p.count; i++) { uv[2 * i] = p.getX(i) * k; uv[2 * i + 1] = p.getY(i) / 0.82 * k; } g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); return g; };
+// gaasopening op de neus: boven- en onderrand uit bodYG1 en bodYG0, afgeronde uiteinden (de halve breedte loopt over 12 mm terug naar boven en onder)
+const bodGZ1 = bodZAtYd(bodYG1), bodGZ0 = bodZAtYd(bodYG0);
+const bodGXe = z => { const w = 2 * clamp((z - bodGZ1) / (bodGZ0 - bodGZ1), 0, 1) - 1; return bodXG - 0.012 * (1 - Math.sqrt(Math.max(0, 1 - w * w))); };
 function bodFrontPanel() {
-  const zA = bodZAtYd(0.70), zB = bodZAtYd(0.545), xs = 0.285, xg = 0.25, sA = z => bodSAtX(z, xs), sG = z => bodSAtX(z, xg);
-  const strip = (z0, z1, nu) => bodDeck(z0, z1, nu, sA, 8);
-  const side = sd => patch((z, p) => bodLow(z, p), zA, zB, 8, z => (sd > 0 ? [sA(z), sG(z)] : [2 - sG(z), 2 - sA(z)]), 1);
-  const honey = bodSTri(bodDeck(zA, zB, 10, sG, 12, [], 0.012), 3.2);
+  const off = 0.0025, sP = z => bodSAtX(z, bodXP), sE = z => bodSAtX(z, bodGXe(z)), sG = z => bodSAtX(z, bodXG + 0.004);
+  // paneel: bovenstrook (onder de kap geschoven), twee zijposten, onderstrook (onder de bumper geschoven); alles 2,5 mm onder de huid
+  const top = bodDeck(bodZLh - 0.008, bodGZ1 + 0.0005, 8, sP, 10, [], off), low = bodDeck(bodGZ0 - 0.0005, 1.705, 6, sP, 10, [], off);
+  const post = sd => bodReg(sd, bodGZ1, bodGZ0, 10, 1, sP, sE, off);
+  const honey = bodHoneyUV(bodDeck(bodGZ1 - 0.003, bodGZ0 + 0.003, 10, sG, 12, [], 0.008), 17.5);
   MAT.bodHoney.map = bodHoneyTex(); MAT.bodHoney.color.setHex(0xffffff); MAT.bodHoney.needsUpdate = true;
+  // kuip: vier zwarte wanden van de paneelrand naar het gaas (8 mm diep)
+  const zt = bodGZ1, zb = bodGZ0, st = sE(zt), sb = sE(zb);
+  const kuip = merge([...[1, -1].map(sd => bodWall(sd, z => [z, sE(z)], zt, zb, 10, off, 0.0085, 1)),
+    bodWall(1, t => [zt, lerp(st, 2 - st, t)], 0, 1, 8, off, 0.0085, 1), bodWall(1, t => [zb, lerp(sb, 2 - sb, t)], 0, 1, 8, off, 0.0085, 1)]);
   const S = [[0.014, 0.016], [0.004, 0.022], [-0.010, 0.018], [-0.012, 0.008], [-0.002, 0.0], [0.010, -0.008], [0.012, -0.018], [0.0, -0.024], [-0.014, -0.018]];
-  const emb = merge([xf(G.cyl('z', 0.03, 0.03, 0.003, 24), [0, 0, 0], [0, 0, 0], [1.4, 1, 1]), tube(S.map(([u, v]) => [u * 1.1, v * 1.1, 0.004]), 0.0032, 40, 5)]);
-  const yE = 0.625, zE = bodZAtYd(yE) - 0.012;
-  return A('Grille en voorpaneel', { d: 'Voorpaneel tussen de koplampen met de honingraatgrille en het embleem (uitvoering 2000 tot 2002).', ex: [0, 0.04, 0.4] }, [
-    P('Voorpaneel', merge([strip(bodZLh, zA, 8), strip(zB, ZF - 0.0005, 4), side(1), side(-1)]), MAT.paint, { d: 'Neuspaneel in carrosseriekleur boven en onder de grille, tussen de koplampen.', ex: [0, 0.04, 0.06] }),
-    P('Honingraatgrille', honey, MAT.bodHoney, { d: 'Zwarte kunststof grille met honingraatstructuur voor de luchtinlaat van de radiateur.', ex: [0, 0, 0.14] }),
-    P('Embleem', emb, MAT.bodChrome, { d: 'Verchroomd embleem op de grille (een gestileerde letter S op een ovaal; schematisch, zonder merkletters).', p: [0, yE + 0.0, zE + 0.0], r: [-0.532, 0, 0], ex: [0, 0.03, 0.12] }),
+  const emb = merge([xf(G.cyl('z', 0.03, 0.03, 0.003, 24), [0, 0, 0], [0, 0, 0], [1.1, 1, 1]), tube(S.map(([u, v]) => [u * 0.9, v * 1.1, 0.004]), 0.0032, 40, 5)]);
+  const yE = (bodYG0 + bodYG1) / 2, zE = bodZAtYd(yE), pE = bodAt(zE, yE, -0.006), nE = bodN(zE, sAtY(zE, yE));
+  return A('Grille en voorpaneel', { d: 'Voorpaneel tussen de koplampen: lichaamskleurig, vlak met de lampen, met één smalle zwarte gaasopening met honingraatgaas en het embleem (uitvoering 2001).', ex: [0, 0.04, 0.4] }, [
+    P('Naadvulling voorkant', patch((z, p) => bodLow(z, p, 0.04), bodZLh - 0.001, ZF - 0.001, 16, z => { const a = sAtY(z, 0.5); return [a, 2 - a]; }, 20), MAT.bodSeal, { d: 'Donkere schil 40 mm onder de huid van de neus (schematisch): vangt wat er na de overlappende naden aan kieren overblijft, zodat daar geen motorruimte te zien is.', ex: [0, 0, -0.03] }),
+    P('Voorpaneel', merge([top, low, post(1), post(-1)]), MAT.paint, { d: 'Neuspaneel in carrosseriekleur boven en onder de gaasopening en ernaast, tussen de koplampen. Het loopt 8 mm onder de kap en onder de bumperrand.', ex: [0, 0.04, 0.06] }),
+    P('Grillekuip', kuip, MAT.bodBlack, { d: 'Zwarte wanden rond de gaasopening: het gaas ligt 8 mm dieper dan het paneel.', ex: [0, 0, 0.1] }),
+    P('Honingraatgrille', honey, MAT.bodHoney, { d: 'Zwart kunststof gaas met fijne honingraatstructuur (uitvoering 2001, één doorlopende opening) voor de luchtinlaat van de radiateur.', ex: [0, 0, 0.14] }),
+    P('Embleem', emb, MAT.bodEmblem, { d: 'Donker metallic embleem op het gaas (een gestileerde letter S op een ovaal; schematisch, zonder merkletters).', p: [0, pE[1], pE[2]], r: [-Math.atan2(nE[1], nE[2]), 0, 0], ex: [0, 0.03, 0.12] }),
   ]);
 }
-const bodBumperGeo = (yTop, z0, zEnd, dir) => merge([
-  patch((z, p) => bodLow(z, p), dir > 0 ? z0 : zEnd + 0.0005, dir > 0 ? zEnd - 0.0005 : z0, 36, z => { const sb = sAtY(z, yTop); return [-sb, sb]; }, 34),
-  bodFace(zEnd, dir, -9, 9, YB(zEnd) + 0.001, dir > 0 ? bodSec(zEnd).yd - 0.001 : yTop, 0, 8, 30)]);
+// normaal van de onderbak in (z, p) voor beide helften (p > 1 is de rechterhelft)
+const bodNrm = (z, p) => { const q = ((p % 2) + 2) % 2, sd = q <= 1 ? 1 : -1, sv = q <= 1 ? q : 2 - q, n = bodN(z, sv); return [sd * n[0], n[1], n[2]]; };
+// zoals patch(), maar met normalen uit het analytische oppervlak in plaats van uit de driehoeken: geen naden of kreukels bij versprongen rijen of waar de uiteinden van het vlak samenkomen
+function bodPatchN(fn, u0, u1, nu, vr, nv, breaks = []) {
+  const g = patch(fn, u0, u1, nu, vr, nv, breaks), us = [];
+  for (let i = 0; i <= nu; i++) us.push(u0 + (u1 - u0) * i / nu);
+  breaks.forEach(b => { if (b > u0 + 1e-4 && b < u1 - 1e-4) us.push(b); });
+  us.sort((a, b) => a - b);
+  const n = g.attributes.normal; let k = 0;
+  for (const u of us) { const [v0, v1] = vr(u); for (let j = 0; j <= nv; j++, k++) { const q = bodNrm(u, v0 + (v1 - v0) * j / nv); n.setXYZ(k, q[0], q[1], q[2]); } }
+  // de wikkeling moet bij de normalen passen (DoubleSide keert de normaal om voor achterkanten): keer de driehoeken om als de meeste ervan achterstevoren staan
+  const ix = g.index, pos = g.attributes.position; let d = 0; const a = V3(), b = V3(), c = V3(), nn = V3();
+  for (let t = 0; t < ix.count; t += 3) {
+    a.fromBufferAttribute(pos, ix.getX(t)); b.fromBufferAttribute(pos, ix.getX(t + 1)); c.fromBufferAttribute(pos, ix.getX(t + 2));
+    b.sub(a); c.sub(a); b.cross(c); nn.fromBufferAttribute(n, ix.getX(t)); d += Math.sign(b.dot(nn)) * Math.min(1, b.length() * 1e4);
+  }
+  if (d < 0) for (let t = 0; t < ix.count; t += 3) { const q = ix.getX(t + 1); ix.setX(t + 1, ix.getX(t + 2)); ix.setX(t + 2, q); }
+  return g;
+}
+// bumperschaal: bovenrand yTop (getal of functie van z), inw(z) is de verschuiving naar binnen (voor onder het scherm: 3 mm; op de neus 1 mm voor het paneel)
+const bodBumperGeo = (yTop, z0, zEnd, dir, inw = () => 0, nu = 36, nv = 34) => {
+  const yt = typeof yTop === 'function' ? yTop : () => yTop;
+  return merge([
+    bodPatchN((z, p) => bodLow(z, p, inw(z)), dir > 0 ? z0 : zEnd + 0.0005, dir > 0 ? zEnd - 0.0005 : z0, nu, z => { const sb = sAtY(z, yt(z)); return [-sb, sb]; }, nv),
+    bodFace(zEnd, dir, -9, 9, YB(zEnd) + 0.001, dir > 0 ? bodSec(zEnd).yd - 0.001 : yt(zEnd), 0, 8, 30)]);
+};
+const bodBumperTop = z => bodYBT(z) + 0.008;                                    // bovenrand voorbumper: 8 mm boven de lijn waar lamp, paneel en scherm op aansluiten
+const bodBumperInw = z => lerp(0.003, -0.001, sstep((z - 1.52) / 0.06));        // onder het scherm 3 mm naar binnen, op de neus 1 mm voor het paneel
 function bodFrontBumper() {
   const both = bodBoth, sn = bodSn;
   if (!MAT.bodPlate.map) { MAT.bodPlate.map = bodPlateTex(); MAT.bodPlate.needsUpdate = true; }
@@ -304,7 +442,7 @@ function bodFrontBumper() {
     P('Lamp knipperlicht voor', G.cyl('z', 0.009, 0.009, 0.035, 10), MAT.ceramic, { d: 'Steeklamp van de richtingaanwijzer.', p: [s * 0.42, 0.425, ZF - 0.05], ex: [0, 0, -0.06] }),
   ]);
   return A('Voorbumper', { d: 'Bumperschaal in carrosseriekleur (Twist) met de hoeken om de wielbogen, richtingaanwijzers laag in de hoeken en een kentekenvlak; erachter de stalen bumperbalk.', ex: [0, -0.04, 0.72] }, [
-    P('Bumperschaal voor', bodBumperGeo(bodYBF, 1.395, ZF, 1), MAT.paint, { d: 'Kunststof bumperschaal in het rood met afgeronde hoeken die om de voorwielboog lopen.', ex: [0, -0.02, 0.12] }),
+    P('Bumperschaal voor', bodBumperGeo(bodBumperTop, 1.395, ZF, 1, bodBumperInw, 56, 44), MAT.paint, { d: 'Kunststof bumperschaal in het rood met afgeronde hoeken die om de voorwielboog lopen.', ex: [0, -0.02, 0.12] }),
     P('Luchtrooster voor', bodFace(ZF, 1, -0.30, 0.30, 0.325, 0.36, -0.002, 2, 14), MAT.bodBumper, { d: 'Zwart rooster in de onderrand van de bumper voor extra koellucht.', ex: [0, -0.04, 0.1] }),
     P('Kentekenplaathouder voor', G.rbox(0.54, 0.125, 0.006, 0.004), MAT.bodBumper, { d: 'Zwarte houder voor de voorste kentekenplaat in het midden van de bumper.', p: [0, 0.405, ZF + 0.0], ex: [0, 0, 0.1] }),
     P('Kentekenplaat voor', G.rbox(0.52, 0.11, 0.003, 0.002), MAT.bodPlate, { d: 'Gele Nederlandse plaat met zwarte rand en blauwe EU-strook, met streepjes op de plaats van het kenteken (geen kenteken in dit model).', p: [0, 0.405, ZF + 0.0035], ex: [0, 0, 0.16] }),
