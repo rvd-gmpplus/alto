@@ -1,0 +1,176 @@
+# Bouwcontract: Suzuki Alto 1.0-16V Twist (2001)
+
+Dit contract legt vast wat de domeineigenaars van elkaar mogen verwachten. Het volgt het sjabloon in [sjabloon-contract.md](sjabloon-contract.md); de architectuur van de app (knoop-API, uitklaplogica, modus Openen, bundelen, `inner`, `hideWhen`) staat in [ontwerp-en-architectuur.md](ontwerp-en-architectuur.md) en verandert per auto niet. Wie een waarde wijzigt, meldt dat aan de orkestrator. De feiten en hun status staan in [specificaties-en-bronnen.md](specificaties-en-bronnen.md); de keuzes bij open vragen in [onderzoek/beslissingen.md](onderzoek/beslissingen.md). De getallen komen uit `src/body.js` (de carrosserie, stap 3); waar een waarde geschat is, staat dat erbij.
+
+## 1. De auto
+
+| Onderwerp | Keuze | Bron |
+|---|---|---|
+| Model en fase | Suzuki Alto, Zen-gebaseerde Europese uitvoering ("Alto 16V", 2000 tot 2002), 3-deurs hatchback, bouwjaar 2001 | onderzoek, eigenaar |
+| Uitvoering | 1.0-16V Twist (geleverd november 2000 tot april 2002) | eigenaar, Autowereld (aannemelijk) |
+| Lak | Bright Red 2, code Z9T (aannemelijk), effen rood zonder metallic; kleurwaarde ongeveer #C8323C (geschat); bumpers in carrosseriekleur | eigenaar, RDW-kleurverdeling, foto's |
+| Wielen en banden | 145/70 R13 (TR) op stalen velgen van 13 inch met volle kunststof wieldoppen; vier bouten, steek 4 x 100 mm (geschat); bandstraal 0,2666 m | Autoweek, foto's |
+| Motor | G10BB: viercilinder in lijn, 16 kleppen, SOHC, 993 cc, 72,0 x 61,0 mm, 43 kW (58 pk) bij 6000 tpm, 78 Nm bij 4500 tpm, multipoint-inspuiting, Euro 3 | werkplaatshandboek, Autoweek |
+| Bak | Handgeschakelde 5-bak, voorwielaandrijving | eigenaar (bevestigd) |
+| Bijzonderheden | Twist-uitrusting: elektrische ramen voor, centrale vergrendeling, elektrisch verstelbare en verwarmde buitenspiegels (handmatig inklapbaar), getint glas, dakrails (los te verwijderen), hoofdsteunen voor en achter, deelbare achterbank. Geen stuurbekrachtiging, geen airbags, geen ABS, geen glazen dak (`panorama.js` blijft leeg) | eigenaar, Autowereld (aannemelijk), Autoweek |
+| Tank, gewicht | 35 l; leeggewicht 705 of 725 kg | Autoweek, RDW, Autowereld |
+
+Open punten bij de eigenaar: of het motorplaatje G10BB (43 kW, Euro 3) zegt, gezien de vermelding "E2" en "145 km/u" op de Autowereld-pagina van de Twist; de exacte lakcode; een recht zijaanzicht om het silhouet te verscherpen.
+
+Kenteken en chassisnummer komen nooit in de repo, de pagina of een commitbericht; de kentekenplaten in het model zijn blanco.
+
+## 2. Assen en hoofdmaten (autoframe)
+
+Meter. x links (+) en rechts (-), y omhoog vanaf de grond, z naar voren (+). De auto is in de lengte gecentreerd. `src/body.js` exporteert deze symbolen.
+
+| Symbool | Waarde | Herkomst |
+|---|---|---|
+| `ZF`, `ZR` | +1,7475 en -1,7475 | lengte 3495 mm |
+| `AXF`, `AXR` | +1,087 en -1,248 | wielbasis 2335 mm; overhang voor 0,661 m en achter 0,499 m (geschat uit een zijaanzicht, fout 3 tot 5 cm) |
+| `AY` | 0,265 | bandstraal 0,2666 m minus 1,6 mm indrukking |
+| `ARCH` | 0,30 | wielboogstraal (band 0,267 m, speling 3 cm) |
+| `TRACK_F`, `TRACK_R` | 0,6675 en 0,6525 | spoor 1335 en 1305 mm |
+| `BOD_WMAX` | 0,7535 | halve breedte zonder spiegels 0,7475 plus 6 mm (breedte 1495 mm) |
+| `BOD_MIRW` | 0,835 | halve breedte met spiegels plus 6 mm; de spiegels reiken tot 0,830 (geschat, geen opgave gevonden) |
+| `BOD_H` | 1,405 | hoogte onbeladen (brochure); de dakrails staan er 3 cm bovenop |
+| `HW(z)` | 0,7475 van z -1,20 tot +0,90; neus 0,50 bij +1,7475; staart 0,50 bij -1,7475 | silhouet (bovenaanzicht) |
+| `YB(z)` | dorpel 0,215 tot 0,25; voorbumper 0,27 (rand 0,31); achterbumper 0,275 (rand 0,34) | geschat |
+| `YT(z)` | gordellijn: 0,894 (z 0,4), 0,913 (0,0), 0,936 (-0,4), 0,960 (-1,0); schouder voor 0,903 (z 0,85) dalend naar 0,722 (z 1,60) en 0,485 (nok) | silhouet, belt |
+| `YR(z)` | daklijn op de hartlijn: 0,930 (z 0,90), 1,105 (0,6), 1,285 (0,35), 1,380 (0,1), 1,405 (-0,4 tot -0,65), 1,382 (-1,15), 1,17 (-1,45), 0,90 (-1,70) | silhouet (top) |
+| `surfX(z, y)` | buitenhuid in x op hoogte y; boven de gordel de halve breedte van ruit, stijl of dak; boven dek of dak 0 | carrosserie |
+| `skin(z, y, s, out)` | punt op de huid | carrosserie |
+
+De doorsnede van de onderbak is een loft in (z, s): vlakke onderkant, bodemhoek (straal 0,045), flank met 12 mm bolling, schouder (straal 0,055), dek met kroon (3 cm voor de kap). De kas (ruiten, stijlen, dak) is een loft in (z, q) met 0,28 hellende ruitstijlen; daklijn en gordel volgen `data/silhouet.json` (alle stations binnen de tolerantie, de voorruit aan de bovengrens, de achterruit zo steil als de tolerantie toelaat).
+
+## 3. Motorframe en aandrijflijn
+
+Oorsprong op de krukas-as, in het midden van het blok (tussen cilinder 2 en 3, waar het axiaallager zit). +x loopt langs de krukas naar de vliegwiel- en bakzijde (links in de auto), +y langs de cilinders omhoog, +z naar de inlaatzijde (naar de voorkant van de auto). Cilinder 1 staat aan de poeliezijde, dus op -x (rechts in de auto): de cilinders staan op x = -0,1185, -0,0395, +0,0395 en +0,1185 (steek 0,079 m, geschat). De distributie en de krukaspoelie zitten rechts, de koppeling en de bak links (handboek).
+
+| Symbool | Beginwaarde | Reden |
+|---|---|---|
+| `PT_POS` | (-0,13; 0,36; 1,217) | motor en bak (breedte 0,78 m, van motor-x -0,26 tot +0,52) staan in de breedte gecentreerd; de krukas ligt 0,095 m boven het differentieel; de onderkant van de carterpan komt daarmee op circa y 0,17 (bodemvrijheid 160 mm, geschat) |
+| `PT_TILT` | 0 rad | geen hoek in de bronnen gevonden; rechtopstaand (besluit 11) |
+| `GB_X` | 0,30 | vlak tussen blok en bak: blokeinde 0,178 plus 0,12 m koppelingshuis |
+| `DIFF` (bakframe) | (0,13; -0,095; -0,13) | differentieelas op x = +0,30, y = 0,265 en z = 1,087 in het autoframe |
+
+Eisen: de as van het differentieel ligt binnen 3 cm van de hartlijn van de voorwielen (y 0,265, z 1,087, dus op 0 cm); gebruik altijd `fromPT`, `toPT`, `ENG2CAR` en `PTM` (`drivetrain.js`). De aandrijfassen zijn ongelijk van lengte: links circa 0,37 m, rechts circa 0,97 m met een tussenas of schuine stand (de rechterkant is het langste stuk, handboek hoofdstuk 9).
+
+**Keuze inlaat en uitlaat: inlaat aan de voorkant (+z), uitlaat aan de achterkant (-z).** Redenen: (1) de motorkap is voor het laagst (0,745 bij de neus) en achter het hoogst (0,93); de lage inlaatzijde krijgt de compacte inlaatkast en luchtfilter, de hoge ruimte achter het blok past bij spruitstuk en katalysator. (2) Het spruitstuk met driewegkatalysator en twee lambdasondes zit zo vlak voor het schutbord (z 0,866) en de pijp loopt de kortste weg onder de vloer naar achter; de hete delen blijven bij het radiatorpakket vandaan. (3) Het is dezelfde conventie als het sjabloon (+z naar de inlaatzijde); de koelventilator en radiator zitten voor de inlaatkast. De bronnen geven geen inlaat- of uitlaatzijde (besluit 11, Niet gevonden): dit is dus een representatieve keuze, geschat; foto's van de motorruimte van de eigenaar kunnen hem omkeren. Er is geen turbo en geen intercooler.
+
+## 4. Motorkap en ruimte in de motorruimte
+
+Het kapprofiel staat in `body.js`. `integrity.py` faalt als een onderdeel minder dan 2,5 cm onder de buitenhuid van de motorkap blijft, of minder dan 0,5 cm onder de laagste laag van de kap (binnenframe 3 cm, isolatiemat 4 cm onder de huid, tussen z 1,01 en 1,48). Met marge voor afronding:
+
+| z (m) | Buitenkant kap op de hartlijn | Hoogste punt van onderdelen bij x = 0 | Bij \|x\| = 0,55 |
+|---|---|---|---|
+| 0,95 (achterrand kap) | 0,923 | 0,875 | 0,865 |
+| 1,05 | 0,910 | 0,865 | 0,855 |
+| 1,15 | 0,889 | 0,845 | 0,835 |
+| 1,25 | 0,863 | 0,820 | 0,805 |
+| 1,35 | 0,834 | 0,790 | 0,780 |
+| 1,45 | 0,804 | 0,760 | 0,745 |
+| 1,55 | 0,770 | 0,725 | 0,710 |
+| 1,60 (voorrand kap) | 0,745 | 0,700 | 0,685 |
+
+De kap is 0,62 m halfbreed tot z 1,2 en versmalt naar 0,55 bij de neus; de koplampen en schermstroken liggen daarbuiten. Gereserveerde ruimte in de motorruimte:
+
+| Zone | Wat | Eigenaar |
+|---|---|---|
+| Schutbord op z 0,866 (voorvlak), kap-scharnieren op z 0,92 tot 1,0, x = +-0,50 | niets plaatsen binnen 4 cm van het schutbord; de uitlaat (katalysator) mag er vlak voor, tot z 0,95 | carrosserie, systemen |
+| Veerpoottorens x = +-0,50, z 1,02 tot 1,16, y 0,56 tot 0,76 (straal 0,05 bovenaan, 0,07 onderaan) | alleen de veerpoot en de bovenste lagerplaat | onderstel |
+| Wielkasten: binnenwand op |x| = 0,50, boog met straal 0,312 om (z 1,087, y 0,265) | de motor blijft binnen |x| < 0,49 onder y 0,58 | motor, aandrijving |
+| Frontmodule (z 1,575 tot 1,625) en koelpakket (z 1,44 tot 1,575) | radiator, koelventilator, slot, bumperbalk (z 1,66, y 0,40) | systemen, carrosserie |
+| Motorkapsteun (x = -0,575, voet op z 1,0 en y 0,84; open tot y 1,29) | stang van 0,51 m met de voet naast de rechter veerpoottoren; in rust ligt hij schuin naar voren langs de rechter binnenwand; houd x -0,60 tot -0,55 tussen z 1,0 en 1,37 vrij | carrosserie |
+| Accu | rechts voor bij de frontmodule of links boven de bak: vrij onder de tabel hierboven | systemen |
+
+De motor (met inlaat) houdt tot de samenvoeging de hoogte van de tabel aan; het ventieldeksel reikt tot y 0,76 (krukas plus 0,40) en de inlaatkast tot y 0,79; bij z 1,35 is 0,79 de grens.
+
+## 5. Aansluitpunten
+
+`ENG_PORTS` (motorframe, `engine1.js`): elke poort is `{ p, dir }`; `portAt(poort, afstand)` geeft een punt op die afstand langs de richting. Beginwaarden, alle geschat en door de motoreigenaar te bevestigen.
+
+| Poort | Plaats p | Richting | Gebruiker |
+|---|---|---|---|
+| `exhaustOut` | (0,02; 0,17; -0,215) | (0, -1, 0) | uitlaatspruitstuk naar de voorkatalysator |
+| `throttleIn` | (0,20; 0,30; 0,19) | (1, 0, 0) | luchtfilterslang naar de gasklep |
+| `thermostatOut` | (-0,19; 0,30; 0,10) | (0, 1, 0) | koelslang boven naar de radiateur |
+| `waterPumpIn` | (-0,155; 0,06; 0,15) | (0, 0, 1) | koelslang onder van de radiateur |
+| `fuelRailIn` | (0,205; 0,285; 0,17) | (1, 0, 0) | brandstofleiding naar de verdeelleiding |
+| `evapPurge` | (0,05; 0,33; 0,20) | (0, 1, 0) | slang van het koolstoffilter (EVAP) naar de inlaat |
+
+Vervallen ten opzichte van laguna3: `compIn` en `compOut` (geen turbo en geen intercooler), `turbineOut` (wordt `exhaustOut`), en `psOut` en `psIn` (geen stuurbekrachtiging). Het onderstel gebruikt `ENG_PORTS` zonder terugvalwaarden voor de stuurpomp.
+
+`DRV_PORTS` (`drivetrain.js`): `starterTerminal` (motorframe, beginwaarde [GB_X + 0,10; -0,04 + 0,062; 0,147 + 0,012], door de startmotor gezet op het plusklemmetje), `diffOutL` en `diffOutR` (aandrijfas-uitgangen links en rechts van het differentieel: x = GB_X + 0,13 +- 0,082, y -0,095, z -0,13 in het motorframe), `clutchLever` (de koppelingsarm op het huis: (GB_X + 0,03; -0,05; -0,03), kabel naar het pedaal in het interieur) en `shiftIn` (de ingang van de schakelstang op de bak: (GB_X + 0,15; 0,0; -0,05), naar de pook).
+
+## 6. Namen (ankers)
+
+Elke naam komt precies een keer voor in de boom; `tools/anchors.json` is de lijst die getoetst wordt (alleen de carrosserie staat er nu volledig in, de andere groepen staan als `contains` en worden pas getoetst als ze bestaan).
+
+- Wortel: `Suzuki Alto`, met precies acht kinderen in deze volgorde: Carrosserie, Interieur, Aandrijflijn, Onderstel, Koeling en luchtinlaat, Uitlaatsysteem, Brandstofsysteem, Elektrisch systeem.
+- `Onderstel` heeft precies vier kinderen: Vooras en stuurinrichting, Achteras, Wielen, Remsysteem.
+- De motor heet **Motor G10BB** (kind van Aandrijflijn). De motorkap heet `Motorkap`.
+
+| Hoofdgroep | Ankernamen (eigenaar) |
+|---|---|
+| Carrosserie | Carrosseriekooi (Vloer en dorpels met Bodemplaat, Voorbouw met Schutbord en Frontmodule, Achterbouw, Zijwanden en dak met Dakpaneel, Waterkast, Hoekruit links en rechts), Motorkap (met Motorkapsteun), Achterklep (met Gasveer links en rechts), Voorbumper, Achterbumper, Portier links en rechts (met Buitenspiegel links en rechts, elk met Zijruit), Voorruit, Koplamp links en rechts, Achterlicht links en rechts, Grille en voorpaneel, Kentekenvlak achter, Ruitenwissers, Tankvulopening (met Tankklep), Dakrail links en rechts |
+| Aandrijflijn | Motor G10BB (Motorblok, Krukmechanisme, Cilinderkop, Distributie, Hulpaandrijving, Smering, Inlaatspruitstuk, Uitlaatspruitstuk), Handbak 5-versnellingen (Koppeling, Differentieel), Aandrijfassen (Aandrijfas links, Aandrijfas rechts), Startmotor |
+| Interieur | Dashboard, Middenconsole, Stoelen (Bestuurdersstoel, Passagiersstoel, Achterbank met deelbare rugleuning en hoofdsteunen), Bekleding |
+| Onderstel | Vooras en stuurinrichting (Stuurinrichting met Stuurwiel, Wielophanging linksvoor en rechtsvoor), Achteras (Wielophanging linksachter en rechtsachter), Wielen (Wiel linksvoor, rechtsvoor, linksachter, rechtsachter), Remsysteem (Handrem) |
+| Koeling en luchtinlaat | Radiateur, Koelventilator, Expansievat, Luchtfilter |
+| Uitlaatsysteem | Katalysator, Middendemper, Einddemper |
+| Brandstofsysteem | Brandstoftank, Vulsysteem (de vulhals hoort achter de Tankklep, de opening zit in de carrosserie), Brandstofpomp |
+| Elektrisch systeem | Accu, Motorregeleenheid, Kabelboom |
+
+## 7. Eigendom en voorvoegsels
+
+| Domein | Bestanden | Voorvoegsel |
+|---|---|---|
+| Carrosserie | `body.js`, `bodyparts.js` (`panorama.js` blijft leeg: geen glazen dak) | `bod` |
+| Motor | `engine1.js`, `engine2.js`, `engine3.js` | `eng` |
+| Aandrijving | `drivetrain.js` | `drv` |
+| Onderstel | `chassis.js` | `chs` |
+| Interieur | `interior.js` | `int` |
+| Systemen | `systems.js` (met `buildCar()`) | `sys` |
+| App en framework | alles in `framework.json` onder generiek, plus `presetdata.js` | `ui`, `app` |
+
+Functies, materialen en cachesleutels krijgen het voorvoegsel van de eigenaar. Alleen-lezen voor domeineigenaars: `core.js`, `body.js`, `tools/anchors.json`, `tools/open_allow.json`, de testscripts en `IGNORE` in `tools/harness.py`.
+
+## 8. Budgetten
+
+In `tools/anchors.json`: totaal 400.000 driehoeken, verdeeld naar verhouding van laguna3 (190.000 van 719.000 voor de carrosserie, enzovoort; op honderdtallen afgerond), tekenopdrachten gemonteerd met bundelen onder 1.500. `tools/tri.py --gate` bewaakt de driehoeken.
+
+| Hoofdgroep | Budget (driehoeken) | Stand carrosserieronde |
+|---|---|---|
+| Aandrijflijn | 133.500 | plaatshouder |
+| Carrosserie | 105.700 | circa 87.000 (244 onderdelen) |
+| Onderstel | 69.500 | plaatshouder |
+| Interieur | 52.900 | plaatshouder |
+| Koeling en luchtinlaat | 13.900 | plaatshouder |
+| Uitlaatsysteem | 11.100 | plaatshouder |
+| Brandstofsysteem | 6.700 | plaatshouder |
+| Elektrisch systeem | 6.700 | plaatshouder |
+| Totaal | 400.000 | |
+
+Doel voor de hele auto: 1.000 tot 1.400 onderdelen (de carrosserie telt er nu 244).
+
+## 9. Openers (modus Openen)
+
+Zes openers van de carrosserie (negen in de modus Openen). Hoeken in graden, slag in meter; `open.min` is minstens 0,8 maal de volle hoek of slag. De hoeken en slagen zijn geschat.
+
+| Opener | Soort | Eindstand | Ondergrens | Bijzonderheden |
+|---|---|---|---|---|
+| Motorkap | scharnier achterrand (z 0,925, y 0,915) | 65 | 55 | steunstang van 0,51 m als volger (`Motorkapsteun`, rechter veerpoottoren); camera van linksvoor |
+| Portier links, rechts | scharnier vlak voor de voorrand (z 0,79, vertikale as) | 62 | 52 | lang portier (3-deurs); scharnierbladen op de A-stijl blijven staan (`stay`); de spiegel hoort bij het portier |
+| Zijruit (links, rechts) | schuif in het portier, langs het eigen vlak (helling 0,28) | 0,25 omlaag en 0,07 naar buiten (0,26 totaal) | 0,21 | volgers: Ruitdrager en Rubber zijruit; de elektrische raambediening zit in het portier |
+| Buitenspiegel links, rechts | scharnier aan de achterbinnenkant van het huis | 80 naar achteren | 64 | de voet blijft staan |
+| Achterklep | scharnier dakrand (z -1,165, y 1,385) | 66 | 60 | twee gasveren als telescoop (0,30 m in, 0,50 m uit), onderaan tegen de C-stijl, bovenaan op de zijrand van de klep |
+| Tankklep | scharnier voorrand (z -1,38), rechter achterscherm | 140 | 112 | opening met tankkom in het scherm; de vulhals zit in het brandstofsysteem |
+
+Uitzonderingen op de botsingstoets staan in `tools/open_allow.json` (nu geen). Wat een opening laat zien, heeft een eigenaar: de tankkom (carrosserie), de vulhals (brandstofsysteem), de achterbank (interieur), het motorcompartiment (motor, aandrijving, systemen).
+
+## 10. Regels voor alle eigenaars
+
+- `d` verplicht (Nederlandse beschrijving), `spec` alleen voor geverifieerde feiten in Nederlandse notatie, `ex` als uitklapvector, `inner` alleen voor wat van buiten nooit te zien is.
+- Elke wijziging met `python3 build.py --lint`; voor samenvoegen `tools/orkestratie/mergecheck.py`; na samenvoegen de volledige set (`tools/orkestratie/finaltests.sh`).
+- Een melding eerst narekenen met `pick.py`, `probe.py` of stralen; dan pas wijzigen.
+- De plaatshouders in `engine1.js`, `interior.js`, `chassis.js` en `systems.js` zijn voor de maten van deze auto gezet (blokken binnen de huid, vier cilinders als wielen) zodat de poorten kunnen draaien; de eigenaars vervangen ze.
