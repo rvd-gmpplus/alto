@@ -1,14 +1,14 @@
 # Kerncijfers
 
-Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-16, bron `243fcd0 2026-10-16`. Niet met de hand bewerken; andere documenten verwijzen hiernaar in plaats van getallen te herhalen.
+Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-17, bron `9612830 2026-10-17`. Niet met de hand bewerken; andere documenten verwijzen hiernaar in plaats van getallen te herhalen.
 
 ## Boom
 
 | Grootheid | Waarde |
 |---|---|
-| Knopen | 1.703 |
+| Knopen | 1.704 |
 | Groepen | 319 |
-| Onderdelen | 1.384 |
+| Onderdelen | 1.385 |
 | Diepte | 7 |
 | Ingesloten knopen (`inner`) | 125 |
 | Presets | 35 |
@@ -19,37 +19,37 @@ Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-16, 
 | Hoofdgroep | Onderdelen | Driehoeken | Budget |
 |---|---|---|---|
 | Aandrijflijn | 549 | 111.492 | 133.500 |
-| Carrosserie | 250 | 97.952 | 105.700 |
+| Carrosserie | 251 | 97.580 | 105.700 |
 | Onderstel | 267 | 62.460 | 69.500 |
 | Interieur | 176 | 49.156 | 52.900 |
 | Koeling en luchtinlaat | 41 | 6.036 | 13.900 |
 | Uitlaatsysteem | 35 | 6.012 | 11.100 |
 | Elektrisch systeem | 37 | 5.716 | 6.700 |
 | Brandstofsysteem | 29 | 4.704 | 6.700 |
-| Totaal | 1.384 | 343.528 | 400.000 |
+| Totaal | 1.385 | 343.156 | 400.000 |
 
 ## Tekenopdrachten (gemonteerd)
 
 | Stand | Waarde |
 |---|---|
-| Met gebundeld renderen | 246 |
-| Zonder bundelen | 1.065 |
-| Batches | 28 groepen, 205 batchmeshes, 1.024 losse meshes vervangen, 18.6 MB van 28.5 MB |
+| Met gebundeld renderen | 245 |
+| Zonder bundelen | 1.066 |
+| Batches | 28 groepen, 204 batchmeshes, 1.025 losse meshes vervangen, 19 MB van 29 MB |
 
 ## Opstarttijdlijn (software-rendering in de container, ms sinds het begin van de navigatie)
 
 | Moment | ms |
 |---|---|
-| script | 59 |
-| buildStart | 100 |
-| buildCar | 188 |
-| startUp | 311 |
-| render0 | 872 |
-| firstFrame | 3.882 |
-| interactive | 3.884 |
-| ready | 5.858 |
-| batches | 3.905 |
-| duur buildCar() | 88 |
+| script | 73 |
+| buildStart | 140 |
+| buildCar | 314 |
+| startUp | 486 |
+| render0 | 1.053 |
+| firstFrame | 1.567 |
+| interactive | 1.571 |
+| ready | 7.880 |
+| batches | 1.716 |
+| duur buildCar() | 174 |
 
 Deze tijden zeggen niets over een echt apparaat; zie `docs/telefoontest.md`.
 
