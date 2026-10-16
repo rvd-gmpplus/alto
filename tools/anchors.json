@@ -1,0 +1,43 @@
+{
+ "root": [
+  "Suzuki Alto"
+ ],
+ "main": [
+  "Carrosserie",
+  "Interieur",
+  "Aandrijflijn",
+  "Onderstel",
+  "Koeling en luchtinlaat",
+  "Uitlaatsysteem",
+  "Brandstofsysteem",
+  "Elektrisch systeem"
+ ],
+ "root_children_order": [
+  "Carrosserie",
+  "Interieur",
+  "Aandrijflijn",
+  "Onderstel",
+  "Koeling en luchtinlaat",
+  "Uitlaatsysteem",
+  "Brandstofsysteem",
+  "Elektrisch systeem"
+ ],
+ "onderstel_children": [
+  "Vooras en stuurinrichting",
+  "Achteras",
+  "Wielen",
+  "Remsysteem"
+ ],
+ "contains": [],
+ "content": {},
+ "openers": [],
+ "preset_ids": [
+  "assembled",
+  "main",
+  "tour"
+ ],
+ "triangle_budgets": {
+  "_uitleg": "driehoeken per hoofdgroep (tri.py --gate)",
+  "totaal": 700000
+ }
+}

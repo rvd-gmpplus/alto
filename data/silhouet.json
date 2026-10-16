@@ -1,0 +1,13 @@
+{
+ "_uitleg": "Silhouet van deze auto, nog te meten (docs/framework.md, stap 3).",
+ "top": [],
+ "plan": [],
+ "belt": [],
+ "axf": 1.3,
+ "axr": -1.3,
+ "neusMax": 9,
+ "staartMax": 9,
+ "tolAs": 0.03,
+ "tolOverhang": 0.05,
+ "maxBuiten": 2
+}
