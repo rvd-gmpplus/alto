@@ -1,6 +1,6 @@
 <!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
 <title>Suzuki Alto 1.0-16V Twist explosietekening</title>
-<meta name="model-version" content="1 (bron 9350027)">
+<meta name="model-version" content="1 (bron 5ecd7cc)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Suzuki Alto 1.0-16V Twist uit 2001: 3-deurs hatchback in rood met de viercilinder G10BB van 993 cc (58 pk), dwars voorin en voorwielaandrijving.">
 <meta property="og:title" content="Suzuki Alto 1.0-16V Twist explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Suzuki Alto 1.0-16V Twist (2001): klik een onderdeel en zie hoe de kleine rode hatchback uit elkaar gaat.">
@@ -610,7 +610,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Suzuki Alto 1.0-16V Twist explosietekening, versie 1 (bron 9350027)</p>
+    <p class="ver">Suzuki Alto 1.0-16V Twist explosietekening, versie 1 (bron 5ecd7cc)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -1712,11 +1712,27 @@ function buildBody() {
 
 /* ===================== panorama.js: beginauto van het framework, wordt vervangen door de domeineigenaar ===================== */
 
-/* ===================== engine1.js: beginauto van het framework, wordt vervangen door de domeineigenaar ===================== */
-function buildPowertrain() {
-  // beginauto: één blok als plaatshouder; de eigenaar van engine1.js vervangt dit door de echte onderdelen
-  return A('Aandrijflijn', { d: 'Plaatshouder voor de hoofdgroep Aandrijflijn.', ex: [0, 0.45, 0.6] }, [
-    P('Aandrijflijn (plaatshouder)', G.box(0.76, 0.42, 0.40), MAT.plasticGrey, { d: 'Blok op de plek van de hoofdgroep (motor en bak, dwars voorin, onder de motorkap); wordt vervangen.', p: [0, 0.42, 1.2], ex: [0, 0.2, 0] }),
+/* ===================== engine1.js: koppelvlak van de motor (orkestrator); de motoreigenaar vervangt de plaatshouder ===================== */
+// Motorframe (docs/contract.md, hoofdstuk 3): oorsprong op de krukas-as tussen cilinder 2 en 3, +x naar de bakzijde (links),
+// +y omhoog, +z naar de inlaatzijde (voor). Cilinder 1 aan de poeliezijde (-x).
+
+// Aansluitpunten in het motorframe (contract, hoofdstuk 5). systems.js sluit slangen en leidingen hierop aan.
+// Contract: de sleutels blijven bestaan; p = punt, dir = richting waarin een slang of pijp de aansluiting verlaat.
+const ENG_PORTS = {
+  exhaustOut: { p: [0.02, 0.17, -0.215], dir: [0, -1, 0] },       // uitlaatspruitstuk naar de voorkatalysator
+  throttleIn: { p: [0.20, 0.30, 0.19], dir: [1, 0, 0] },          // luchtfilterslang naar de gasklep
+  thermostatOut: { p: [-0.19, 0.30, 0.10], dir: [0, 1, 0] },      // koelslang boven naar de radiateur
+  waterPumpIn: { p: [-0.155, 0.06, 0.15], dir: [0, 0, 1] },       // koelslang onder van de radiateur
+  fuelRailIn: { p: [0.205, 0.285, 0.17], dir: [1, 0, 0] },        // brandstofleiding naar de verdeelleiding
+  evapPurge: { p: [0.05, 0.33, 0.20], dir: [0, 1, 0] },           // slang van het koolstoffilter naar de inlaat
+};
+// punt op afstand d buiten een aansluiting, langs dir (motorframe)
+function portAt(port, d = 0) { return [port.p[0] + port.dir[0] * d, port.p[1] + port.dir[1] * d, port.p[2] + port.dir[2] * d]; }
+
+function buildEngine() {
+  // plaatshouder; de motoreigenaar vervangt dit door blok, krukmechanisme, kop, distributie, inlaat, smering en hulpstukken
+  return A('Motor G10BB', { d: 'Plaatshouder voor de motor G10BB, 993 cc viercilinder met 16 kleppen.', ex: [-0.24, 0.12, 0] }, [
+    P('Motorblok (plaatshouder)', G.box(0.44, 0.50, 0.36), MAT.plasticGrey, { d: 'Blok op de plek van de motor; wordt vervangen.', p: ENG2CAR([-0.04, 0.12, 0]), ex: [0, 0.2, 0] }),
   ]);
 }
 
@@ -1724,7 +1740,39 @@ function buildPowertrain() {
 
 /* ===================== engine3.js: beginauto van het framework, wordt vervangen door de domeineigenaar ===================== */
 
-/* ===================== drivetrain.js: beginauto van het framework, wordt vervangen door de domeineigenaar ===================== */
+/* ===================== drivetrain.js: aandrijflijnframe en koppelvlak (orkestrator); bak, koppeling en aandrijfassen volgen van de eigenaar ===================== */
+// Aandrijflijnframe = motorframe (docs/contract.md, hoofdstuk 3): oorsprong op de krukas-as tussen cilinder 2 en 3,
+// +x naar de vliegwiel- en bakzijde (links in de auto), +y langs de cilinders omhoog, +z naar de inlaatzijde (voor).
+const PT_POS = V3(-0.13, 0.36, 1.217), PT_TILT = 0, GB_X = 0.30;
+const PTM = new THREE.Matrix4().compose(PT_POS, new THREE.Quaternion().setFromEuler(new THREE.Euler(PT_TILT, 0, 0)), V3(1, 1, 1));
+const PTI = PTM.clone().invert();
+const toPT = p => V3(...p).applyMatrix4(PTI);
+const fromPT = p => V3(...p).applyMatrix4(PTM);
+const ENG2CAR = p => fromPT(p).toArray();             // motorframe = aandrijflijnframe
+const DIFF = [0.13, -0.095, -0.13];                    // differentieel in bakframe (x vanaf het vlak GB_X, y, z)
+
+// Aansluitpunten van bak en startmotor in het motorframe (contract, hoofdstuk 5). De sleutels blijven bestaan.
+const DRV_PORTS = {
+  starterTerminal: [GB_X + 0.10, -0.04 + 0.062, 0.147 + 0.012],
+  diffOutL: [GB_X + DIFF[0] + 0.082, DIFF[1], DIFF[2]],
+  diffOutR: [GB_X + DIFF[0] - 0.082, DIFF[1], DIFF[2]],
+  clutchLever: [GB_X + 0.03, -0.05, -0.03],
+  shiftIn: [GB_X + 0.15, 0.0, -0.05],
+};
+
+function buildGearbox() {
+  // plaatshouder; de eigenaar van drivetrain.js vervangt dit door koppelingshuis, bak, differentieel en schakelmechanisme
+  return A('Handbak 5-versnellingen', { d: 'Plaatshouder voor de handgeschakelde vijfbak met differentieel.', ex: [0.3, 0, 0] }, [
+    P('Handbak (plaatshouder)', G.box(0.22, 0.30, 0.34), MAT.plasticGrey, { d: 'Blok op de plek van de bak, links naast het blok; wordt vervangen.', p: ENG2CAR([GB_X + 0.11, -0.02, -0.06]), ex: [0.2, 0, 0] }),
+  ]);
+}
+
+function buildPowertrain() {
+  // koppelvlak: buildEngine() komt uit de motorbestanden (engine1-3.js), buildGearbox() uit dit bestand
+  return A('Aandrijflijn', { d: 'Dwarsgeplaatste viercilinder G10BB met handgeschakelde vijfbak en voorwielaandrijving.', ex: [0, 0.45, 0.6] }, [
+    buildEngine(), buildGearbox(),
+  ]);
+}
 
 /* ===================== chassis.js: beginauto van het framework, wordt vervangen door de domeineigenaar ===================== */
 function buildChassis() {
