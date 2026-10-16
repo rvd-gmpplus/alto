@@ -121,6 +121,27 @@ Onderzoek van 16 oktober 2026 (stap 1 van het framework, zie [framework.md](fram
 | Koeling | Radiateur met expansietank, thermostaat, koelvloeistofpomp, elektrische koelventilator aangestuurd door de motorregeleenheid via een relais; drukdop 0,9 bar (handbak) of 1,1 bar (automaat); automaat met transmissievloeistofkoeler | Nimag-werkplaatshandboek (3.1, 3.2, 3.9) | Bevestigd |
 | Verlichting | Halogeen koplampen met helder glas; ruitenwissers voor met sproeiers en één achterruitwisser; achterruitverwarming | Foto's, Autowereld, huntingad | Aannemelijk |
 
+## Aanvulling van de eigenaar (16 oktober 2026)
+
+De eigenaar bevestigt: 3-deurs, motor G10BB, Bright Red 2 (Z9T). De uitvoering is de **Twist** (Alto 1.0-16V Twist, geleverd november 2000 tot en met april 2002). Bron voor de uitrusting: [Autowereld, Suzuki Alto 1.0-16V Twist](https://www.autowereld.nl/info/suzuki/alto/1-0-16v-twist-32586/details.html), uit een samenvatting en niet letterlijk gecontroleerd (status Aannemelijk).
+
+| Gegeven | Waarde | Bron | Status |
+|---|---|---|---|
+| Uitvoering | Twist (vervangt de aanname GA uit onderzoek/beslissingen.md, besluit 4) | eigenaar | Bevestigd |
+| Bumpers | In carrosseriekleur (rood), niet zwart | Autowereld Twist, eigenaar | Aannemelijk |
+| Dakrails | Aanwezig; in het model losse onderdelen, zodat ze weg kunnen als de eigenaar ze afwijst | Autowereld Twist | Aannemelijk |
+| Ruiten | Elektrisch bediend (voor), getint glas | Autowereld Twist | Aannemelijk |
+| Vergrendeling | Centrale vergrendeling | Autowereld Twist | Aannemelijk |
+| Buitenspiegels | Elektrisch verstelbaar en verwarmd (niet elektrisch inklapbaar) | Autowereld Twist | Aannemelijk |
+| Hoofdsteunen en achterbank | Hoofdsteunen voor en achter; achterbank in delen neerklapbaar | Autowereld Twist | Aannemelijk |
+| Leeggewicht | 725 kg (valt binnen de RDW-waarden van 705 en 725 kg voor de 3-deurs) | Autowereld Twist | Aannemelijk |
+| Topsnelheid | 145 km/u (Autoweek, Autozine en Autowereld GA: 150 km/u); niet overgenomen | Autowereld Twist | Aannemelijk |
+| Tank | 35 l | Autowereld Twist | Bevestigd |
+| Emissie | De pagina noemt E2; handboek en RDW geven Euro 3 voor de G10BB. Niet overgenomen: het motorplaatje beslist | Autowereld Twist | Open |
+| Transmissie | Handgeschakelde 5-bak, geen automaat. De opgave "automaat" op de Autowereld-pagina geldt niet voor deze auto | eigenaar | Bevestigd |
+
+Gevolgen voor het model: rode bumpers, dakrails als losse onderdelen, elektrische raambediening (raammotoren in plaats van handslingers), slotmotoren voor de centrale vergrendeling, verwarmde spiegels met verstelmotoren, getinte ruiten. De hoofdsteunen achter en de deelbare achterbank horen bij het interieur.
+
 ## Silhouet
 
 De meetpunten staan in `data/silhouet.json` in het formaat van laguna3 (autoframe in meter: x links, y omhoog vanaf de grond, z naar voren, lengte gecentreerd). Alles is geschat; er bestaat geen maatschets van deze auto.
@@ -156,7 +177,7 @@ De Alto 1.0 16V GA en Twist werden door Nimag (importeur) geleverd van november 
 
 ## Open punten
 
-- Of de auto van de eigenaar 3 of 5 deuren heeft, GA of Twist is, en een G10BB (43 kW) of een G10B (40 kW).
+- Of de motor volgens het plaatje een G10BB (43 kW, Euro 3) is, gezien de vermelding E2 en 145 km/u op de Autowereld-pagina van de Twist (de transmissie is bevestigd als 5-bak).
 - De exacte lakcode van de rode kleur (plaatje bij het chassisnummer, op het schutbord onder de motorkap).
 - Overbrengingen van de 5-bak en de eindoverbrenging.
 - Helling van de motor, inlaat- en uitlaatzijde, en de plaats van tank en accu.

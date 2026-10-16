@@ -39,11 +39,11 @@ Datum: 16 oktober 2026. Per open vraag een beslissing met de reden en de status.
 
 ## 4. Welke uitvoering: GA of Twist?
 
-**Beslissing:** uitrusting op het basisniveau (GA), de naamgeving in `auto.json` zonder uitvoering ("Alto 1.0-16V") tot de eigenaar het zegt.
+**Beslissing (bijgesteld op 16 oktober 2026):** de eigenaar bevestigt de **Twist**. Rode bumpers, dakrails (losse onderdelen), elektrische ramen, centrale vergrendeling, elektrisch verstelbare en verwarmde spiegels, getint glas, hoofdsteunen voor en achter, deelbare achterbank. Oorspronkelijke beslissing: basisniveau (GA) tot de eigenaar het zegt.
 
 **Reden:** de GA is het basismodel (geen centrale vergrendeling, elektrische ruiten of stuurbekrachtiging, airco was een optie van 1.586 euro); de Twist heeft volgens één advertentie elektrische ruiten voor, centrale vergrendeling en bumpers in carrosseriekleur. Het is niet te zien aan de RDW-data. Voor het 3D-model maakt het weinig uit: de verschillen zitten in schakelaars en bumperlak.
 
-**Status:** Geschat (uitvoering), Bevestigd (beide uitvoeringen bestonden).
+**Status:** Bevestigd (Twist, eigenaar), Aannemelijk (de uitrusting, uit een samenvatting van Autowereld). De transmissie is bevestigd door de eigenaar: handgeschakelde 5-bak (de opgave "automaat" op de Autowereld-pagina geldt niet). Open: de pagina noemt als emissie E2, wat bij de G10B (8 kleppen) hoort; het motorplaatje beslist.
 
 ## 5. Welke rode lakkleur?
 
