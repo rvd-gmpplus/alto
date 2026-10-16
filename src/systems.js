@@ -25,6 +25,6 @@ function buildElectrical() {
 }
 function buildCar() {
   // de wortel heet zoals auto.json zegt (AUTO.wortel) en heeft precies de acht hoofdgroepen, in deze volgorde
-  return A(AUTO.wortel, { d: 'Beginauto van het framework: acht plaatshouders. Klik op een onderdeel om het uit te klappen.' },
+  return A(AUTO.wortel, { d: 'Suzuki Alto 1.0-16V Twist (2001), 3-deurs hatchback. De carrosserie is uitgewerkt; de andere zeven hoofdgroepen zijn nog plaatshouders. Klik op een onderdeel om het uit te klappen.' },
     [buildBody(), buildInterior(), buildPowertrain(), buildChassis(), buildCooling(), buildExhaust(), buildFuel(), buildElectrical()]);
 }

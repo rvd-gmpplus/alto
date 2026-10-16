@@ -1,6 +1,6 @@
 <!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
 <title>Suzuki Alto 1.0-16V Twist explosietekening</title>
-<meta name="model-version" content="1 (bron c050591)">
+<meta name="model-version" content="1 (bron 676968c)">
 <meta name="description" content="Interactieve 3D-explosietekening van een Suzuki Alto 1.0-16V Twist uit 2001: 3-deurs hatchback in rood met de viercilinder G10BB van 993 cc (58 pk), dwars voorin en voorwielaandrijving.">
 <meta property="og:title" content="Suzuki Alto 1.0-16V Twist explosietekening">
 <meta property="og:description" content="Interactieve 3D-explosietekening van een Suzuki Alto 1.0-16V Twist (2001): klik een onderdeel en zie hoe de kleine rode hatchback uit elkaar gaat.">
@@ -610,7 +610,7 @@ input[type=range]{width:100%;accent-color:var(--ink)}
   <div id="press" hidden><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28"/></svg></div>
   <div id="helpDlg" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h2 id="helpTitle">Bediening</h2>
-    <p class="ver">Suzuki Alto 1.0-16V Twist explosietekening, versie 1 (bron c050591)</p>
+    <p class="ver">Suzuki Alto 1.0-16V Twist explosietekening, versie 1 (bron 676968c)</p>
     <div id="helpMouse"><h3>Met de muis</h3><dl>
       <dt>Klik</dt><dd>De groep van het onderdeel klapt uit; de rest blijft staan. Staat die groep al open, dan wordt het onderdeel uitgelicht.</dd>
       <dt>Dubbelklik</dt><dd>Direct naar dit onderdeel: alle groepen erboven gaan laag voor laag open.</dd>
@@ -1774,7 +1774,7 @@ function buildElectrical() {
 }
 function buildCar() {
   // de wortel heet zoals auto.json zegt (AUTO.wortel) en heeft precies de acht hoofdgroepen, in deze volgorde
-  return A(AUTO.wortel, { d: 'Beginauto van het framework: acht plaatshouders. Klik op een onderdeel om het uit te klappen.' },
+  return A(AUTO.wortel, { d: 'Suzuki Alto 1.0-16V Twist (2001), 3-deurs hatchback. De carrosserie is uitgewerkt; de andere zeven hoofdgroepen zijn nog plaatshouders. Klik op een onderdeel om het uit te klappen.' },
     [buildBody(), buildInterior(), buildPowertrain(), buildChassis(), buildCooling(), buildExhaust(), buildFuel(), buildElectrical()]);
 }
 
