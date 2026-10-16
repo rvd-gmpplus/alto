@@ -401,7 +401,11 @@
   "Suzuki Alto/Carrosserie/Portier rechts",
   "Suzuki Alto/Carrosserie/Portier rechts/Zijruit",
   "Suzuki Alto/Carrosserie/Portier rechts/Buitenspiegel rechts",
-  "Suzuki Alto/Carrosserie/Tankvulopening/Tankklep"
+  "Suzuki Alto/Carrosserie/Tankvulopening/Tankklep",
+  "Suzuki Alto/Interieur/Stoelen/Bestuurdersstoel/Rugleuning bestuurder",
+  "Suzuki Alto/Interieur/Stoelen/Passagiersstoel/Rugleuning passagier",
+  "Suzuki Alto/Interieur/Stoelen/Achterbank/Rugleuning groot deel",
+  "Suzuki Alto/Interieur/Stoelen/Achterbank/Rugleuning klein deel"
  ],
  "preset_ids": [
   "assembled",
