@@ -351,7 +351,7 @@ function bodPlateTex() {
 function bodLampTex() {
   const W = 512, H = 256, c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
   g.fillStyle = '#101113'; g.fillRect(0, 0, W, H);
-  const bx = W * 0.09, by = H * 0.10, iw = W - 2 * bx, ih = H - 2 * by, lx = W * 0.5, ly = H * 0.34;
+  const bx = W * 0.115, by = H * 0.13, iw = W - 2 * bx, ih = H - 2 * by, lx = W * 0.5, ly = H * 0.34;
   g.save(); g.beginPath(); g.rect(bx, by, iw, ih); g.clip();
   const rg = g.createRadialGradient(lx, ly, 6, W * 0.5, H * 0.55, W * 0.58); rg.addColorStop(0, '#d0d5d9'); rg.addColorStop(0.2, '#8f979e'); rg.addColorStop(0.55, '#4d535a'); rg.addColorStop(1, '#1f2226');
   g.fillStyle = rg; g.fillRect(bx, by, iw, ih);
