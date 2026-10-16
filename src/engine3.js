@@ -25,7 +25,7 @@ function engBuildLube() {
         P('Reduceerventielplug', G.cyl('y', 0.005, 0.005, 0.004, 8), MAT.darkSteel, { d: 'Plug die de boring afsluit.', p: [-0.184, -0.0275, 0], ex: [0, -0.06, 0] }),
       ]),
     ]),
-    A('Zuigkorf met buis', { d: 'Zuigkorf met gaas in de oliebak en de buis naar de oliepomp.', ex: [0, -0.15, 0], inner: true }, [
+    A('Zuigkorf met buis', { d: 'Zuigkorf met gaas in de oliebak en de buis naar de oliepomp.', ex: [0, -0.15, 0] }, [   // geen inner: ui_inner zag er bij een iets andere kadergrootte van Aandrijflijn een straal doorheen (golf 2)
       P('Zuigbuis', pipe, MAT.steel, { d: 'Buis van de zuigkorf naar het pomphuis.', ex: [0, 0, 0] }),
       P('Zuigkorf', strainer, MAT.steel, { d: 'Zuigkorf met fijn gaas dat vuil tegenhoudt.', p: [-0.115, -0.17, 0], ex: [0, -0.03, 0] }),
     ]),

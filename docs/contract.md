@@ -76,12 +76,12 @@ De kap is 0,62 m halfbreed tot z 1,2 en versmalt naar 0,55 bij de neus; de kopla
 
 | Zone | Wat | Eigenaar |
 |---|---|---|
-| Schutbord op z 0,866 (voorvlak), kap-scharnieren op z 0,92 tot 1,0, x = +-0,50 | niets plaatsen binnen 4 cm van het schutbord; de uitlaat (katalysator) mag er vlak voor, tot z 0,95 | carrosserie, systemen |
+| Schutbord op z 0,866 (voorvlak) en 0,854 (achtervlak), kap-scharnieren op z 0,92 tot 1,0, x = +-0,50 | niets plaatsen binnen 4 cm van het schutbord; de uitlaat (katalysator) mag er vlak voor, tot z 0,95. Het schutbord loopt onder y 0,58 alleen tot |x| 0,50 (de wielkastwanden) en daarboven tot |x| 0,69. Uitzondering: doorvoeren en bevestigingen mogen het schutbord raken en er doorheen steken (golf 2): de rembekrachtiger met zijn vier pennen (tot z 0,854) en de duwstang, de stuurkolomdoorvoer met de tussenas en de onderste kruiskoppeling, de stompen en doorvoerplaat van de kachel, de doorvoer van de kabelboom, de klemmen van het stuurhuis en de steunplaten van zekeringkast en regeleenheid. Het dashboard begint op z 0,85, achter het schutbord; de wissermotor zit in de waterkast ervoor (z 0,867 tot 0,957) | carrosserie, systemen, onderstel, interieur |
 | Veerpoottorens x = +-0,50, z 1,02 tot 1,16, y 0,56 tot 0,76 (straal 0,05 bovenaan, 0,07 onderaan) | alleen de veerpoot en de bovenste lagerplaat | onderstel |
-| Wielkasten: binnenwand op |x| = 0,50, boog met straal 0,312 om (z 1,087, y 0,265) | de motor blijft binnen |x| < 0,49 onder y 0,58 | motor, aandrijving |
+| Wielkasten: binnenwand op |x| = 0,50, boog met straal 0,312 om (z 1,087, y 0,265); de wand begint pas op y 0,42 (voor) en y 0,485 (achter), daaronder lopen aandrijfas, stuurstangen, draagarmen en achteras vrij; voor heeft de wand en het dak een uitsparing (halve breedte 7,5 cm, tot |x| 0,58) voor de veerpoot | de motor blijft binnen |x| < 0,49 onder y 0,58 | motor, aandrijving, onderstel |
 | Frontmodule (z 1,575 tot 1,625) en koelpakket (z 1,44 tot 1,575) | radiator, koelventilator, slot, bumperbalk (z 1,66, y 0,40) | systemen, carrosserie |
 | Motorkapsteun (x = -0,575, voet op z 1,0 en y 0,84; open tot y 1,29) | stang van 0,51 m met de voet naast de rechter veerpoottoren; in rust ligt hij schuin naar voren langs de rechter binnenwand; houd x -0,60 tot -0,55 tussen z 1,0 en 1,37 vrij | carrosserie |
-| Accu | rechts voor bij de frontmodule of links boven de bak: vrij onder de tabel hierboven | systemen |
+| Accu | links voor, tussen luchtfilterhuis en wielkast (x 0,305 tot 0,495, y 0,50 tot 0,69, z 1,40 tot 1,53): vrij onder de tabel hierboven en 38 cm voor de rembekrachtiger | systemen |
 
 De motor (met inlaat) houdt tot de samenvoeging de hoogte van de tabel aan; het ventieldeksel reikt tot y 0,76 (krukas plus 0,40) en de inlaatkast tot y 0,79; bij z 1,35 is 0,79 de grens.
 
@@ -174,3 +174,19 @@ Uitzonderingen op de botsingstoets staan in `tools/open_allow.json` (nu geen). W
 - Elke wijziging met `python3 build.py --lint`; voor samenvoegen `tools/orkestratie/mergecheck.py`; na samenvoegen de volledige set (`tools/orkestratie/finaltests.sh`).
 - Een melding eerst narekenen met `pick.py`, `probe.py` of stralen; dan pas wijzigen.
 - De plaatshouders in `engine1.js`, `interior.js`, `chassis.js` en `systems.js` zijn voor de maten van deze auto gezet (blokken binnen de huid, vier cilinders als wielen) zodat de poorten kunnen draaien; de eigenaars vervangen ze.
+
+## 11. Doordringing tussen domeinen (golf 2)
+
+Na de samenvoeging van de vijf domeinen is elk paar meshes uit verschillende hoofdgroepen of domeinen getoetst op doordringing: een driehoek-driehoektoets op de wereldmeshes van de gemonteerde stand (alle openers dicht), met de diepte van de binnendringing langs de snijlijn. Van 369 doordringende paren bleven er 217 over; boven 1,5 cm zijn er nog 38. Wat blijft staan is bedoeld contact of een plaatshouder die erbij hoort:
+
+| Contact | Reden |
+|---|---|
+| Veerpoot, schroefveer, veerschotel en lagerplaat in de veerpoottoren | de veerpoot loopt in de toren (bedoeld); de uitsparing in de wielkastwand voor staat voor de doorgang |
+| Stuurkolom, onderste en bovenste kruiskoppeling, duwstang en kabelboom in het dashboardblok | het dashboard is een gesloten blok; kolom, pedaalarmen en kabels lopen er verborgen in |
+| Handremhendel en -steun van het onderstel in de tunnelconsole | de hendel zit in de tunnel; het zichtbare deel is van het interieur |
+| Buitenste homokineet in de fusee, vulhals in de tankkom, naaf op de stuuras, bout in de lagerbus | bevestigingen: het ene deel zit in het andere |
+| Linker aandrijfas (binnenste homokineet en hoes) tegen de beugel en de bouten van de dwarsbalk, tot 2,7 cm | beugel en bouten zitten op de plaats van de homokineet; oplossing is een herontwerp van het hulpframe (beugel lager, bouten naast de as) |
+| Panhardbus in de langsligger achter, remslangbeugels op de wielkastwand, vulpijp door de bumperrand (1,5 cm) | bevestigingen en een plaats waar de pijp de rand van de bumper raakt |
+| Vliegwiel met koppelingsdeksel, startkrans in het koppelingshuis, primaire as in het vliegwiel | vlak tegen elkaar (het deksel ligt in de rand van het vliegwiel), de as steekt in het pilotlager |
+
+Wat wel is opgelost: de wielkastwanden (begin op y 0,42 voor en 0,485 achter, uitsparing voor de veerpoot), het schutbord onder y 0,58 smaller dan de wielkasten, de brandstoftank (3,5 cm lager, 2 cm naar links) met de remleidingen, handremkabels en kabelboom eromheen, de stabilisatorstang (puntvolgorde: ging als rechte lijn door carter en bak), de torsiesteun (nu boven het stuurhuis), het motorkapslot (boven de waterkast van de radiateur), de koppelingsplaat (tegen het vliegwiel), het dashboard (0,52 breed, voorvlak op z 0,85), de stoelen, de C-stijlbekleding, de wielkastbekleding (schil), de vloerbedekking, de achterwandbekleding en de wissermotor.
