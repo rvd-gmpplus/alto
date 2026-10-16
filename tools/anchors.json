@@ -367,6 +367,38 @@
   [
    "Elektrisch systeem",
    "Accu"
+  ],
+  [
+   "Remsysteem",
+   "Schijfrem linksvoor"
+  ],
+  [
+   "Schijfrem linksvoor",
+   "Remklauw linksvoor"
+  ],
+  [
+   "Achterbank",
+   "Rugleuning groot deel"
+  ],
+  [
+   "Cilinderkop",
+   "Tuimelaarsassen en tuimelaars"
+  ],
+  [
+   "Cilinderkop",
+   "Kleppentrein"
+  ],
+  [
+   "Inlaatspruitstuk",
+   "Gasklephuis"
+  ],
+  [
+   "Handbak 5-versnellingen",
+   "Koppelingshuis"
+  ],
+  [
+   "Koeling en luchtinlaat",
+   "Koelslangen"
   ]
  ],
  "content": {
@@ -410,7 +442,39 @@
  "preset_ids": [
   "assembled",
   "main",
-  "tour"
+  "bodyOff",
+  "xray",
+  "everything",
+  "tour",
+  "engine",
+  "engineAll",
+  "head",
+  "crank",
+  "timing",
+  "intake",
+  "manifold",
+  "exhaust",
+  "gearbox",
+  "clutch",
+  "diff",
+  "shafts",
+  "chassis",
+  "frontAxle",
+  "rearAxle",
+  "wheelLF",
+  "brakeLF",
+  "body",
+  "doorL",
+  "headlampL",
+  "tailgate",
+  "interior",
+  "driverSeat",
+  "dash",
+  "openHood",
+  "openDoors",
+  "openTrunk",
+  "openFuel",
+  "openAll"
  ],
  "triangle_budgets": {
   "_uitleg": "driehoeken per hoofdgroep (tri.py --gate): het totaal van 400.000 is verdeeld naar verhouding van laguna3 (190.000 van 719.000 voor de carrosserie, enzovoort), op honderdtallen afgerond; zie docs/contract.md paragraaf 8. Alleen-lezen voor domeineigenaars; wijzigen alleen met een reden in docs/onderzoek/beslissingen.md. Tekenopdrachten gemonteerd (met bundelen) onder 1.500: itest controle 11.",
