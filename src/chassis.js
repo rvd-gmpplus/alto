@@ -246,7 +246,7 @@ function chsSteering() {
 // stabilisatorstang: voor de motor langs, uiteinden aan de draagarmen (schematisch, geschat)
 function chsStabilizer() {
   const half = [[0.49, 0.226, 1.20], [0.50, 0.226, 1.28], [0.47, 0.226, 1.36], [0.38, 0.226, 1.405], [0.15, 0.226, 1.41]];
-  const pts = [...half.slice().reverse().map(p => [-p[0], p[1], p[2]]), ...half.slice(1)];
+  const pts = [...half.map(p => [-p[0], p[1], p[2]]), ...half.slice().reverse()];   // een U van rechts (-x) naar links; de oude volgorde trok een rechte lijn van uiteinde naar uiteinde dwars door carterpan en bak
   const clip = sg => P(`Stabilisatorbeugel ${chsSn(sg)}`, merge([G.torus('x', 0.0115, 0.0035, 16, 5), xf(G.box(0.03, 0.035, 0.012), [0, 0.0235, 0])]), MAT.darkSteel, { d: 'Beugel met rubber die de stabilisatorstang tegen de onderkant van de langsligger houdt (plaats geschat).', p: [sg * 0.41, 0.226, 1.385], q: chsQ(V3(0, 1, 0)), ex: [sg * 0.1, 0.1, 0.1] });
   return A('Stabilisator', { d: 'Stabilisatorstang voor: een U-vormige torsiestaaf die de rolbeweging beperkt. Ligt voor de motor en eindigt aan beide draagarmen (schematisch, geschat).', ex: [0, -0.1, 0.5] }, [
     P('Stabilisatorstang', chsLine(pts, 0.0085, 8), MAT.chsSpring, { d: 'Stalen staaf van 17 mm; verdraait bij het scheef inveren en werkt dan tegen de rol.', ex: [0, 0, 0] }),
@@ -423,7 +423,7 @@ function chsHydraulics() {
   const calM = chsMat([chsMF, AY, AXF], [HALF - chsPHI, 0, 0]);
   const ban = chsPt(calM, [-0.131, 0.085, -0.02]);
   const FL = [[0.39, 0.587, 1.125], [0.39, 0.55, 1.125], [0.39, 0.50, 1.14], [0.40, 0.50, 1.15], [0.46, 0.50, 1.16], [0.515, 0.50, 1.16]];
-  const FR = [[0.39, 0.587, 1.125], [0.39, 0.575, 1.125], [0.33, 0.58, 1.12], [0.215, 0.58, 1.10], [0.215, 0.58, 0.905], [-0.35, 0.58, 0.905], [-0.46, 0.54, 0.97], [-0.50, 0.50, 1.05], [-0.515, 0.50, 1.16]];
+  const FR = [[0.39, 0.587, 1.125], [0.39, 0.575, 1.125], [0.33, 0.58, 1.12], [0.215, 0.58, 1.10], [0.215, 0.58, 0.905], [-0.35, 0.575, 0.905], [-0.46, 0.52, 0.97], [-0.50, 0.50, 1.05], [-0.515, 0.50, 1.16]];
   const RM = [[0.39, 0.587, 1.085], [0.39, 0.50, 1.085], [0.33, 0.50, 0.99], [0.30, 0.51, 0.912], [0.30, 0.40, 0.909], [0.30, 0.26, 0.905], [0.33, 0.215, 0.80], [0.36, 0.205, 0.5], [0.36, 0.205, -0.5], [0.36, 0.213, -0.9], [0.40, 0.213, -0.98]];
   const RL = [[0.40, 0.213, -0.98], [0.42, 0.22, -1.04], [0.43, 0.235, -1.095]];
   // rechts loopt de leiding tussen de bovenkant van de uitlaatpijp (y 0,221) en de vloer (y 0,23) door, voor het ophangrubber van de pijp langs (z -1,02) en boven de tank (y 0,19)

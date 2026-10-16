@@ -428,7 +428,9 @@ function drvStarter() {
 /* ---------- motorsteunen ---------- */
 function drvMounts() {
   const bolt = (nm, d, p, ax, ex, r) => drvP(nm, drvBolt(0.022, 0.009, ax), MAT.darkSteel, d, p, ex, { r });
-  const topY = 0.075, rodA = [0.41, -0.07, -0.238], sub = [0.41, 0.04, -0.283];
+  // torsiesteun: van de bovenkant van de achterkant van het bakhuis (auto y 0,455) schuin omhoog naar een beugel boven de stuurkolomdoorvoer (auto y 0,60, x 0,26);
+  // de oude plaats (x 0,28, y 0,29 tot 0,40) lag in de stuurhoes en het stuurhuis en tegen de remdrukbegrenzer (golf 2)
+  const topY = 0.075, rodA = [0.39, 0.095, -0.244], sub = [0.39, 0.24, -0.292];
   return A('Motorsteunen', { d: 'Rubber-metalen steunen die motor en bak trillingsarm aan de carrosserie hangen: rechts aan de distributiezijde van het blok, links op de bak en een torsiesteun achter. Plaats en uitvoering zijn geschat; de bronnen geven geen afbeelding.', p: PT_POS.toArray(), r: [PT_TILT, 0, 0], ex: [0, 0.6, 0] }, [
     A('Motorsteun rechts', { d: 'Rechter steun aan de distributiezijde: rubberblok tussen een beugel op het blok en een beugel naar de carrosserie (naast de veerpoot). Uitvoering geschat.', ex: [-0.14, 0.08, 0] }, [
       drvP('Beugel motorzijde rechts', G.rbox(0.03, 0.05, 0.06, 0.004), MAT.aluCast, 'Aluminium beugel die met twee bouten aan het blok zit.', [-0.255, 0.25, 0], [0, 0, 0.0001]),
@@ -449,8 +451,8 @@ function drvMounts() {
       drvP('Torsiestaaf', rodBetween(rodA, sub, 0.01), MAT.darkSteel, 'Staaf met aan beide uiteinden een oog.', undefined, [0, 0, 0.0001]),
       drvP('Rubberbus motorzijde', G.cyl('x', 0.02, 0.02, 0.028, 18), MAT.rubber, 'Rubberbus in het oog aan de kant van het bakhuis.', rodA, [0.1, 0.03, 0]),
       drvP('Rubberbus carrosseriezijde', G.cyl('x', 0.02, 0.02, 0.028, 18), MAT.rubber, 'Rubberbus in het oog aan de carrosseriezijde.', sub, [-0.1, 0.0, 0]),
-      drvP('Beugel bakhuis', G.rbox(0.045, 0.03, 0.016, 0.004), MAT.aluCast, 'Beugel aan de achterkant van het bakhuis waaraan de staaf vastzit.', [0.41, -0.07, -0.244], [0, 0.1, 0.1]),
-      drvP('Beugel carrosserie torsie', G.rbox(0.05, 0.05, 0.01, 0.003), MAT.darkSteel, 'Beugel op de carrosserie (vorm schematisch).', [0.41, 0.045, -0.292], [0, 0.1, -0.1]),
+      drvP('Beugel bakhuis', G.rbox(0.045, 0.03, 0.016, 0.004), MAT.aluCast, 'Beugel aan de achterkant van het bakhuis waaraan de staaf vastzit.', [0.39, 0.095, -0.25], [0, 0.1, 0.1]),
+      drvP('Beugel carrosserie torsie', G.rbox(0.05, 0.05, 0.01, 0.003), MAT.darkSteel, 'Beugel op de carrosserie (vorm schematisch).', [0.39, 0.24, -0.298], [0, 0.1, -0.1]),
       drvP('Doorgaande bout motorzijde', drvBolt(0.06, 0.01, 'x'), MAT.darkSteel, 'Bout door de bus en de beugel.', [rodA[0] - 0.03, rodA[1], rodA[2]], [-0.14, 0.04, 0]),
       drvP('Doorgaande bout carrosseriezijde', drvBolt(0.06, 0.01, 'x'), MAT.darkSteel, 'Bout door de bus en de carrosseriebeugel.', [sub[0] - 0.03, sub[1], sub[2]], [-0.16, 0.0, 0]),
     ]),
