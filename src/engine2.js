@@ -126,7 +126,7 @@ function engBuildHead() {
     P('Cilinderkop (gietwerk)', engHeadGeo(), MAT.aluCast, { d: 'Kop met kanalen aan de inlaatzijde (voor) en de uitlaatzijde (achter), kleppengeleiders, lagerbokken van de nokkenas en de tuimelaarsassen en bougiebuizen. Alle maten zijn geschat.', ex: [0, 0, 0] }),
     P('Kopkoppakking', engPlanHoles(rrectPts(2 * ENG_HX, 2 * ENG_HZ, 0.02), ENG_XC.map(x => [x, 0, 0.0378]).concat(ENG_XM.flatMap(x => [[x, 0.0215, 0.0045], [x, -0.0215, 0.0045]])), ENG_GASKET), MAT.steel, { d: 'Metalen koppakking tussen blok en kop met gaten voor de cilinders en bouten (geklemde dikte geschat).', p: [0, ENG_DECK + ENG_GASKET / 2, 0], ex: [0, -0.06, 0] }),
     A('Kopbouten', { d: 'Tien kopbouten (aantal en plaats geschat) die de kop op het blok klemmen.', ex: [0, 0.2, 0] }, hb.map(([x, z, n]) => P(`Kopbout ${n}`, hexBolt(0.125, 0.009), MAT.darkSteel, { d: 'Kopbout; wordt in een vaste volgorde en hoeken aangehaald (waarden niet bevestigd).', p: [x, ENG_FLOOR + 0.016, z], r: [PI, 0, 0], ex: [0, 0.04, 0] }))),
-    A('Nokkenas', { d: 'De ene bovenliggende nokkenas midden in de kop, met een keerring aan de distributiezijde.', ex: [0, 0.19, 0], inner: true }, [
+    A('Nokkenas', { d: 'De ene bovenliggende nokkenas midden in de kop, met een keerring aan de distributiezijde.', ex: [0, 0.19, 0] }, [   // geen inner: een straal kan er tussen kop en deksel bij (golf 2)
       P('Nokkenas', engCamGeo(), MAT.steel, { d: 'Nokkenas met vijf lagertappen en zestien nokken (een per klep, schematisch); nokvorm en tappen geschat.', p: [0, ENG_CAMY, 0], ex: [0, 0, 0] }),
       P('Keerring nokkenas', annulus(0.0105, 0.0165, 0.007, 'x', 18), MAT.rubber, { d: 'Oliekeerring van de nokkenas aan de distributiezijde.', p: [-0.1815, ENG_CAMY, 0], ex: [-0.08, 0, 0] }),
     ]),
@@ -210,7 +210,7 @@ function engBuildAccessory() {
       P('Dynamo achterhuis', rearH, MAT.aluCast, { d: 'Achterhuis met koelopeningen en de diodebrug (niet getekend).', p: [-0.132, 0, 0], ex: [0.04, 0, 0] }),
       P('Spanningsregelaar', regul, MAT.engCoil, { d: 'Elektronische spanningsregelaar met borstelhouder op de achterzijde (schematisch).', p: [-0.12, 0.06, 0], ex: [0.06, 0.03, 0] }),
       P('Dynamoas', shaft, MAT.steel, { d: 'As van de dynamorotor met lagers; draagt aan het uiteinde de poelie.', p: [-0.1675, 0, 0], ex: [-0.09, 0, 0] }),
-      P('Dynamorotor', rotor, MAT.darkSteel, { d: 'Rotor met klauwpolen en slepringen op de as (schematisch).', p: [-0.147, 0, 0], ex: [0.0, 0, 0.0], inner: true }),
+      P('Dynamorotor', rotor, MAT.darkSteel, { d: 'Rotor met klauwpolen en slepringen op de as (schematisch).', p: [-0.147, 0, 0], ex: [0.0, 0, 0.0] }),
       P('Dynamopoelie', engPoly(0.028, 'engAPul', 0.0085), MAT.steel, { d: 'Poelie met groeven voor de multiriem.', p: [XA, 0, 0], ex: [-0.05, 0, 0] }),
       P('Dynamomoer', engNut(0.018, 0.008, 'x'), MAT.darkSteel, { d: 'Moer die de poelie op de dynamoas vasthoudt.', p: [XA - 0.0165, 0, 0], ex: [-0.1, 0, 0] }),
       P('Dynamosteun', lug, MAT.aluCast, { d: 'Gietaluminium beugel waarmee de dynamo aan het uiteinde van het blok hangt.', p: [-0.184, 0, 0], ex: [0.0, 0.0, -0.07] }),

@@ -98,7 +98,7 @@ function chsWheel(sg, front) {
     P('Velgschijf', chsRimDishG(), MAT.chsRim, { d: 'Geperste stalen velgschijf met vier boutgaten, steek 4 x 100 mm (geschat), en een holle middenkap voor de naafmoer. Aan het velgbed gelast.', ex: [0.12, 0, 0] }),
     ...[0, 1, 2, 3].map(k => P(`Wielbout ${k + 1}`, chsBolt(0.024, 0.012, '-x'), MAT.steel, {
       d: 'Wielbout met kegelvormige zitting; trekt het wiel op de naafflens. De bronnen noemen bouten, geen moeren.', spec: [['Aanhaalmoment', '70 tot 100 Nm']],
-      p: [0.0435, pcd * Math.cos(PI / 4 + k * HALF), pcd * Math.sin(PI / 4 + k * HALF)], ex: [0.2, 0, 0], inner: true })),
+      p: [0.0435, pcd * Math.cos(PI / 4 + k * HALF), pcd * Math.sin(PI / 4 + k * HALF)], ex: [0.2, 0, 0] })),   // geen inner: ui_inner vindt een straal tussen wieldop en velg door naar bout 4 (golf 2)
     P('Wieldop', chsCoverG(), MAT.chsCover, { d: 'Volle kunststof wieldop (Twist) over de hele velgschijf, met tien radiale ribben; klikt op de velgflens.', ex: [0.3, 0, 0] }),
     P('Wieldopembleem', chsLathe('x', [[0, 0.0790], [0.0300, 0.0790], [0.0300, 0.0805], [0, 0.0805]], 24, 'Cap'), MAT.chrome, { d: 'Rond embleem midden op de wieldop (schematisch, zonder letter).', ex: [0.36, 0, 0] }),
     P('Ventiel', valve, MAT.rubber, { d: 'Bandenventiel in het diepbed, wijst naar de wielas.', ex: [-0.04, 0.1, 0.1] }),
