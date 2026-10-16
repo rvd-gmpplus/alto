@@ -1,5 +1,16 @@
 # Wijzigingen
 
+## Voorkant, bijsturing na het advies (tak golf3-front, nog niet gepubliceerd)
+
+Aanleiding: het advies op ronde 1 (verdict bijsturen). Metingen met `meet.py` (id-pass zonder z- of y-filter, DPR 2, 18 camera's links en rechts, geijkt op V1); de plannen en cijfers staan in `docs/onderzoek/beslissingen.md`, punt 20.
+
+- Kaphoek en doorkijk dicht: hoekstuk van het voorscherm boven de hoekkap, strook langs de kaprand, lamp 8 mm dieper onder het scherm, lamphuis 8 mm hoger met een scheidingswand onder de Lamprand, kaprand ook achter, scharnieren onder de kap. Alle kierpoorten groen in 18 camera's: geen knoop uit de motorruimte of het onderstel boven 50 beeldpunten breed (lamphoek: 22.313 beeldpunten motorruimte voor, 0 breed na; naden van hoogstens 2 beeldpunten blijven).
+- Bumperschouder 18,2 graden (was 26,7) door 27 kolommen met 8 op de schouder. Lip sluit aan op de wang: aansluithoek gemiddeld 4,0 graden (was 50,9).
+- Onderplaat voorbumper met voorschort en twee zijschermen: zicht op onderstel en motor onder de bumper 0,00 tot 0,03 procent van het beeld (was 1,1 tot 1,4 procent).
+- Afwerking: bumpernaad onder de schermrand, verdiepte luchtsleuven, lichtere en glaziger hoekreflector, hoekige S als embleem, Lamprand stopt op de lamponderrand, zwarte wielkastbekleding en donkerder binnenlak.
+- Carrosserie 97,6 duizend driehoeken (was 95,6 duizend; grens 105,7 duizend).
+- Nog open: neusprofiel (beslissing 17, ronde 3), basislijn van `visdiff` en de uv-reparatie naar laguna3 (orkestrator), `meet.py` in `tools/orkestratie` en `finaltests.sh`.
+
 ## Voorkant, ronde 2 (tak golf3-front, nog niet gepubliceerd)
 
 Aanleiding: een premortem op ronde 1. Elke poort was groen, maar de lamp bleef een wit vlak en de grille grijs fijngaas. Metingen nu op de GPU (DPR 2) vanuit een camera die op de melding van de eigenaar is afgestemd. Zie `docs/onderzoek/beslissingen.md`, punt 17.
@@ -16,7 +27,7 @@ Aanleiding: een premortem op ronde 1. Elke poort was groen, maar de lamp bleef e
 Aanleiding: "de basis ziet er goed uit, maar de koplampen zien er ruk uit in combinatie met de grille". Zie `docs/onderzoek/beslissingen.md`, punt 16, voor wat anders is gedaan dan het ontwerpplan.
 
 - Hoofdoorzaak: de samenvoegmodus (`uiBatchAdd`, generiek) nam geen uv mee, waardoor grille, kentekenplaat en reflector in de standaardweergave zwart waren. Nu gebundeld gelijk aan los.
-- Gedeelde grenzen voor kap, lamp, paneel, scherm en bumper (`bodXP`, `bodYBT` en andere): geen kieren meer met zicht op motorruimte of onderstel (stralenraster: 0,0 tot 0,7 procent buiten de voorkantlijst, was 3 tot 11 procent).
+- Gedeelde grenzen voor kap, lamp, paneel, scherm en bumper (`bodXP`, `bodYBT` en andere): minder kieren met zicht op motorruimte of onderstel (stralenraster: 0,0 tot 0,7 procent buiten de voorkantlijst, was 3 tot 11 procent). Dat raster sloot z < 1,25 en y > 0,95 uit en zag de kaphoek niet; zie het kopje Voorkant, bijsturing hieronder voor de meting zonder filter.
 - Kap met afgeronde voorhoeken (70 mm) en een zwarte afdichtrand; de kap oogt massief.
 - Koplamp: hoofdlens met ribbels, aparte gladde hoekkap, zilveren facettenreflector, zwarte scheiding en een gesloten huis; helder glas aan de buitenkant gezien.
 - Voorpaneel in carrosseriekleur vlak met de lampen, met één smalle gaasopening (650 x 76 mm) met fijn honingraatgaas en een donker embleem; het rode trapezium met het zwarte vlak is weg.
