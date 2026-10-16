@@ -230,8 +230,8 @@ function intSteering() {
   const dir = V3(...INT_COLDIR), bx = intBx, cy = intCy;
   return A('Stuurwiel met kolomkap', { d: 'Stuurwiel met naaf, claxonpad en schakelaars, en de kunststof kap rond de stuurkolom tot het dashboard. De stuurkolom zelf is van het onderstel; zij sluit aan op het punt in het verlengde van de kolom tegen het dashboard (zie INT_PORTS.stuurkolom). Geen airbag.',
     p: INT_WHEEL, q: intWheelQ(dir), ex: [0, 0.18, -0.35] }, [
-    intPart('Stuurwielkrans', G.torus('z', 0.18, 0.0135, 36, 8), MAT.plastic, 'Rubber kunststof stuurkrans met een doorsnede van 36 cm (maat geschat); geen stuurbekrachtiging.', { ex: [0, 0, -0.1] }),
-    intPart('Stuurwielspaken', merge([rodBetween([0.04, 0, 0], [0.17, 0, 0.0], 0.011, 8), rodBetween([-0.04, 0, 0], [-0.17, 0, 0], 0.011, 8), rodBetween([0, -0.04, 0], [0, -0.17, 0], 0.011, 8)]), MAT.plastic, 'Drie spaken tussen naaf en krans.', { ex: [0, 0, -0.06] }),
+    intPart('Stuurwielkrans', G.torus('z', 0.17, 0.0135, 36, 8), MAT.plastic, 'Rubber kunststof stuurkrans met een doorsnede van 36 cm (maat geschat); geen stuurbekrachtiging.', { ex: [0, 0, -0.1] }),
+    intPart('Stuurwielspaken', merge([rodBetween([0.04, 0, 0], [0.16, 0, 0.0], 0.011, 8), rodBetween([-0.04, 0, 0], [-0.16, 0, 0], 0.011, 8), rodBetween([0, -0.04, 0], [0, -0.16, 0], 0.011, 8)]), MAT.plastic, 'Drie spaken tussen naaf en krans.', { ex: [0, 0, -0.06] }),
     intPart('Stuurwielnaaf', merge([cy('z', 0.05, 0.04, [0, 0, 0.0], 20), bx(0.09, 0.07, 0.014, 0.015, [0, 0, 0.026])]), MAT.plastic, 'Naaf met claxonpad; de naaf zit met een gekartelde as op de stuurkolom.', { ex: [0, 0, -0.1] }),
     intPart('Kolomkap boven', cy('z', 0.048, 0.14, [0, 0.005, -0.1], 16), MAT.plastic, 'Bovenste helft van de kap om de stuurkolom, tot het dashboard.', { ex: [0, 0.06, 0] }),
     intPart('Kolomkap onder', bx(0.1, 0.05, 0.14, 0.015, [0, -0.04, -0.1]), MAT.plastic, 'Onderste helft van de kap om de stuurkolom met het contactslot.', { ex: [0, -0.06, 0] }),
@@ -328,13 +328,15 @@ function intTrim() {
   // zijbekleding achter: onder de hoekruit, tussen B-stijl en achterklep; boven de wielkast met de gordelrolautomaat
   const sideRear = s => intPart(`Zijbekleding achter ${sideName(s)}`, intPanel(s, -0.74, -1.17, z => 0.3 + 0.3 * clamp((-0.93 - z) / 0.1, 0, 1), z => YT(z) - 0.03, 0.035, 20, 6), MAT.intSide, 'Kunststof zijbekleding onder de hoekruit bij de achterbank, tot de achterklep.', { ex: [s * 0.1, 0, -0.04] });
   const sideFront = s => intPart(`Zijbekleding achterbank ${sideName(s)}`, intPanel(s, -0.585, -0.74, () => 0.285, () => 0.55, 0.036, 4, 4), MAT.intSide, 'Onderste deel van de bekleding naast de achterbank.', { ex: [s * 0.1, 0, 0] });
-  const cPillar = s => intPart(`C-stijlbekleding ${sideName(s)}`, intPanel(s, -1.17, -1.6, z => 0.62, z => Math.max(bodGh(z).ye - 0.04, 0.7), 0.04, 14, 8), MAT.intSide, 'Bekleding van de achterste stijl naast de achterklep, onder de rand van de hemel.', { ex: [s * 0.1, 0.04, -0.06] });
+  // de gasveerbevestiging (0,03 diep) en rechts de tankkom met de vulhals zitten achter de bekleding: die ligt 9,5 cm van de huid, rechts onder y 0,9 bij de vulhals 16,5 cm
+  const cPillar = s => intPart(`C-stijlbekleding ${sideName(s)}`, patch((z, v) => { const bump = s < 0 ? sstep((-1.33 - z) / 0.05) * sstep((0.9 - v) / 0.08) : 0; return [s * (surfX(z, v) - 0.095 - 0.07 * bump), v, z]; }, -1.17, -1.6, 26, z => [0.62, Math.max(bodGh(z).ye - 0.04, 0.7)], 8), MAT.intSide, 'Bekleding van de achterste stijl naast de achterklep, onder de rand van de hemel.', { ex: [s * 0.1, 0.04, -0.06] });
   // wielkast achter: schil over de wielkast (straal 0,322 tot 0,35 om de as, de koker van de carrosserie heeft straal 0,312), onder de zijbekleding en
   // naast de bagagevloer; geen massief blok, want dat liep dwars door de band en de schokdemperbevestiging (golf 2)
   const arch = (() => { const y0 = 0.47, ring = R => { const t0 = Math.asin((y0 - AY) / R), pts = []; for (let i = 0; i <= 10; i++) { const t = t0 + (PI - 2 * t0) * i / 10; pts.push([AXR + R * Math.cos(t), AY + R * Math.sin(t)]); } return pts; };
     return ring(0.35).concat(ring(0.322).reverse()); })();
   const wheelCover = s => intPart(`Wielkastbekleding ${sideName(s)}`, intSideBlock(arch.map(p => [p[0], p[1]]), s > 0 ? 0.51 : -0.7, s > 0 ? 0.7 : -0.51), MAT.intFelt, 'Beklede verhoging over de achterwielkast in de bagageruimte, tot de zijbekleding.', { ex: [s * 0.1, 0.06, 0] });
-  const bootSide = s => intPart(`Zijbekleding bagageruimte ${sideName(s)}`, intPanel(s, -1.17, -1.66, () => 0.47, () => 0.64, 0.03, 12, 3), MAT.intFelt, 'Beklede zijwand van de bagageruimte in donker vilt, onder het achterscherm.', { ex: [s * 0.12, 0, -0.08] });
+  // boven de achterband (y 0,53) langs de wielkast begint de zijbekleding op y 0,56
+  const bootSide = s => intPart(`Zijbekleding bagageruimte ${sideName(s)}`, intPanel(s, -1.17, -1.66, z => 0.47 + 0.09 * sstep((z + 1.56) / 0.04), () => 0.64, 0.03, 20, 3), MAT.intFelt, 'Beklede zijwand van de bagageruimte in donker vilt, onder het achterscherm.', { ex: [s * 0.12, 0, -0.08] });
   // vloer: vloerbedekking in een stuk over de voetruimte en onder de achterbank
   const carpet = (() => { const hx = 0.62, g = roundPlate([[-0.5, -1.02], [0.5, -1.02], [0.5, -0.9], [hx, -0.9], [hx, 0.775], [0.5, 0.775], [0.5, 0.85], [-0.5, 0.85], [-0.5, 0.775], [-hx, 0.775], [-hx, -0.9], [-0.5, -0.9]], 0.008, 0.003); g.rotateX(HALF); g.translate(0, INT_YF - 0.004, 0); return g; })();
   const mat = (s, n, z) => intPart(`Vloermat ${n}`, bx(0.4, 0.008, 0.52, 0.003, [s * 0.38, INT_YF + 0.004, z]), MAT.rubber, 'Losse rubber vloermat in de voetruimte.', { ex: [0, 0.12, 0.1] });
@@ -360,7 +362,7 @@ function intTrim() {
   });
   const boot = A('Bagageruimte', { d: 'Bagageruimte met vloer tussen de wielkasten, zijbekleding in vilt, wielkastbekleding, de afdekplaat (hoedenplank) en de achterwandbekleding.', ex: [0, 0.0, -0.3] }, [
     intPart('Bagagevloer', bootFloor, MAT.carpet, 'Vloerplaat met tapijt van de bagageruimte, tussen de achterwielkasten.', { ex: [0, -0.1, -0.1] }),
-    intPart('Achterwandbekleding', bx(1.2, 0.34, 0.012, 0.004, [0, 0.68, -1.69]), MAT.intFelt, 'Bekleding van het achterpaneel onder de achterklep.', { ex: [0, 0, -0.2] }),
+    intPart('Achterwandbekleding', bx(1.2, 0.34, 0.012, 0.004, [0, 0.68, -1.64]), MAT.intFelt, 'Bekleding van het achterpaneel onder de achterklep.', { ex: [0, 0, -0.2] }),
     ...[1, -1].map(bootSide), ...[1, -1].map(wheelCover),
     uit(intPart('Hoedenplank', plankGeo, MAT.intFelt, 'Afdekplaat achter de achterbank boven de bagageruimte; hangt met koordjes aan de achterklep en komt mee omhoog als die opent (geschat 31 graden). Wordt uitgenomen als een rugleuning achter neerklapt.', Object.assign({ p: [0, plankY, pc], ex: [0, 0.3, -0.2] }, plankOpen))),
     ...cords,
