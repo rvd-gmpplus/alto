@@ -258,7 +258,7 @@ function bodHoodParts() {
 // zodat er geen kier ontstaat (regel R1). Het glas ligt 4 mm onder de huid, het paneel 2,5 mm.
 const bodLampZ0 = bodZFe - 0.006, bodLampIn = 0.004, bodZH = bodZLh - 0.0003;
 const bodLLo = (z, d = -0.004) => sAtY(z, bodYBT(z) + d);                  // onderrand ten opzichte van de bumperbovenrand
-const bodLHi1 = z => bodSAtX(z, bodHoodX(z) - 0.008);                       // bovenrand flank: 8 mm onder de kap
+const bodLHi1 = z => Math.min(bodSAtX(z, bodHoodX(z) - 0.008), sAtY(z, 0.745));   // bovenrand flank: 8 mm onder de kap, hoogstens op 0,745 (hoekkap hoogstens 7 mm boven de hoofdlens, foto's: lager)
 const bodLHi2 = z => bodSAtX(z, bodXP - 0.008);                             // binnenrand neus: 8 mm onder het paneel
 const bodLSpl = z => bodSAtX(z, bodSec(z).xe - 0.012);                      // scheiding hoofdlens en hoekkap, op de dekrand
 const bodLampZE = (() => { let z = bodZH; while (z < ZF - 0.01 && bodLHi2(z) - bodLLo(z, 0.002) > 0.006) z += 0.001; return z - 0.001; })();   // einde lens op de neus: onderrand snijdt binnenrand
