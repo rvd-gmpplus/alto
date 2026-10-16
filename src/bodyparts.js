@@ -70,7 +70,7 @@ const bodHoodArcZ = (n = 14) => Array.from({ length: n }, (_, k) => bodZLh - bod
    (lamp, paneel, grille, bumper, scherm, kap) lezen hun grenzen uit deze constanten, zodat er geen naden met eigen getallen ontstaan. */
 const bodXP = 0.355;                              // halve breedte van het paneel: grens paneel en lamp
 const bodXG = 0.325;                              // halve breedte van de gaasopening
-const bodYG0 = 0.635, bodYG1 = 0.715;             // onder- en bovenrand van de gaasopening (80 mm hoog)
+const bodYG0 = 0.637, bodYG1 = 0.713;             // onder- en bovenrand van de gaasopening (76 mm hoog, breedte 650 mm: verhouding 8,5)
 const bodYBT = z => 0.50 + 0.11 * sstep((z - 1.43) / 0.23);   // bovenrand bumper = onderrand lamp, paneel en scherm: 0,50 tot z 1,43, 0,551 bij 1,54, 0,591 bij 1,60, 0,610 op de neus
 const bodTuck = 0.005;                            // het onderliggende deel loopt zoveel onder het bovenliggende
 const bodArchLo = (z, az, yOut) => (Math.abs(z - az) <= ARCH ? archS(z) : sAtY(z, yOut(z)));   // onderrand van een paneel boven de boog
@@ -386,11 +386,11 @@ const bodHoneyUV = (g, k) => { const p = g.attributes.position, uv = new Float32
 const bodGZ1 = bodZAtYd(bodYG1), bodGZ0 = bodZAtYd(bodYG0);
 const bodGXe = z => { const w = 2 * clamp((z - bodGZ1) / (bodGZ0 - bodGZ1), 0, 1) - 1; return bodXG - 0.012 * (1 - Math.sqrt(Math.max(0, 1 - w * w))); };
 function bodFrontPanel() {
-  const off = 0.0025, sP = z => bodSAtX(z, bodXP), sE = z => bodSAtX(z, bodGXe(z)), sG = z => bodSAtX(z, bodXG + 0.004);
+  const off = 0.0025, sP = z => bodSAtX(z, bodXP), sE = z => bodSAtX(z, bodGXe(z)), sG = z => bodSAtX(z, bodXG + 0.0012);
   // paneel: bovenstrook (onder de kap geschoven), twee zijposten, onderstrook (onder de bumper geschoven); alles 2,5 mm onder de huid
   const top = bodDeck(bodZLh - 0.008, bodGZ1 + 0.0005, 8, sP, 10, [], off), low = bodDeck(bodGZ0 - 0.0005, 1.705, 6, sP, 10, [], off);
   const post = sd => bodReg(sd, bodGZ1, bodGZ0, 10, 1, sP, sE, off);
-  const honey = bodHoneyUV(bodDeck(bodGZ1 - 0.003, bodGZ0 + 0.003, 10, sG, 12, [], 0.008), 17.5);
+  const honey = bodHoneyUV(bodDeck(bodZAtYd(bodYG1 + 0.0012), bodZAtYd(bodYG0 - 0.0012), 10, sG, 12, [], 0.008), 17.5);
   MAT.bodHoney.map = bodHoneyTex(); MAT.bodHoney.color.setHex(0xffffff); MAT.bodHoney.needsUpdate = true;
   // kuip: vier zwarte wanden van de paneelrand naar het gaas (8 mm diep)
   const zt = bodGZ1, zb = bodGZ0, st = sE(zt), sb = sE(zb);
@@ -407,16 +407,22 @@ function bodFrontPanel() {
     P('Embleem', emb, MAT.bodEmblem, { d: 'Donker metallic embleem op het gaas (een gestileerde letter S op een ovaal; schematisch, zonder merkletters).', p: [0, pE[1], pE[2]], r: [-Math.atan2(nE[1], nE[2]), 0, 0], ex: [0, 0.03, 0.12] }),
   ]);
 }
+// kolomverdeling over de doorsnede: dicht op de hoeken (onderkant, schouder), ruim op de vlakke delen. bodWarp(a, b, t) geeft s tussen a en b voor t in [0, 1],
+// zodat elke rij van een schaal evenveel kolommen heeft die op dezelfde plek in de doorsnede liggen (4 op de onderhoek, 3 op de wand, 5 op de schouder, 8 op het dek)
+const bodWK = [[S1, 0], [S2, 4], [S3, 7], [S4, 12], [1, 24]];
+const bodWC = sv => { for (let i = 0; i < bodWK.length - 1; i++) if (sv <= bodWK[i + 1][0]) return bodWK[i][1] + (bodWK[i + 1][1] - bodWK[i][1]) * (sv - bodWK[i][0]) / (bodWK[i + 1][0] - bodWK[i][0]); return 24; };
+const bodWI = c => { for (let i = 0; i < bodWK.length - 1; i++) if (c <= bodWK[i + 1][1]) return bodWK[i][0] + (bodWK[i + 1][0] - bodWK[i][0]) * (c - bodWK[i][1]) / (bodWK[i + 1][1] - bodWK[i][1]); return 1; };
+const bodWarp = (a, b, t) => bodWI(bodWC(a) + (bodWC(b) - bodWC(a)) * t);
 // normaal van de onderbak in (z, p) voor beide helften (p > 1 is de rechterhelft)
 const bodNrm = (z, p) => { const q = ((p % 2) + 2) % 2, sd = q <= 1 ? 1 : -1, sv = q <= 1 ? q : 2 - q, n = bodN(z, sv); return [sd * n[0], n[1], n[2]]; };
 // zoals patch(), maar met normalen uit het analytische oppervlak in plaats van uit de driehoeken: geen naden of kreukels bij versprongen rijen of waar de uiteinden van het vlak samenkomen
-function bodPatchN(fn, u0, u1, nu, vr, nv, breaks = [], nfix = null) {
+function bodPatchN(fn, u0, u1, nu, vr, nv, breaks = [], nfix = null, pOf = null) {
   const g = patch(fn, u0, u1, nu, vr, nv, breaks), us = [];
   for (let i = 0; i <= nu; i++) us.push(u0 + (u1 - u0) * i / nu);
   breaks.forEach(b => { if (b > u0 + 1e-4 && b < u1 - 1e-4) us.push(b); });
   us.sort((a, b) => a - b);
   const n = g.attributes.normal; let k = 0;
-  for (const u of us) { const [v0, v1] = vr(u); for (let j = 0; j <= nv; j++, k++) { let q = bodNrm(u, v0 + (v1 - v0) * j / nv); if (nfix) q = nfix(q, u); n.setXYZ(k, q[0], q[1], q[2]); } }
+  for (const u of us) { const [v0, v1] = vr(u); for (let j = 0; j <= nv; j++, k++) { let q = bodNrm(u, pOf ? pOf(u, v0 + (v1 - v0) * j / nv) : v0 + (v1 - v0) * j / nv); if (nfix) q = nfix(q, u); n.setXYZ(k, q[0], q[1], q[2]); } }
   // de wikkeling moet bij de normalen passen (DoubleSide keert de normaal om voor achterkanten): keer de driehoeken om als de meeste ervan achterstevoren staan
   const ix = g.index, pos = g.attributes.position; let d = 0; const a = V3(), b = V3(), c = V3(), nn = V3();
   for (let t = 0; t < ix.count; t += 3) {
@@ -484,10 +490,11 @@ function bodFrontBumper() {
   ]);
   // schaal: twee helften van de onderrand (s = S1) tot de bovenrand die bij de lamp past; de onderkant is een apart zwart deel
   const zS = 1.395, zE = ZF, sbF = z => Math.max(S1 + 0.002, sAtY(z, bodBumperTop(z)));
-  const nfix = (n, z) => bodEndBlend(n, z, 1), NR = 20;
-  const shell = s => bodPatchN((z, p) => bodLow(z, p, bodBumperInw(z)), zS, zE, 28, z => sideR(s, S1, sbF(z)), NR, [1.50, 1.56, 1.62, 1.70, 1.72, 1.735, ...Array.from({ length: 14 }, (_, k) => 1.658 + k * 0.0026)], nfix);
+  const nfix = (n, z) => bodEndBlend(n, z, 1), NR = 24;
+  const pW = (s, z, t) => (s > 0 ? bodWarp(S1, sbF(z), t) : 2 - bodWarp(S1, sbF(z), t));
+  const shell = s => bodPatchN((z, t) => bodLow(z, pW(s, z, t), bodBumperInw(z)), zS, zE, 28, () => [0, 1], NR, [1.50, 1.56, 1.62, 1.70, 1.72, 1.735, ...Array.from({ length: 14 }, (_, k) => 1.658 + k * 0.0026)], nfix, (z, t) => pW(s, z, t));
   // eindvlak: rijen op dezelfde hoogtes als de laatste rij van de schaal (zelfde z, zelfde s-verdeling), zodat er geen sliert tussen vlak en schaal overblijft
-  const face = patch((j, t) => { const [x, y] = halfPt(ZF, S1 + (1 - S1) * j / NR); return [lerp(x, -x, t), y, ZF]; }, 0, NR, NR, () => [0, 1], 14);
+  const face = patch((j, t) => { const [x, y] = halfPt(ZF, bodWarp(S1, 1, j / NR)); return [lerp(x, -x, t), y, ZF]; }, 0, NR, NR, () => [0, 1], 14);
   const slot = (x, y, w, h) => xf(G.rbox(w, h, 0.003, 0.004), [x, y, ZF + 0.0015]);
   const rib = (x, y, w, h, k) => Array.from({ length: k }, (_, i) => xf(G.box(w, 0.0035, 0.002), [x, y - h / 2 + h * (i + 1) / (k + 1), ZF + 0.0033]));
   return A('Voorbumper', { d: 'Bumperschaal in carrosseriekleur (Twist) met de hoeken om de wielbogen, een lip langs de onderkant, luchtsleuven rond het kentekenvlak en richtingaanwijzers laag in de hoeken; erachter de stalen bumperbalk.', ex: [0, -0.04, 0.72] }, [
