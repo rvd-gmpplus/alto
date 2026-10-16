@@ -997,13 +997,6 @@ def check18(s):
     check('18 R3 telefoon draaien na een duik kadreert op het gedoken onderdeel (lastFit), liggend en weer staand', lf and lf.get('nodes') == [sel] and f['inside'] and f['cover'] >= 0.02 and f2['inside'] and f2['cover'] >= 0.02, json.dumps([lf, f['cover'], f2['cover']]))
     # U2. "+n meer" als er meer onderdelen zijn dan labels (ux-audit U11: stil afgekapt op 10 of 24)
     pp.evaluate("__model.preset('engine'); __model.finishAll()"); pp.wait_for_timeout(300); settle(pp, 200)
-    # Bekende aanwijzing voor de eigenaar van app2.js (niet hier te herstellen): uiPlaceMore zet bij het verbergen (regel "if (!uiLabelsMore)")
-    # el._x en el._y niet terug op null, zodat een chip die op dezelfde plek terugkomt zijn parkeerpositie (-9999) houdt. Dit zagen we
-    # alleen na de duik hierboven. De test wijkt daarom met een pixel in de hoogte uit als de chip nog geparkeerd staat.
-    parked = "(() => { const e = document.querySelector('#labels .lmore'); return !!e && e.getBoundingClientRect().left < -9000; })()"
-    if pp.evaluate(parked):
-        pp.set_viewport_size({'width': 390, 'height': 845}); pp.wait_for_timeout(400); settle(pp, 200)
-        pp.set_viewport_size({'width': 390, 'height': 844}); pp.wait_for_timeout(400); settle(pp, 200)
     lm = pp.evaluate("""(() => { const L = __model, g = L.byName('Motor G10BB'), el = document.querySelector('#labels .lmore');
       const eligible = g.kids.filter(k => k.ev).length, shown = L.labelRects().length, more = L.labelsMore();
       const r = el && !el.hidden ? el.getBoundingClientRect() : null, v = L.freeView();
