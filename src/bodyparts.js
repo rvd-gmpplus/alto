@@ -12,13 +12,13 @@ std('bodBlack', 0x0f1012, 0, 0.62);                                        // zw
 std('bodPillar', 0x060607, 0, 0.8, { envMapIntensity: 0.12 });             // zwart rubber en kader
 std('bodPillarGloss', 0x08090b, 0.05, 0.3, { envMapIntensity: 0.35 });     // hoogglans zwarte B-stijl
 std('bodChrome', 0xa9b0b7, 1, 0.06, { envMapIntensity: 2.1 });
-std('bodHoney', 0x131519, 0.1, 0.6, { envMapIntensity: 0.4 });           // honingraatgrille
+std('bodHoney', 0x131519, 0, 0.9, { envMapIntensity: 0.1 });           // honingraatgrille
 std('bodMirror', 0xb4bec6, 1, 0.04, { envMapIntensity: 1.1 });
 std('bodSeal', 0x151618, 0, 0.9);
-std('bodEmblem', 0x2b2e33, 0.6, 0.35);
+std('bodEmblem', 0x3b3f44, 0.3, 0.5);
 std('bodAmber', 0xe05a08, 0, 0.42, { emissive: 0x4d1c00, emissiveIntensity: 0.3, envMapIntensity: 0.3 });   // oranje knipperlichtlens: echt oranje, niet bleekgeel                                       // embleem 2001: donker metallic
 std('bodPlate', 0xffffff, 0.05, 0.42);                                     // Nederlandse plaat: geel met zwarte rand, blauwe EU-strook en streepjes (map volgt in bodPlateTex)
-std('bodLamp', 0xffffff, 0.35, 0.3);                                       // binnenkant van de koplamp: twee verchroomde reflectorbakken (map volgt in bodLampTex)
+std('bodLamp', 0xc4c9ce, 0.3, 0.42, { envMapIntensity: 0.7 });                                       // binnenkant van de koplamp: twee verchroomde reflectorbakken (map volgt in bodLampTex)
 phys('bodLens', { color: 0xe4edf5, metalness: 0, roughness: 0.03, transparent: true, opacity: 0.10, depthWrite: false, envMapIntensity: 0.6, clearcoat: 0.5, clearcoatRoughness: 0.04, side: THREE.FrontSide });   // helder koplampglas: aan de buitenkant gezien (FrontSide), dunner dan lensClear zodat de reflector zichtbaar blijft
 phys('bodLensRib', { color: 0xe4edf5, metalness: 0, roughness: 0.03, transparent: true, opacity: 0.10, depthWrite: false, envMapIntensity: 0.6, clearcoat: 0.5, clearcoatRoughness: 0.04, side: THREE.FrontSide });   // hoofdlens met ribbelnormaal (prismaglas); de map volgt in bodHeadlamp
 std('bodRefl', 0x7b8087, 0.7, 0.5);                                    // reflectorschaal achter helder glas (donkerder dan spiegelend chroom)
@@ -343,24 +343,38 @@ function bodPlateTex() {
   g.fillStyle = '#111214'; for (let k = 0; k < 6; k++) g.fillRect(185 + k * 138 + (k >= 3 ? 24 : 0), H / 2 - 11, 92, 22);
   const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; return t;
 }
-// Binnenkant van de koplamp (hoofdlens): één groot parabolisch reflectorvlak met zilveren facetten (6 x 3 trapezia), de lamp midden boven en een
-// donkere buitenrand van 5 procent. Geen chroomrand in de textuur: die rekt op een wikkelend vlak uit tot een zwevende bocht.
+// Binnenkant van de koplamp (hoofdlens): een parabolische reflectorbak zonder raster. Midden-grijs met een heldere zone rond de lamp, facetten als zachte
+// waaiers vanuit de lamp (geen lijnen), een donkere lampkap onder de gloeilamp, een schaduwband onderin en een donkere buitenrand van 9 procent.
+// Foto's (F1, F2): helderheid gemiddeld 0,50 tot 0,58, spreiding 0,24 tot 0,26, donker 24 tot 32 procent, glans 12 tot 20 procent.
 function bodLampTex() {
   const W = 512, H = 256, c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
-  g.fillStyle = '#0c0d0f'; g.fillRect(0, 0, W, H);
-  const bx = W * 0.05, by = H * 0.06, iw = W - 2 * bx, ih = H - 2 * by;
-  const rg = g.createRadialGradient(W * 0.5, H * 0.36, 8, W * 0.5, H * 0.5, W * 0.62); rg.addColorStop(0, '#e9edf0'); rg.addColorStop(0.5, '#a9b1b8'); rg.addColorStop(1, '#4f575f');
+  g.fillStyle = '#101113'; g.fillRect(0, 0, W, H);
+  const bx = W * 0.09, by = H * 0.10, iw = W - 2 * bx, ih = H - 2 * by, lx = W * 0.5, ly = H * 0.34;
+  g.save(); g.beginPath(); g.rect(bx, by, iw, ih); g.clip();
+  const rg = g.createRadialGradient(lx, ly, 6, W * 0.5, H * 0.55, W * 0.58); rg.addColorStop(0, '#d0d5d9'); rg.addColorStop(0.2, '#8f979e'); rg.addColorStop(0.55, '#4d535a'); rg.addColorStop(1, '#1f2226');
   g.fillStyle = rg; g.fillRect(bx, by, iw, ih);
-  const cols = 6, rows = 3, shade = [[0.07, -0.04, 0.08, -0.06, 0.04, -0.05], [-0.04, 0.09, -0.06, 0.10, -0.08, 0.05], [0.05, -0.08, 0.07, -0.04, 0.08, -0.09]];
-  for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
-    const x0 = bx + iw * i / cols, x1 = bx + iw * (i + 1) / cols, y0 = by + ih * j / rows, y1 = by + ih * (j + 1) / rows, k = shade[j][i];
-    g.fillStyle = k > 0 ? `rgba(255,255,255,${k})` : `rgba(20,26,32,${-k})`; g.fillRect(x0, y0, x1 - x0, y1 - y0);
-  }
-  g.strokeStyle = 'rgba(60,66,72,0.30)'; g.lineWidth = 1.5;
-  for (let i = 1; i < cols; i++) { g.beginPath(); g.moveTo(bx + iw * i / cols, by); g.lineTo(bx + iw * i / cols, by + ih); g.stroke(); }
-  for (let j = 1; j < rows; j++) { g.beginPath(); g.moveTo(bx, by + ih * j / rows); g.lineTo(bx + iw, by + ih * j / rows); g.stroke(); }
-  const bg = g.createRadialGradient(W * 0.5, H * 0.3, 2, W * 0.5, H * 0.3, 24); bg.addColorStop(0, '#fffbe8'); bg.addColorStop(0.5, '#f1e4a8'); bg.addColorStop(1, 'rgba(60,58,50,0)');
-  g.fillStyle = bg; g.beginPath(); g.arc(W * 0.5, H * 0.3, 24, 0, PI * 2); g.fill();
+  // facetten: zachte vlekken (spiegelende vlakken van de bak die licht of donker vangen), geen regelmatig raster en geen lijnen
+  const blob = (x, y, rx, ry, k) => {
+    g.save(); g.translate(x * W, y * H); g.scale(rx * W, ry * H);
+    const q = g.createRadialGradient(0, 0, 0, 0, 0, 1); const col = k > 0 ? '240,244,247' : '10,12,14', a = Math.abs(k);
+    q.addColorStop(0, `rgba(${col},${a})`); q.addColorStop(0.6, `rgba(${col},${a * 0.6})`); q.addColorStop(1, `rgba(${col},0)`);
+    g.fillStyle = q; g.beginPath(); g.arc(0, 0, 1, 0, PI * 2); g.fill(); g.restore();
+  };
+  [[0.27, 0.30, 0.16, 0.20, 0.30], [0.72, 0.34, 0.15, 0.22, -0.38], [0.50, 0.62, 0.20, 0.17, 0.26], [0.18, 0.66, 0.12, 0.20, -0.40], [0.82, 0.70, 0.13, 0.18, 0.24],
+    [0.38, 0.80, 0.18, 0.12, -0.34], [0.63, 0.20, 0.12, 0.14, 0.26], [0.10, 0.28, 0.08, 0.26, -0.26], [0.92, 0.40, 0.08, 0.24, -0.30], [0.55, 0.88, 0.22, 0.10, -0.40]].forEach(b => blob(...b));
+  // schaduwband in het onderste derde en donkere ringen aan de zijkanten (de bak loopt steil op)
+  const sg = g.createLinearGradient(0, by + ih * 0.55, 0, by + ih); sg.addColorStop(0, 'rgba(8,9,10,0)'); sg.addColorStop(1, 'rgba(8,9,10,0.78)');
+  g.fillStyle = sg; g.fillRect(bx, by, iw, ih);
+  const sg2 = g.createLinearGradient(bx, 0, bx + iw, 0); sg2.addColorStop(0, 'rgba(8,9,10,0.55)'); sg2.addColorStop(0.16, 'rgba(8,9,10,0)'); sg2.addColorStop(0.84, 'rgba(8,9,10,0)'); sg2.addColorStop(1, 'rgba(8,9,10,0.55)');
+  g.fillStyle = sg2; g.fillRect(bx, by, iw, ih);
+  // heldere zone rond de lamp: de bak vangt hier het licht van de gloeidraad
+  const hz = g.createRadialGradient(W * 0.46, H * 0.44, 4, W * 0.46, H * 0.44, W * 0.2); hz.addColorStop(0, 'rgba(250,252,255,0.78)'); hz.addColorStop(1, 'rgba(250,252,255,0)');
+  g.fillStyle = hz; g.fillRect(bx, by, iw, ih);
+  g.restore();
+  // lampkap: de afschermkap van de halogeenlamp, donker, onder de gloeidraad
+  g.fillStyle = '#17191c'; g.beginPath(); g.ellipse(lx, ly + 12, 27, 12, 0, 0, PI * 2); g.fill();
+  const bg = g.createRadialGradient(lx, ly - 4, 1, lx, ly - 4, 20); bg.addColorStop(0, '#fffdf2'); bg.addColorStop(0.45, '#f4e9b5'); bg.addColorStop(1, 'rgba(60,58,50,0)');
+  g.fillStyle = bg; g.beginPath(); g.arc(lx, ly - 4, 20, 0, PI * 2); g.fill();
   const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; return t;
 }
 // uv uit de plaats: u van x0 (binnen) naar x1 (buiten) op |x|, v van y0 naar y1 (voor wikkelende vlakken die geen eigen uv hebben)
@@ -369,10 +383,10 @@ function bodPlanarUV(g, x0, x1, y0, y1) {
   for (let i = 0; i < p.count; i++) { uv[2 * i] = clamp((Math.abs(p.getX(i)) - x0) / (x1 - x0), 0, 1); uv[2 * i + 1] = clamp((p.getY(i) - y0) / (y1 - y0), 0, 1); }
   g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); return g;
 }
-// Gaas van de grille: zeshoekig raster dat naadloos herhaalt (4 cellen over de breedte, 7 rijparen over de hoogte), donkere lijnen op een zwarte ondergrond
+// Gaas van de grille: zeshoekig raster dat naadloos herhaalt (4 cellen over de breedte van de tegel, 7 rijparen over de hoogte), dikke donkergrijze wanden op zwart
 function bodHoneyTex() {
   const W = 256, c = document.createElement('canvas'); c.width = W; c.height = W; const g = c.getContext('2d');
-  g.fillStyle = '#0b0c0e'; g.fillRect(0, 0, W, W); g.strokeStyle = '#5d636b'; g.lineWidth = 3;
+  g.fillStyle = '#060607'; g.fillRect(0, 0, W, W); g.strokeStyle = '#1b1d20'; g.lineWidth = 6; g.lineJoin = 'round';
   const r = W / 12, h = W / 7, ky = h / (r * Math.sqrt(3));
   for (let row = -1; row < 16; row++) for (let col = -1; col < 6; col++) {
     const cx = col * r * 3 + (row % 2 ? r * 1.5 : 0), cy = row * h / 2;
@@ -380,8 +394,8 @@ function bodHoneyTex() {
   }
   const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; return t;
 }
-// uv van het gaas: u over x, v over de lengte langs de neushelling (ca. 55 graden), k herhalingen per meter (cel ca. 9,5 mm bij k 17,5)
-const bodHoneyUV = (g, k) => { const p = g.attributes.position, uv = new Float32Array(p.count * 2); for (let i = 0; i < p.count; i++) { uv[2 * i] = p.getX(i) * k; uv[2 * i + 1] = p.getY(i) / 0.82 * k; } g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); return g; };
+// uv van het gaas: u over x, v over de lengte langs de neushelling; k herhalingen per meter (k 4,8: celbreedte 35 mm, kolomafstand 26 mm, ca. 25 kolommen over 650 mm; foto F1: ca. 25 grove cellen)
+const bodHoneyUV = (g, k) => { const p = g.attributes.position, uv = new Float32Array(p.count * 2); for (let i = 0; i < p.count; i++) { uv[2 * i] = p.getX(i) * k; uv[2 * i + 1] = p.getY(i) / 1.0 * k; } g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); return g; };
 // gaasopening op de neus: boven- en onderrand uit bodYG1 en bodYG0, afgeronde uiteinden (de halve breedte loopt over 12 mm terug naar boven en onder)
 const bodGZ1 = bodZAtYd(bodYG1), bodGZ0 = bodZAtYd(bodYG0);
 const bodGXe = z => { const w = 2 * clamp((z - bodGZ1) / (bodGZ0 - bodGZ1), 0, 1) - 1; return bodXG - 0.012 * (1 - Math.sqrt(Math.max(0, 1 - w * w))); };
@@ -390,21 +404,21 @@ function bodFrontPanel() {
   // paneel: bovenstrook (onder de kap geschoven), twee zijposten, onderstrook (onder de bumper geschoven); alles 2,5 mm onder de huid
   const top = bodDeck(bodZLh - 0.008, bodGZ1 + 0.0005, 8, sP, 10, [], off), low = bodDeck(bodGZ0 - 0.0005, 1.705, 6, sP, 10, [], off);
   const post = sd => bodReg(sd, bodGZ1, bodGZ0, 10, 1, sP, sE, off);
-  const honey = bodHoneyUV(bodDeck(bodZAtYd(bodYG1 + 0.0012), bodZAtYd(bodYG0 - 0.0012), 10, sG, 12, [], 0.008), 17.5);
+  const honey = bodHoneyUV(bodDeck(bodZAtYd(bodYG1 + 0.0012), bodZAtYd(bodYG0 - 0.0012), 10, sG, 12, [], 0.008), 4.8);
   MAT.bodHoney.map = bodHoneyTex(); MAT.bodHoney.color.setHex(0xffffff); MAT.bodHoney.needsUpdate = true;
   // kuip: vier zwarte wanden van de paneelrand naar het gaas (8 mm diep)
   const zt = bodGZ1, zb = bodGZ0, st = sE(zt), sb = sE(zb);
   const kuip = merge([...[1, -1].map(sd => bodWall(sd, z => [z, sE(z)], zt, zb, 10, off, 0.0085, 1)),
     bodWall(1, t => [zt, lerp(st, 2 - st, t)], 0, 1, 8, off, 0.0085, 1), bodWall(1, t => [zb, lerp(sb, 2 - sb, t)], 0, 1, 8, off, 0.0085, 1)]);
   const S = [[0.014, 0.016], [0.004, 0.022], [-0.010, 0.018], [-0.012, 0.008], [-0.002, 0.0], [0.010, -0.008], [0.012, -0.018], [0.0, -0.024], [-0.014, -0.018]];
-  const emb = merge([xf(G.cyl('z', 0.03, 0.03, 0.003, 24), [0, 0, 0], [0, 0, 0], [1.1, 1, 1]), tube(S.map(([u, v]) => [u * 0.9, v * 1.1, 0.004]), 0.0032, 40, 5)]);
+  const emb = tube(S.map(([u, v]) => [u * 1.15, v * 1.3, 0.004]), 0.004, 48, 6);   // donkere S zonder schijf, ca. 70 mm hoog (foto F1)
   const yE = (bodYG0 + bodYG1) / 2, zE = bodZAtYd(yE), pE = bodAt(zE, yE, -0.006), nE = bodN(zE, sAtY(zE, yE));
   return A('Grille en voorpaneel', { d: 'Voorpaneel tussen de koplampen: lichaamskleurig, vlak met de lampen, met één smalle zwarte gaasopening met honingraatgaas en het embleem (uitvoering 2001).', ex: [0, 0.04, 0.4] }, [
     P('Naadvulling voorkant', patch((z, p) => bodLow(z, p, 0.04), bodZLh - 0.001, ZF - 0.001, 16, z => { const a = sAtY(z, 0.5); return [a, 2 - a]; }, 20), MAT.bodSeal, { d: 'Donkere schil 40 mm onder de huid van de neus (schematisch): vangt wat er na de overlappende naden aan kieren overblijft, zodat daar geen motorruimte te zien is.', ex: [0, 0, -0.03] }),
     P('Voorpaneel', merge([top, low, post(1), post(-1)]), MAT.paint, { d: 'Neuspaneel in carrosseriekleur boven en onder de gaasopening en ernaast, tussen de koplampen. Het loopt 8 mm onder de kap en onder de bumperrand.', ex: [0, 0.04, 0.06] }),
     P('Grillekuip', kuip, MAT.bodBlack, { d: 'Zwarte wanden rond de gaasopening: het gaas ligt 8 mm dieper dan het paneel.', ex: [0, 0, 0.1] }),
     P('Honingraatgrille', honey, MAT.bodHoney, { d: 'Zwart kunststof gaas met fijne honingraatstructuur (uitvoering 2001, één doorlopende opening) voor de luchtinlaat van de radiateur.', ex: [0, 0, 0.14] }),
-    P('Embleem', emb, MAT.bodEmblem, { d: 'Donker metallic embleem op het gaas (een gestileerde letter S op een ovaal; schematisch, zonder merkletters).', p: [0, pE[1], pE[2]], r: [-Math.atan2(nE[1], nE[2]), 0, 0], ex: [0, 0.03, 0.12] }),
+    P('Embleem', emb, MAT.bodEmblem, { d: 'Donker metallic embleem op het gaas: een gestileerde letter S van ongeveer 70 mm hoog, zonder schijf eronder (schematisch, zonder merkletters).', p: [0, pE[1], pE[2]], r: [-Math.atan2(nE[1], nE[2]), 0, 0], ex: [0, 0.03, 0.12] }),
   ]);
 }
 // kolomverdeling over de doorsnede: dicht op de hoeken (onderkant, schouder), ruim op de vlakke delen. bodWarp(a, b, t) geeft s tussen a en b voor t in [0, 1],
