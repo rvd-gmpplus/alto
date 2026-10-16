@@ -423,10 +423,11 @@ function chsHydraulics() {
   const calM = chsMat([chsMF, AY, AXF], [HALF - chsPHI, 0, 0]);
   const ban = chsPt(calM, [-0.131, 0.085, -0.02]);
   const FL = [[0.39, 0.587, 1.125], [0.39, 0.55, 1.125], [0.39, 0.50, 1.14], [0.40, 0.50, 1.15], [0.46, 0.50, 1.16], [0.515, 0.50, 1.16]];
-  const FR = [[0.39, 0.587, 1.125], [0.39, 0.575, 1.125], [0.33, 0.58, 1.12], [0.215, 0.58, 1.10], [0.215, 0.58, 0.93], [-0.35, 0.58, 0.93], [-0.46, 0.54, 0.97], [-0.50, 0.50, 1.05], [-0.515, 0.50, 1.16]];
-  const RM = [[0.39, 0.587, 1.085], [0.39, 0.50, 1.085], [0.33, 0.50, 0.99], [0.30, 0.51, 0.912], [0.30, 0.40, 0.909], [0.30, 0.26, 0.905], [0.33, 0.215, 0.80], [0.36, 0.205, 0.5], [0.36, 0.205, -0.5], [0.36, 0.213, -0.95], [0.30, 0.213, -1.02]];
-  const RL = [[0.30, 0.213, -1.02], [0.36, 0.215, -1.05], [0.43, 0.235, -1.095]];
-  const RR = [[0.30, 0.213, -1.02], [0.0, 0.213, -1.02], [-0.36, 0.215, -1.05], [-0.43, 0.235, -1.095]];
+  const FR = [[0.39, 0.587, 1.125], [0.39, 0.575, 1.125], [0.33, 0.58, 1.12], [0.215, 0.58, 1.10], [0.215, 0.58, 0.89], [-0.35, 0.58, 0.89], [-0.46, 0.54, 0.97], [-0.50, 0.50, 1.05], [-0.515, 0.50, 1.16]];
+  const RM = [[0.39, 0.587, 1.085], [0.39, 0.50, 1.085], [0.33, 0.50, 0.99], [0.30, 0.51, 0.912], [0.30, 0.40, 0.909], [0.30, 0.26, 0.905], [0.33, 0.215, 0.80], [0.36, 0.205, 0.5], [0.36, 0.205, -0.5], [0.36, 0.213, -0.9], [0.40, 0.213, -0.98]];
+  const RL = [[0.40, 0.213, -0.98], [0.42, 0.22, -1.04], [0.43, 0.235, -1.095]];
+  // rechts loopt de leiding tussen de bovenkant van de uitlaatpijp (y 0,221) en de vloer (y 0,23) door, voor het ophangrubber van de pijp langs (z -1,02) en boven de tank (y 0,19)
+  const RR = [[0.40, 0.213, -0.98], [0.34, 0.2255, -0.98], [0.27, 0.2255, -0.98], [0.2, 0.213, -0.98], [0.0, 0.213, -0.98], [-0.36, 0.215, -1.04], [-0.43, 0.235, -1.095]];
   const hoseF = sg => chsXs(sg, [[0.515, 0.495, 1.16], [0.53, 0.46, 1.165], [0.58, 0.40, 1.17], [0.575, 0.34, 1.17], ban]);
   const hoseR = sg => chsXs(sg, [[0.43, 0.235, -1.095], [0.47, 0.33, -1.15], [0.54, 0.37, -1.20], [0.60, 0.375, -1.22], [chsMR - 0.067, AY + 0.0795, AXR - 0.012]]);
   const hf = sg => P(`Remslang voor ${chsSn(sg)}`, chsLine(hoseF(sg), 0.0045, 8), MAT.rubber, { d: 'Flexibele remslang van de carrosserie naar de remklauw; volgt de veer- en stuurbeweging.', ex: [sg * 0.2, 0.1, 0.1] });
@@ -437,10 +438,10 @@ function chsHydraulics() {
     P('Remleiding voor links', chsLine(FL, 0.003), MAT.chsZinc, { d: 'Verzinkte stalen leiding van de hoofdcilinder naar de linker voorwielkast.', ex: [0, 0.1, 0] }),
     P('Remleiding voor rechts', chsLine(FR, 0.003), MAT.chsZinc, { d: 'Verzinkte stalen leiding langs het schutbord naar de rechter voorwielkast.', ex: [0, 0.15, 0] }),
     P('Remleiding achter', chsLine(RM, 0.003), MAT.chsZinc, { d: 'Leiding van de hoofdcilinder achter het stuurhuis langs, onder de vloer naar de achterwielen.', ex: [0, -0.1, 0] }),
-    P('Remverdeler achter', merge([xf(G.box(0.03, 0.02, 0.03), [0.30, 0.213, -1.02])]), MAT.chsZinc, { d: 'T-stuk dat het achtercircuit naar links en rechts verdeelt.', ex: [0, -0.1, 0] }),
+    P('Remverdeler achter', merge([xf(G.box(0.03, 0.02, 0.03), [0.40, 0.213, -0.98])]), MAT.chsZinc, { d: 'T-stuk dat het achtercircuit naar links en rechts verdeelt.', ex: [0, -0.1, 0] }),
     P('Remleiding achter links', chsLine(RL, 0.003), MAT.chsZinc, { d: 'Leiding van het T-stuk naar de linker achterlangsligger.', ex: [0.1, -0.1, 0] }),
     P('Remleiding achter rechts', chsLine(RR, 0.003), MAT.chsZinc, { d: 'Leiding van het T-stuk dwars onder de vloer naar de rechter achterlangsligger.', ex: [-0.1, -0.1, 0] }),
-    hf(1), hf(-1), hr(1), hr(-1), bk(1), bk(-1), clip(0.45, 1), clip(-0.25, 2), clip(-0.8, 3),
+    hf(1), hf(-1), hr(1), hr(-1), bk(1), bk(-1), clip(0.45, 1), clip(-0.25, 2), clip(-0.86, 3),
     P('Remdrukbegrenzer', merge([xf(G.cyl('z', 0.014, 0.014, 0.05, 14), [0.30, 0.40, 0.935]), xf(G.box(0.03, 0.01, 0.03), [0.30, 0.43, 0.935])]), MAT.chsZinc, { d: 'Remdrukbegrenzer in het achtercircuit: beperkt de druk op de achterwielen (schematisch, aannemelijk).', ex: [0.1, 0.2, 0] }),
   ]);
 }
@@ -448,7 +449,7 @@ function chsHydraulics() {
 function chsHandbrake() {
   const piv = [0, 0.29, -0.20], tip = [0, 0.46, -0.03];
   const K = sg => [sg * (chsMR - 0.065), AY + 0.03, AXR - 0.085];
-  const cab = sg => [[sg * 0.02, 0.205, -0.64], [sg * 0.15, 0.207, -0.85], [sg * 0.35, 0.21, -1.0], [sg * 0.50, 0.215, -1.12], [sg * 0.52, 0.22, -1.29], [sg * 0.60, 0.27, -1.325], K(sg)];
+  const cab = sg => [[sg * 0.02, 0.215, -0.64], [sg * 0.15, 0.216, -0.85], [sg * 0.35, 0.215, -1.0], [sg * 0.50, 0.217, -1.12], [sg * 0.52, 0.22, -1.29], [sg * 0.60, 0.27, -1.325], K(sg)];
   const rear = sg => P(`Handremkabel ${chsSn(sg)}`, chsLine(cab(sg), 0.0035, 6), MAT.rubber, { d: `Handremkabel naar de ${chsSn(sg)} achtertrommel (buitenkabel met binnenkabel, getekend als geheel).`, ex: [sg * 0.2, -0.1, -0.2] });
   const klem = sg => P(`Kabelklem ${chsSn(sg)}`, xf(G.box(0.025, 0.008, 0.02), [sg * 0.35, 0.2125, -1.0]), MAT.plasticGrey, { d: 'Klem die de handremkabel aan de vloer vasthoudt.', ex: [sg * 0.1, -0.1, 0] });
   return A('Handrem', { d: 'Parkeerrem: handhefboom op de middentunnel, kabel naar een egalisator onder de vloer en twee kabels die de schoenen van de achtertrommels spreiden. Plaats van de hefboom geschat; het dashboard en de middenconsole zijn van het interieur.', ex: [0, -0.2, -0.3] }, [

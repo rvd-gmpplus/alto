@@ -95,7 +95,7 @@ function buildCooling() {
   const hoseHeatA = sysHoseG('Kachelslang aanvoer', 'Voert warme koelvloeistof van de motor naar de kachelradiateur achter het schutbord.',
     [S0, sysPlus(S0, 0.005, 0.07, -0.01), [-0.27, 0.793, 1.20], [-0.24, 0.795, 1.10], [-0.205, 0.78, 1.01], [-0.18, 0.71, 0.955], [HX[0], HY + 0.003, HZ]], 0.0095, { n0: 'Klem motor', c1: false, ex: [0, 0.12, -0.1] });
   const hoseHeatR = sysHoseG('Kachelslang retour', 'Brengt de afgekoelde vloeistof van de kachelradiateur terug naar het koelcircuit.',
-    [R0, sysPlus(R0, 0.005, 0.065, -0.005), [-0.235, 0.77, 1.23], [-0.205, 0.77, 1.10], [-0.17, 0.765, 1.01], [-0.14, 0.71, 0.955], [HX[1], HY + 0.003, HZ]], 0.0095, { n0: 'Klem motor', c1: false, ex: [0, 0.16, -0.1] });
+    [R0, sysPlus(R0, 0.005, 0.065, -0.005), [-0.235, 0.785, 1.23], [-0.205, 0.785, 1.10], [-0.17, 0.78, 1.01], [-0.14, 0.71, 0.955], [HX[1], HY + 0.003, HZ]], 0.0095, { n0: 'Klem motor', c1: false, ex: [0, 0.16, -0.1] });
   const verwarming = A('Kachelslangen', { d: 'De twee slangen tussen het koelcircuit en de kachelradiateur achter het schutbord, met de doorvoer door het schutbord.', ex: [0, 0.1, -0.1] }, [
     hoseHeatA, hoseHeatR,
     sysPart('Doorvoer kachel', merge([...HX.map(x => xf(G.cyl('z', 0.0085, 0.0085, 0.06, 10), [x, HY, 0])), xf(G.rbox(0.09, 0.05, 0.008, 0.003), [(HX[0] + HX[1]) / 2, HY, -0.026])]), MAT.alu, [0, 0, 0.908], 'Twee aluminium stompen van de kachelradiateur die door het schutbord steken, met een rubber doorvoerplaat.', [0, 0, 0.1]),
@@ -222,38 +222,38 @@ function buildExhaust() {
 // de dampleiding rechts. Alle leidingen beginnen of eindigen op een poort via ENG2CAR.
 function buildFuel() {
   const fr = ENG_PORTS.fuelRailIn, evp = ENG_PORTS.evapPurge;
-  const TX = -0.15, TY = 0.1725, TZ = -0.92, TW = 0.64, TH = 0.085, TD = 0.60;   // tank: x -0.47 tot 0,17, z -0.62 tot -1,22
+  const TX = -0.10, TY = 0.1475, TZ = -0.92, TW = 0.64, TH = 0.085, TD = 0.60;   // tank: x -0,42 tot 0,22, y 0,105 tot 0,19, z -0,62 tot -1,22 (golf 2: 2,5 cm lager en 5 cm naar links: de remleiding, de handremkabels en de achterasbout liepen erdoor)
   // ---------- tank ----------
   const strap = z => merge([xf(G.box(TW, 0.004, 0.04), [0, -TH / 2 - 0.002, z]), ...[-1, 1].map(s => xf(G.box(0.004, TH + 0.02, 0.04), [s * (TW / 2 + 0.002), 0.01, z])), ...[-1, 1].map(s => xf(G.box(0.03, 0.004, 0.04), [s * (TW / 2 + 0.017), TH / 2 + 0.008, z]))]);
   const tank = A('Brandstoftank', { d: 'Platte stalen tank van 35 l onder de achterbank, tussen de achterwielkasten en voor de torsiebalk. Plaats aangenomen; de inhoud is bevestigd.', spec: [['Inhoud', '35 l']], ex: [0, -0.5, 0] }, [
     sysPart('Tankhuis', G.rbox(TW, TH, TD, 0.02), MAT.sysTank, [TX, TY, TZ], 'Gelaste stalen tank met schotten tegen klotsen; plat gebouwd om onder de achterbank te passen.', [0, -0.08, 0]),
     sysPart('Spanband voor', strap(0.18), MAT.darkSteel, [TX, TY, TZ], 'Stalen spanband die de tank aan de vloer houdt, voor.', [0, -0.2, 0.05]),
     sysPart('Spanband achter', strap(-0.18), MAT.darkSteel, [TX, TY, TZ], 'Stalen spanband die de tank aan de vloer houdt, achter.', [0, -0.2, -0.05]),
-    sysPart('Tankstomp vulhals', merge([G.cyl('z', 0.027, 0.027, 0.03, 14), xf(G.cyl('x', 0.007, 0.007, 0.03, 8), [0.02, 0.012, 0.01])]), MAT.sysTank, [-0.40, 0.185, -1.235], 'Stomp op de achterkant van de tank voor de vulpijp, met een kleine stomp voor de ontluchting.', [0, 0, -0.1]),
+    sysPart('Tankstomp vulhals', merge([G.cyl('z', 0.027, 0.027, 0.03, 14), xf(G.cyl('x', 0.007, 0.007, 0.03, 8), [0.02, 0.012, 0.01])]), MAT.sysTank, [-0.40, 0.16, -1.235], 'Stomp op de achterkant van de tank voor de vulpijp, met een kleine stomp voor de ontluchting.', [0, 0, -0.1]),
   ]);
   // ---------- brandstofpomp met niveaumeter, in de tank (niet van buiten te zien) ----------
   const PX = -0.20, PZ = -0.85;
   const pomp = A('Brandstofpomp', { d: 'Elektrische brandstofpomp in de tank met de niveaumeter, voorfilter en stekker. De pomp zit in de tank onder de achterbank, bereikbaar via de flens boven op de tank; motor, zeef en niveaumeter zitten er helemaal in.', ex: [0, 0.3, 0] }, [
-    sysPart('Pompflens', merge([G.cyl('y', 0.05, 0.05, 0.006, 24), xf(G.cyl('y', 0.012, 0.012, 0.014, 10), [0.02, 0.008, 0])]), MAT.darkSteel, [PX, 0.218, PZ], 'Ronde flens boven op de tank met de leidingaansluiting en de stekker.', [0, 0.2, 0]),
-    sysPart('Pompmotor', merge([G.cyl('y', 0.028, 0.028, 0.07, 18), xf(G.cyl('y', 0.012, 0.012, 0.04, 10), [0.0, 0.025, 0])]), MAT.steel, [PX, 0.17, PZ], 'Gelijkstroommotor met rollenpomp, hangend in de tank.', [0, 0.05, 0], { inner: true }),
-    sysPart('Zeef', G.box(0.07, 0.012, 0.05), MAT.filter, [PX, 0.14, PZ], 'Zeef op de zuigmond die vuil uit de tank houdt.', [0, -0.1, 0], { inner: true }),
+    sysPart('Pompflens', merge([G.cyl('y', 0.05, 0.05, 0.006, 24), xf(G.cyl('y', 0.012, 0.012, 0.014, 10), [0.02, 0.008, 0])]), MAT.darkSteel, [PX, 0.193, PZ], 'Ronde flens boven op de tank met de leidingaansluiting en de stekker.', [0, 0.2, 0]),
+    sysPart('Pompmotor', merge([G.cyl('y', 0.028, 0.028, 0.07, 18), xf(G.cyl('y', 0.012, 0.012, 0.04, 10), [0.0, 0.025, 0])]), MAT.steel, [PX, 0.145, PZ], 'Gelijkstroommotor met rollenpomp, hangend in de tank.', [0, 0.05, 0], { inner: true }),
+    sysPart('Zeef', G.box(0.07, 0.012, 0.05), MAT.filter, [PX, 0.115, PZ], 'Zeef op de zuigmond die vuil uit de tank houdt.', [0, -0.1, 0], { inner: true }),
     A('Niveaumeter', { d: 'Vlotter op een arm met een glijweerstand; geeft het brandstofniveau door aan de brandstofmeter in het dashboard.', ex: [0.1, 0, 0], inner: true }, [
-      P('Vlotterarm', sysTube([[PX + 0.03, 0.2, PZ], [PX + 0.06, 0.17, PZ + 0.02], [PX + 0.12, 0.155, PZ + 0.06]], 0.0018, 5, 0.02), MAT.steel, { d: 'Dunne metalen arm die op en neer draait met het niveau.', ex: [0.05, 0.05, 0] }),
-      sysPart('Vlotter', G.sphere(0.014, 10), MAT.red, [PX + 0.12, 0.152, PZ + 0.06], 'Kunststof vlotter die op de brandstof drijft.', [0.08, 0, 0.05]),
+      P('Vlotterarm', sysTube([[PX + 0.03, 0.175, PZ], [PX + 0.06, 0.145, PZ + 0.02], [PX + 0.12, 0.13, PZ + 0.06]], 0.0018, 5, 0.02), MAT.steel, { d: 'Dunne metalen arm die op en neer draait met het niveau.', ex: [0.05, 0.05, 0] }),
+      sysPart('Vlotter', G.sphere(0.014, 10), MAT.red, [PX + 0.12, 0.127, PZ + 0.06], 'Kunststof vlotter die op de brandstof drijft.', [0.08, 0, 0.05]),
     ]),
-    sysPart('Pompstekker', G.box(0.03, 0.02, 0.02), MAT.plastic, [PX + 0.02, 0.23, PZ], 'Stekker van de pomp en de niveaumeter.', [0, 0.1, 0]),
+    sysPart('Pompstekker', G.box(0.03, 0.02, 0.02), MAT.plastic, [PX + 0.02, 0.205, PZ], 'Stekker van de pomp en de niveaumeter.', [0, 0.1, 0]),
   ]);
   // ---------- vulsysteem: van de tankklep (achter het rechter achterscherm) naar de tank ----------
   const [k0, k1] = bodTkZ, [y0, y1] = bodTkY, ym = (y0 + y1) / 2, xs = surfX(k1, ym), zm = (k0 + k1) / 2;
   const xk = -(xs - 0.06);                       // voorvlak van de tankkom
-  const neck = [[-(xs - 0.09), ym, zm], [-(xs - 0.12), ym - 0.01, zm - 0.01], [-0.60, 0.69, -1.52], [-0.62, 0.62, -1.575], [-0.62, 0.45, -1.58], [-0.60, 0.32, -1.578], [-0.55, 0.255, -1.57], [-0.48, 0.235, -1.52], [-0.42, 0.215, -1.42], [-0.40, 0.2, -1.31]];
-  const vulslang = sysHoseG('Vulslang', 'Korte rubber slang tussen de stalen vulpijp en de stomp op de tank; vangt de beweging van de tank op.', [[-0.40, 0.2, -1.31], [-0.40, 0.19, -1.27], [-0.40, 0.185, -1.225]], 0.027, { n0: 'Klem vulpijp', n1: 'Klem tank', ex: [0, -0.1, -0.05] });
+  const neck = [[-(xs - 0.09), ym, zm], [-(xs - 0.12), ym - 0.01, zm - 0.01], [-0.60, 0.69, -1.52], [-0.62, 0.62, -1.575], [-0.62, 0.45, -1.58], [-0.60, 0.32, -1.578], [-0.55, 0.255, -1.57], [-0.48, 0.235, -1.52], [-0.42, 0.19, -1.42], [-0.40, 0.175, -1.31]];
+  const vulslang = sysHoseG('Vulslang', 'Korte rubber slang tussen de stalen vulpijp en de stomp op de tank; vangt de beweging van de tank op.', [[-0.40, 0.175, -1.31], [-0.40, 0.165, -1.27], [-0.40, 0.16, -1.225]], 0.027, { n0: 'Klem vulpijp', n1: 'Klem tank', ex: [0, -0.1, -0.05] });
   const vul = A('Vulsysteem', { d: 'Vulpijp van de opening in het rechter achterscherm (achter de tankklep) langs de achterkant van het wiel onder de vloer naar de tank, met de tankdop, een rubber vulslang en een ontluchtingsslang.', ex: [-0.3, -0.2, -0.3] }, [
     sysPart('Vulhals', G.lathe('-x', [[0.02, 0], [0.027, 0.014], [0.03, 0.03]], 20, 'sysFillNeck'), MAT.steel, [-(xs - 0.09), ym, zm], 'Trechtervormige vulhals achter de tankklep, in de tankkom.', [-0.1, 0, 0]),
     sysPart('Tankdop', merge([G.cyl('x', 0.026, 0.026, 0.018, 20), xf(G.box(0.012, 0.06, 0.012), [-0.008, 0, 0])]), MAT.plastic, [xk - 0.012, ym, zm], 'Dop van de vulhals; de onderdruk in de tank wordt via een klepje in de dop geregeld.', [-0.2, 0.05, 0]),
     P('Vulpijp', sysTube(neck, 0.02, 10, 0.03), MAT.sysTank, { d: 'Stalen vulpijp die achter het wiel langs naar beneden en onder de vloer naar de tank loopt.', ex: [-0.08, -0.1, -0.1] }),
     vulslang,
-    P('Ontluchtingsslang vulpijp', sysTube(neck.slice(2).map(p => sysPlus(p, 0.035, 0, 0.03)).concat([[-0.41, 0.215, -1.215], [-0.40, 0.225, -1.2]]), 0.006, 6, 0.04), MAT.sysHose, { d: 'Dunne slang die de lucht uit de tank naar de bovenkant van de vulpijp voert, zodat de tank sneller vol kan.', ex: [0.05, 0, -0.05] }),
+    P('Ontluchtingsslang vulpijp', sysTube(neck.slice(2).map(p => sysPlus(p, 0.035, 0, 0.03)).concat([[-0.41, 0.19, -1.215], [-0.40, 0.2, -1.2]]), 0.006, 6, 0.04), MAT.sysHose, { d: 'Dunne slang die de lucht uit de tank naar de bovenkant van de vulpijp voert, zodat de tank sneller vol kan.', ex: [0.05, 0, -0.05] }),
   ]);
   // ---------- brandstofleiding: toevoer links van het midden onder de vloer, over de bak naar de verdeelleiding ----------
   const FX = -0.20, FY = 0.207;
@@ -332,8 +332,8 @@ function buildElectrical() {
   // ---------- kabelboom op hoofdlijnen ----------
   const trunk = [[FBx + 0.03, FBy + 0.06, FBz], [FBx + 0.03, 0.74, 0.94], [FBx + 0.03, 0.80, 0.935], [-0.2, 0.80, 0.935], [0.0, 0.80, 0.935], [0.2, 0.80, 0.935], [0.38, 0.80, 0.935], [0.40, 0.79, 0.99], [0.40, 0.775, 1.10], [0.40, 0.76, 1.22], [0.40, 0.735, 1.31], [0.395, 0.715, 1.375]];
   const fan = [[0.205, 0.42, 1.435], [0.25, 0.425, 1.44], [0.32, 0.43, 1.45], [0.36, 0.44, 1.44], [0.385, 0.46, 1.40], [0.385, 0.50, 1.38], [0.385, 0.60, 1.38], [0.395, 0.70, 1.385]];
-  const cabin = [[FBx, 0.58, 0.915], [FBx, 0.58, 0.872], [FBx, 0.56, 0.80], [-0.40, 0.45, 0.72], [-0.30, 0.33, 0.68], [-0.1, 0.26, 0.66], [0.2, 0.25, 0.66], [0.45, 0.25, 0.66]];
-  const rear = [[0.45, 0.25, 0.66], [0.48, 0.25, 0.5], [0.48, 0.25, 0.0], [0.48, 0.25, -0.6], [0.48, 0.25, -1.0], [0.48, 0.26, -1.3], [0.49, 0.40, -1.5], [0.52, 0.65, -1.60]];
+  const cabin = [[FBx, 0.50, 0.915], [FBx, 0.50, 0.872], [FBx, 0.49, 0.80], [-0.40, 0.44, 0.72], [-0.30, 0.33, 0.68], [-0.1, 0.25, 0.66], [0.2, 0.24, 0.66], [0.45, 0.24, 0.66]];
+  const rear = [[0.45, 0.24, 0.66], [0.48, 0.24, 0.5], [0.48, 0.24, 0.0], [0.48, 0.24, -0.6], [0.48, 0.24, -1.0], [0.48, 0.26, -1.3], [0.49, 0.40, -1.5], [0.52, 0.65, -1.60]];
   const kabelboom = A('Kabelboom', { d: 'Hoofdlijnen van de kabelboom: de motorruimte (van de zekeringkast over het schutbord naar de accu), de tak naar de koelventilator, de tak door het schutbord de cabine in en de achterste boom langs de linkerdorpel naar de achterlichten. Schematisch; geen losse draden.', ex: [0, 0.4, 0] }, [
     P('Kabelboom motorruimte', sysTube(trunk, 0.012, 8, 0.03), MAT.sysWire, { d: 'Dikke bundel zwarte kabels met tape en gaas; loopt langs de bovenkant van het schutbord naar links en dan langs de linkerwielkast naar de accu.', ex: [0, 0.2, 0.05] }),
     P('Kabelboom koelventilator', sysTube(fan, 0.005, 6, 0.03), MAT.sysWire, { d: 'Tak van de kabelboom van de stekker van de koelventilator naar de motorruimteboom bij de accu.', ex: [0.1, 0.1, 0.1] }),
