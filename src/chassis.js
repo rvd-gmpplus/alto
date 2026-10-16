@@ -406,7 +406,7 @@ function chsRearBrake(sg) {
 function chsMaster() {
   const X = 0.39, Y = 0.60, Z0 = 0.870;
   const boost = merge([chsLathe('z', [[0, 0], [0.080, 0], [0.088, 0.008], [0.088, 0.040], [0.0915, 0.042], [0.0915, 0.050], [0.088, 0.052], [0.088, 0.096], [0.080, 0.104], [0, 0.104]], 32, 'Boost'),
-    ...[[1, 1], [1, -1], [-1, 1], [-1, -1]].map(([a, b]) => xf(G.cyl('z', 0.004, 0.004, 0.04, 8), [a * 0.055, b * 0.055, -0.02]))]);
+    ...[[1, 1], [1, -1], [-1, 1], [-1, -1]].map(([a, b]) => xf(G.cyl('z', 0.004, 0.004, 0.016, 8), [a * 0.055, b * 0.055, -0.008]))]);   // de vier bevestigingspennen steken alleen door de plaat van het schutbord (z 0,854 tot 0,866), niet door tot in het dashboard
   const mc = merge([xf(G.cyl('z', 0.0127, 0.0127, 0.166, 16), [0, 0, 0.083]), xf(G.cyl('z', 0.0205, 0.0205, 0.01, 16), [0, 0, 0.005]), xf(G.cyl('z', 0.0145, 0.0145, 0.014, 14), [0, 0, 0.159])]);
   return A('Hoofdremcilinder en rembekrachtiger', {
     d: 'Onderdrukservo met tandemhoofdcilinder en reservoir, op het schutbord links in de motorruimte (linksgestuurd). De servo trekt onderdruk uit het inlaatspruitstuk (slang niet getekend, de inlaat heeft daar geen poort). Plaats en maten geschat.', ex: [0.2, 0.2, 0.5],
@@ -423,7 +423,7 @@ function chsHydraulics() {
   const calM = chsMat([chsMF, AY, AXF], [HALF - chsPHI, 0, 0]);
   const ban = chsPt(calM, [-0.131, 0.085, -0.02]);
   const FL = [[0.39, 0.587, 1.125], [0.39, 0.55, 1.125], [0.39, 0.50, 1.14], [0.40, 0.50, 1.15], [0.46, 0.50, 1.16], [0.515, 0.50, 1.16]];
-  const FR = [[0.39, 0.587, 1.125], [0.39, 0.575, 1.125], [0.33, 0.58, 1.12], [0.215, 0.58, 1.10], [0.215, 0.58, 0.89], [-0.35, 0.58, 0.89], [-0.46, 0.54, 0.97], [-0.50, 0.50, 1.05], [-0.515, 0.50, 1.16]];
+  const FR = [[0.39, 0.587, 1.125], [0.39, 0.575, 1.125], [0.33, 0.58, 1.12], [0.215, 0.58, 1.10], [0.215, 0.58, 0.905], [-0.35, 0.58, 0.905], [-0.46, 0.54, 0.97], [-0.50, 0.50, 1.05], [-0.515, 0.50, 1.16]];
   const RM = [[0.39, 0.587, 1.085], [0.39, 0.50, 1.085], [0.33, 0.50, 0.99], [0.30, 0.51, 0.912], [0.30, 0.40, 0.909], [0.30, 0.26, 0.905], [0.33, 0.215, 0.80], [0.36, 0.205, 0.5], [0.36, 0.205, -0.5], [0.36, 0.213, -0.9], [0.40, 0.213, -0.98]];
   const RL = [[0.40, 0.213, -0.98], [0.42, 0.22, -1.04], [0.43, 0.235, -1.095]];
   // rechts loopt de leiding tussen de bovenkant van de uitlaatpijp (y 0,221) en de vloer (y 0,23) door, voor het ophangrubber van de pijp langs (z -1,02) en boven de tank (y 0,19)

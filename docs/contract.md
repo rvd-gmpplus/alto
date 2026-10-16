@@ -76,12 +76,12 @@ De kap is 0,62 m halfbreed tot z 1,2 en versmalt naar 0,55 bij de neus; de kopla
 
 | Zone | Wat | Eigenaar |
 |---|---|---|
-| Schutbord op z 0,866 (voorvlak), kap-scharnieren op z 0,92 tot 1,0, x = +-0,50 | niets plaatsen binnen 4 cm van het schutbord; de uitlaat (katalysator) mag er vlak voor, tot z 0,95 | carrosserie, systemen |
+| Schutbord op z 0,866 (voorvlak) en 0,854 (achtervlak), kap-scharnieren op z 0,92 tot 1,0, x = +-0,50 | niets plaatsen binnen 4 cm van het schutbord; de uitlaat (katalysator) mag er vlak voor, tot z 0,95. Het schutbord loopt onder y 0,58 alleen tot |x| 0,50 (de wielkastwanden) en daarboven tot |x| 0,69. Uitzondering: doorvoeren en bevestigingen mogen het schutbord raken en er doorheen steken (golf 2): de rembekrachtiger met zijn vier pennen (tot z 0,854) en de duwstang, de stuurkolomdoorvoer met de tussenas en de onderste kruiskoppeling, de stompen en doorvoerplaat van de kachel, de doorvoer van de kabelboom, de klemmen van het stuurhuis en de steunplaten van zekeringkast en regeleenheid. Het dashboard begint op z 0,85, achter het schutbord; de wissermotor zit in de waterkast ervoor (z 0,867 tot 0,957) | carrosserie, systemen, onderstel, interieur |
 | Veerpoottorens x = +-0,50, z 1,02 tot 1,16, y 0,56 tot 0,76 (straal 0,05 bovenaan, 0,07 onderaan) | alleen de veerpoot en de bovenste lagerplaat | onderstel |
-| Wielkasten: binnenwand op |x| = 0,50, boog met straal 0,312 om (z 1,087, y 0,265) | de motor blijft binnen |x| < 0,49 onder y 0,58 | motor, aandrijving |
+| Wielkasten: binnenwand op |x| = 0,50, boog met straal 0,312 om (z 1,087, y 0,265); de wand begint pas op y 0,42 (voor) en y 0,485 (achter), daaronder lopen aandrijfas, stuurstangen, draagarmen en achteras vrij; voor heeft de wand en het dak een uitsparing (halve breedte 7,5 cm, tot |x| 0,58) voor de veerpoot | de motor blijft binnen |x| < 0,49 onder y 0,58 | motor, aandrijving, onderstel |
 | Frontmodule (z 1,575 tot 1,625) en koelpakket (z 1,44 tot 1,575) | radiator, koelventilator, slot, bumperbalk (z 1,66, y 0,40) | systemen, carrosserie |
 | Motorkapsteun (x = -0,575, voet op z 1,0 en y 0,84; open tot y 1,29) | stang van 0,51 m met de voet naast de rechter veerpoottoren; in rust ligt hij schuin naar voren langs de rechter binnenwand; houd x -0,60 tot -0,55 tussen z 1,0 en 1,37 vrij | carrosserie |
-| Accu | rechts voor bij de frontmodule of links boven de bak: vrij onder de tabel hierboven | systemen |
+| Accu | links voor, tussen luchtfilterhuis en wielkast (x 0,305 tot 0,495, y 0,50 tot 0,69, z 1,40 tot 1,53): vrij onder de tabel hierboven en 38 cm voor de rembekrachtiger | systemen |
 
 De motor (met inlaat) houdt tot de samenvoeging de hoogte van de tabel aan; het ventieldeksel reikt tot y 0,76 (krukas plus 0,40) en de inlaatkast tot y 0,79; bij z 1,35 is 0,79 de grens.
 

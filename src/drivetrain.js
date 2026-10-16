@@ -108,10 +108,10 @@ const DRV_OUT_BELL = [drvZY([0, 0], DRV_RB), drvZY(DRV_ST, 0.048)];
 
 /* ---------- koppeling ---------- */
 function drvClutch() {
-  const XP = 0.216;                                    // midden van de koppelingsplaat; het vliegwiel (motor) eindigt op x 0,205
+  const XP = 0.2095;                                   // midden van de koppelingsplaat; het wrijvingsvlak van het vliegwiel (motor) ligt op x 0,2045 (golf 2: de plaat zweefde er 7 mm vandaan)
   const cover = cache('drvCover', () => merge([drvL('Cover', [[0.0985, 0.2045], [0.0985, 0.2075], [0.0935, 0.2075], [0.0935, 0.255], [0.074, 0.262], [0.036, 0.262]], 40), xf(drvAn(0.08, 0.0985, 0.003), [0.206, 0, 0])]));
   const diaph = cache('drvDiaph', () => merge([drvL('Diaph', [[0.088, 0.2405], [0.078, 0.2435], [0.028, 0.2545]], 40), drvL('Diaph2', [[0.088, 0.2425], [0.078, 0.2455], [0.028, 0.2565]], 40)]));
-  const straps = drvRing('drvStraps', 3, 0.084, a => xf(G.box(0.0012, 0.044, 0.008), [0, 0, 0], [a + HALF, 0, 0]), 0.3, [0, 0], 0.2335);
+  const straps = drvRing('drvStraps', 3, 0.084, a => xf(G.box(0.0012, 0.044, 0.008), [0, 0, 0], [a + HALF, 0, 0]), 0.3, [0, 0], 0.2265);
   const tors = drvRing('drvTors', 6, 0.034, a => xf(G.cyl('z', 0.0035, 0.0035, 0.02, 8), [0, 0, 0], [a, 0, 0]), 0.2, [0, 0], XP);
   const bearing = cache('drvRelBrg', () => merge([drvAn(0.0205, 0.0285, 0.016), xf(drvAn(0.0285, 0.0365, 0.005), [0.0055, 0, 0])]));
   const fork = cache('drvFork', () => {
@@ -129,7 +129,7 @@ function drvClutch() {
   }, [
     A('Drukgroep', { d: 'Deksel met drukplaat en diafragmaveer; draait met het vliegwiel mee en klemt de koppelingsplaat ertegen. De maten zijn geschat.', ex: [-0.04, 0.12, 0], inner: true }, [
       drvP('Koppelingsdeksel', cover, MAT.darkSteel, 'Stalen deksel dat met zes bouten aan het vliegwiel zit en de drukplaat en de diafragmaveer draagt.', undefined, [0, 0, 0.0001]),
-      drvP('Drukplaat', drvAn(0.056, 0.0885, 0.012), MAT.iron, 'Gietijzeren ring die de koppelingsplaat tegen het vliegwiel drukt.', [0.2275, 0, 0], [0.03, 0, 0]),
+      drvP('Drukplaat', drvAn(0.056, 0.0885, 0.012), MAT.iron, 'Gietijzeren ring die de koppelingsplaat tegen het vliegwiel drukt.', [0.2205, 0, 0], [0.03, 0, 0]),
       drvP('Diafragmaveer', diaph, MAT.steel, 'Schotelveer: houdt de koppeling ingeschakeld; het druklager drukt de binnenrand in om te ontkoppelen.', undefined, [0.07, 0, 0]),
       drvP('Bladveren drukplaat', straps, MAT.steel, 'Drie bladveren (tangentiaal, aantal schematisch) die de drukplaat aan het deksel koppelen en bij het ontkoppelen terugtrekken.', undefined, [0.05, 0.04, 0]),
       drvP('Dekselbouten', drvRing('drvDekB', 6, 0.0965, () => drvBolt(0.016, 0.007, '-x'), 0.2, [0, 0], 0.2098), MAT.darkSteel, 'Zes bouten (aantal schematisch) die het deksel aan het vliegwiel vasthouden.', undefined, [-0.12, 0, 0]),
@@ -137,8 +137,8 @@ function drvClutch() {
     A('Koppelingsplaat', { d: 'Plaat met frictievoeringen op de spiebaan van de primaire as: neemt het koppel van het vliegwiel mee als de koppeling ingeschakeld is. Veertjes in de naaf dempen de schokken.', ex: [-0.09, -0.1, 0], inner: true }, [
       drvP('Naaf koppelingsplaat', drvL('PlHub', [[0.0095, 0.2105], [0.0225, 0.2105], [0.0225, 0.2215], [0.0095, 0.2215]], 28), MAT.steel, 'Naaf met spiebaan voor de primaire as.', undefined, [0.05, 0, 0]),
       drvP('Plaatschijf', drvAn(0.0225, 0.0885, 0.0016), MAT.darkSteel, 'Stalen schijf waarop de voeringen zitten.', [XP, 0, 0], [0, 0, 0.0001]),
-      drvP('Frictievoering motorzijde', drvAn(0.055, 0.0885, 0.0035), MAT.friction, 'Frictievoering aan de kant van het vliegwiel.', [0.2135, 0, 0], [-0.06, 0, 0]),
-      drvP('Frictievoering bakzijde', drvAn(0.055, 0.0885, 0.0035), MAT.friction, 'Frictievoering aan de kant van de drukplaat.', [0.2185, 0, 0], [0.03, 0, 0]),
+      drvP('Frictievoering motorzijde', drvAn(0.055, 0.0885, 0.0035), MAT.friction, 'Frictievoering aan de kant van het vliegwiel.', [0.207, 0, 0], [-0.06, 0, 0]),
+      drvP('Frictievoering bakzijde', drvAn(0.055, 0.0885, 0.0035), MAT.friction, 'Frictievoering aan de kant van de drukplaat.', [0.212, 0, 0], [0.03, 0, 0]),
       drvP('Torsiedemperveren', tors, MAT.darkSteel, 'Zes schroefveertjes in de naaf die schokken in de aandrijving dempen (aantal schematisch).', undefined, [0, 0.06, 0.06]),
     ]),
     A('Druklager', { d: 'Druklager op de geleidehuls van het bakhuis: wordt door de koppelingsvork tegen de diafragmaveer gedrukt om te ontkoppelen.', ex: [-0.06, -0.13, 0], inner: true }, [
