@@ -71,7 +71,7 @@ const bodHoodArcZ = (n = 14) => Array.from({ length: n }, (_, k) => bodZLh - bod
 const bodXP = 0.355;                              // halve breedte van het paneel: grens paneel en lamp
 const bodXG = 0.325;                              // halve breedte van de gaasopening
 const bodYG0 = 0.637, bodYG1 = 0.713;             // onder- en bovenrand van de gaasopening (76 mm hoog, breedte 650 mm: verhouding 8,5)
-const bodYBT = z => 0.50 + 0.11 * sstep((z - 1.43) / 0.23);   // bovenrand bumper = onderrand lamp, paneel en scherm: 0,50 tot z 1,43, 0,551 bij 1,54, 0,591 bij 1,60, 0,610 op de neus
+const bodYBT = z => 0.60 + 0.012 * sstep((z - 1.43) / 0.23);   // bovenrand bumper = onderrand lamp, paneel en scherm: vrijwel waterpas (0,600 op de flank, 0,612 op de neus), zoals op foto F1; een schuine lijn gaf de hoekkap een hoektand
 const bodTuck = 0.005;                            // het onderliggende deel loopt zoveel onder het bovenliggende
 const bodArchLo = (z, az, yOut) => (Math.abs(z - az) <= ARCH ? archS(z) : sAtY(z, yOut(z)));   // onderrand van een paneel boven de boog
 // kas: bovenrand zijruit, onderrand voorruit en achterruit (zijkant), schuine achterrand van de hoekruit
@@ -177,7 +177,7 @@ function bodStructure() {
     ...both(s => P(`Veerpoottoren ${sn(s)}`, merge([G.cyl('y', 0.05, 0.07, 0.2, 24, true), xf(G.cyl('y', 0.05, 0.05, 0.006, 24), [0, 0.1, 0])]), MAT.paintIn, { d: 'Bevestigingspunt van de veerpoot in de carrosserie.', p: [s * 0.50, 0.66, AXF], ex: [s * 0.1, 0.06, 0] })),
     // onder y 0,58 loopt het schutbord alleen tot de wielkastwanden (|x| 0,50): daarbuiten zit het voorwiel (de band stak erdoorheen)
     P('Schutbord', cache('bodSchutbord', () => roundPlate([[-0.5, -0.3], [0.5, -0.3], [0.5, -0.02], [0.69, -0.02], [0.69, 0.3], [-0.69, 0.3], [-0.69, -0.02], [-0.5, -0.02]], 0.012, 0.004, 0.004)), MAT.paintIn, { d: 'Scheidingswand tussen motorruimte en interieur met doorvoeren voor stuurkolom, pedalen en kabelboom.', p: [0, 0.60, 0.86], ex: [0, 0, -0.08] }),
-    P('Frontmodule', merge([xf(G.box(0.84, 0.05, 0.05), [0, 0.67, 0]), xf(G.box(1.0, 0.05, 0.05), [0, 0.33, 0]), xf(G.box(0.05, 0.36, 0.05), [0.5, 0.5, 0]), xf(G.box(0.05, 0.36, 0.05), [-0.5, 0.5, 0]), xf(G.box(0.05, 0.3, 0.05), [0, 0.5, 0])]), MAT.plastic, { d: 'Kunststof en stalen voorkopplaat die radiateur, koplampen en motorkapslot draagt.', p: [0, 0, 1.575], ex: [0, 0.04, 0.12] }),
+    P('Frontmodule', merge([xf(G.box(0.84, 0.05, 0.05), [0, 0.67, 0]), xf(G.box(1.0, 0.05, 0.05), [0, 0.33, 0]), xf(G.box(0.05, 0.36, 0.05), [0.33, 0.5, 0]), xf(G.box(0.05, 0.36, 0.05), [-0.33, 0.5, 0]), xf(G.box(0.05, 0.3, 0.05), [0, 0.5, 0])]), MAT.plastic, { d: 'Kunststof en stalen voorkopplaat die radiateur, koplampen en motorkapslot draagt.', p: [0, 0, 1.575], ex: [0, 0.04, 0.12] }),
     P('Motorkapslot', merge([G.rbox(0.07, 0.05, 0.04, 0.008), xf(G.rbox(0.02, 0.04, 0.015, 0.004), [0.04, 0.01, 0.015])]), MAT.darkSteel, { d: 'Slot op de voorkopplaat waarin de slotbeugel van de motorkap grijpt; ontgrendeling met een kabel vanuit het interieur.', p: [0, 0.682, 1.55], ex: [0, 0.06, 0.06] }),   // boven de bovenste waterkast van de radiateur (y 0,655); op y 0,625 zat het slot erin
     P('Bumperbalk voor', tube([-0.55, -0.35, -0.17, 0, 0.17, 0.35, 0.55].map(x => [x, 0.40, 1.655 - 0.12 * x * x]), 0.032, 24, 8), MAT.steel, { d: 'Gebogen stalen botsbalk achter de voorbumper.', ex: [0, 0, 0.1] }),
     ...both(s => bodWheelHousePart(s, true)),
@@ -414,7 +414,6 @@ function bodFrontPanel() {
   const emb = tube(S.map(([u, v]) => [u * 1.15, v * 1.3, 0.004]), 0.004, 48, 6);   // donkere S zonder schijf, ca. 70 mm hoog (foto F1)
   const yE = (bodYG0 + bodYG1) / 2, zE = bodZAtYd(yE), pE = bodAt(zE, yE, -0.006), nE = bodN(zE, sAtY(zE, yE));
   return A('Grille en voorpaneel', { d: 'Voorpaneel tussen de koplampen: lichaamskleurig, vlak met de lampen, met één smalle zwarte gaasopening met honingraatgaas en het embleem (uitvoering 2001).', ex: [0, 0.04, 0.4] }, [
-    P('Naadvulling voorkant', patch((z, p) => bodLow(z, p, 0.04), bodZLh - 0.001, ZF - 0.001, 16, z => { const a = sAtY(z, 0.5); return [a, 2 - a]; }, 20), MAT.bodSeal, { d: 'Donkere schil 40 mm onder de huid van de neus (schematisch): vangt wat er na de overlappende naden aan kieren overblijft, zodat daar geen motorruimte te zien is.', ex: [0, 0, -0.03] }),
     P('Voorpaneel', merge([top, low, post(1), post(-1)]), MAT.paint, { d: 'Neuspaneel in carrosseriekleur boven en onder de gaasopening en ernaast, tussen de koplampen. Het loopt 8 mm onder de kap en onder de bumperrand.', ex: [0, 0.04, 0.06] }),
     P('Grillekuip', kuip, MAT.bodBlack, { d: 'Zwarte wanden rond de gaasopening: het gaas ligt 8 mm dieper dan het paneel.', ex: [0, 0, 0.1] }),
     P('Honingraatgrille', honey, MAT.bodHoney, { d: 'Zwart kunststof gaas met fijne honingraatstructuur (uitvoering 2001, één doorlopende opening) voor de luchtinlaat van de radiateur.', ex: [0, 0, 0.14] }),
@@ -481,7 +480,7 @@ function bodSkinPlate(cx, cy, w, h, off, nu = 24, nv = 8) {
 // pose van een klein onderdeel op de bumperhuid: positie plus een draaiing die de z-as langs de huidnormaal legt
 function bodSkinPose(x, y, off) { const [p, n] = bodSkinXY(x, y, off); return { p, q: quatFromTo(V3(0, 0, 1), V3(...n)) }; }
 // Bumperlip: gesloten rand in carrosseriekleur langs de onderkant van de schaal, van achter links (z 1,43) om de voorkant naar achter rechts; boven op de onderrand van de
-// schaal (s = S1), onder op y 0,185 (125 mm in het midden, 80 mm achter)
+// schaal (s = S1), onder op y 0,225 (85 mm in het midden)
 function bodBumperLip() {
   const zA = 1.425, zE = ZF - 0.0005, xb = z => halfPt(z, S1)[0], yb = z => halfPt(z, S1)[1], N1 = 22, N2 = 16;
   const pts = [];
@@ -489,7 +488,19 @@ function bodBumperLip() {
   for (let k = 1; k < N2; k++) pts.push([xb(zE) * (1 - 2 * k / N2), zE]);
   for (let k = N1; k >= 0; k--) { const [x, z] = pts[k]; pts.push([-x, z]); }
   const N = pts.length - 1;
-  return patch((u, v) => { const i = Math.min(N - 1, Math.floor(u)), f = u - i, a = pts[i], b = pts[i + 1], x = lerp(a[0], b[0], f), z = lerp(a[1], b[1], f); return [x, lerp(yb(z), lerp(yb(z), 0.185, sstep((z - zA) / 0.07)), v), z]; }, 0, N, N, () => [0, 1], 2);
+  return patch((u, v) => { const i = Math.min(N - 1, Math.floor(u)), f = u - i, a = pts[i], b = pts[i + 1], x = lerp(a[0], b[0], f), z = lerp(a[1], b[1], f); return [x, lerp(yb(z), lerp(yb(z), 0.225, sstep((z - zA) / 0.07)), v), z]; }, 0, N, N, () => [0, 1], 2);
+}
+// Naad op de bovenrand van de bumper: een donkere voeg langs de rand waar paneel, lampen en scherm onder de bumper verdwijnen. Hij volgt de rand van links (z 1,44) over
+// de neus naar rechts, op de huid via bodSkinXY (vooraanzicht), zodat de bumper vanuit elke hoek als apart deel van het paneel leest.
+function bodBumperSeam() {
+  const X0 = ringX(1.44, bodBumperTop(1.44)) - 0.002, pts = [], N = 64;
+  for (let k = 0; k <= N; k++) {
+    const x = Math.max(0.0015, Math.abs(X0 * Math.sin((k / N * 2 - 1) * HALF))) * (k < N / 2 ? -1 : 1);
+    let y = bodBumperTop(1.7), pt = null;
+    for (let it = 0; it < 3; it++) { pt = bodSkinXY(x, y, 0.0006)[0]; y = bodBumperTop(Math.min(pt[2], 1.7)) - 0.0012; }
+    pts.push(bodSkinXY(x, y, 0.0006)[0]);
+  }
+  return tube(pts, 0.0026, 128, 6);
 }
 function bodFrontBumper() {
   const both = bodBoth, sn = bodSn;
@@ -513,7 +524,8 @@ function bodFrontBumper() {
   const rib = (x, y, w, h, k) => Array.from({ length: k }, (_, i) => xf(G.box(w, 0.0035, 0.002), [x, y - h / 2 + h * (i + 1) / (k + 1), ZF + 0.0033]));
   return A('Voorbumper', { d: 'Bumperschaal in carrosseriekleur (Twist) met de hoeken om de wielbogen, een lip langs de onderkant, luchtsleuven rond het kentekenvlak en richtingaanwijzers laag in de hoeken; erachter de stalen bumperbalk.', ex: [0, -0.04, 0.72] }, [
     P('Bumperschaal voor', merge([shell(1), shell(-1), face]), MAT.paint, { d: 'Kunststof bumperschaal in het rood met afgeronde hoeken die om de voorwielboog lopen; de bovenrand sluit op de lamp, het paneel en het scherm aan.', ex: [0, -0.02, 0.12] }),
-    P('Bumperlip voor', bodBumperLip(), MAT.paint, { d: 'Rand in carrosseriekleur langs de onderkant van de bumper (onderrand ongeveer 185 mm boven de grond, achter uitlopend naar niets): hij houdt het zicht op onderstel en stabilisatorstang van normale hoogte af.', ex: [0, -0.05, 0.04] }),
+    P('Bumpernaad voor', cache('bodBumperSeam', bodBumperSeam), MAT.bodSeal, { d: 'Donkere voeg van ongeveer 5 mm langs de bovenrand van de bumper, waar het voorpaneel, de koplampen en de schermen eronder verdwijnen: de bumper is een apart deel (de echte voeg is nauwelijks breder).', ex: [0, 0, 0.1] }),
+    P('Bumperlip voor', bodBumperLip(), MAT.paint, { d: 'Rand in carrosseriekleur langs de onderkant van de bumper (onderrand ongeveer 225 mm boven de grond, achter uitlopend naar niets): hij houdt het zicht op onderstel en stabilisatorstang van normale hoogte af.', ex: [0, -0.05, 0.04] }),
     P('Onderplaat voorbumper', bodPatchN((z, p) => bodLow(z, p, 0.0), 1.425, zE, 18, () => [-S1, S1], 6, [], (n) => n), MAT.bodBlack, { d: 'Zwarte onderzijde van de bumper, schematisch (de echte afscherming onder de bumper is niet vast te stellen).', ex: [0, -0.06, 0.02] }),
     P('Luchtrooster voor', merge([slot(0.34, 0.415, 0.12, 0.06), slot(-0.34, 0.415, 0.12, 0.06), slot(0, 0.328, 0.54, 0.022)]), MAT.bodBlack, { d: 'Zwarte luchtsleuven: links en rechts van het kentekenvlak en een smalle sleuf eronder, voor extra koellucht.', ex: [0, -0.04, 0.1] }),
     P('Luchtroosterribben voor', merge([...rib(0.34, 0.415, 0.12, 0.06, 2), ...rib(-0.34, 0.415, 0.12, 0.06, 2)]), MAT.bodBumper, { d: 'Horizontale ribben in de luchtsleuven naast het kentekenvlak.', ex: [0, -0.04, 0.12] }),
@@ -741,9 +753,10 @@ function bodRoofRails(s) {
 }
 /* ---------- opbouw ---------- */
 // Zijrepeater: klein oranje herhalingsknipperlicht (ca. 40 x 20 mm) op het voorscherm, net voor de portiervoorrand en boven de wielkast; de plaats is aannemelijk (foto 2001), niet bevestigd
+// Hij hangt in dezelfde groep als het voorscherm en schuift met dezelfde uitklapvector mee, zodat hij bij een uitgeklapte carrosserie op het scherm blijft zitten.
 function bodRepeater(s) {
   const z = 0.84, y = 0.60, sv = sAtY(z, y), n = bodN(z, sv);
-  return P(`Zijrepeater ${bodSn(s)}`, G.rbox(0.006, 0.02, 0.04, 0.004), MAT.bodAmber, { d: 'Oranje herhalingsknipperlicht op het voorscherm (ongeveer 40 x 20 mm); de plaats is aannemelijk op foto\'s van de uitvoering, niet bevestigd.', ...bodPose(s, bodAt(z, y, 0.0005), n), ex: [s * 0.04, 0, 0.02] });
+  return P(`Zijrepeater ${bodSn(s)}`, G.rbox(0.006, 0.02, 0.04, 0.004), MAT.bodAmber, { d: 'Oranje herhalingsknipperlicht op het voorscherm (ongeveer 40 x 20 mm); de plaats is aannemelijk op foto\'s van de uitvoering, niet bevestigd.', ...bodPose(s, bodAt(z, y, 0.0005), n), ex: [s * 0.46, 0.06, 0.1] });
 }
 function buildBody() {
   const sk = bodSkinParts(), both = bodBoth, sn = bodSn;
@@ -751,7 +764,7 @@ function buildBody() {
     P('Dakpaneel', bodRoofGeo(), MAT.paint, { d: 'Dakplaat van staal in het rood, gelast op de dakranden en de dakbogen; zonder glazen dak.', ex: [0, 0.16, 0] }),
     A('Dakbogen', { d: 'Drie dwarsliggers onder het dakpaneel.', ex: [0, 0.1, 0] }, [[0.30, 'voor'], [-0.45, 'midden'], [-1.05, 'achter']].map(([z, nm]) => P(`Dakboog ${nm}`, (() => { const pts = []; for (let i = 0; i <= 12; i++) { const w = bodQR / 2 + (1 - bodQR) * i / 12, p = ghPt(z, w); pts.push([p[0] * 0.97, p[1] - 0.012, z]); } return tube(pts, 0.0045, 24, 6); })(), MAT.paintIn, { d: 'Dwarsligger onder het dakpaneel.', ex: [0, -0.04, z * 0.05] }))),
     P('Waterkast', bodCowlGeo(), MAT.bodBlack, { d: 'Zwarte kunststof afdekplaat met luchtinlaat voor het interieur, tussen motorkap en voorruit; hierin staan de wisserassen.', ex: [0, 0.1, 0.02] }),
-    ...sk.kids, ...both(sk.qGlass),
+    ...sk.kids, ...both(sk.qGlass), ...both(bodRepeater),
     P('Achterpaneel', bodRearPanel(), MAT.paint, { d: 'Staartvlak tussen de achterlichten, het dek achter de lip en de randen boven en onder de lichten; hierin ligt de sponning van de achterklep.', ex: [0, 0, -0.2] }),
     ...both(s => P(`Slotbeugel B-stijl ${sn(s)}`, merge([xf(G.rbox(0.05, 0.14, 0.01, 0.002), [0, 0, 0.0]), tube([[s * 0.018, 0, 0.0], [s * 0.018, 0, 0.06], [-s * 0.018, 0, 0.06], [-s * 0.018, 0, 0.0]], 0.008, 16, 6)]), MAT.darkSteel, { d: 'Sluitplaat met U-beugel in de achterrand van de portieropening waar het slot van het portier in grijpt (plaats geschat); alleen te zien bij open portier.', p: [s * 0.68, 0.66, bodZDR - 0.04], ex: [s * 0.09, 0, -0.05] })),
     ...both(bodGsMount),
@@ -760,6 +773,6 @@ function buildBody() {
   return A('Carrosserie', { d: 'Zelfdragende carrosserie van de 3-deurs hatchback in effen rood (Bright Red 2, aannemelijk) met bumpers in carrosseriekleur (Twist), dakrails, alle aanbouwdelen, ruiten en verlichting.', ex: [0, 2.0, 0],
     spec: [['Lengte', '3.495 mm'], ['Breedte zonder spiegels', '1.495 mm'], ['Hoogte', '1.405 mm'], ['Wielbasis', '2.335 mm'], ['Spoorbreedte voor / achter', '1.335 / 1.305 mm']] }, [
     cage, bodHoodParts(), bodTailgate(), bodFrontBumper(), bodRearBumper(), bodDoor(1), bodDoor(-1), bodWindscreen(), bodHeadlamp(1), bodHeadlamp(-1), bodTaillamp(1), bodTaillamp(-1),
-    bodFrontPanel(), bodRearPlate(), bodWipers(), bodFuelFlap(), bodRoofRails(1), bodRoofRails(-1), bodRepeater(1), bodRepeater(-1),
+    bodFrontPanel(), bodRearPlate(), bodWipers(), bodFuelFlap(), bodRoofRails(1), bodRoofRails(-1),
   ]);
 }
