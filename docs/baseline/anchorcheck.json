@@ -1,0 +1,413 @@
+{
+ "commit": "c454cec Framework uit laguna3 57b4d18: uiPlaceMore wist de onthouden plek bij verbergen; omweg in itest weg (222 van 222)",
+ "viewport": "1280x800",
+ "totaal": {
+  "labels": 239,
+  "eigen": 203,
+  "vrij": 176
+ },
+ "presets": {
+  "assembled": {
+   "label": "Gemonteerd",
+   "labels": 0,
+   "eigen": 0,
+   "vrij": 0,
+   "achter": [],
+   "lucht": []
+  },
+  "main": {
+   "label": "Hoofdgroepen",
+   "labels": 8,
+   "eigen": 6,
+   "vrij": 5,
+   "achter": [
+    "Brandstofsysteem achter Stuurhuis",
+    "Interieur achter Buitenpaneel",
+    "Koeling en luchtinlaat achter Claxontoeter"
+   ],
+   "lucht": [
+    "Carrosserie",
+    "Uitlaatsysteem"
+   ]
+  },
+  "bodyOff": {
+   "label": "Carrosserie eraf",
+   "labels": 8,
+   "eigen": 6,
+   "vrij": 5,
+   "achter": [
+    "Elektrisch systeem achter Band",
+    "Interieur achter Buitenpaneel",
+    "Aandrijflijn achter Accublok"
+   ],
+   "lucht": [
+    "Carrosserie",
+    "Uitlaatsysteem"
+   ]
+  },
+  "xray": {
+   "label": "Röntgen",
+   "labels": 0,
+   "eigen": 0,
+   "vrij": 0,
+   "achter": [],
+   "lucht": []
+  },
+  "everything": {
+   "label": "Alles uit elkaar",
+   "labels": 8,
+   "eigen": 6,
+   "vrij": 8,
+   "achter": [],
+   "lucht": [
+    "Carrosserie",
+    "Uitlaatsysteem"
+   ]
+  },
+  "engine": {
+   "label": "Motor G10BB",
+   "labels": 13,
+   "eigen": 9,
+   "vrij": 11,
+   "achter": [
+    "Krukmechanisme achter Filterhuis",
+    "Ontsteking achter Cilinderkop (gietwerk)"
+   ],
+   "lucht": [
+    "Motorblok",
+    "Smering",
+    "Cilinderkop",
+    "Uitlaatspruitstuk"
+   ]
+  },
+  "engineAll": {
+   "label": "Motor tot op de bout",
+   "labels": 13,
+   "eigen": 9,
+   "vrij": 12,
+   "achter": [],
+   "lucht": [
+    "Motorblok",
+    "Smering",
+    "Cilinderkop",
+    "Uitlaatspruitstuk"
+   ]
+  },
+  "head": {
+   "label": "Cilinderkop en tuimelaars",
+   "labels": 8,
+   "eigen": 7,
+   "vrij": 6,
+   "achter": [
+    "Nokkenas achter Tuimelaar inlaat 3a",
+    "Nokkenaslagerdoppen achter Kleppendeksel"
+   ],
+   "lucht": [
+    "Cilinderkop (gietwerk)"
+   ]
+  },
+  "crank": {
+   "label": "Krukmechanisme",
+   "labels": 5,
+   "eigen": 5,
+   "vrij": 5,
+   "achter": [],
+   "lucht": []
+  },
+  "timing": {
+   "label": "Distributie",
+   "labels": 8,
+   "eigen": 7,
+   "vrij": 3,
+   "achter": [
+    "Pakking distributiekap achter Distributiekap",
+    "Distributieriem achter Distributiekap",
+    "Nokkenwiel achter Distributiekap",
+    "Spanner distributieriem achter Distributiekap",
+    "Krukastandwiel distributie achter Distributiekap"
+   ],
+   "lucht": [
+    "Nokkenwielbout"
+   ]
+  },
+  "intake": {
+   "label": "Inlaat en injectie",
+   "labels": 7,
+   "eigen": 6,
+   "vrij": 6,
+   "achter": [
+    "Pakking inlaatspruitstuk achter Inlaatkast"
+   ],
+   "lucht": [
+    "Inlaatkast"
+   ]
+  },
+  "manifold": {
+   "label": "Uitlaatspruitstuk",
+   "labels": 5,
+   "eigen": 5,
+   "vrij": 4,
+   "achter": [
+    "Pakking uitlaatspruitstuk achter Hitteschild"
+   ],
+   "lucht": []
+  },
+  "exhaust": {
+   "label": "Uitlaatsysteem",
+   "labels": 8,
+   "eigen": 4,
+   "vrij": 7,
+   "achter": [
+    "Hitteschilden achter Ophangrubber middendemper voor"
+   ],
+   "lucht": [
+    "Middenpijp",
+    "Katalysator",
+    "Middendemper",
+    "Einddemper"
+   ]
+  },
+  "gearbox": {
+   "label": "Handbak",
+   "labels": 15,
+   "eigen": 15,
+   "vrij": 12,
+   "achter": [
+    "Bouten bakhuis achter Tussenwiel achteruit",
+    "Koppeling achter Huisschaal koppelingshuis",
+    "Differentieel achter Schakelmof"
+   ],
+   "lucht": []
+  },
+  "clutch": {
+   "label": "Koppeling",
+   "labels": 9,
+   "eigen": 9,
+   "vrij": 7,
+   "achter": [
+    "Koppelingsplaat achter Lagerbussen ontkoppelas",
+    "Ontkoppelas achter Lagerbussen ontkoppelas"
+   ],
+   "lucht": []
+  },
+  "diff": {
+   "label": "Differentieel",
+   "labels": 12,
+   "eigen": 12,
+   "vrij": 10,
+   "achter": [
+    "Kegellager rechts achter Kroonwiel",
+    "Planetair tandwiel links achter Kegellager links"
+   ],
+   "lucht": []
+  },
+  "shafts": {
+   "label": "Aandrijfassen",
+   "labels": 2,
+   "eigen": 2,
+   "vrij": 2,
+   "achter": [],
+   "lucht": []
+  },
+  "chassis": {
+   "label": "Onderstel",
+   "labels": 4,
+   "eigen": 3,
+   "vrij": 4,
+   "achter": [],
+   "lucht": [
+    "Vooras en stuurinrichting"
+   ]
+  },
+  "frontAxle": {
+   "label": "Vooras McPherson",
+   "labels": 5,
+   "eigen": 4,
+   "vrij": 5,
+   "achter": [],
+   "lucht": [
+    "Stuurinrichting"
+   ]
+  },
+  "rearAxle": {
+   "label": "Achteras",
+   "labels": 4,
+   "eigen": 4,
+   "vrij": 4,
+   "achter": [],
+   "lucht": []
+  },
+  "wheelLF": {
+   "label": "Wiel linksvoor",
+   "labels": 10,
+   "eigen": 9,
+   "vrij": 4,
+   "achter": [
+    "Velgschijf achter Wieldop",
+    "Ventiel achter Band",
+    "Wielbout 1 achter Wieldop",
+    "Wielbout 2 achter Wieldop",
+    "Wielbout 3 achter Wieldop",
+    "Wielbout 4 achter Wieldop"
+   ],
+   "lucht": [
+    "Wieldop"
+   ]
+  },
+  "brakeLF": {
+   "label": "Rem linksvoor",
+   "labels": 10,
+   "eigen": 10,
+   "vrij": 8,
+   "achter": [
+    "Klauwdrager achter Klauwhuis",
+    "Zuiger achter Klauwhuis"
+   ],
+   "lucht": []
+  },
+  "body": {
+   "label": "Carrosserie en kooi",
+   "labels": 18,
+   "eigen": 17,
+   "vrij": 12,
+   "achter": [
+    "Portier rechts achter Frontmodule",
+    "Voorruit achter Buitenpaneel motorkap",
+    "Achterklep achter C-stijl links",
+    "Achterbumper achter Zijruit",
+    "Kentekenvlak achter achter Achterscherm links",
+    "Tankvulopening achter Wielkast achter rechts"
+   ],
+   "lucht": [
+    "Koplamp links"
+   ]
+  },
+  "doorL": {
+   "label": "Portier links",
+   "labels": 16,
+   "eigen": 16,
+   "vrij": 7,
+   "achter": [
+    "Portierrand achter Buitenpaneel",
+    "Binnenpaneel achter Buitenpaneel",
+    "Portierrubber achter Buitenpaneel",
+    "Deurbekleding achter Rubber zijruit",
+    "Rubber zijruit achter Zijruit",
+    "Waterscherm achter Buitenpaneel",
+    "Zijdelingse botsbalk achter Buitenpaneel",
+    "Raambediening achter Binnenpaneel",
+    "Deurvanger achter Buitenpaneel"
+   ],
+   "lucht": []
+  },
+  "headlampL": {
+   "label": "Koplamp links",
+   "labels": 6,
+   "eigen": 1,
+   "vrij": 1,
+   "achter": [
+    "Lampfitting achter Afdekglas"
+   ],
+   "lucht": [
+    "Afdekglas",
+    "Reflector",
+    "Lamphuis",
+    "Stofkap lamp",
+    "Halogeenlamp"
+   ]
+  },
+  "tailgate": {
+   "label": "Achterklep",
+   "labels": 18,
+   "eigen": 18,
+   "vrij": 11,
+   "achter": [
+    "Achterruitverwarming achter Achterruit",
+    "Achterklepslot achter Buitenpaneel achterklep",
+    "Klepscharnier links achter Achterruit",
+    "Klepscharnier rechts achter Achterruit",
+    "Klepscharnierblad links achter Achterruit",
+    "Klepscharnierblad rechts achter Achterruit",
+    "Gasveerbeugel rechts achter Achterruit"
+   ],
+   "lucht": []
+  },
+  "interior": {
+   "label": "Interieur",
+   "labels": 7,
+   "eigen": 6,
+   "vrij": 6,
+   "achter": [
+    "Middenconsole achter A-stijlbekleding links"
+   ],
+   "lucht": [
+    "Dashboard"
+   ]
+  },
+  "driverSeat": {
+   "label": "Bestuurdersstoel",
+   "labels": 5,
+   "eigen": 3,
+   "vrij": 4,
+   "achter": [
+    "Gordelslot voor achter Zitbekleding"
+   ],
+   "lucht": [
+    "Rugleuning bestuurder",
+    "Zitting"
+   ]
+  },
+  "dash": {
+   "label": "Dashboard",
+   "labels": 7,
+   "eigen": 4,
+   "vrij": 7,
+   "achter": [],
+   "lucht": [
+    "Dashboardkap",
+    "Handschoenenkastje",
+    "Instrumentenkap"
+   ]
+  },
+  "openHood": {
+   "label": "Motorruimte",
+   "labels": 0,
+   "eigen": 0,
+   "vrij": 0,
+   "achter": [],
+   "lucht": []
+  },
+  "openDoors": {
+   "label": "Instappen",
+   "labels": 0,
+   "eigen": 0,
+   "vrij": 0,
+   "achter": [],
+   "lucht": []
+  },
+  "openTrunk": {
+   "label": "Bagageruimte",
+   "labels": 0,
+   "eigen": 0,
+   "vrij": 0,
+   "achter": [],
+   "lucht": []
+  },
+  "openFuel": {
+   "label": "Tanken",
+   "labels": 0,
+   "eigen": 0,
+   "vrij": 0,
+   "achter": [],
+   "lucht": []
+  },
+  "openAll": {
+   "label": "Alles open",
+   "labels": 0,
+   "eigen": 0,
+   "vrij": 0,
+   "achter": [],
+   "lucht": []
+  }
+ }
+}
