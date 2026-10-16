@@ -18,7 +18,7 @@ std('bodChrome', 0xa9b0b7, 1, 0.06, { envMapIntensity: 2.1 });
 std('bodHoney', 0x131519, 0, 0.9, { envMapIntensity: 0.1 });           // honingraatgrille
 std('bodMirror', 0xb4bec6, 1, 0.04, { envMapIntensity: 1.1 });
 std('bodSeal', 0x151618, 0, 0.9);
-std('bodEmblem', 0x3b3f44, 0.3, 0.5);                                      // embleem 2001: donker metallic
+std('bodEmblem', 0x101214, 0, 0.7, { envMapIntensity: 0.05 });          // embleem 2001: donker metallic, op het gaas hoogstens twee keer zo helder (foto F1: even donker)
 std('bodAmber', 0xe05a08, 0, 0.42, { emissive: 0x4d1c00, emissiveIntensity: 0.3, envMapIntensity: 0.3 });   // oranje knipperlichtlens: echt oranje, niet bleekgeel
 std('bodPlate', 0xffffff, 0.05, 0.42);                                     // Nederlandse plaat: geel met zwarte rand, blauwe EU-strook en streepjes (map volgt in bodPlateTex)
 std('bodLamp', 0xc4c9ce, 0.3, 0.42, { envMapIntensity: 0.7 });                                       // binnenkant van de koplamp: twee verchroomde reflectorbakken (map volgt in bodLampTex)
@@ -427,9 +427,21 @@ function bodFrontPanel() {
   const zt = bodGZ1, zb = bodGZ0, st = sE(zt), sb = sE(zb);
   const kuip = merge([...[1, -1].map(sd => bodWall(sd, z => [z, sE(z)], zt, zb, 10, off, 0.0085, 1)),
     bodWall(1, t => [zt, lerp(st, 2 - st, t)], 0, 1, 8, off, 0.0085, 1), bodWall(1, t => [zb, lerp(sb, 2 - sb, t)], 0, 1, 8, off, 0.0085, 1)]);
-  // embleem: hoekige S van vijf balkjes (boven, midden, onder, links boven en rechts onder), ca. 70 mm hoog en 34 mm breed (foto F1 en F2)
-  const emb = merge([[0, 0.031], [0, 0], [0, -0.031]].map(([x, y]) => xf(G.box(0.034, 0.008, 0.004), [x, y, 0.004])).concat(
-    [[-0.013, 0.0155], [0.013, -0.0155]].map(([x, y]) => xf(G.box(0.008, 0.023, 0.004), [x, y, 0.004]))));
+  // embleem: gestileerde Suzuki-S, een doorlopende streep (twee squircle-bogen, schuin afgesneden uiteinden, 11 graden naar rechts gekanteld), ca. 70 mm hoog en 41 mm breed, 4 mm dik.
+  // Vijf losse balkjes lazen als het cijfer 5 (zevensegmentvorm); een doorlopende streep met schuine punten leest als S (foto F1 en F2)
+  const embS = cache('bodEmblemS', () => {
+    const a = 0.0155, b = 0.015, t = 0.0105, n = 2.6, sh = 0.2, N = 14, c = 0.0055, pw = (v, e) => Math.sign(v) * Math.pow(Math.abs(v), e), C = [];
+    for (let k = 0; k <= N; k++) { const th = lerp(35, 270, k / N) * PI / 180; C.push([a * pw(Math.cos(th), 2 / n), b + b * pw(Math.sin(th), 2 / n)]); }
+    for (let k = 1; k <= N; k++) { const th = lerp(90, -145, k / N) * PI / 180; C.push([a * pw(Math.cos(th), 2 / n), -b + b * pw(Math.sin(th), 2 / n)]); }
+    const M = C.length, Lp = [], Rp = [];
+    C.forEach((q, i) => {
+      const p0 = C[Math.max(0, i - 1)], p1 = C[Math.min(M - 1, i + 1)], tx = p1[0] - p0[0], ty = p1[1] - p0[1], l = Math.hypot(tx, ty) || 1, ux = tx / l, uy = ty / l, e = i === 0 || i === M - 1 ? c : 0;
+      Lp.push([q[0] - uy * t / 2 - ux * e, q[1] + ux * t / 2 - uy * e]); Rp.push([q[0] + uy * t / 2 + ux * e, q[1] - ux * t / 2 + uy * e]);
+    });
+    const poly = Lp.concat(Rp.reverse()).map(q => [q[0] + sh * q[1], q[1]]);
+    return front(shapeOf(poly), 0.004);
+  });
+  const emb = merge([xf(embS, [0, 0, 0.004])]);
   const yE = (bodYG0 + bodYG1) / 2, zE = bodZAtYd(yE), pE = bodAt(zE, yE, -0.006), nE = bodN(zE, sAtY(zE, yE));
   return A('Grille en voorpaneel', { d: 'Voorpaneel tussen de koplampen: lichaamskleurig, vlak met de lampen, met één smalle zwarte gaasopening met honingraatgaas en het embleem (uitvoering 2001).', ex: [0, 0.04, 0.4] }, [
     P('Voorpaneel', merge([top, low, post(1), post(-1)]), MAT.paint, { d: 'Neuspaneel in carrosseriekleur boven en onder de gaasopening en ernaast, tussen de koplampen. Het loopt 8 mm onder de kap en onder de bumperrand.', ex: [0, 0.04, 0.06] }),
