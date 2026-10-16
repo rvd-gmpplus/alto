@@ -1,5 +1,16 @@
 # Wijzigingen
 
+## Voorkant, ronde 2 (tak golf3-front, nog niet gepubliceerd)
+
+Aanleiding: een premortem op ronde 1. Elke poort was groen, maar de lamp bleef een wit vlak en de grille grijs fijngaas. Metingen nu op de GPU (DPR 2) vanuit een camera die op de melding van de eigenaar is afgestemd. Zie `docs/onderzoek/beslissingen.md`, punt 17.
+
+- Koplamp: reflectorbak zonder raster (vlekken, heldere zone rond de lamp, lampkap, donkere rand); lens 0,52 tot 0,62 helder met een spreiding van 0,2 (was een egaal wit vlak van 0,9).
+- Grille: grof gaas met 25 kolommen, donker (0,12 tegen 0,38) en een donkere S zonder schijf.
+- Bumperlijn vrijwel waterpas: de hoekkap is geen hoektand meer en staat 4 mm boven de hoofdlens. Donkere voeg langs de bumperrand, lip op 225 mm, geen kier tussen scherm en bumper.
+- Lak dieper en matter: de kap is vanuit de lage blik van de eigenaar niet meer wit (verzadiging kap gedeeld door scherm 0,65 tot 0,73, was 0,30 tot 0,36).
+- Uitklappen: de naadvulling (zwart masker) is weg en de zijrepeaters blijven op het scherm.
+- Nog open: verlaging van het neusprofiel (verzoek aan de orkestrator), onafhankelijk oordeel, basislijn van `visdiff`, terugmelding van de uv-reparatie aan laguna3.
+
 ## Voorkant, ronde 1 (tak golf3-front, nog niet gepubliceerd)
 
 Aanleiding: "de basis ziet er goed uit, maar de koplampen zien er ruk uit in combinatie met de grille". Zie `docs/onderzoek/beslissingen.md`, punt 16, voor wat anders is gedaan dan het ontwerpplan.
