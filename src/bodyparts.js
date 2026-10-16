@@ -427,9 +427,10 @@ function bodFrontPanel() {
   ]);
 }
 // kolomverdeling over de doorsnede: dicht op de hoeken (onderkant, schouder), ruim op de vlakke delen. bodWarp(a, b, t) geeft s tussen a en b voor t in [0, 1],
-// zodat elke rij van een schaal evenveel kolommen heeft die op dezelfde plek in de doorsnede liggen (4 op de onderhoek, 3 op de wand, 5 op de schouder, 8 op het dek)
-const bodWK = [[S1, 0], [S2, 4], [S3, 7], [S4, 12], [1, 24]];
-const bodWC = sv => { for (let i = 0; i < bodWK.length - 1; i++) if (sv <= bodWK[i + 1][0]) return bodWK[i][1] + (bodWK[i + 1][1] - bodWK[i][1]) * (sv - bodWK[i][0]) / (bodWK[i + 1][0] - bodWK[i][0]); return 24; };
+// zodat elke rij van een schaal evenveel kolommen heeft die op dezelfde plek in de doorsnede liggen (4 op de onderhoek, 3 op de wand, 8 op de schouder, 12 op het dek; bodNC is het totaal)
+const bodNC = 27;
+const bodWK = [[S1, 0], [S2, 4], [S3, 7], [S4, 15], [1, bodNC]];
+const bodWC = sv => { for (let i = 0; i < bodWK.length - 1; i++) if (sv <= bodWK[i + 1][0]) return bodWK[i][1] + (bodWK[i + 1][1] - bodWK[i][1]) * (sv - bodWK[i][0]) / (bodWK[i + 1][0] - bodWK[i][0]); return bodNC; };
 const bodWI = c => { for (let i = 0; i < bodWK.length - 1; i++) if (c <= bodWK[i + 1][1]) return bodWK[i][0] + (bodWK[i + 1][0] - bodWK[i][0]) * (c - bodWK[i][1]) / (bodWK[i + 1][1] - bodWK[i][1]); return 1; };
 const bodWarp = (a, b, t) => bodWI(bodWC(a) + (bodWC(b) - bodWC(a)) * t);
 // normaal van de onderbak in (z, p) voor beide helften (p > 1 is de rechterhelft)
@@ -521,7 +522,7 @@ function bodFrontBumper() {
   ]);
   // schaal: twee helften van de onderrand (s = S1) tot de bovenrand die bij de lamp past; de onderkant is een apart zwart deel
   const zS = 1.381, zE = ZF, sbF = z => Math.max(S1 + 0.002, sAtY(z, bodBumperTop(z)));
-  const nfix = (n, z) => bodEndBlend(n, z, 1), NR = 24;
+  const nfix = (n, z) => bodEndBlend(n, z, 1), NR = bodNC;
   const pW = (s, z, t) => (s > 0 ? bodWarp(S1, sbF(z), t) : 2 - bodWarp(S1, sbF(z), t));
   const shell = s => bodPatchN((z, t) => bodLow(z, pW(s, z, t), bodBumperInw(z)), zS, zE, 28, () => [0, 1], NR, [1.50, 1.56, 1.62, 1.70, 1.72, 1.735, ...Array.from({ length: 14 }, (_, k) => 1.658 + k * 0.0026)], nfix, (z, t) => pW(s, z, t));
   // eindvlak: rijen op dezelfde hoogtes als de laatste rij van de schaal (zelfde z, zelfde s-verdeling), zodat er geen sliert tussen vlak en schaal overblijft
