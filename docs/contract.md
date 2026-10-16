@@ -174,3 +174,19 @@ Uitzonderingen op de botsingstoets staan in `tools/open_allow.json` (nu geen). W
 - Elke wijziging met `python3 build.py --lint`; voor samenvoegen `tools/orkestratie/mergecheck.py`; na samenvoegen de volledige set (`tools/orkestratie/finaltests.sh`).
 - Een melding eerst narekenen met `pick.py`, `probe.py` of stralen; dan pas wijzigen.
 - De plaatshouders in `engine1.js`, `interior.js`, `chassis.js` en `systems.js` zijn voor de maten van deze auto gezet (blokken binnen de huid, vier cilinders als wielen) zodat de poorten kunnen draaien; de eigenaars vervangen ze.
+
+## 11. Doordringing tussen domeinen (golf 2)
+
+Na de samenvoeging van de vijf domeinen is elk paar meshes uit verschillende hoofdgroepen of domeinen getoetst op doordringing: een driehoek-driehoektoets op de wereldmeshes van de gemonteerde stand (alle openers dicht), met de diepte van de binnendringing langs de snijlijn. Van 369 doordringende paren bleven er 217 over; boven 1,5 cm zijn er nog 38. Wat blijft staan is bedoeld contact of een plaatshouder die erbij hoort:
+
+| Contact | Reden |
+|---|---|
+| Veerpoot, schroefveer, veerschotel en lagerplaat in de veerpoottoren | de veerpoot loopt in de toren (bedoeld); de uitsparing in de wielkastwand voor staat voor de doorgang |
+| Stuurkolom, onderste en bovenste kruiskoppeling, duwstang en kabelboom in het dashboardblok | het dashboard is een gesloten blok; kolom, pedaalarmen en kabels lopen er verborgen in |
+| Handremhendel en -steun van het onderstel in de tunnelconsole | de hendel zit in de tunnel; het zichtbare deel is van het interieur |
+| Buitenste homokineet in de fusee, vulhals in de tankkom, naaf op de stuuras, bout in de lagerbus | bevestigingen: het ene deel zit in het andere |
+| Linker aandrijfas (binnenste homokineet en hoes) tegen de beugel en de bouten van de dwarsbalk, tot 2,7 cm | beugel en bouten zitten op de plaats van de homokineet; oplossing is een herontwerp van het hulpframe (beugel lager, bouten naast de as) |
+| Panhardbus in de langsligger achter, remslangbeugels op de wielkastwand, vulpijp door de bumperrand (1,5 cm) | bevestigingen en een plaats waar de pijp de rand van de bumper raakt |
+| Vliegwiel met koppelingsdeksel, startkrans in het koppelingshuis, primaire as in het vliegwiel | vlak tegen elkaar (het deksel ligt in de rand van het vliegwiel), de as steekt in het pilotlager |
+
+Wat wel is opgelost: de wielkastwanden (begin op y 0,42 voor en 0,485 achter, uitsparing voor de veerpoot), het schutbord onder y 0,58 smaller dan de wielkasten, de brandstoftank (3,5 cm lager, 2 cm naar links) met de remleidingen, handremkabels en kabelboom eromheen, de stabilisatorstang (puntvolgorde: ging als rechte lijn door carter en bak), de torsiesteun (nu boven het stuurhuis), het motorkapslot (boven de waterkast van de radiateur), de koppelingsplaat (tegen het vliegwiel), het dashboard (0,52 breed, voorvlak op z 0,85), de stoelen, de C-stijlbekleding, de wielkastbekleding (schil), de vloerbedekking, de achterwandbekleding en de wissermotor.

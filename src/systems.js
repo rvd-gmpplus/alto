@@ -95,7 +95,7 @@ function buildCooling() {
   const hoseHeatA = sysHoseG('Kachelslang aanvoer', 'Voert warme koelvloeistof van de motor naar de kachelradiateur achter het schutbord.',
     [S0, sysPlus(S0, 0.005, 0.07, -0.01), [-0.27, 0.793, 1.20], [-0.24, 0.795, 1.10], [-0.205, 0.78, 1.01], [-0.18, 0.71, 0.955], [HX[0], HY + 0.003, HZ]], 0.0095, { n0: 'Klem motor', c1: false, ex: [0, 0.12, -0.1] });
   const hoseHeatR = sysHoseG('Kachelslang retour', 'Brengt de afgekoelde vloeistof van de kachelradiateur terug naar het koelcircuit.',
-    [R0, sysPlus(R0, 0.005, 0.065, -0.005), [-0.235, 0.785, 1.23], [-0.205, 0.785, 1.10], [-0.17, 0.78, 1.01], [-0.14, 0.71, 0.955], [HX[1], HY + 0.003, HZ]], 0.0095, { n0: 'Klem motor', c1: false, ex: [0, 0.16, -0.1] });
+    [R0, sysPlus(R0, 0.008, 0.07, 0.012), [-0.235, 0.785, 1.23], [-0.205, 0.785, 1.10], [-0.17, 0.78, 1.01], [-0.14, 0.71, 0.955], [HX[1], HY + 0.003, HZ]], 0.0095, { n0: 'Klem motor', c1: false, ex: [0, 0.16, -0.1] });
   const verwarming = A('Kachelslangen', { d: 'De twee slangen tussen het koelcircuit en de kachelradiateur achter het schutbord, met de doorvoer door het schutbord.', ex: [0, 0.1, -0.1] }, [
     hoseHeatA, hoseHeatR,
     sysPart('Doorvoer kachel', merge([...HX.map(x => xf(G.cyl('z', 0.0085, 0.0085, 0.06, 10), [x, HY, 0])), xf(G.rbox(0.09, 0.05, 0.008, 0.003), [(HX[0] + HX[1]) / 2, HY, -0.026])]), MAT.alu, [0, 0, 0.908], 'Twee aluminium stompen van de kachelradiateur die door het schutbord steken, met een rubber doorvoerplaat.', [0, 0, 0.1]),
