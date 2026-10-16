@@ -23,7 +23,7 @@ std('bodPlate', 0xffffff, 0.05, 0.42);                                     // Ne
 std('bodLamp', 0xc4c9ce, 0.3, 0.42, { envMapIntensity: 0.7 });                                       // binnenkant van de koplamp: twee verchroomde reflectorbakken (map volgt in bodLampTex)
 phys('bodLens', { color: 0xe4edf5, metalness: 0, roughness: 0.03, transparent: true, opacity: 0.10, depthWrite: false, envMapIntensity: 0.6, clearcoat: 0.5, clearcoatRoughness: 0.04, side: THREE.FrontSide });   // helder koplampglas: aan de buitenkant gezien (FrontSide), dunner dan lensClear zodat de reflector zichtbaar blijft
 phys('bodLensRib', { color: 0xe4edf5, metalness: 0, roughness: 0.03, transparent: true, opacity: 0.10, depthWrite: false, envMapIntensity: 0.6, clearcoat: 0.5, clearcoatRoughness: 0.04, side: THREE.FrontSide });   // hoofdlens met ribbelnormaal (prismaglas); de map volgt in bodHeadlamp
-std('bodRefl', 0x7b8087, 0.7, 0.5);                                    // reflectorschaal achter helder glas (donkerder dan spiegelend chroom)
+std('bodRefl', 0x5f656c, 0.7, 0.5);                                    // reflectorschaal achter helder glas (donkerder dan spiegelend chroom)
 const bodBoth = f => [1, -1].map(f);
 const bodSn = s => sideName(s);
 const bodPp = (s, sv) => (s > 0 ? sv : 2 - sv);                         // s van de linkerhelft naar p voor zijde s
@@ -492,10 +492,10 @@ function bodBumperLip() {
   const N = pts.length - 1;
   return patch((u, v) => { const i = Math.min(N - 1, Math.floor(u)), f = u - i, a = pts[i], b = pts[i + 1], x = lerp(a[0], b[0], f), z = lerp(a[1], b[1], f); return [x, lerp(yb(z), lerp(yb(z), 0.225, sstep((z - zA) / 0.07)), v), z]; }, 0, N, N, () => [0, 1], 2);
 }
-// Naad op de bovenrand van de bumper: een donkere voeg langs de rand waar paneel, lampen en scherm onder de bumper verdwijnen. Hij volgt de rand van links (z 1,44) over
+// Naad op de bovenrand van de bumper: een donkere voeg langs de rand waar paneel, lampen en scherm onder de bumper verdwijnen. Hij volgt de rand van links (z 1,40, het begin van de schaal) over
 // de neus naar rechts, op de huid via bodSkinXY (vooraanzicht), zodat de bumper vanuit elke hoek als apart deel van het paneel leest.
 function bodBumperSeam() {
-  const X0 = ringX(1.44, bodBumperTop(1.44)) - 0.002, pts = [], N = 64;
+  const X0 = ringX(1.40, bodBumperTop(1.40)) - 0.002, pts = [], N = 64;
   for (let k = 0; k <= N; k++) {
     const x = Math.max(0.0015, Math.abs(X0 * Math.sin((k / N * 2 - 1) * HALF))) * (k < N / 2 ? -1 : 1);
     let y = bodBumperTop(1.7), pt = null;
@@ -516,7 +516,7 @@ function bodFrontBumper() {
     P('Lamp knipperlicht voor', G.cyl('z', 0.009, 0.009, 0.035, 10), MAT.ceramic, { d: 'Steeklamp van de richtingaanwijzer.', p: [s * 0.46, KY, ZF - 0.05], ex: [0, 0, -0.06] }),
   ]);
   // schaal: twee helften van de onderrand (s = S1) tot de bovenrand die bij de lamp past; de onderkant is een apart zwart deel
-  const zS = 1.395, zE = ZF, sbF = z => Math.max(S1 + 0.002, sAtY(z, bodBumperTop(z)));
+  const zS = 1.381, zE = ZF, sbF = z => Math.max(S1 + 0.002, sAtY(z, bodBumperTop(z)));
   const nfix = (n, z) => bodEndBlend(n, z, 1), NR = 24;
   const pW = (s, z, t) => (s > 0 ? bodWarp(S1, sbF(z), t) : 2 - bodWarp(S1, sbF(z), t));
   const shell = s => bodPatchN((z, t) => bodLow(z, pW(s, z, t), bodBumperInw(z)), zS, zE, 28, () => [0, 1], NR, [1.50, 1.56, 1.62, 1.70, 1.72, 1.735, ...Array.from({ length: 14 }, (_, k) => 1.658 + k * 0.0026)], nfix, (z, t) => pW(s, z, t));
@@ -526,7 +526,7 @@ function bodFrontBumper() {
   const rib = (x, y, w, h, k) => Array.from({ length: k }, (_, i) => xf(G.box(w, 0.0035, 0.002), [x, y - h / 2 + h * (i + 1) / (k + 1), ZF + 0.0033]));
   return A('Voorbumper', { d: 'Bumperschaal in carrosseriekleur (Twist) met de hoeken om de wielbogen, een lip langs de onderkant, luchtsleuven rond het kentekenvlak en richtingaanwijzers laag in de hoeken; erachter de stalen bumperbalk.', ex: [0, -0.04, 0.72] }, [
     P('Bumperschaal voor', merge([shell(1), shell(-1), face]), MAT.paint, { d: 'Kunststof bumperschaal in het rood met afgeronde hoeken die om de voorwielboog lopen; de bovenrand sluit op de lamp, het paneel en het scherm aan.', ex: [0, -0.02, 0.12] }),
-    P('Bumpernaad voor', cache('bodBumperSeam', bodBumperSeam), MAT.bodSeal, { d: 'Donkere voeg van ongeveer 5 mm langs de bovenrand van de bumper, waar het voorpaneel, de koplampen en de schermen eronder verdwijnen: de bumper is een apart deel (de echte voeg is nauwelijks breder).', ex: [0, 0, 0.1] }),
+    P('Bumpernaad voor', cache('bodBumperSeam', bodBumperSeam), MAT.bodSeal, { d: 'Donkere voeg van ongeveer 5 mm langs de bovenrand van de bumper, waar het voorpaneel, de koplampen en de schermen eronder verdwijnen: de bumper is een apart deel (de echte voeg is nauwelijks breder).', ex: [0, -0.02, 0.12] }),
     P('Bumperlip voor', bodBumperLip(), MAT.paint, { d: 'Rand in carrosseriekleur langs de onderkant van de bumper (onderrand ongeveer 225 mm boven de grond, achter uitlopend naar niets): hij houdt het zicht op onderstel en stabilisatorstang van normale hoogte af.', ex: [0, -0.05, 0.04] }),
     P('Onderplaat voorbumper', bodPatchN((z, p) => bodLow(z, p, 0.0), 1.425, zE, 18, () => [-S1, S1], 6, [], (n) => n), MAT.bodBlack, { d: 'Zwarte onderzijde van de bumper, schematisch (de echte afscherming onder de bumper is niet vast te stellen).', ex: [0, -0.06, 0.02] }),
     P('Luchtrooster voor', merge([slot(0.34, 0.415, 0.12, 0.06), slot(-0.34, 0.415, 0.12, 0.06), slot(0, 0.328, 0.54, 0.022)]), MAT.bodBlack, { d: 'Zwarte luchtsleuven: links en rechts van het kentekenvlak en een smalle sleuf eronder, voor extra koellucht.', ex: [0, -0.04, 0.1] }),
