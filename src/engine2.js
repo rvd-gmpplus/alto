@@ -1,54 +1,65 @@
-/* ===================== engine2.js: motor G10BB, deel 2: cilinderkop met nokkenassen, kleppen en kleppendeksel, distributie, hulpaandrijving, koelcircuit ===================== */
-// De DOHC-opbouw (twee nokkenassen, stoters met beker) volgt de opdracht aan de motoreigenaar; het handboek in
-// docs/specificaties-en-bronnen.md noemt één nokkenas met tuimelaars. Die tegenstrijdigheid staat als open punt in de beschrijving van de kop.
+/* ===================== engine2.js: motor G10BB, deel 2: cilinderkop met nokkenas, tuimelaars en kleppen en kleppendeksel, distributie, hulpaandrijving, koelcircuit ===================== */
+// SOHC met tuimelaars (handboek, docs/specificaties-en-bronnen.md): een nokkenas midden in de kop bedient via twee tuimelaarsassen
+// (inlaat voor, uitlaat achter) en stelschroeven met borgmoer de zestien kleppen.
 
 /* ---------- cilinderkop ---------- */
 function engHeadGeo() {
   const L = [], out = rrectPts(2 * ENG_HX, 2 * ENG_HZ, 0.02), tw = 0.0052;
   const bolts = []; ENG_XM.forEach(x => [-1, 1].forEach(sg => bolts.push([x, sg * 0.0215, tw])));
-  const plugs = ENG_XC.map(x => [x, 0, 0.0098]);
+  const plugs = ENG_XC.map(x => [x, ENG_PLZ, 0.0098]);
   const slab = engPlanHoles(out, bolts.concat(plugs), ENG_FLOOR - ENG_HEAD_Y0); slab.translate(0, (ENG_FLOOR + ENG_HEAD_Y0) / 2, 0); L.push(slab);
   const well = [[-0.168, -0.067], [0.168, -0.067], [0.168, 0.067], [-0.168, 0.067]];
   const rim = plan(engRing(out, well), ENG_CAMY - ENG_FLOOR); rim.translate(0, (ENG_CAMY + ENG_FLOOR) / 2, 0); L.push(rim);
   // boutentorens en bougiebuizen
   const tower = G.lathe('y', [[tw, 0], [0.0105, 0], [0.0105, 0.016], [tw, 0.016], [tw, 0]], 10, 'engTower');
   bolts.forEach(([x, z]) => L.push(xf(tower, [x, ENG_FLOOR, z])));
-  const ph = ENG_CAMY + 0.0095 - 0.19, plugTube = G.lathe('y', [[0.0098, 0], [0.0125, 0], [0.0125, ph], [0.0098, ph], [0.0098, 0]], 12, 'engPlugTube');
-  ENG_XC.forEach(x => L.push(xf(plugTube, [x, 0.19, 0])));
+  const ph = 0.285 - 0.19, plugTube = G.lathe('y', [[0.0098, 0], [0.0125, 0], [0.0125, ph], [0.0098, ph], [0.0098, 0]], 12, 'engPlugTube');
+  ENG_XC.forEach(x => L.push(xf(plugTube, [x, 0.19, ENG_PLZ])));
   // klepgeleiders met veerzetel
   const pad = G.cyl('y', 0.0105, 0.0105, 0.012, 10), neck = G.cyl('y', 0.0065, 0.0065, 0.016, 8);
   ENG_XC.forEach(xc => [-1, 1].forEach(dk => [-1, 1].forEach(sg => {
-    const x = xc + dk * ENG_VDX, zs = sg * ENG_VZ, tilt = sg * ENG_VT, c = Math.cos(ENG_VT), s = Math.sin(ENG_VT);
+    const x = xc + dk * (sg > 0 ? ENG_VXI : ENG_VXE), zs = sg * ENG_VZ, tilt = sg * ENG_VT, c = Math.cos(ENG_VT), s = Math.sin(ENG_VT);
     L.push(xf(pad, [x, ENG_VY + 0.024 * c, zs + sg * 0.024 * s], [tilt, 0, 0]));
     L.push(xf(neck, [x, ENG_VY + 0.038 * c, zs + sg * 0.038 * s], [tilt, 0, 0]));
   })));
-  // lagerbokken van de nokkenassen: onderste helft van de nokkenaslager
-  const ped = zc => {
-    const r = 0.0128, w = 0.0155, pts = [[zc - w, ENG_FLOOR], [zc + w, ENG_FLOOR], [zc + w, ENG_CAMY], [zc + r, ENG_CAMY]];
-    for (let k = 1; k < 12; k++) { const a = -k / 12 * PI; pts.push([zc + r * Math.cos(a), ENG_CAMY + r * Math.sin(a)]); }
-    pts.push([zc - r, ENG_CAMY], [zc - w, ENG_CAMY]);
+  // lagerbokken van de nokkenas (midden) en van de twee tuimelaarsassen: onderste helft van het lager
+  const ped = (zc, yc, r, w) => {
+    const pts = [[zc - w, ENG_FLOOR], [zc + w, ENG_FLOOR], [zc + w, yc], [zc + r, yc]];
+    for (let k = 1; k < 12; k++) { const a = -k / 12 * PI; pts.push([zc + r * Math.cos(a), yc + r * Math.sin(a)]); }
+    pts.push([zc - r, yc], [zc - w, yc]);
     return side(shapeOf(pts), 0.016);
   };
-  const pi = ped(ENG_CAMZ), pe = ped(-ENG_CAMZ);
-  ENG_XM.forEach(x => { L.push(xf(pi, [x, 0, 0])); L.push(xf(pe, [x, 0, 0])); });
+  const pc = ped(0, ENG_CAMY, 0.0128, 0.0155), pr = [1, -1].map(sg => ped(sg * ENG_RSZ, ENG_RSY, 0.0088, 0.0125));
+  ENG_XM.forEach(x => { L.push(xf(pc, [x, 0, 0])); pr.forEach(g => L.push(xf(g, [x, 0, 0]))); });
   // flenzen van de inlaat- en uitlaatpoorten
   const portBoss = G.lathe('z', [[0.0118, 0], [0.0165, 0], [0.0165, 0.006], [0.0118, 0.006], [0.0118, 0]], 16, 'engPortBoss');
   ENG_XC.forEach(x => { L.push(xf(portBoss, [x, ENG_PORT_Y, ENG_HZ])); L.push(xf(portBoss, [x, ENG_PORT_Y, -ENG_HZ], [0, PI, 0])); });
   return merge(L);
 }
-function engCamGeo(intake) {
-  return cache('engCam' + intake, () => {
+function engCamGeo() {
+  return cache('engCam1', () => {
     const base = 0.0145, nose = 0.022, L = [xf(G.cyl('x', 0.0105, 0.0105, 0.4015, 12), [-0.0247, 0, 0])];
     ENG_XM.forEach(x => L.push(xf(G.cyl('x', 0.0125, 0.0125, 0.016, 14), [x, 0, 0])));
     L.push(xf(G.cyl('x', 0.0125, 0.0125, 0.008, 14), [-0.1845, 0, 0]));          // kraag voor de axiale geleiding
-    const beta = intake ? [-0.6, 0.9, -0.2, 0.5] : [0.6, -0.9, 0.2, -0.5];
+    const bi = [-0.5, 0.9, -0.2, 0.5], be = [0.7, -0.6, 0.3, -0.9];
     ENG_XC.forEach((xc, i) => {
-      const pts = [];
-      for (let k = 0; k < 24; k++) { const t = k / 24 * PI * 2, r = base + (nose - base) * Math.pow(Math.max(0, Math.cos(t)), 3), a = t + HALF + beta[i]; pts.push([r * Math.cos(a), r * Math.sin(a)]); }
-      const lobe = zTo(extrude(shapeOf(pts), 0.011), 'x');
-      [-ENG_VDX, ENG_VDX].forEach(dx => L.push(xf(lobe, [xc + dx, 0, 0])));
+      [[ENG_VXI, bi[i]], [ENG_VXE, be[i]]].forEach(([dx, beta]) => {
+        const pts = [];
+        for (let k = 0; k < 24; k++) { const t = k / 24 * PI * 2, r = base + (nose - base) * Math.pow(Math.max(0, Math.cos(t)), 3), a = t - HALF + beta; pts.push([r * Math.cos(a), r * Math.sin(a)]); }
+        const lobe = zTo(extrude(shapeOf(pts), 0.005), 'x');
+        [-dx, dx].forEach(d => L.push(xf(lobe, [xc + d, 0, 0])));
+      });
     });
     return merge(L);
+  });
+}
+// tuimelaar: zijprofiel in (z, y) voor de inlaatzijde (+z); sg = -1 spiegelt naar de uitlaatzijde
+function engRockerGeo(sg) {
+  return cache('engRocker' + sg, () => {
+    const q = [[0.002, 0.2965], [0.024, 0.2965], [0.0275, 0.2905], [0.0345, 0.2785], [0.0385, 0.267], [0.0455, 0.267], [0.0465, 0.2765], [0.0465, 0.2865]];
+    for (let k = 0; k <= 8; k++) { const a = -0.35 + k / 8 * (PI * 0.5 + 0.35 + 0.4); q.push([0.036 + 0.0105 * Math.cos(a), 0.297 + 0.0105 * Math.sin(a)]); }
+    q.push([0.002, 0.3075]);
+    return side(shapeOf(q.map(([z, y]) => [sg * z, y])), 0.0055);
   });
 }
 function engCapGeo() {
@@ -69,32 +80,30 @@ function engValve(kind, cyl, k) {
   const valve = G.lathe('y', [[0, 0], [hr, 0], [hr, 0.0012], [0.0035, 0.0125], [0.0025, 0.0165], [0.0025, L], [0, L]], 10, 'engValve' + kind);
   const ret = G.lathe('y', [[0.0035, 0.0665], [0.0105, 0.0665], [0.0105, 0.0685], [0.0065, 0.0715], [0.0035, 0.0715], [0.0035, 0.0665]], 12, 'engRet');
   const keys = G.lathe('y', [[0.0025, 0.0715], [0.005, 0.0715], [0.0042, 0.0795], [0.0025, 0.0795], [0.0025, 0.0715]], 8, 'engKeys');
-  const bucket = G.lathe('y', [[0, 0.0905], [0.0135, 0.0905], [0.0135, 0.073], [0.0125, 0.073], [0.0125, 0.0885], [0, 0.0885]], 14, 'engBucket');
   const name = inl ? 'Inlaatklep' : 'Uitlaatklep';
   return A(`${name} ${lab}`, {
     d: `${name} van cilinder ${cyl + 1} (vier kleppen per cilinder, twee inlaat en twee uitlaat). Diameters, lengte en klephoek zijn geschat.`,
-    p: [ENG_XC[cyl] + (k ? 1 : -1) * ENG_VDX, ENG_VY, sg * ENG_VZ], r: [sg * ENG_VT, 0, 0], ex: [(k ? 1 : -1) * 0.03, 0, sg * 0.05],
+    p: [ENG_XC[cyl] + (k ? 1 : -1) * (inl ? ENG_VXI : ENG_VXE), ENG_VY, sg * ENG_VZ], r: [sg * ENG_VT, 0, 0], ex: [(k ? 1 : -1) * 0.03, 0, sg * 0.05],
   }, [
     P('Klep', valve, inl ? MAT.steel : MAT.darkSteel, { d: inl ? 'Inlaatklep met holle kop (schematisch), steel Ø5 mm (geschat).' : 'Uitlaatklep, kleiner van kop dan de inlaatklep, steel Ø5 mm (geschat).', ex: [0, 0, 0] }),
     P('Klepveer', engSpring(0.0085, 0.0008, 0.036, 4.5, 5), MAT.steel, { d: 'Schroefveer die de klep sluit; windingen en draaddikte geschat.', p: [0, 0.048, 0], ex: [0, 0.03, 0] }),
     P('Veerschotel', ret, MAT.darkSteel, { d: 'Bovenste veerschotel; houdt de veer op de klepsteel.', ex: [0, 0.05, 0] }),
     P('Klepkeggen', keys, MAT.steel, { d: 'Twee halve kegels die het veerschotel op de klepsteel vergrendelen (samengetekend als een onderdeel).', ex: [0, 0.07, 0] }),
-    P('Klepstoter', bucket, MAT.steel, { d: 'Stoterbeker tussen nok en klep; de klepspeling wordt met een afstelplaatje geregeld (schematisch, de bediening via tuimelaars volgens het handboek is niet getekend).', ex: [0, 0.095, 0] }),
   ]);
 }
 function engBuildCover() {
   const out = rrectPts(2 * ENG_HX, 2 * ENG_HZ, 0.02), inn = rrectPts(2 * ENG_HX - 0.006, 2 * ENG_HZ - 0.006, 0.017);
   const y1 = ENG_CAMY + 0.002, yTop = ENG_COVER_TOP;
   const skirt = plan(engRing(out, inn), yTop - 0.006 - y1); skirt.translate(0, (yTop - 0.006 + y1) / 2, 0);
-  const top = engPlanHoles(out, ENG_XC.map(x => [x, 0, 0.0135]), 0.006); top.translate(0, yTop - 0.003, 0);
-  const cover = merge([skirt, top, ...[-0.12, -0.04, 0.04, 0.12].map(x => xf(G.box(0.012, 0.0016, 0.1), [x, yTop + 0.0004, 0.0])), xf(G.cyl('y', 0.019, 0.019, 0.008, 20), [0.098, yTop + 0.003, 0.035]), xf(G.cyl('z', 0.0065, 0.0065, 0.016, 10), [-0.09, ENG_CAMY + 0.016, 0.0765])]);
+  const top = engPlanHoles(out, ENG_XC.map(x => [x, ENG_PLZ, 0.0135]), 0.006); top.translate(0, yTop - 0.003, 0);
+  const cover = merge([skirt, top, ...[-0.12, -0.04, 0.04, 0.12].map(x => xf(G.box(0.012, 0.0016, 0.05), [x, yTop + 0.0004, -0.03])), xf(G.cyl('y', 0.019, 0.019, 0.008, 20), [0.098, yTop + 0.003, -0.035]), xf(G.cyl('z', 0.0065, 0.0065, 0.016, 10), [-0.09, ENG_CAMY + 0.016, 0.0765])]);
   const coverBolts = [];
   [-0.15, -0.05, 0.05, 0.15].forEach(x => [-1, 1].forEach(sg => coverBolts.push([x, sg * 0.0705])));
-  return A('Kleppendeksel', { d: 'Aluminium kleppendeksel met rubber pakking en oliedop: sluit de nokkenassen en kleppen af. De vorm is schematisch; de hoogte blijft binnen 0,40 m boven de krukas.', ex: [0, 0.3, 0] }, [
+  return A('Kleppendeksel', { d: 'Aluminium kleppendeksel met rubber pakking en oliedop: sluit de nokkenas, tuimelaars en kleppen af. De vorm is schematisch; de hoogte blijft binnen 0,40 m boven de krukas.', ex: [0, 0.3, 0] }, [
     P('Kleppendeksel', cover, MAT.engCover, { d: 'Zwart gelakt aluminium deksel met gaten voor de bougies, een opstaande rand voor de oliedop en een ontluchtingsnippel aan de voorzijde.', ex: [0, 0, 0] }),
     P('Pakking kleppendeksel', plan(engRing(out, inn), 0.002), MAT.rubber, { d: 'Rubber pakking tussen kop en kleppendeksel.', p: [0, ENG_CAMY + 0.001, 0], ex: [0, -0.04, 0] }),
-    P('Olievuldop', G.lathe('y', [[0, 0], [0.016, 0], [0.0165, 0.004], [0.013, 0.012], [0, 0.012]], 16, 'engFillCap'), MAT.plastic, { d: 'Kunststof dop op de vulopening voor motorolie.', p: [0.098, yTop + 0.007, 0.035], ex: [0, 0.08, 0] }),
-    P('Bougieputafdichtingen', merge(ENG_XC.map(x => xf(annulus(0.0125, 0.0155, 0.004, 'y', 16), [x, yTop - 0.003, 0]))), MAT.rubber, { d: 'Vier rubber ringen die de bougieputten in het kleppendeksel afdichten.', ex: [0, 0.05, 0] }),
+    P('Olievuldop', G.lathe('y', [[0, 0], [0.016, 0], [0.0165, 0.004], [0.013, 0.012], [0, 0.012]], 16, 'engFillCap'), MAT.plastic, { d: 'Kunststof dop op de vulopening voor motorolie.', p: [0.098, yTop + 0.007, -0.035], ex: [0, 0.08, 0] }),
+    P('Bougieputafdichtingen', merge(ENG_XC.map(x => xf(annulus(0.0125, 0.0155, 0.004, 'y', 16), [x, yTop - 0.003, ENG_PLZ]))), MAT.rubber, { d: 'Vier rubber ringen die de bougieputten in het kleppendeksel afdichten.', ex: [0, 0.05, 0] }),
     A('Dekselbouten', { d: 'Acht bouten van het kleppendeksel (aantal geschat).', ex: [0, 0.14, 0] }, coverBolts.map(([x, z], k) => P(`Dekselbout ${k + 1}`, hexBolt(0.016, 0.007), MAT.darkSteel, { d: 'Bout van het kleppendeksel.', p: [x, yTop, z], r: [PI, 0, 0], ex: [0, 0.03, 0] }))),
   ]);
 }
@@ -102,52 +111,61 @@ function engBuildHead() {
   const hb = [];
   ENG_XM.forEach((x, i) => [-1, 1].forEach((sg, j) => hb.push([x, sg * 0.0215, i * 2 + j + 1])));
   const cap = engCapGeo();
-  const caps = [];
-  ENG_XM.forEach((x, i) => { caps.push(P(`Lagerdop inlaat ${i + 1}`, cap, MAT.aluCast, { d: `Lagerdop ${i + 1} van de inlaatnokkenas.`, p: [x, ENG_CAMY, ENG_CAMZ], ex: [0, 0.05, 0.02] })); caps.push(P(`Lagerdop uitlaat ${i + 1}`, cap, MAT.aluCast, { d: `Lagerdop ${i + 1} van de uitlaatnokkenas.`, p: [x, ENG_CAMY, -ENG_CAMZ], ex: [0, 0.05, -0.02] })); });
-  const valves = ENG_XC.map((_, i) => A(`Kleppen cilinder ${i + 1}`, { d: `De vier kleppen van cilinder ${i + 1} met veren, schotels en stoters.`, ex: [ENG_XC[i] * 0.4, 0.02, 0] }, [engValve('in', i, 0), engValve('in', i, 1), engValve('ex', i, 0), engValve('ex', i, 1)]));
-  return A('Cilinderkop', { d: 'Aluminium cilinderkop met vier kleppen per cilinder (16 in totaal), twee bovenliggende nokkenassen en stoters met bekers. De nokkenas-opbouw volgt de opdracht (DOHC); het handboek noemt één nokkenas met tuimelaars, dus de bediening is hier voor deze motor niet bevestigd.', ex: [0, 0.22, 0] }, [
-    P('Cilinderkop (gietwerk)', engHeadGeo(), MAT.aluCast, { d: 'Kop met kanalen aan de inlaatzijde (voor) en de uitlaatzijde (achter), kleppengeleiders, lagerbokken van de nokkenassen en bougiebuizen. Alle maten zijn geschat.', spec: [['Kleppen', '16 (vier per cilinder)']], ex: [0, 0, 0] }),
+  const caps = ENG_XM.map((x, i) => P(`Lagerdop nokkenas ${i + 1}`, cap, MAT.aluCast, { d: `Lagerdop ${i + 1} van de nokkenas.`, p: [x, ENG_CAMY, 0], ex: [0, 0.05, 0] }));
+  const valves = ENG_XC.map((_, i) => A(`Kleppen cilinder ${i + 1}`, { d: `De vier kleppen van cilinder ${i + 1} met veren, schotels en keggen.`, ex: [ENG_XC[i] * 0.4, 0.02, 0] }, [engValve('in', i, 0), engValve('in', i, 1), engValve('ex', i, 0), engValve('ex', i, 1)]));
+  const adj = cache('engAdj', () => merge([xf(G.cyl('y', 0.003, 0.003, 0.0105, 8), [0, 0.00525, 0]), xf(engNut(0.0105, 0.0035, 'y'), [0, 0.0072, 0])]));
+  const rockers = ENG_XC.map((xc, i) => A(`Tuimelaars cilinder ${i + 1}`, { d: `De acht tuimelaars van cilinder ${i + 1} (vier inlaat, vier uitlaat; een per klep) met stelschroef en borgmoer.`, ex: [xc * 0.3, 0.03, 0] },
+    [[1, ENG_VXI, 'inlaat'], [-1, ENG_VXE, 'uitlaat']].flatMap(([sg, dx, nm]) => [-1, 1].flatMap((dk, k) => {
+      const lab = `${nm} ${i + 1}${k ? 'b' : 'a'}`, x = xc + dk * dx, tz = sg * (ENG_VZ + Math.sin(ENG_VT) * 0.086), ty = ENG_VY + Math.cos(ENG_VT) * 0.086;
+      return [
+        P(`Tuimelaar ${lab}`, engRockerGeo(sg), MAT.darkSteel, { d: `Tuimelaar van de ${nm}klep ${i + 1}${k ? 'b' : 'a'}: draait op de tuimelaarsas, de nok drukt de ene kant omlaag en de andere kant opent de klep (vorm geschat).`, p: [x, 0, 0], ex: [dk * 0.01, 0.03, sg * 0.04] }),
+        P(`Stelschroef ${lab}`, adj, MAT.steel, { d: `Stelschroef met borgmoer in de tuimelaar boven de klepsteel: stelt de klepspeling in (handboek).`, p: [x, ty, tz], ex: [0, 0.07, sg * 0.04] }),
+      ];
+    }))));
+  return A('Cilinderkop', { d: 'Aluminium cilinderkop met vier kleppen per cilinder (16 in totaal), een bovenliggende nokkenas midden in de kop en tuimelaars op twee tuimelaarsassen die de inlaat- en uitlaatkleppen bedienen (handboek). Het aantal nokken, de vorm en alle maten zijn geschat.', spec: [['Kleppen', '16 (vier per cilinder)'], ['Kleppenbediening', 'een bovenliggende nokkenas met tuimelaars'], ['Klepspeling koud', 'inlaat 0,13 tot 0,17 mm, uitlaat 0,23 tot 0,27 mm']], ex: [0, 0.22, 0] }, [
+    P('Cilinderkop (gietwerk)', engHeadGeo(), MAT.aluCast, { d: 'Kop met kanalen aan de inlaatzijde (voor) en de uitlaatzijde (achter), kleppengeleiders, lagerbokken van de nokkenas en de tuimelaarsassen en bougiebuizen. Alle maten zijn geschat.', ex: [0, 0, 0] }),
     P('Kopkoppakking', engPlanHoles(rrectPts(2 * ENG_HX, 2 * ENG_HZ, 0.02), ENG_XC.map(x => [x, 0, 0.0378]).concat(ENG_XM.flatMap(x => [[x, 0.0215, 0.0045], [x, -0.0215, 0.0045]])), ENG_GASKET), MAT.steel, { d: 'Metalen koppakking tussen blok en kop met gaten voor de cilinders en bouten (geklemde dikte geschat).', p: [0, ENG_DECK + ENG_GASKET / 2, 0], ex: [0, -0.06, 0] }),
     A('Kopbouten', { d: 'Tien kopbouten (aantal en plaats geschat) die de kop op het blok klemmen.', ex: [0, 0.2, 0] }, hb.map(([x, z, n]) => P(`Kopbout ${n}`, hexBolt(0.125, 0.009), MAT.darkSteel, { d: 'Kopbout; wordt in een vaste volgorde en hoeken aangehaald (waarden niet bevestigd).', p: [x, ENG_FLOOR + 0.016, z], r: [PI, 0, 0], ex: [0, 0.04, 0] }))),
-    A('Nokkenassen', { d: 'Twee bovenliggende nokkenassen (inlaat voor, uitlaat achter) die de zestien kleppen via de stoters openen.', ex: [0, 0.14, 0] }, [
-      P('Nokkenas inlaat', engCamGeo(true), MAT.steel, { d: 'Nokkenas met acht nokken voor de acht inlaatkleppen en vijf lagertappen; nokvorm en tappen geschat.', p: [0, ENG_CAMY, ENG_CAMZ], ex: [0, 0, 0.05] }),
-      P('Nokkenas uitlaat', engCamGeo(false), MAT.steel, { d: 'Nokkenas met acht nokken voor de acht uitlaatkleppen; draait in dezelfde richting als de inlaatnokkenas.', p: [0, ENG_CAMY, -ENG_CAMZ], ex: [0, 0, -0.05] }),
-      P('Keerring nokkenas inlaat', annulus(0.0105, 0.0165, 0.007, 'x', 18), MAT.rubber, { d: 'Oliekeerring van de inlaatnokkenas aan de distributiezijde.', p: [-0.1815, ENG_CAMY, ENG_CAMZ], ex: [-0.08, 0, 0] }),
-      P('Keerring nokkenas uitlaat', annulus(0.0105, 0.0165, 0.007, 'x', 18), MAT.rubber, { d: 'Oliekeerring van de uitlaatnokkenas aan de distributiezijde.', p: [-0.1815, ENG_CAMY, -ENG_CAMZ], ex: [-0.08, 0, 0] }),
+    A('Nokkenas', { d: 'De ene bovenliggende nokkenas midden in de kop, met een keerring aan de distributiezijde.', ex: [0, 0.19, 0], inner: true }, [
+      P('Nokkenas', engCamGeo(), MAT.steel, { d: 'Nokkenas met vijf lagertappen en zestien nokken (een per klep, schematisch); nokvorm en tappen geschat.', p: [0, ENG_CAMY, 0], ex: [0, 0, 0] }),
+      P('Keerring nokkenas', annulus(0.0105, 0.0165, 0.007, 'x', 18), MAT.rubber, { d: 'Oliekeerring van de nokkenas aan de distributiezijde.', p: [-0.1815, ENG_CAMY, 0], ex: [-0.08, 0, 0] }),
     ]),
-    A('Nokkenaslagerdoppen', { d: 'Tien lagerdoppen (vijf per nokkenas) die de nokkenassen in de lagerbokken van de kop houden.', ex: [0, 0.19, 0], inner: true }, caps),
-    A('Kleppentrein', { d: 'De zestien kleppen met veren, schotels, keggen en stoters. Zitten volledig onder het kleppendeksel.', ex: [0, 0.07, 0], inner: true }, valves),
+    A('Nokkenaslagerdoppen', { d: 'Vijf lagerdoppen die de nokkenas in de lagerbokken van de kop houden.', ex: [0, 0.25, 0], inner: true }, caps),
+    A('Tuimelaarsassen en tuimelaars', { d: 'Twee tuimelaarsassen (inlaat voor, uitlaat achter) met zestien tuimelaars en stelschroeven; de nokkenas drukt de tuimelaars, die de kleppen openen. Zitten onder het kleppendeksel.', ex: [0, 0.13, 0], inner: true }, [
+      P('Tuimelaarsas inlaat', G.cyl('x', 0.0075, 0.0075, 0.35, 12), MAT.steel, { d: 'As waarop de inlaattuimelaars draaien.', p: [0, ENG_RSY, ENG_RSZ], ex: [0, 0, 0.08] }),
+      P('Tuimelaarsas uitlaat', G.cyl('x', 0.0075, 0.0075, 0.35, 12), MAT.steel, { d: 'As waarop de uitlaattuimelaars draaien.', p: [0, ENG_RSY, -ENG_RSZ], ex: [0, 0, -0.08] }),
+      ...rockers,
+    ]),
+    A('Kleppentrein', { d: 'De zestien kleppen met veren, schotels en keggen. Zitten volledig onder het kleppendeksel.', ex: [0, 0.07, 0], inner: true }, valves),
     engBuildCover(),
   ]);
 }
 
 /* ---------- distributie ---------- */
-const ENG_TCIRC = [[0, 0, 0.0215], [ENG_CAMZ, ENG_CAMY, 0.0415], [-ENG_CAMZ, ENG_CAMY, 0.0415], [-0.066, 0.12, 0.0165]];
+const ENG_TCIRC = [[0, 0, 0.0215], [0, ENG_CAMY, 0.0415], [-0.052, 0.12, 0.0165]];
 function engBuildTiming() {
   const X = ENG_XT;
-  const belt = engBelt([[0, 0, 0.0215, 1], [ENG_CAMZ, ENG_CAMY, 0.0415, 1], [-ENG_CAMZ, ENG_CAMY, 0.0415, 1], [-0.066, 0.12, 0.0165, -1]], 0.022, 0.004);
+  const belt = engBelt([[0, 0, 0.0215, 1], [0, ENG_CAMY, 0.0415, 1], [-0.052, 0.12, 0.0165, -1]], 0.022, 0.004);
   const hullPts = g => hull(ENG_TCIRC.flatMap(([a, b, r]) => Array.from({ length: 28 }, (_, i) => { const t = i / 28 * PI * 2; return [a + (r + g) * Math.cos(t), b + (r + g) * Math.sin(t)]; })));
   const rim = side(engRing(hullPts(0.0115), hullPts(0.008)), 0.045); rim.translate(-0.201, 0, 0);
   const faceS = shapeOf(hullPts(0.0115)); faceS.holes.push(circlePath(0, 0, 0.0145));
   const face = side(faceS, 0.003); face.translate(-0.2250, 0, 0);
   const gasket = side(engRing(hullPts(0.0115), hullPts(0.008)), 0.0015); gasket.translate(-0.1793, 0, 0);
-  const pts = [[-0.066, 0.12, 0.0165], [-0.095, 0.06, 0.011]];
+  const pts = [[-0.052, 0.12, 0.0165], [-0.058, 0.07, 0.011]];
   const arm = side(shapeOf(hull(pts.flatMap(([a, b, r]) => Array.from({ length: 16 }, (_, i) => { const t = i / 16 * PI * 2; return [a + r * Math.cos(t), b + r * Math.sin(t)]; })))), 0.006); arm.translate(-0.1905, 0, 0);
   const roller = G.lathe('x', [[0.006, -0.011], [0.019, -0.011], [0.019, -0.0095], [0.0165, -0.0095], [0.0165, 0.0095], [0.019, 0.0095], [0.019, 0.011], [0.006, 0.011], [0.006, -0.011]], 20, 'engTRoller');
   const camGear = gear(36, 0.0415, 0.0388, 0.02, 0.0105, 'x'), crGear = gear(18, 0.0215, 0.0185, 0.02, 0.0155, 'x');
-  const coverBolts = [[0.055, 0.32], [-0.055, 0.32], [0, 0.28], [-0.075, 0.12], [0.03, 0.14], [0, 0.05]];
-  return A('Distributie', { d: 'Getande distributieriem van de krukas naar de twee nokkenassen, met een spanrol en een kunststof beschermkap. De riem, het aantal tanden en de plaats van de spanrol zijn geschat; het handboek bevestigt alleen een distributieriem met spanrol en veer.', ex: [-0.13, 0, 0] }, [
-    P('Distributieriem', belt, MAT.belt, { d: 'Getande riem (tanden niet getekend) die krukas en beide nokkenassen koppelt in verhouding 1 op 2; breedte 22 mm geschat.', p: [X, 0, 0], ex: [-0.08, 0, 0] }),
+  const coverBolts = [[0.02, 0.31], [-0.02, 0.31], [0, 0.2], [-0.052, 0.12], [0.02, 0.12], [0, 0.05]];
+  return A('Distributie', { d: 'Getande distributieriem van de krukas naar het tandwiel van de ene nokkenas, met een spanrol en een kunststof beschermkap. De riem, het aantal tanden en de plaats van de spanrol zijn geschat; het handboek bevestigt alleen een distributieriem met spanrol en veer.', ex: [-0.13, 0, 0] }, [
+    P('Distributieriem', belt, MAT.belt, { d: 'Getande riem (tanden niet getekend) die krukas en nokkenas koppelt in verhouding 1 op 2; breedte 22 mm geschat.', p: [X, 0, 0], ex: [-0.08, 0, 0] }),
     P('Krukastandwiel distributie', crGear, MAT.steel, { d: 'Tandwiel op de krukasneus (18 tanden, schematisch).', p: [X, 0, 0], ex: [-0.1, 0, 0] }),
-    P('Nokkenwiel inlaat', camGear, MAT.steel, { d: 'Tandwiel op de inlaatnokkenas (36 tanden, schematisch: twee maal het krukaswiel).', p: [X, ENG_CAMY, ENG_CAMZ], ex: [-0.1, 0, 0.02] }),
-    P('Nokkenwiel uitlaat', camGear, MAT.steel, { d: 'Tandwiel op de uitlaatnokkenas.', p: [X, ENG_CAMY, -ENG_CAMZ], ex: [-0.1, 0, -0.02] }),
-    P('Nokkenwielbout inlaat', hexBolt(0.03, 0.012, 'x'), MAT.darkSteel, { d: 'Bout die het nokkenwiel op de inlaatnokkenas vastzet.', p: [X - 0.0105, ENG_CAMY, ENG_CAMZ], ex: [-0.17, 0, 0.02] }),
-    P('Nokkenwielbout uitlaat', hexBolt(0.03, 0.012, 'x'), MAT.darkSteel, { d: 'Bout die het nokkenwiel op de uitlaatnokkenas vastzet.', p: [X - 0.0105, ENG_CAMY, -ENG_CAMZ], ex: [-0.17, 0, -0.02] }),
+    P('Nokkenwiel', camGear, MAT.steel, { d: 'Tandwiel op de nokkenas (36 tanden, schematisch: twee maal het krukaswiel).', p: [X, ENG_CAMY, 0], ex: [-0.1, 0, 0] }),
+    P('Nokkenwielbout', hexBolt(0.03, 0.012, 'x'), MAT.darkSteel, { d: 'Bout die het nokkenwiel op de nokkenas vastzet.', p: [X - 0.0105, ENG_CAMY, 0], ex: [-0.17, 0, 0] }),
     A('Spanner distributieriem', { d: 'Spanrol met arm, veer en bout: houdt de riem op spanning (opbouw schematisch).', ex: [-0.04, 0, -0.1] }, [
-      P('Spanrol', roller, MAT.darkSteel, { d: 'Rol die tegen de rug van de riem loopt.', p: [X, 0.12, -0.066], ex: [-0.07, 0, 0] }),
+      P('Spanrol', roller, MAT.darkSteel, { d: 'Rol die tegen de rug van de riem loopt.', p: [X, 0.12, -0.052], ex: [-0.07, 0, 0] }),
       P('Spanarm', arm, MAT.steel, { d: 'Draaiarm waarop de spanrol zit.', ex: [0, 0, 0] }),
-      P('Spanveer', engSpring(0.005, 0.0008, 0.03, 7, 6, 'x'), MAT.steel, { d: 'Veer die de arm tegen de riem drukt.', p: [-0.1905, 0.085, -0.07], ex: [0, 0, -0.06] }),
-      P('Spanbout', hexBolt(0.03, 0.01, 'x'), MAT.darkSteel, { d: 'Draaipuntbout van de spanarm in het blok.', p: [-0.1935, 0.06, -0.095], ex: [-0.1, 0, 0] }),
+      P('Spanveer', engSpring(0.005, 0.0008, 0.03, 7, 6, 'x'), MAT.steel, { d: 'Veer die de arm tegen de riem drukt.', p: [-0.1905, 0.09, -0.04], ex: [0, 0, -0.06] }),
+      P('Spanbout', hexBolt(0.03, 0.01, 'x'), MAT.darkSteel, { d: 'Draaipuntbout van de spanarm in het blok.', p: [-0.1935, 0.07, -0.058], ex: [-0.1, 0, 0] }),
     ]),
     P('Distributiekap', merge([rim, face]), MAT.engCover, { d: 'Beschermkap over riem, wielen en spanrol, met een opening voor de krukasneus. Vorm geschat; in werkelijkheid vaak in een boven- en onderdeel.', ex: [-0.16, 0, 0] }),
     P('Pakking distributiekap', gasket, MAT.rubber, { d: 'Rubber pakking tussen het blok en de distributiekap.', ex: [-0.03, 0, 0] }),

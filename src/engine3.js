@@ -116,22 +116,22 @@ function engBuildIgnition() {
   const plug = G.lathe('y', [[0.0012, -0.003], [0.0035, -0.003], [0.0035, 0], [0.007, 0], [0.007, 0.02], [0.0092, 0.02], [0.0092, 0.028], [0.007, 0.028], [0.007, 0.03], [0, 0.03]], 12, 'engPlug');
   const ins = G.lathe('y', [[0, 0.03], [0.0062, 0.03], [0.0062, 0.07], [0.0042, 0.075], [0, 0.075]], 12, 'engPlugIns');
   const boot = G.lathe('y', [[0.0042, 0.07], [0.0085, 0.07], [0.0095, 0.074], [0.0095, 0.145], [0.0075, 0.15], [0.0045, 0.15], [0.0042, 0.07]], 14, 'engBoot');
-  const bougies = ENG_XC.map((x, i) => A(`Bougie ${i + 1}`, { d: `Bougie van cilinder ${i + 1} met isolator en rubber dop; zit in een diepe bougieput in het midden van de kop. Type en maten zijn niet bevestigd.`, p: [x, PSY, 0], ex: [0, 0.18 + i * 0.0, 0] }, [
+  const bougies = ENG_XC.map((x, i) => A(`Bougie ${i + 1}`, { d: `Bougie van cilinder ${i + 1} met isolator en rubber dop; zit in een diepe bougieput naast de nokkenas. Type en maten zijn niet bevestigd.`, p: [x, PSY, ENG_PLZ], ex: [0, 0.18, 0] }, [
     P('Bougie', plug, MAT.steel, { d: 'Bougie met zeskant en elektrode.', ex: [0, -0.04, 0] }),
     P('Isolator bougie', ins, MAT.ceramic, { d: 'Keramische isolator van de bougie.', ex: [0, 0.04, 0] }),
     P('Bougiedop', boot, MAT.rubber, { d: 'Rubber dop die de hoogspanningskabel op de bougie sluit.', ex: [0, 0.12, 0] }),
   ]));
-  // verdeler op de uitlaatnokkenas aan de bakzijde; torens straalsgewijs op de kap (hoek vanaf boven, in het (z, y)-vlak)
+  // verdeler op de nokkenas aan de bakzijde; torens straalsgewijs op de kap (hoek vanaf boven, in het (z, y)-vlak)
   const dz = -ENG_CAMZ, dy = ENG_CAMY, ang = [-0.7, -0.25, 0.25, 0.7];
   const tip = ang.map(a => [dz + 0.044 * Math.sin(a), dy + 0.044 * Math.cos(a)]);
   const cap = merge([G.lathe('x', [[0, 0], [0.03, 0], [0.03, 0.026], [0.026, 0.03], [0, 0.03]], 20, 'engDistCap'), ...ang.map(a => xf(G.cyl('y', 0.0055, 0.0055, 0.014, 8), [0.014, 0.037 * Math.cos(a), 0.037 * Math.sin(a)], [a, 0, 0]))]);
   const cables = ENG_XC.map((x, i) => {
     const [tz, ty] = tip[i];
-    return tube([[x, PSY + 0.15, 0], [x + 0.012, 0.345, 0.012 * (i - 1.5)], [0.14 + 0.015 * i, 0.352, tz * 0.5], [0.205, ty + 0.012, tz], [0.219, ty, tz]], 0.0032, 40, 5);
+    return tube([[x, PSY + 0.15, ENG_PLZ], [x + 0.012, 0.345, ENG_PLZ - 0.012 * (i - 1.5)], [0.14 + 0.015 * i, 0.352, tz * 0.5], [0.205, ty + 0.012, tz], [0.219, ty, tz]], 0.0032, 40, 5);
   });
   return A('Ontsteking', { d: 'Elektronische ontsteking: ontstekingsmodule en een bobine, stroomverdeler op de nokkenas, vier hoogspanningskabels en vier bougies (handboek). Plaats, type en uitvoering zijn geschat.', ex: [0.1, 0.1, -0.1] }, [
     A('Bougies', { d: 'Vier bougies, een per cilinder, met isolator en dop.', ex: [0, 0.1, 0] }, bougies),
-    A('Stroomverdeler', { d: 'Stroomverdeler met toerentalsensor op het uiteinde van de uitlaatnokkenas aan de bakzijde (handboek: stroomverdeler met toerentalsensor).', ex: [0.12, 0, 0] }, [
+    A('Stroomverdeler', { d: 'Stroomverdeler met toerentalsensor op het uiteinde van de nokkenas aan de bakzijde (handboek: stroomverdeler met toerentalsensor).', ex: [0.12, 0, 0] }, [
       P('Verdelerhuis', G.lathe('x', [[0, 0], [0.026, 0], [0.026, 0.027], [0, 0.027]], 20, 'engDistHouse'), MAT.aluCast, { d: 'Aluminium huis dat tegen het uiteinde van de kop gemonteerd is.', p: [0.178, dy, dz], ex: [0, 0, 0] }),
       P('Verdelerrotor', merge([G.cyl('x', 0.004, 0.004, 0.02, 8), xf(G.box(0.004, 0.026, 0.008), [0.008, 0.013, 0])]), MAT.copper, { d: 'Verdelerarm die de hoogspanning naar de juiste bougiekabel brengt.', p: [0.2, dy, dz], ex: [0.06, 0, 0], inner: true }),
       P('Verdelerkap', cap, MAT.engCoil, { d: 'Kunststof kap met vier torens voor de bougiekabels (en een middentoren, niet getekend).', p: [0.205, dy, dz], ex: [0.07, 0, 0] }),

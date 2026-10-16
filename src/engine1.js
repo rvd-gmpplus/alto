@@ -12,9 +12,11 @@ const ENG_DECK = 0.1625, ENG_GASKET = 0.0012;            // blokvlak en geklemde
 const ENG_HX = 0.178, ENG_HZ = 0.080;                    // halve lengte en halve breedte van blok en kop (blokeinde 0,178: contract)
 const ENG_HEAD_Y0 = ENG_DECK + ENG_GASKET;               // onderkant kop
 const ENG_FLOOR = 0.206;                                 // bovenkant van de kopplaat: zetel van de klepveren
-const ENG_VT = 0.19, ENG_VZ = 0.0255, ENG_VY = ENG_DECK + 0.014, ENG_VDX = 0.0135, ENG_VAX = 0.105;   // klephoek, klepzitting, afstand zitting tot nokkenas
-const ENG_CAMY = ENG_VY + ENG_VAX * Math.cos(ENG_VT);    // hartlijn nokkenassen (hoogte)
-const ENG_CAMZ = ENG_VZ + ENG_VAX * Math.sin(ENG_VT);    // nokkenas inlaat op +z, uitlaat op -z
+const ENG_VT = 0.19, ENG_VZ = 0.0255, ENG_VY = ENG_DECK + 0.014;   // klephoek, afstand zitting tot hartlijn, hoogte zitting
+const ENG_VXI = 0.0235, ENG_VXE = 0.011;                 // x-afstand van de inlaatkleppen en de uitlaatkleppen tot het cilinderhart (geschat)
+const ENG_CAMY = 0.282, ENG_CAMZ = 0;                    // hartlijn van de ene nokkenas, midden in de kop
+const ENG_RSY = 0.297, ENG_RSZ = 0.036;                  // tuimelaarsassen: hoogte en afstand tot het midden (inlaat +z, uitlaat -z)
+const ENG_PLZ = 0.024;                                   // bougies naast de nokkenas, naar de inlaatzijde verschoven
 const ENG_COVER_TOP = ENG_CAMY + 0.0345;                 // bovenkant kleppendeksel (contract: hoogstens 0,40 boven de krukas)
 const ENG_XT = -0.2075, ENG_XA = -0.245;                 // vlak van de distributieriem en van de multiriem (poeliezijde)
 const ENG_PORT_Y = 0.188;                                // hoogte van de inlaat- en uitlaatpoorten in de kop
