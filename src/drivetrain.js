@@ -202,7 +202,7 @@ function drvPrimary() {
   const shaft = cache('drvPriShaft', () => merge([drvL('PriAs', [[0.0045, 0.2], [0.0045, 0.2055], [0.0095, 0.2055], [0.0095, 0.262], [0.0105, 0.262], [0.0105, 0.4985], [0.009, 0.4985], [0.009, 0.516]], 20),
     xf(gear(12, 0.0098, 0.0086, 0.05, 0, 'x'), [0.231, 0, 0])]));
   const names = ['1e', '2e', '3e', '4e', '5e'];
-  return A('Primaire as', { d: 'Ingaande as met de vaste tandwielen van de vijf versnellingen en het achteruitwiel; draait met de koppelingsplaat mee. Het tandwielstel is schematisch: tandentallen en overbrengingen zijn niet gevonden.', ex: [0.2, 0.1, 0], inner: true }, [
+  return A('Primaire as', { d: 'Ingaande as met de vaste tandwielen van de vijf versnellingen en het achteruitwiel; draait met de koppelingsplaat mee. Het tandwielstel is schematisch: tandentallen en overbrengingen zijn niet gevonden.', ex: [0.2, 0.1, 0] }, [
     drvP('Primaire as', shaft, MAT.steel, 'Ingaande as in lijn met de krukas: begint met de spiebaan voor de koppelingsplaat en draagt de vaste tandwielen van de versnellingen. Schematisch weergegeven.', undefined, [0, 0, 0.0001]),
     ...[1, 2, 3, 4, 5].map((k, i) => drvP(`Tandwiel ${names[i]} versnelling primair`, gearP(k), MAT.steel, `Tandwiel van de ${names[i]} versnelling op de primaire as; het tandental is schematisch (niet gevonden).`, [DRV_X['g' + k], 0, 0], [(i - 2) * 0.03, 0.06 + i * 0.01, 0])),
     drvP('Achteruitwiel primair', drvG(10, DRV_M, 0.01, 0.01), MAT.steel, 'Tandwiel op de primaire as dat het tussenwiel voor achteruit aandrijft; tandental schematisch.', [DRV_XR, 0, 0], [0, 0.1, 0.04]),

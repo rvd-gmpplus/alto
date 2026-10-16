@@ -211,7 +211,7 @@ function chsSteering() {
   const tie = sg => {
     const J = [sg * 0.355, RY, RZ], E = [sg * chsTRE[0], 0.315, chsTRE[2]], d = V3(E[0] - J[0], E[1] - J[1], E[2] - J[2]).normalize(), nm = chsSn(sg);
     return A(`Spoorstang ${nm}`, { d: `Spoorstang ${nm}: van het uiteinde van de tandheugel naar de stuurarm van de fusee. De lengte is instelbaar met een contramoer (voorspoor).`, ex: [sg * 0.12, -0.08, 0] }, [
-      P(`Axiaal kogelgewricht ${nm}`, rodBetween(J, at(J, d, 0.06), 0.013, 12), MAT.darkSteel, { d: 'Kogelgewricht op het einde van de tandheugel, onder de stuurhoes; laat de spoorstang schommelen.', ex: [sg * -0.05, 0, 0], inner: true }),
+      P(`Axiaal kogelgewricht ${nm}`, rodBetween(J, at(J, d, 0.06), 0.013, 12), MAT.darkSteel, { d: 'Kogelgewricht op het einde van de tandheugel, onder de stuurhoes; laat de spoorstang schommelen.', ex: [sg * -0.05, 0, 0] }),
       P(`Staaf ${nm}`, rodBetween(at(J, d, 0.05), at(E, d, -0.05), 0.0075, 8), MAT.steel, { d: 'Stalen staaf met schroefdraad voor de lengte-instelling.', ex: [0, 0, 0] }),
       P(`Contramoer ${nm}`, chsNut('y', 0.0115, 0.012), MAT.steel, { d: 'Contramoer die het spoorstangeind in de ingestelde lengte vastzet.', p: at(E, d, -0.075), q: chsQ(d), ex: [sg * 0.05, 0.06, 0] }),
       P(`Spoorstangeind ${nm}`, merge([rodBetween(at(E, d, -0.065), E, 0.0125, 10), xf(G.cyl('y', 0.0055, 0.008, 0.075, 10), [E[0], E[1] + 0.03, E[2]])]), MAT.darkSteel, { d: 'Buitenste kogelgewricht met taps toelopende pen die in de stuurarm van de fusee steekt.', ex: [sg * 0.1, -0.1, 0] }),
