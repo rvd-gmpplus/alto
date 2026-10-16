@@ -1,8 +1,10 @@
 /* ===================== carrosserie: onderdelen ===================== */
 // Panelen zijn stukken van het parametrische oppervlak uit body.js: onderbak in (z, s), kas in (z, q), eindvlakken in (x, y).
 // Rode lak (Bright Red 2, aannemelijk), effen: geen metallic. Bumpers, spiegels en grepen van de GA-uitvoering zijn zwart kunststof.
-MAT.paint.color.setHex(0xb8222b); MAT.paint.metalness = 0.04; MAT.paint.roughness = 0.34; MAT.paint.clearcoat = 0.4; MAT.paint.clearcoatRoughness = 0.22; MAT.paint.envMapIntensity = 0.35; MAT.paint.specularIntensity = 0.5;
-// Lak: minder clearcoat en een zachtere weerspiegeling dan voorheen (1 / 0,08 / 0,7): de heldere plafondlichten van de omgeving spoelden bijna horizontale vlakken (kap, neus) uit tot roze.
+MAT.paint.color.setHex(0xa8161f); MAT.paint.metalness = 0.04; MAT.paint.roughness = 0.4; MAT.paint.clearcoat = 0.05; MAT.paint.clearcoatRoughness = 0.55; MAT.paint.envMapIntensity = 0.22; MAT.paint.specularIntensity = 0.12;
+// Lak: nauwelijks clearcoat en een lage speculariteit (f90 van een diëlektricum is gelijk aan specularIntensity, dus ook de reflectie onder een flauwe hoek blijft laag), en een iets
+// diepere basiskleur: de heldere plafondlichten van de omgeving spoelden bijna horizontale vlakken (kap, neus) uit tot roze. Verzadiging kap gedeeld door scherm vanuit de lage blik
+// van de eigenaar (GPU, DPR 2): 0,65 donker en 0,73 licht (was 0,30 en 0,36).
 MAT.paintIn.color.setHex(0x8a2429); MAT.paintIn.metalness = 0.2;
 // ruiten: licht getint autoglas (de 2001-uitvoering heeft geen donker privacyglas)
 MAT.lensClear.opacity = 0.26; MAT.lensClear.color.setHex(0xb9c6d0);
