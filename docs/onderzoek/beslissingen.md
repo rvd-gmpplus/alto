@@ -138,3 +138,27 @@ Datum: 16 oktober 2026. Per open vraag een beslissing met de reden en de status.
 **Beslissing:** geen kenteken en geen chassisnummer in de repo. De RDW-open data zijn alleen als aantallen per type vastgelegd (aggregaten via de API), niet per voertuig. De huntingad-advertentie is alleen gebruikt voor de uitrusting van de Twist en verschijnt zonder het kenteken dat erin staat.
 
 **Status:** Afgesloten.
+
+## 16. Voorkant, ronde 1: wat is anders gedaan dan het ontwerpplan en waarom?
+
+Datum: 16 oktober 2026. Aanleiding: de eigenaar vond de koplampen er "ruk" uitzien in combinatie met de grille. Meetgereedschap en opnamen staan buiten de repo in `front-ronde1/v1/` (`front_meet.py`: pickmasker, stralenraster, geometriecijfers, verschil gebundeld tegen los).
+
+**Beslissing 1 (hoofdoorzaak, generiek):** `uiBatchAdd` in `src/app1.js` kopieert nu de uv mee (nullen voor meshes zonder uv in dezelfde materiaalgroep) en rekent 8 byte per vertex extra mee voor de geheugengrens. Zonder dat waren grille, kentekenplaat en reflector in de standaardweergave (gebundeld) zwart. Gemeten: gebundeld tegen los verschilt gemiddeld 0,00 tot 0,01 van 255 (grens 2); de kentekenplaat heeft gebundeld verzadiging 0,47 en helderheid 0,85 (was 0,07 en 0,23). **Melding aan de orkestrator en terugmelden aan laguna3:** `app1.js` staat in `framework.json` onder generiek; `framework.py vergelijk` meldt tot die tijd "afwijkend", `framework.py check` blijft groen.
+
+**Beslissing 2 (afwijking van het plan, onderrand van de bumperlip):** 185 mm boven de grond in plaats van 220 tot 240 mm. Het plan eist tegelijk "0 treffers op Stabilisatorstang en Oliecarter" vanaf de lage camera (y 0,30) en een liponderrand van 0,22 tot 0,24; dat kan niet allebei: vanaf die camera ziet een rechte lijn onder een lip van 0,205 nog de onderkant van de oliecarter (50 stralen van 22.000). Gekozen is het zicht (0,01 procent buiten de voorkantlijst), binnen de 15 procent onzekerheid van de bron (A1: 200 tot 240 mm). **Status:** Geschat.
+
+**Beslissing 3 (afwijking, onderplaat):** de zwarte onderzijde van de bumper ligt op de natuurlijke onderkant van de schaal (y 0,265 tot 0,31), niet op 0,255 tot z 1,43. De eigenlijke afscherming onder de bumper is niet vast te stellen (A1 3.5); de `d` zegt "schematisch".
+
+**Beslissing 4 (afwijking, gaasopening):** 650 x 76 mm (`bodYG0` 0,637 en `bodYG1` 0,713) in plaats van 80 mm, zodat de verhouding 8,5 is, ook als het gaas een millimeter onder het paneel doorloopt. De uitvoering eind 2000 (twee openingen met middenbrug) is niet gebouwd; de `d` van `Honingraatgrille` zegt "uitvoering 2001".
+
+**Beslissing 5 (afwijking, naadvulling):** de donkere schil onder de neus ligt op 40 mm onder de huid (plan: 14 mm), anders lag hij voor de reflectorschaal (die tot 30 mm diep komt) en maakte de lamp zwart. Hij is alleen aanwezig vanaf de voorrand van de kap (de motorkapsteun en de slotbeugel sneden er in het opentest doorheen).
+
+**Beslissing 6 (frontmodule):** de frontmodule staat 25 mm verder naar achteren (z 1,575) en de bovenbalk is korter (0,84 m): de balken staken door de nieuwe reflectorschaal. De radiateur blijft staan; de overlap met het koelblok is minder dan 10 mm en onzichtbaar.
+
+**Beslissing 7 (lak):** `paint` kreeg clearcoat 0,4 (was 1), clearcoatruwheid 0,22 (was 0,08), omgeving 0,35 (was 0,7) en speculariteit 0,5. De roze waas kwam uit de heldere plafondlichten van de omgeving in de clearcoat. Gemeten verzadiging kap gedeeld door bumper (recht, donker): 0,80 (was 0,46; grens 0,70); paneel gedeeld door bumper: 0,75 (was 0,59; grens 0,75). **Niet gehaald:** kap gedeeld door scherm vanaf de lage schuine camera: 0,45 (was 0,37; grens 0,70). De kap is daar een grazend vlak van 18 beeldpunten, met meer licht dan het scherm; ook een matte proeflak (clearcoat 0, speculariteit 0,2) haalt maar 0,56. Dat doel is met een materiaalkeuze niet haalbaar en is niet doorgedreven. Alle presetbeelden van de carrosserie veranderen daardoor; de basislijn van `visdiff` moet de orkestrator vernieuwen.
+
+**Beslissing 8 (zijrepeaters):** gebouwd op z 0,84 en y 0,60 (40 x 20 mm, 6 mm dik). De plaats is aannemelijk op foto F1, niet bevestigd; dat staat in de `d`.
+
+**Beslissing 9 (kenteken):** er komen geen tekens op de plaat; de streepjes blijven. Foto's met kenteken zijn niet overgenomen.
+
+**Status:** Beslissing 1, 3, 4, 5, 6: Bevestigd door meting. Beslissing 2, 7, 8: Geschat.

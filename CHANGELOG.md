@@ -1,5 +1,19 @@
 # Wijzigingen
 
+## Voorkant, ronde 1 (tak golf3-front, nog niet gepubliceerd)
+
+Aanleiding: "de basis ziet er goed uit, maar de koplampen zien er ruk uit in combinatie met de grille". Zie `docs/onderzoek/beslissingen.md`, punt 16, voor wat anders is gedaan dan het ontwerpplan.
+
+- Hoofdoorzaak: de samenvoegmodus (`uiBatchAdd`, generiek) nam geen uv mee, waardoor grille, kentekenplaat en reflector in de standaardweergave zwart waren. Nu gebundeld gelijk aan los.
+- Gedeelde grenzen voor kap, lamp, paneel, scherm en bumper (`bodXP`, `bodYBT` en andere): geen kieren meer met zicht op motorruimte of onderstel (stralenraster: 0,0 tot 0,7 procent buiten de voorkantlijst, was 3 tot 11 procent).
+- Kap met afgeronde voorhoeken (70 mm) en een zwarte afdichtrand; de kap oogt massief.
+- Koplamp: hoofdlens met ribbels, aparte gladde hoekkap, zilveren facettenreflector, zwarte scheiding en een gesloten huis; helder glas aan de buitenkant gezien.
+- Voorpaneel in carrosseriekleur vlak met de lampen, met één smalle gaasopening (650 x 76 mm) met fijn honingraatgaas en een donker embleem; het rode trapezium met het zwarte vlak is weg.
+- Bumper: bovenrand volgt de lamponderrand, zachte hoeken (analytische normalen), lip langs de onderkant (185 mm boven de grond), zwarte onderzijde, luchtsleuven links, rechts en onder het kentekenvlak, afgeronde oranje knipperlichten van 190 x 50 mm met rand en schroefjes.
+- Lak: minder clearcoat en een zachtere weerspiegeling; de kap is niet meer roze uitgewassen. Zijrepeaters op de voorschermen.
+- Carrosserie 94,6 duizend driehoeken (was 86,8 duizend; grens 105,7 duizend).
+- De basislijn van `visdiff` moet de orkestrator vernieuwen: de presets met de voorkant zijn bewust veranderd.
+
 ## Versie 1 (16 oktober 2026)
 
 Eerste publicatie op GitHub Pages. Gebouwd met het framework uit laguna3 (zie `FRAMEWORK` voor de bron-commit).

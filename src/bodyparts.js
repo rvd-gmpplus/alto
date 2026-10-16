@@ -1,7 +1,7 @@
 /* ===================== carrosserie: onderdelen ===================== */
 // Panelen zijn stukken van het parametrische oppervlak uit body.js: onderbak in (z, s), kas in (z, q), eindvlakken in (x, y).
 // Rode lak (Bright Red 2, aannemelijk), effen: geen metallic. Bumpers, spiegels en grepen van de GA-uitvoering zijn zwart kunststof.
-MAT.paint.color.setHex(0xb8222b); MAT.paint.metalness = 0.04; MAT.paint.roughness = 0.34; MAT.paint.clearcoat = 0.45; MAT.paint.clearcoatRoughness = 0.2; MAT.paint.envMapIntensity = 0.4; MAT.paint.specularIntensity = 0.6;
+MAT.paint.color.setHex(0xb8222b); MAT.paint.metalness = 0.04; MAT.paint.roughness = 0.34; MAT.paint.clearcoat = 0.4; MAT.paint.clearcoatRoughness = 0.22; MAT.paint.envMapIntensity = 0.35; MAT.paint.specularIntensity = 0.5;
 // Lak: minder clearcoat en een zachtere weerspiegeling dan voorheen (1 / 0,08 / 0,7): de heldere plafondlichten van de omgeving spoelden bijna horizontale vlakken (kap, neus) uit tot roze.
 MAT.paintIn.color.setHex(0x8a2429); MAT.paintIn.metalness = 0.2;
 // ruiten: licht getint autoglas (de 2001-uitvoering heeft geen donker privacyglas)
@@ -306,16 +306,16 @@ function bodHeadlamp(s) {
   const refl = bodPlanarUV(bodReg(sd, bodZH, ZE, 14, 10, bodLmLo, bodLmHi, bodRefBowl), 0.34, 0.60, 0.60, 0.745);
   // hoekreflector: een zilveren vlak onder de hoekkap met een kleine schotel (positielicht)
   const zD = 1.578, sD = lerp(bodLcLo(zD), bodLHi1(zD) - 0.03, 0.42), pD = bodLow(zD, bodPp(sd, sD), 0.012), nD = bodN(zD, sD);
-  const dish = G.lathe('x', [[0, -0.012], [0.008, -0.0105], [0.016, -0.0072], [0.023, -0.0030], [0.028, 0]], 20, 'bodHLdish').clone().applyQuaternion(quatFromTo(V3(1, 0, 0), V3(sd * nD[0], nD[1], nD[2]))).translate(pD[0], pD[1], pD[2]);
-  const cornerRefl = merge([bodReg(sd, Z0, bodZH, 8, 8, bodLcLo, z => Math.max(bodLcLo(z) + 0.001, bodLHi1(z)), 0.012), bodReg(sd, bodZH, ZC, 8, 8, bodLcLo, bodLcHi, 0.012), dish]);
+  const dish = G.lathe('x', [[0, -0.012], [0.008, -0.0105], [0.016, -0.0072], [0.023, -0.0030], [0.028, 0]], 14, 'bodHLdish').clone().applyQuaternion(quatFromTo(V3(1, 0, 0), V3(sd * nD[0], nD[1], nD[2]))).translate(pD[0], pD[1], pD[2]);
+  const cornerRefl = merge([bodReg(sd, Z0, bodZH, 5, 5, bodLcLo, z => Math.max(bodLcLo(z) + 0.001, bodLHi1(z)), 0.012), bodReg(sd, bodZH, ZC, 5, 5, bodLcLo, bodLcHi, 0.012), dish]);
   // Lamprand: 6 mm brede zwarte scheiding tussen hoofdlens en hoekkap, vlak met het glas
   const rim = bodReg(sd, bodZH, ZC + 0.006, 8, 2, z => bodLSpl(z) - 0.0030, z => bodLSpl(z) + 0.0030, bodLampIn - 0.0004);
   // Lamphuis: gesloten kuip (vloer op 70 mm, vier wanden) zodat het zicht door het glas nooit op frontmodule, koelblok of waterkast valt
   const lo = z => bodLLo(z, -0.004), hi2 = z => Math.max(lo(z) + 0.0005, bodLHi2(z)), D = 0.07;
   const housing = merge([
-    bodReg(sd, Z0, bodZH, 8, 8, lo, bodLHi1, D), bodReg(sd, bodZH, ZE, 14, 8, lo, hi2, D),
-    bodWall(sd, z => [z, lo(z)], Z0, ZE, 24, 0.004, D), bodWall(sd, z => [z, bodLHi1(z)], Z0, bodZH, 8, 0.004, D), bodWall(sd, z => [z, hi2(z)], bodZH, ZE, 14, 0.004, D),
-    bodWall(sd, t => [bodZH, lerp(bodLHi1(bodZH), hi2(bodZH), t)], 0, 1, 4, 0.004, D), bodWall(sd, t => [Z0, lerp(lo(Z0), bodLHi1(Z0), t)], 0, 1, 6, 0.004, D)]);
+    bodReg(sd, Z0, bodZH, 4, 3, lo, bodLHi1, D), bodReg(sd, bodZH, ZE, 8, 4, lo, hi2, D),
+    bodWall(sd, z => [z, lo(z)], Z0, ZE, 20, 0.004, D, 2), bodWall(sd, z => [z, bodLHi1(z)], Z0, bodZH, 6, 0.004, D, 2), bodWall(sd, z => [z, hi2(z)], bodZH, ZE, 10, 0.004, D, 2),
+    bodWall(sd, t => [bodZH, lerp(bodLHi1(bodZH), hi2(bodZH), t)], 0, 1, 3, 0.004, D, 2), bodWall(sd, t => [Z0, lerp(lo(Z0), bodLHi1(Z0), t)], 0, 1, 4, 0.004, D, 2)]);
   const bulb = bodLow(1.645, bodPp(sd, lerp(bodLmLo(1.645), bodLmHi(1.645), 0.5)), 0.06);
   return A(`Koplamp ${n}`, { d: 'Rechthoekige koplamp met helder glas, om de hoek van de neus gewikkeld naar het scherm: een hoofdlens met ribbels, een gladde hoekkap, een zilveren reflector en een zwart huis. De onderrand volgt de bumper, de kap en het scherm lopen erover.', ex: [s * 0.32, 0.1, 0.55] }, [
     P('Afdekglas', mainLens, MAT.bodLensRib, { d: 'Heldere hoofdlens van polycarbonaat met fijne verticale ribbels (prismaglas), vlak met het voorpaneel en onder de kap en de bumperrand geschoven.', ex: [s * 0.1, 0.04, 0.2] }),
@@ -356,7 +356,7 @@ function bodLampTex() {
     const x0 = bx + iw * i / cols, x1 = bx + iw * (i + 1) / cols, y0 = by + ih * j / rows, y1 = by + ih * (j + 1) / rows, k = shade[j][i];
     g.fillStyle = k > 0 ? `rgba(255,255,255,${k})` : `rgba(20,26,32,${-k})`; g.fillRect(x0, y0, x1 - x0, y1 - y0);
   }
-  g.strokeStyle = 'rgba(60,66,72,0.55)'; g.lineWidth = 2;
+  g.strokeStyle = 'rgba(60,66,72,0.30)'; g.lineWidth = 1.5;
   for (let i = 1; i < cols; i++) { g.beginPath(); g.moveTo(bx + iw * i / cols, by); g.lineTo(bx + iw * i / cols, by + ih); g.stroke(); }
   for (let j = 1; j < rows; j++) { g.beginPath(); g.moveTo(bx, by + ih * j / rows); g.lineTo(bx + iw, by + ih * j / rows); g.stroke(); }
   const bg = g.createRadialGradient(W * 0.5, H * 0.3, 2, W * 0.5, H * 0.3, 24); bg.addColorStop(0, '#fffbe8'); bg.addColorStop(0.5, '#f1e4a8'); bg.addColorStop(1, 'rgba(60,58,50,0)');
