@@ -48,7 +48,13 @@ Uitvoer en exitcode
   JSON (--json; anders UIT/zijstraal.json, met --uit of een nieuwe tijdelijke map): per kant het aantal stralen, het aantal stralen met een treffer door de huid per knoop, met
   het y- en z-bereik, de grootste uitsteek in mm met een voorbeeldpunt (y, z, x, x_huid) en de huidknoop erachter; de huid- en
   uitzonderingslijst, de controle met de Raycaster en de console-fouten.
-  Exitcode 0 groen, 1 rood (een knoop door de huid of een console-fout), 2 meting mislukt.
+  Het veld dekking telt per patroon van HUID ('huid') en UITZONDERING ('uit') het aantal gematchte zichtbare meshes. Een patroon zonder mesh (n = 0)
+  is een mislukte meting: een hernoemde knoop (bijvoorbeeld Voorscherm) laat anders de dekking van de huid stil wegvallen terwijl de poort groen
+  blijft, en een uitzondering zonder mesh is een verouderde vrijstelling. De telling van 'uit' slaat knopen over die al onder HUID vallen (die
+  indeling gaat voor). De telling is per patroon, niet per alternatief in een groep: valt alleen 'Voorscherm' uit (Voorscherm|Achterscherm|Schermflens)
+  weg, dan staat n lager (4 in plaats van 6) maar niet op 0; die hernoeming valt dan op via de poort zelf (Voorscherm wordt kandidaat, rood met exitcode 1).
+  Exitcode 0 groen, 1 rood (een knoop door de huid of een console-fout), 2 meting mislukt (raycaster-controle wijkt af, geen huid geraakt of
+  een patroon zonder mesh; de melding is dan 'METING MISLUKT: huidpatroon zonder mesh: <patroon>' of 'METING MISLUKT: uitzondering zonder mesh: <patroon>').
 
 Gebruik
   . ~/.config/web3d/env.sh
@@ -133,6 +139,8 @@ JS = r"""([cfg]) => {
   // meshes: soort 1 huid, 2 uitzondering, 0 kandidaat
   const meshes = [], namen = [], soort = [], toe = [];   // toe: toegestane uitsteek in m per knoop
   const kn = new Map();
+  // dekking: per patroon het aantal gematchte zichtbare meshes (een patroon zonder mesh is een mislukte meting, zie Python)
+  const dekH = cfg.huid.map(() => 0), dekU = cfg.uit.map(() => 0), nodeH = [], nodeU = [];
   for (const m of L.MESHES) {
     if (!zichtbaar(m) || !m.userData.node) continue;
     const p = pad(m.userData.node);
@@ -140,11 +148,15 @@ JS = r"""([cfg]) => {
     if (k === undefined) {
       k = namen.length; namen.push(p); kn.set(p, k);
       const u = uitRe.find(([r]) => r.test(p));
+      const hH = huidRe.map((r, i) => r.test(p) ? i : -1).filter(i => i >= 0);
+      nodeH.push(hH); nodeU.push(hH.length ? [] : uitRe.map(([r], i) => r.test(p) ? i : -1).filter(i => i >= 0));   // huid gaat voor uitzondering
       if (huidRe.some(r => r.test(p))) { soort.push(1); toe.push(0); }
       else if (u && u[1] === null) { soort.push(2); toe.push(0); }
       else { soort.push(0); toe.push(u ? u[1] / 1000 : cfg.drempel / 1000); }
     }
     meshes.push([m, k]);
+    for (const i of nodeH[k]) dekH[i]++;
+    for (const i of nodeU[k]) dekU[i]++;
   }
   const SKIN = [new Float64Array(N).fill(-Infinity), new Float64Array(N).fill(-Infinity)], SKINK = [new Int32Array(N).fill(-1), new Int32Array(N).fill(-1)];
   const v = new THREE.Vector3();
@@ -257,6 +269,7 @@ JS = r"""([cfg]) => {
     meshes: meshes.length, huid_meshes: meshes.filter(([, k]) => soort[k] === 1).length, uitzondering_meshes: meshes.filter(([, k]) => soort[k] === 2).length,
     huid_knopen: namen.filter((_, k) => soort[k] === 1), uitzondering_knopen: namen.filter((_, k) => soort[k] === 2),
     toegestane_uitsteek: Object.fromEntries(namen.map((n, k) => [n, toe[k]]).filter(([, t], k) => soort[k] === 0 && Math.abs(t * 1000 - cfg.drempel) > 1e-9).map(([n, t]) => [n, +(t * 1000).toFixed(1)])),
+    dekking: { huid: Object.fromEntries(cfg.huid.map((s, i) => [s, dekH[i]])), uit: Object.fromEntries(cfg.uit.map(([s], i) => [s, dekU[i]])) },
     links: kant(0), rechts: kant(1),
     raycaster_controle: { stralen: steek, verschil, voorbeelden: vb }, losse_stralen: los,
     ms_rekenen: Math.round(T1 - T0), ms_controle: Math.round(performance.now() - T1)
@@ -305,7 +318,10 @@ def main():
     r['uitzonderingen'] = [{'patroon': p, 'toegestaan_mm': mm, 'reden': w} for p, mm, w in UITZONDERING]
     r['console'] = console
     rc = r['raycaster_controle']
-    meting_ok = rc['stralen'] > 0 and rc['verschil'] <= 0.01 * rc['stralen'] and r['links']['stralen_met_huid'] > 0 and r['rechts']['stralen_met_huid'] > 0
+    dek = r.get('dekking') or {'huid': {}, 'uit': {}}
+    zonder = [('huidpatroon', p) for p, _ in HUID if dek['huid'].get(p, 0) == 0] + [('uitzondering', p) for p, _, _ in UITZONDERING if dek['uit'].get(p, 0) == 0]   # n == 0 of niet gemeten
+    stralen_ok = rc['stralen'] > 0 and rc['verschil'] <= 0.01 * rc['stralen'] and r['links']['stralen_met_huid'] > 0 and r['rechts']['stralen_met_huid'] > 0
+    meting_ok = stralen_ok and not zonder
     rood = [k for k in ('links', 'rechts') if r[k]['knopen']]
     r['ok'] = meting_ok and not rood and not console
     r['meting_ok'] = meting_ok
@@ -324,8 +340,13 @@ def main():
         for k in ('links', 'rechts'):
             print(f"straal y {t['y']} z {t['z']} {k}: " + '; '.join(f"{h['knoop']} ({h['soort']}) x {h['x']}" for h in t[k]))
     print(f"raycaster-controle: {rc['stralen']} stralen, {rc['verschil']} met verschil" + (f" {rc['voorbeelden']}" if rc['verschil'] else ''))
+    print('dekking per patroon (aantal gematchte zichtbare meshes): huid ' + ', '.join(str(dek['huid'].get(p, 0)) for p, _ in HUID) + ' | uitzondering ' + ', '.join(str(dek['uit'].get(p, 0)) for p, _, _ in UITZONDERING))
+    for soort, p in zonder:
+        print(f'METING MISLUKT: {soort} zonder mesh: {p}')
+    if not stralen_ok:
+        print('METING MISLUKT: raycaster-controle wijkt af of er is geen huid geraakt | json:', jp)
     if not meting_ok:
-        print('METING MISLUKT: raycaster-controle wijkt af of er is geen huid geraakt | json:', jp); return 2
+        print('json:', jp); return 2
     print(('GROEN' if r['ok'] else 'ROOD') + f" | {round(time.time() - t0, 1)} s | json: {jp}")
     return 0 if r['ok'] else 1
 
