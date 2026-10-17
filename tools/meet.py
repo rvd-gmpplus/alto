@@ -72,6 +72,8 @@ Achtermodus (--achter; open punt AWK, stage S1, 18 oktober 2026): de doorkijk do
             wielkast venster boven de band achter <kant>, wielkast gat onder de boog achter <kant>, wielkast opening boven het venster achter <kant>   over de rondgang van die kant
             wielkast venster tegenover V1 achter <kant>   tussenpoort (getal uit de voormeting; achter niet apart geijkt)
             wielkast rondgang h<hoogte> r<afstand> achter <kant>   12 poorten
+            wielkast midden onder de boog achter <kant>   strenger dan voor: achter loopt geen aandrijfas, dus de vrijstelling midden onder de boog (|z - as| < 0,20, y < 0,50) geldt hier niet;
+                                                          50 px per knoop in zone_px.midden over de rondgang van die kant (de 21 poorten hierboven blijven zoals in meet_achter.py)
             console zonder fouten achter
   Controle  volle achtermodus (zonder --cams en --geen-rondgang): precies VERWACHT_HARD_ACHTER harde en VERWACHT_ZACHT_ACHTER zachte poorten (extra poort 'aantal poorten achter'), en de extra poort
             'interessegebied achterwielen in beeld' (minstens een rondgangcamera met het linker- en een met het rechterachterwiel, elke wielkastcamera achter met interessegebied). Een poort zonder
@@ -579,7 +581,7 @@ def git_info():
 
 # Verwacht aantal poorten in volle achtermodus (--achter zonder --cams en --geen-rondgang). Bron: nulmeting van 18 oktober 2026 op fa5c619 (open punt AWK, stage S1): de 21 poorten van
 # front-ronde4/v2/meet_achter.py. Wie bewust een poort toevoegt of schrapt, past deze twee getallen mee aan. De extra controles ('interessegebied achterwielen in beeld', 'aantal poorten achter') tellen niet mee.
-VERWACHT_HARD_ACHTER = 21
+VERWACHT_HARD_ACHTER = 23   # 21 van meet_achter.py plus 'wielkast midden onder de boog achter' links en rechts (nulmeting fa5c619: beide rood)
 VERWACHT_ZACHT_ACHTER = 0
 
 
@@ -625,6 +627,18 @@ def poorten_achter(res, namen, poort):
                     if not ks and vol: leeg(nm, eis, f"rondgangcamera's h{h} r{r} {kant}"); continue
                     rood = [(k, wk_slecht(res['cams'][k], True)) for k in ks]; rood = [(k, sl) for k, sl in rood if sl]
                     poort(nm, not rood, f"ok ({len(ks)} camera's)" if not rood else f"{len(rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {sl[0][1]} ({sl[0][2]}, {sl[0][3]}) {sl[0][0]}' for k, sl in sorted(rood, key=lambda t: -t[1][0][0])[:5]), eis)
+    # strengere poort (achter): voor loopt de aandrijfas op naafhoogte vrij door de wand, daarom telt midden onder de boog (|z - as| < ZONE_DEND 0,20, y < 0,50) daar niet (zone 'overig').
+    # Achter loopt geen aandrijfas; de vrijstelling verbergt daar doorkijk. Nulmeting fa5c619 (macOS-GPU, rondgang): links 20 knopen boven 50 px in 13 camera's, rechts 16 in 9, grootste
+    # Kabelboom achter 76.405 px en Bagagevloer 22.414 px (baanm-r2.0-h0.23-a160), Zitbekleding achter 4.387 px (baanm-r2.0-h0.23-a-160). De 21 poorten hierboven blijven ongewijzigd.
+    for kant in ('links', 'rechts'):
+        ks = kant_cams(rg, kant)
+        nm = f'wielkast midden onder de boog achter {kant}'
+        eis = (f'geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed midden onder de achterboog: de blik passeert het wielkastvlak |x| 0,50 op y {ZONE_Y[0]} tot {ZONE_Y[1]} en |z - ({AXR_ACHTER})| < {ZONE_DEND}, '
+               f'of het punt ligt daar zelf in de wielkastruimte (zone_px.midden); voor is dit vrijgesteld voor de aandrijfas, achter loopt geen aandrijfas')
+        if not ks: leeg(nm, eis, f"rondgangcamera's {kant}"); continue
+        hits = sorted([(n['zone_px'].get('midden', 0), n['knoop'], n['klasse'], k) for k in ks for n in res['cams'][k]['gevlagd'] if n['zone_px'].get('midden', 0) > KAP_MAX_PX], reverse=True)
+        cams_rood = sorted({h[3] for h in hits})
+        poort(nm, not hits, f'ok ({len(ks)} camera\'s)' if not hits else f"{len(cams_rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {kn} ({kl}) {px}' for px, kn, kl, k in hits[:6]) + (f' (+{len(hits) - 6} meer)' if len(hits) > 6 else ''), eis)
     # extra controle (volle modus): het interessegebied rond de achterwielen bestaat; zonder omkadering telt geen enkel beeldpunt en zou elke poort hierboven stil groen zijn
     if vol:
         gev = [0, 0]
