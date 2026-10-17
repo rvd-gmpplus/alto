@@ -1,6 +1,6 @@
 # Kerncijfers
 
-Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-17, bron `9de5595 2026-10-17`. Niet met de hand bewerken; andere documenten verwijzen hiernaar in plaats van getallen te herhalen.
+Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-17, bron `a28dff6 2026-10-17`. Niet met de hand bewerken; andere documenten verwijzen hiernaar in plaats van getallen te herhalen.
 
 ## Boom
 
@@ -32,24 +32,24 @@ Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-17, 
 
 | Stand | Waarde |
 |---|---|
-| Met gebundeld renderen | 246 |
+| Met gebundeld renderen | 248 |
 | Zonder bundelen | 1.068 |
-| Batches | 28 groepen, 205 batchmeshes, 1.027 losse meshes vervangen, 19 MB van 28.9 MB |
+| Batches | 28 groepen, 207 batchmeshes, 1.027 losse meshes vervangen, 19 MB van 28.9 MB |
 
 ## Opstarttijdlijn (software-rendering in de container, ms sinds het begin van de navigatie)
 
 | Moment | ms |
 |---|---|
-| script | 114 |
-| buildStart | 167 |
-| buildCar | 300 |
-| startUp | 494 |
-| render0 | 931 |
-| firstFrame | 1.280 |
-| interactive | 1.282 |
-| ready | 6.272 |
-| batches | 1.307 |
-| duur buildCar() | 133 |
+| script | 55 |
+| buildStart | 99 |
+| buildCar | 226 |
+| startUp | 349 |
+| render0 | 796 |
+| firstFrame | 1.129 |
+| interactive | 1.134 |
+| ready | 5.206 |
+| batches | 1.165 |
+| duur buildCar() | 127 |
 
 Deze tijden zeggen niets over een echt apparaat; zie `docs/telefoontest.md`.
 
