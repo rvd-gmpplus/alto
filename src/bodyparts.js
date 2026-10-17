@@ -126,9 +126,19 @@ function bodWheelHouse(s, az, yb = 0.21, hw = 0, xn = 0.58, ae = 0, dEnd = 0.20)
   const wall = merge(polys.map(pp => { const g = new THREE.ShapeGeometry(new THREE.Shape(pp), 1); g.rotateY(-HALF); g.translate(s * xin, 0, 0); return g; }));
   const inN = a => (hw > 0 && a > aN && a < PI - aN) ? (xn - xin) / (xo(a) - xin) : 0;
   const arc = patch((a, t) => [s * lerp(xin, xo(a), t), AY + R * Math.sin(a), az + R * Math.cos(a)], a0 - ae, PI - a0 + ae, 28 + Math.round(ae / 0.0436), a => [inN(a), 1], 3, hw > 0 ? [aN - 1e-4, aN + 1e-4, PI - aN - 1e-4, PI - aN + 1e-4] : []);
+  // Platen in een vlak x = constant: het veelhoekpunt is (z, y), het vlak wordt op s * x gezet.
+  const plaat = (pts, x) => { const g = new THREE.ShapeGeometry(new THREE.Shape(pts.map(([z, y]) => V(z, y))), 1); g.rotateY(-HALF); g.translate(s * x, 0, 0); return g; };
+  const extra = [];
   let schot = null;
-  if (hw > 0) { const g = new THREE.ShapeGeometry(new THREE.Shape([V(az - wl - 0.01, yn - 0.01), V(az + wr + 0.01, yn - 0.01), V(az + wr + 0.01, 0.555), V(az - wl - 0.01, 0.555)]), 1); g.rotateY(-HALF); g.translate(s * xb, 0, 0); schot = g; }
-  return merge(schot ? [wall, arc, schot] : [wall, arc]);
+  if (hw > 0) {
+    // Venster boven de band (poort `wielkast venster boven de band`): het schot loopt over de volle breedte van de inkeping (z tot az plus en min hw) en tot 15 mm in de veerpoottoren (y 0,635), en een bak van drie dunne platen
+    // (buitenplaat op x xn, voorplaat en achterplaat tussen x xb en xn) sluit de inkeping van de koker. Schuine blikken kwamen anders langs het schot of door de koker heen. De voorplaat staat op z az + hw + 0,0165 (1,1785):
+    // 2,5 mm achter de remslang (tot z 1,175) en 2,5 mm voor de motorsteunbeugel rechts (vanaf z 1,182).
+    const zr = az - hw - 0.004, zf = az + hw + 0.0165, t = 0.002, y0 = yn - 0.01, hh = 0.635 - y0, xm = (xb + xn) / 2;
+    schot = plaat([[zr, y0], [zf, y0], [zf, 0.635], [zr, 0.635]], xb);
+    extra.push(xf(new THREE.BoxGeometry(t, 0.08, zf - zr), [s * xn, 0.595, (zr + zf) / 2]), xf(new THREE.BoxGeometry(xn - xb, hh, t), [s * xm, y0 + hh / 2, zr]), xf(new THREE.BoxGeometry(xn - xb, hh, t), [s * xm, y0 + hh / 2, zf]));
+  }
+  return merge(schot ? [wall, arc, schot, ...extra] : [wall, arc]);
 }
 /* ---------- carrosserieschil ---------- */
 function bodSkinParts() {
