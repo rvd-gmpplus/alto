@@ -35,6 +35,7 @@ taal van code-commentaar, beschrijvingen, docs en commits. Geen em-dashes in tek
   beslislijst en de verwachte rondes geven (zie `~/.claude/CLAUDE.md`, Lange orkestraties); max 6 reparatierondes per golf,
   daarna een beslisnotitie aan de gebruiker in plaats van nog een ronde.
 - Ruis op macOS: GPU-prestatiehints van ANGLE (zoals `GPU stall due to ReadPixels`) in de lokale smoketest. Melden, niet blokkeren.
+- Netwerkfouten bij Google Fonts (`ERR_NETWORK_CHANGED`, `ERR_SOCKET_NOT_CONNECTED`) zijn sinds laguna3 `f63b185` geen ruis meer: de harness haalt de lettertypen uit `~/.cache/explosietekening/fonts`. Zie je ze toch, dan is de cache leeg of ontbreekt hij (Linux: `~/alto-linux/run-fonts.sh`); meld het. `visdiff` op de Mac: eigen basis via `VISDIFF_BASIS`.
 
 ## Werkwijze
 
