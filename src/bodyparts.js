@@ -135,7 +135,9 @@ function bodSkinParts() {
   const fenderHi = z => bodSAtX(z, bodHoodX(z) + 0.004);
   const fenderLo = z => bodArchLo(z, AXF, zz => (zz > AXF ? bodYBT(zz) + 0.003 : bodYSill + 0.004));
   // hoekstuk boven de lamp: tussen bovenrand lamp (3 mm bedekt) en kaprand, van bodZFe tot waar de lamp zelf onder de kap loopt
-  const fenderCLo = z => Math.min(sAtY(z, halfPt(z, bodLHi1(z))[1] - 0.006), fenderHi(z) - 0.0015);
+  // De onderrand ligt 6 mm onder de waterpas lopende lampbovenrand (bodHoodFrontY, 0,745) en blijft daar tot de strook (schermhoogte min 1,5 mm) hem inhaalt: de lamprand volgt achter z 1,572
+  // de kaplijn omlaag en gaf met lampbovenrand min 6 mm een rood tandje van 5 mm onder de kaprand en een treetje naar de kaprand. Nu loopt de onderrand gelijk met de kaprand (verschil hoogstens 2 mm).
+  const fenderCLo = z => Math.min(sAtY(z, bodHoodFrontY - 0.006), fenderHi(z) - 0.0015);
   const fenderTop = s => lowSide(s, bodZDF + 0.004, bodZCe, 70, z => [bodSAtX(z, bodHoodX(z) + 0.007), bodSAtX(z, bodHoodX(z) + 0.0005)], 2, undefined, 0.003);
   const fender = s => P(`Voorscherm ${bodSn(s)}`, merge([lowSide(s, bodZDF + 0.004, bodZFe, 44, z => [fenderLo(z), fenderHi(z)], 18, ARCH_BREAKS), lowSide(s, bodZFe - 0.002, bodZCe, 12, z => [fenderCLo(z), fenderHi(z)], 6), fenderTop(s)]), MAT.paint,
     { d: 'Voorscherm van plaatstaal met de uitsparing voor het voorwiel, gelakt in het rood. Zit met bouten aan de A-stijl, de veerpoottoren en de voorkopplaat.', ex: [s * 0.46, 0.06, 0.1] });
