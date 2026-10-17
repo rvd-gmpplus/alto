@@ -626,9 +626,9 @@ function bodFrontBumper() {
   const zS = 1.381, zE = ZF, sbF = z => Math.max(S1 + 0.002, sAtY(z, bodBumperTop(z)));
   const nfix = (n, z) => bodEndBlend(n, z, 1), NR = bodNC;
   const pW = (s, z, t) => (s > 0 ? bodWarp(S1, sbF(z), t) : 2 - bodWarp(S1, sbF(z), t));
-  // extra rijen op de plaatsen waar de schaal sterk draait; een extra rij die binnen 1,6 mm van een bestaande rij valt maakt een sliert van een halve millimeter en wordt weggelaten
+  // extra rijen op de plaatsen waar de schaal sterk draait; een extra rij die binnen 2,6 mm van een bestaande rij valt maakt een smalle sliert (de vlaknormaal wijkt daar meer dan 30 graden af van de hoekpuntnormalen: plooien in de glans) en wordt weggelaten
   const rijen = Array.from({ length: 29 }, (_, k) => zS + (zE - zS) * k / 28), breaks = [];
-  [1.50, 1.56, 1.62, 1.70, 1.72, 1.735, ...Array.from({ length: 14 }, (_, k) => 1.658 + k * 0.0026)].forEach(b => { if (!rijen.concat(breaks).some(r => Math.abs(r - b) < 0.0016)) breaks.push(b); });
+  [1.50, 1.56, 1.62, 1.70, 1.72, 1.735, ...Array.from({ length: 14 }, (_, k) => 1.658 + k * 0.0026)].forEach(b => { if (!rijen.concat(breaks).some(r => Math.abs(r - b) < 0.0026)) breaks.push(b); });
   const shell = s => bodPatchN((z, t) => bodLow(z, pW(s, z, t), bodBumperInw(z)), zS, zE, 28, () => [0, 1], NR, breaks, nfix, (z, t) => pW(s, z, t), true, 1.70);
   // eindvlak: rijen op dezelfde hoogtes als de laatste rij van de schaal (zelfde z, zelfde s-verdeling), zodat er geen sliert tussen vlak en schaal overblijft
   const face = patch((j, t) => { const [x, y] = halfPt(ZF, bodWarp(S1, 1, j / NR)); return [lerp(x, -x, t), y, ZF]; }, 0, NR, NR, () => [0, 1], 14);
