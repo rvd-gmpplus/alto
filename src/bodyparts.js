@@ -56,6 +56,7 @@ function bodZAtYd(y) { let lo = 1.6, hi = ZF; for (let i = 0; i < 40; i++) { con
 const bodZDF = 0.78, bodZDR = -0.56;              // voorrand en achterrand van het portier
 const bodYSill = 0.268;                            // onderrand portier; de dorpel eindigt 6 mm lager
 const bodZFe = 1.54, bodZLh = 1.60;                // achterrand koplamp (voorscherm tot hier), voorrand motorkap
+const bodZCe = bodZLh - 0.015;                       // einde van het hoekstuk en de bovenstrook van het scherm: 15 mm voor de voorrand van de motorkap
 const bodYBF = 0.50, bodYBR = 0.575;                // bovenrand van de voor- en achterbumper op de flank
 const bodZT0 = -1.62;                              // voorrand achterlicht en bumperhoek achter
 const bodZHB = 0.917;                              // achterrand motorkap
@@ -112,8 +113,8 @@ function bodSkinParts() {
   const fenderLo = z => bodArchLo(z, AXF, zz => (zz > AXF ? bodYBT(zz) + 0.003 : bodYSill + 0.004));
   // hoekstuk boven de lamp: tussen bovenrand lamp (3 mm bedekt) en kaprand, van bodZFe tot waar de lamp zelf onder de kap loopt
   const fenderCLo = z => Math.min(sAtY(z, halfPt(z, bodLHi1(z))[1] - 0.006), fenderHi(z) - 0.0015);
-  const fenderTop = s => lowSide(s, bodZDF + 0.004, 1.585, 70, z => [bodSAtX(z, bodHoodX(z) + 0.007), bodSAtX(z, bodHoodX(z) + 0.0005)], 2, undefined, 0.003);
-  const fender = s => P(`Voorscherm ${bodSn(s)}`, merge([lowSide(s, bodZDF + 0.004, bodZFe, 44, z => [fenderLo(z), fenderHi(z)], 18, ARCH_BREAKS), lowSide(s, bodZFe - 0.002, 1.585, 12, z => [fenderCLo(z), fenderHi(z)], 6), fenderTop(s)]), MAT.paint,
+  const fenderTop = s => lowSide(s, bodZDF + 0.004, bodZCe, 70, z => [bodSAtX(z, bodHoodX(z) + 0.007), bodSAtX(z, bodHoodX(z) + 0.0005)], 2, undefined, 0.003);
+  const fender = s => P(`Voorscherm ${bodSn(s)}`, merge([lowSide(s, bodZDF + 0.004, bodZFe, 44, z => [fenderLo(z), fenderHi(z)], 18, ARCH_BREAKS), lowSide(s, bodZFe - 0.002, bodZCe, 12, z => [fenderCLo(z), fenderHi(z)], 6), fenderTop(s)]), MAT.paint,
     { d: 'Voorscherm van plaatstaal met de uitsparing voor het voorwiel, gelakt in het rood. Zit met bouten aan de A-stijl, de veerpoottoren en de voorkopplaat.', ex: [s * 0.46, 0.06, 0.1] });
   // achterscherm: van de portierspleet tot het achterlicht, boven de wielboog, tot de schouderlijn
   const quarterLo = z => bodArchLo(z, AXR, zz => (zz > AXR ? bodYSill + 0.004 : bodYBR + 0.003));
@@ -262,7 +263,8 @@ function bodHoodParts() {
 // zodat er geen kier ontstaat (regel R1). Het glas ligt 4 mm onder de huid, het paneel 2,5 mm.
 const bodLampZ0 = bodZFe - 0.014, bodLampIn = 0.004, bodZH = bodZLh - 0.0003;
 const bodLLo = (z, d = -0.004) => sAtY(z, bodYBT(z) + d);                  // onderrand ten opzichte van de bumperbovenrand
-const bodLHi1 = z => Math.min(bodSAtX(z, bodHoodX(z) - 0.008), sAtY(z, 0.745));   // bovenrand flank: 8 mm onder de kap, hoogstens op 0,745 (hoekkap hoogstens 4 mm boven de hoofdlens (gemeten +3,7 mm), foto's: lager)
+const bodHoodFrontY = halfPt(bodZLh - 0.0003, 1)[1];                // hoogte van de voorrand van de motorkap op de hartlijn (0,745)
+const bodLHi1 = z => Math.min(bodSAtX(z, bodHoodX(z) - 0.008), sAtY(z, bodHoodFrontY));   // bovenrand flank: 8 mm onder de kap, hoogstens op de voorrand van de kap (0,745; afgeleid van de kapvorm in body.js, zodat een lagere neus de hoekkap meeneemt) (hoekkap hoogstens 4 mm boven de hoofdlens (gemeten +3,7 mm), foto's: lager)
 const bodLHi2 = z => bodSAtX(z, bodXP - 0.008);                             // binnenrand neus: 8 mm onder het paneel
 const bodLSpl = z => bodSAtX(z, bodSec(z).xe - 0.012);                      // scheiding hoofdlens en hoekkap, op de dekrand
 const bodLampZE = (() => { let z = bodZH; while (z < ZF - 0.01 && bodLHi2(z) - bodLLo(z, 0.002) > 0.006) z += 0.001; return z - 0.001; })();   // einde lens op de neus: onderrand snijdt binnenrand
