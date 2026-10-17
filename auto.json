@@ -25,5 +25,20 @@
     "Maruti",
     "Z9T",
     "Bright Red"
+  ],
+  "extraTests": [
+    {
+      "naam": "meet",
+      "cmd": [
+        "python3",
+        "tools/meet.py",
+        "--uit",
+        "{uit}/meet",
+        "--json",
+        "{uit}/meet.json",
+        "--geen-png"
+      ],
+      "uitleg": "Meting van de voorkant (tools/meet.py): 99 harde poorten (doorkijk in de hoek-, wielkast- en rondgangcamera's, zicht onder de bumper, bumperschouderhoek, lip, hoekkap, verhouding bumper/lamp) en 13 zachte (geel, tellen niet mee voor de exitcode). Exitcode 0 groen, 1 minstens een rode poort, 2 meting mislukt. Renderer bewust de standaard van het script: ANGLE Metal op macOS, SwiftShader op Linux. Gemeten op 17 oktober 2026 op dezelfde stand: dezelfde kleur voor alle 112 poorten op macOS-GPU, macOS-SwiftShader en Linux-SwiftShader; SwiftShader geeft op macOS en Linux dezelfde beeldpunttellingen, de GPU wijkt tot enkele tientallen beeldpunten af (kleinste marge van een harde doorkijkpoort: 35 van 50 px). De GPU duurt ca. 4 minuten tegen ca. 20 minuten voor SwiftShader op macOS, dus macOS-GPU is de snelle lokale controle; de Linux-run (SwiftShader, ca. 17 minuten) is de poort voor 'klaar'. Zijstraal komt later."
+    }
   ]
 }
