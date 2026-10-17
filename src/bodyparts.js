@@ -111,7 +111,7 @@ function bodSkinParts() {
   const fenderHi = z => bodSAtX(z, bodHoodX(z) + 0.004);
   const fenderLo = z => bodArchLo(z, AXF, zz => (zz > AXF ? bodYBT(zz) + 0.003 : bodYSill + 0.004));
   // hoekstuk boven de lamp: tussen bovenrand lamp (3 mm bedekt) en kaprand, van bodZFe tot waar de lamp zelf onder de kap loopt
-  const fenderCLo = z => Math.min(sAtY(z, halfPt(z, bodLHi1(z))[1] - 0.003), fenderHi(z) - 0.0015);
+  const fenderCLo = z => Math.min(sAtY(z, halfPt(z, bodLHi1(z))[1] - 0.006), fenderHi(z) - 0.0015);
   const fenderTop = s => lowSide(s, bodZDF + 0.004, 1.585, 70, z => [bodSAtX(z, bodHoodX(z) + 0.007), bodSAtX(z, bodHoodX(z) + 0.0005)], 2, undefined, 0.003);
   const fender = s => P(`Voorscherm ${bodSn(s)}`, merge([lowSide(s, bodZDF + 0.004, bodZFe, 44, z => [fenderLo(z), fenderHi(z)], 18, ARCH_BREAKS), lowSide(s, bodZFe - 0.002, 1.585, 12, z => [fenderCLo(z), fenderHi(z)], 6), fenderTop(s)]), MAT.paint,
     { d: 'Voorscherm van plaatstaal met de uitsparing voor het voorwiel, gelakt in het rood. Zit met bouten aan de A-stijl, de veerpoottoren en de voorkopplaat.', ex: [s * 0.46, 0.06, 0.1] });
@@ -163,7 +163,7 @@ function bodWindscreen() {
 }
 // stukken van de dakplaat, de waterkast en de klepdelen (geometrie)
 const bodRoofGeo = () => bodGhDeck(bodZGR, bodZW0, 64, () => bodQR, 16);
-const bodCowlGeo = () => merge([bodGhDeck(bodZW1, BOD_ZG1, 6, bodQLoW, 18), bodDeck(BOD_ZG1, bodZHB, 4, z => bodSAtX(z, bodHoodX(z) + 0.004), 14)]);
+const bodCowlGeo = () => merge([bodGhDeck(bodZW1, BOD_ZG1, 6, bodQLoW, 18), bodDeck(BOD_ZG1 - 0.004, bodZHB, 5, z => bodSAtX(z, bodHoodX(z) + 0.004), 14)]);
 function bodTailSkinGeo(out = 0, zLow = BOD_ZG0) {
   return merge([bodGhDeck(bodZGR - 0.004, bodZH0, 5, () => bodQR, 14, [], out), bodGhDeck(zLow, bodZH1, 6, () => bodQR, 14, [], out),
     ...bodBoth(s => bodGhSide(s, bodZH1, bodZH0, 22, z => [bodQR, bodQLoH(z)], 3, [], out))]);
@@ -312,7 +312,7 @@ function bodHeadlamp(s) {
   const refl = bodPlanarUV(bodReg(sd, bodZH, ZE, 14, 10, bodLmLo, bodLmHi, bodRefBowl), 0.34, 0.60, 0.60, 0.745);
   // hoekreflector: een zilveren vlak onder de hoekkap met een kleine schotel (positielicht)
   const zD = 1.578, sD = lerp(bodLcLo(zD), bodLHi1(zD) - 0.03, 0.42), pD = bodLow(zD, bodPp(sd, sD), 0.012), nD = bodN(zD, sD);
-  const dish = G.lathe('x', [[0, -0.012], [0.008, -0.0105], [0.016, -0.0072], [0.023, -0.0030], [0.028, 0]], 14, 'bodHLdish').clone().applyQuaternion(quatFromTo(V3(1, 0, 0), V3(sd * nD[0], nD[1], nD[2]))).translate(pD[0], pD[1], pD[2]);
+  const dish = G.lathe('x', [[0, -0.012], [0.008, -0.0105], [0.016, -0.0072], [0.023, -0.0030], [0.028, 0]], 28, 'bodHLdish').clone().applyQuaternion(quatFromTo(V3(1, 0, 0), V3(sd * nD[0], nD[1], nD[2]))).translate(pD[0], pD[1], pD[2]);
   // dezelfde textuur als de hoofdreflector, maar alleen het deel zonder gloeilamp: u loopt langs de hoek (zijkant z, dan voorkant x), v over de hoogte
   const cornerRefl = bodArcUV(merge([bodReg(sd, Z0, bodZH, 5, 5, bodLcLo, z => Math.max(bodLcLo(z) + 0.001, bodLHi1(z)), 0.012), bodReg(sd, bodZH, ZC, 5, 5, bodLcLo, bodLcHi, 0.012), dish]));
   // Lamprand: 6 mm brede zwarte scheiding tussen hoofdlens en hoekkap, vlak met het glas
@@ -330,7 +330,7 @@ function bodHeadlamp(s) {
     P('Hoekkap', capLens, MAT.bodLens, { d: 'Gladde heldere hoekkap die om de voorhoek van het scherm loopt (positielicht, schematisch), met een zwarte scheiding naar de hoofdlens.', ex: [s * 0.14, 0.04, 0.12] }),
     P('Reflector', refl, MAT.bodLamp, { d: 'Zilveren reflectorschaal met facetten achter de hoofdlens: een groot parabolisch vlak met de lamp midden boven (dim- en grootlicht, schematisch).', ex: [0, 0, 0.06] }),
     P('Hoekreflector', cornerRefl, MAT.bodLamp, { d: 'Zilveren reflectorvlak met facetten en een kleine ronde schotel achter de hoekkap (positielicht, aannemelijk; niet bevestigd).', ex: [s * 0.04, 0, 0.03] }),
-    P('Lamprand', rim, MAT.bodBlack, { d: 'Zwarte scheiding van ongeveer 6 mm tussen de hoofdlens en de hoekkap (echte lamp: 8 tot 10 mm, geschat).', ex: [s * 0.1, 0.04, 0.2] }),
+    P('Lamprand', rim, MAT.bodPillar, { d: 'Zwarte scheiding van ongeveer 6 mm tussen de hoofdlens en de hoekkap (echte lamp: 8 tot 10 mm, geschat).', ex: [s * 0.1, 0.04, 0.2] }),
     P('Lamphuis', housing, MAT.plastic, { d: 'Zwart kunststof lamphuis: een gesloten kuip met vier wanden waarin de lamp en reflector zijn gemonteerd.', ex: [0, 0, -0.03] }),
     P('Lampfitting', G.cyl('z', 0.022, 0.022, 0.05, 14), MAT.plastic, { d: 'Fitting met stekker voor de halogeenlamp (H4, plaats schematisch).', p: [bulb[0], bulb[1], bulb[2] - 0.03], ex: [0, 0.03, -0.1] }),
     P('Halogeenlamp', G.cyl('z', 0.011, 0.011, 0.06, 12), MAT.ceramic, { d: 'Halogeenlamp voor dim- en grootlicht (type niet voor deze auto geverifieerd).', p: [bulb[0], bulb[1], bulb[2] + 0.0], ex: [0, 0.04, 0.05] }),
