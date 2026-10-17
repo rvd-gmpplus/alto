@@ -1,5 +1,15 @@
 # Wijzigingen
 
+## Voorkant, ronde 3: afscherming, voorwielkast en afwerking (tak golf3-front, nog niet gepubliceerd)
+
+Aanleiding: het advies op de herbouw (verdict bijsturen). Metingen met `meet.py` ronde 3 (45 camera's, 69 harde poorten en 13 zachte; 67 van 69 harde poorten groen, de twee rode zijn remhardware in de boog), opnamen en uitleg in `docs/onderzoek/beslissingen.md`, punt 22. Kerncijfers staan in `docs/cijfers.md`.
+
+- Afscherming onder de bumper: eigen zwart materiaal, geen grijze weerkaatsing meer (Onderplaat tegenover Luchtrooster 0,28 tot 0,34, was 1,32 tot 1,69) en geen tand onder de bumperhoek: de diepte van het lint loopt vloeiend over de hele lipbocht.
+- Dunne lijn over het bumpervlak weg: de voorrand van de onderplaat stak 0,5 mm voor de lipwand uit (1.150 tot 2.550 beeldpunten, nu 0).
+- Voorwielkast dicht: de koker loopt tot de huid, de wand en de koker lopen onder de boog door, de inkeping voor de veerpoot volgt de schroefveer, en een strook achter de portierspleet vangt de schuine blikken. Het Schutbord is niet meer als donkerrode sikkel zichtbaar (698 beeldpunten in eig, nu 0) en door de wielkast zie je geen motorruimte of cabine meer, op de slangbeugel en de remleiding na (93 beeldpunten in een enkele camera).
+- Afwerking: plooien in de glans op de bumperbovenrand weg (22 driehoeken naar 0), geen witte spleet met de bumperbalk meer tussen lamphuis en bumpernaad (6.068 beeldpunten naar 0), embleem leesbaarder en matter (0,8 tot 1,9 keer het gaas, was 0,5 tot 1,6), geen rood tandje en treetje meer bij de kaphoek.
+- Nog open: de ondergrens van de embleempoort voor de grazende kijkhoek (0,8 haalbaar, 0,9 niet naast de bovengrens 2,0), de twee remhardwarepoorten, `meet.py` in `tools/orkestratie` en `finaltests.sh`, de basislijn van `visdiff`, neusprofiel (beslissing 17, buiten deze publicatie) en de uv-reparatie naar laguna3.
+
 ## Voorkant, herbouw na de premortem (tak golf3-front, nog niet gepubliceerd)
 
 Aanleiding: een premortem op de bijsturing hieronder. Alle poorten waren groen, maar twee nieuwe elementen stonden in het beeld van de eigenaar: een embleem dat als het cijfer 5 las en een zwart bord onder de bumper. Metingen met `meet.py` (nu 33 camera's en 44 poorten, alle groen; de vorige set had 26 poorten), opnamen en uitleg in `docs/onderzoek/beslissingen.md`, punt 21.
