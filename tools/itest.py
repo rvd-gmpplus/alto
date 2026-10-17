@@ -42,7 +42,7 @@ Controles (zie de app-brief):
 """
 import sys, os, random, json, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from harness import session
+from harness import session, FONT_HOSTS, _font_route
 
 OUT = os.environ.get('ITEST_SHOTS')
 RESULTS = []
@@ -764,6 +764,8 @@ def run_view(s, tag, w, h, touch):
 def fault_page(s, w=1280, h=800, init=None, block=None):
     """Eigen context buiten de logregistratie van de harness: deze paden geven met opzet fouten in de console."""
     ctx = s.browser.new_context(viewport={'width': w, 'height': h})
+    # Lettertypen in de tests uit de lokale cache, niet van het netwerk (P2, 17 oktober 2026)
+    ctx.route(lambda u: u.startswith(FONT_HOSTS), _font_route)
     ctx.add_init_script('window.__MODEL_CACHECHECK = true;')
     logs = []
     pg = ctx.new_page()
