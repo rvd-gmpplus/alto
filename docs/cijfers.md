@@ -52,23 +52,3 @@ Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-17, 
 | duur buildCar() | 129 |
 
 Deze tijden zeggen niets over een echt apparaat; zie `docs/telefoontest.md`.
-
-
-## Meting en testduur (P1, 17 oktober 2026)
-
-Handmatig toegevoegd op `d044bae`: `tools/orkestratie/cijfers.py` kent deze sectie niet en laat haar vervallen bij opnieuw genereren. Bronnen: `meet.json` en `zijstraal.json` en `tests.txt` van de volledige set (container `~/alto-linux/run-aqHG/uit/ft`, macOS `~/alto-wt/s4-meet/ft-mac`). Uitleg per script: `docs/testen.md`.
-
-| Grootheid | Waarde |
-|---|---|
-| Poorten van `meet.py` | 112: 99 harde en 13 zachte |
-| Zachte poorten groen | 12 van 13 (geel: `afwerking e: embleem leesbaar zijhoek-r light`) |
-| Camera's in `meet.json` | 484 |
-| Raster van `zijstraal.py` | stap 5 mm, 88.454 stralen per kant, 1.041 meshes (26 huid, 14 uitzondering) |
-| Controle van `zijstraal.py` met de Raycaster | 1.774 stralen, 0 verschil |
-| Duur `meet`, macOS (GPU) | 243 s (242,3 s in `meet.json`) |
-| Duur `meet`, Linux-container in de volledige set | 1.228 s |
-| Duur `meet`, Linux-container los | 704 s (`run-PXBQ`) |
-| Duur `zijstraal` | macOS 2 s; Linux-container in de volledige set 16 s |
-| Volledige set, Linux-container, met `meet` en `zijstraal` | 20 min 46 s |
-| Volledige set, Linux-container, zonder extra tests | 6 min 52 s |
-| Volledige set, macOS | 7 min 33 s |
