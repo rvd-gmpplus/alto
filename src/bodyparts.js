@@ -19,7 +19,7 @@ std('bodChrome', 0xa9b0b7, 1, 0.06, { envMapIntensity: 2.1 });
 std('bodHoney', 0x131519, 0, 0.9, { envMapIntensity: 0.1 });           // honingraatgrille
 std('bodMirror', 0xb4bec6, 1, 0.04, { envMapIntensity: 1.1 });
 std('bodSeal', 0x151618, 0, 0.9);
-std('bodEmblem', 0x101214, 0, 0.7, { envMapIntensity: 0.05 });          // embleem 2001: donker metallic, op het gaas hoogstens twee keer zo helder (foto F1: even donker)
+std('bodEmblem', 0x26292e, 0, 0.85, { envMapIntensity: 0.12 });          // embleem 2001: graphietgrijs, mat (ruw 0,85): minder kijkhoekafhankelijk dan het vorige donkere, glanzende (0,55 tot 1,6 keer het gaas, nu 0,8 tot 1,9); op het gaas hoogstens twee keer zo helder
 std('bodAmber', 0xe05a08, 0, 0.42, { emissive: 0x4d1c00, emissiveIntensity: 0.3, envMapIntensity: 0.3 });   // oranje knipperlichtlens: echt oranje, niet bleekgeel
 std('bodPlate', 0xffffff, 0.05, 0.42);                                     // Nederlandse plaat: geel met zwarte rand, blauwe EU-strook en streepjes (map volgt in bodPlateTex)
 std('bodLamp', 0xc4c9ce, 0.3, 0.42, { envMapIntensity: 0.7 });                                       // binnenkant van de koplamp: twee verchroomde reflectorbakken (map volgt in bodLampTex)
