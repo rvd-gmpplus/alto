@@ -1,93 +1,21 @@
 # Wijzigingen
 
-## Voorkant, ronde 4 V2: herbouw na de premortem op 1ea1319 (tak golf3-front, nog niet gepubliceerd)
+## Versie 2 (tak golf3-front, nog niet gepubliceerd)
 
-Aanleiding: de premortem op ronde 4 (verdict bijsturen; zeven oorzaken, zes herbouwpunten). Elk punt is eerst nagerekend; uitgevoerd is wat de cijfers dragen. Uitleg, cijfers en afwijkingen staan in `docs/onderzoek/beslissingen.md`, punt 25. Kerncijfers staan in `docs/cijfers.md`.
+Aanleiding: "de basis ziet er goed uit, maar de koplampen zien er ruk uit in combinatie met de grille". Deze versie herbouwt de voorkant in vier rondes met premortem en advies na elke ronde. Uitleg, cijfers en afwijkingen per stap staan in `docs/onderzoek/beslissingen.md` (punt 16 tot en met 25); kerncijfers in `docs/cijfers.md`. Alleen wat een meting of opname draagt staat hier.
 
-- Voetruimte bij een open portier: de binnenplaat (x 0,572) en de wandplaat (x 0,50) achter de voorband begonnen 9 tot 11 cm voor de boog, in de cabine (Voetsteun ingeklemd, vloermat afgesneden; v-voetruimte-laag: Voetsteun 9.292 in plaats van 26.990 beeldpunten). De binnenplaat volgt nu de boog, de wandplaat is vervallen (binnen de boog was hij overbodig). Open, voetruimtecamera's tegenover c9ce3fb: Voetsteun 88 procent (v-voetruimte-laag) en 86 procent (open sweep), koppelingspedaalarm 100 procent. De buitenplaat (x 0,625, vanaf z 0,70) blijft: vanaf z 0,74 worden de poorten voor wielkast, gat onder de boog en rondgang weer rood (de instaplijst staat op z 0,716). Daarom haalt de Voetsteun de 90 procent van de premortem niet.
-- Achterwielkast: twee sluitplaten (x 0,715) voor en achter de band. De zijbekleding achter, die tot in de boog doorloopt, is niet meer te zien door de spleet bij de band (rondgang baanv-r3.0-h0.23-a160: 25.014 beeldpunten weg). De achterste poorten blijven rood (18 van 21): de achterbank, de bagagebekleding en de vloer lopen in de boog (`interior.js`, buiten deze golf).
-- Meting: `meet.py` ronde 4, 99 van 99 harde poorten groen op beide commits. Premortemsweep (5.757 vrije camera's, 1.512 in de rondgang, DPR 1) tegenover `1ea1319`: de rondgang geeft 0 nieuwe camera's met doorkijk (716 naar 698), de vrije sweep 7 (hoogstens 278 beeldpunten: de vloermat door de portierspleet boven de schermflens, van boven gezien; dat zicht was alleen dichtgehouden door de platen in de voetruimte). Open sweep (openAll, op `61831c0`): tegenover c9ce3fb alleen dezelfde 4 nieuwe camera's als op `1ea1319` (instaplijst, vloermat); Voetsteun 86 procent, koppelingspedaalarm 99,9 procent, vloermatten 98 procent van c9ce3fb (op `1ea1319`: 51, 18 en 89 tot 92 procent). Lokaal alle losse tests groen; in de container alles groen behalve visdiff en itest controle 7 (221 van 222, beide bekend).
-- Niet uitgevoerd, met reden (beslissing 25): de portierrand en het scharnier (punt 3), de kier onder het portier (punt 5), de poorten in `meet.py` (punt 2 en 6: de orkestrator; wel gereedschap in `front-ronde4/v2/`), de neus (beslissing 17, open) en de afstand tussen de scharnieren.
-
-## Voorkant, ronde 4: venster boven de band, gaten onderin de boog en meetopzet (tak golf3-front, nog niet gepubliceerd)
-
-Aanleiding: het advies op ronde 3 (verdict bijsturen). Koplamp, grille en bumper waren af; de voorwielkast liet nog doorkijk naar de motorruimte en de cabine zien. Metingen met `meet.py` ronde 4 (acht nieuwe wielkastcamera's, een lage rondgang van 432 camera's, 99 harde poorten en 13 zachte; nulmeting op de vorige stand: 28 van 99 harde poorten rood, alle 69 van ronde 3 groen). Uitleg, cijfers en afwijkingen staan in `docs/onderzoek/beslissingen.md`, punt 24. Kerncijfers staan in `docs/cijfers.md`.
-
-- Venster boven de band dicht: het schot achter de inkeping voor de veerpoot loopt over de hele inkeping en tot y 0,635, met een bak van drie platen van 2 mm. Hoofdremcilinder (3.978 beeldpunten in wielkast-recht), Kleppendeksel en Rembekrachtiger zijn van opzij niet meer te zien. Een regressie uit `a28dff6` (de toren op y 0,62).
-- Gaten onderin de boog dicht: sluitplaten voor en achter de band (de rand volgt de band op 6 mm, de ondergrens van de bewaking van 5 mm) tot de bumper en tot de portierstijl. De langsligger voor de band en de vloermat en het scharnierblad achter de band zijn niet meer te zien.
-- Scharnieren hoger (onder y 0,53 was 0,34, boven y 0,62 was 0,56): het scharnierblad ligt niet meer in de boogopening. Het bovenste scharnier kon niet hoger dan 0,63 omdat de zijruit er dan tegenaan loopt; de deurvanger staat 6 mm verder naar buiten.
-- Meting: `meet.py` ronde 4, 99 van 99 harde poorten groen (waaronder de twaalf poorten van de lage rondgang, grootste rest 35 beeldpunten tegen een grens van 50), 12 van 13 zachte groen. Botsingscontrole op 2 mm: geen nieuw contact. Lokaal alle losse tests groen (itest 222 van 222). In de container (git archive van `1668990`) alles groen behalve visdiff (bekend: lettertypen en lak); itest controle 7 was groen (222 van 222). De ronde voegt 144 driehoeken toe aan Carrosserie; de stand staat in `docs/cijfers.md`.
-- Niet gesloten, bewust: het gat midden onder de boog (de aandrijfas loopt daar op naafhoogte door de wand) en de portierrand zelf (8.587 beeldpunten in wielkast-recht; sluiten kan met een donkere afdekplaat of voorrand in `bodyparts.js` en niet alleen met `body.js`, zie ronde 4 V2: niet uitgevoerd, besluit voor de orkestrator).
-- Nog open: `meet.py` en `rays.py` in `tools/` en in `finaltests.sh` (de tussenpoort `wielkast venster tegenover V1` kan vervallen), de basislijn na akkoord in de container, beslissing 17 (neusprofiel, buiten deze publicatie) en de uv-reparatie naar laguna3.
-
-## Voorkant, ronde 3 V2: herbouw na de premortem op V1 (tak golf3-front, nog niet gepubliceerd)
-
-Aanleiding: een premortem op de stand van ronde 3 (verdict bijsturen). Alle poorten waren groen, maar het koplampbeeld, de kleur van de afscherming en een rood blok in de wielkast stonden buiten de poorten. Elk herbouwpunt is eerst nagerekend; uitleg, cijfers en wat niet is uitgevoerd staan in `docs/onderzoek/beslissingen.md`, punt 23.
-
-- Koplamp: de hoekreflector heeft een eigen, donkerder materiaal (gemiddeld 0,58 in dicht-lamp tegen 0,74 voor, bijna wit 4,5 procent tegen 30,6), de lamprand is donkergrijs en de scheidingswand eronder is reflectorkleur in plaats van een zwarte balk. Zwart binnen de lens hoogstens 0,14 procent in zeven camera's (was tot 3,9). In de rechterhelft van het beeld (eig-r, lamphoek-r) is de hoekreflector daardoor 0,14 tot 0,24 donkerder dan de hoofdreflector; dat is nog niet door de eigenaar of de adviseur beoordeeld.
-- Kaphoek van opzij: het hoekstuk van het scherm loopt tot 8 mm voor de kapvoorrand (was 15): de sprong in de rode rand en de donkere wig onder het glas zijn op beeld weg (dicht-lamp-zij).
-- Afscherming onder de bumper antraciet (0x232529) in plaats van pikzwart: 0,55 tot 0,74 keer het luchtrooster (was 0,28 tot 0,34). Zicht onder de bumper ongewijzigd (0,318 in eig).
-- Wielkast van opzij: de veerpoottoren begint op y 0,62 (was 0,56), zodat er geen rood blok meer boven de band zichtbaar is (10.829 beeldpunten naar 0 in wielkast-recht en wielkast-r). **Rechtgezet in ronde 4:** dat gold voor het rode blok in die twee camera's; tussen koker en toren bleef een venster van 45 mm open met doorkijk naar de motorruimte (Hoofdremcilinder 3.978 beeldpunten in wielkast-recht). Ronde 4 sluit dat venster.
-- Meting: `meet.py` ronde 3, 67 van 69 harde poorten groen (de twee rode zijn dezelfde remhardwarepoorten als voorheen), 12 van 13 zachte groen. Lokaal alle losse tests groen (itest 222 van 222); in de container alles groen behalve visdiff (bekend: lettertypen en lak) en itest controle 7 (preset Cilinderkop en tuimelaars, bekend wisselend in de container).
-- **Verwachting:** de neus staat nog 30 tot 60 mm te hoog (kapvoorrand 0,745 tegen 0,685 tot 0,715 op de foto's) en de bumper is 2,7 keer (tot de lip) en 3,1 keer (tot de afscherming) zo hoog als de lamp. Deze stand lost de klacht over de koplampen en de grille niet volledig op: beslissing 17 (neusprofiel in `body.js`) is de volgende ronde, met de voorwaarde dat `meet.py` in `finaltests.sh` draait voordat `body.js` wijzigt. Een datum voor die ronde moet de orkestrator bepalen.
-- Niet gedaan: de scharnierplaat en portierrand achter in de boog (rechtgezet in ronde 4: het scharnier stond in `bodyparts.js` en is verplaatst; alleen de portierrand blijft open en kan alleen met `body.js`), de poorten voor het koplampbeeld en voor wielkast-recht en wielkast-r in `meet.py`, de uv-reparatie naar laguna3 met de controle `kentekenplaat gebundeld` in `finaltests.sh`, het onafhankelijk oordeel over de galerij.
-
-## Voorkant, ronde 3: afscherming, voorwielkast en afwerking (tak golf3-front, nog niet gepubliceerd)
-
-Aanleiding: het advies op de herbouw (verdict bijsturen). Metingen met `meet.py` ronde 3 (45 camera's, 69 harde poorten en 13 zachte; 67 van 69 harde poorten groen, de twee rode zijn remhardware in de boog), opnamen en uitleg in `docs/onderzoek/beslissingen.md`, punt 22. Kerncijfers staan in `docs/cijfers.md`.
-
-- Afscherming onder de bumper: eigen donker materiaal, geen grijze weerkaatsing meer (Onderplaat tegenover Luchtrooster 0,28 tot 0,34, was 1,32 tot 1,69; in V2 antraciet, 0,55 tot 0,74) en geen tand onder de bumperhoek: de diepte van het lint loopt vloeiend over de hele lipbocht.
-- Dunne lijn over het bumpervlak weg: de voorrand van de onderplaat stak 0,5 mm voor de lipwand uit (1.150 tot 2.550 beeldpunten, nu 0).
-- Voorwielkast dicht: de koker loopt tot de huid, de wand en de koker lopen onder de boog door, de inkeping voor de veerpoot volgt de schroefveer, en een strook achter de portierspleet vangt de schuine blikken. Het Schutbord is niet meer als donkerrode sikkel zichtbaar (698 beeldpunten in eig, nu 0) en door de wielkast zie je in de tien poortcamera's van ronde 3 geen motorruimte of cabine meer, op de slangbeugel en de remleiding na (93 beeldpunten in een enkele camera); in de camera's van ronde 4 (laag bij de grond, recht op de boog) bleek dat niet te kloppen en is dat in ronde 4 rechtgezet.
-- Afwerking: plooien in de glans op de bumperbovenrand weg (22 driehoeken naar 0), geen witte spleet met de bumperbalk meer tussen lamphuis en bumpernaad (6.068 beeldpunten naar 0), embleem leesbaarder en matter (0,8 tot 1,9 keer het gaas, was 0,5 tot 1,6), geen rood tandje en treetje meer bij de kaphoek.
-- Nog open: de ondergrens van de embleempoort voor de grazende kijkhoek (0,8 haalbaar, 0,9 niet naast de bovengrens 2,0), de twee remhardwarepoorten, `meet.py` in `tools/orkestratie` en `finaltests.sh`, de basislijn van `visdiff`, neusprofiel (beslissing 17, buiten deze publicatie) en de uv-reparatie naar laguna3.
-
-## Voorkant, herbouw na de premortem (tak golf3-front, nog niet gepubliceerd)
-
-Aanleiding: een premortem op de bijsturing hieronder. Alle poorten waren groen, maar twee nieuwe elementen stonden in het beeld van de eigenaar: een embleem dat als het cijfer 5 las en een zwart bord onder de bumper. Metingen met `meet.py` (nu 33 camera's en 44 poorten, alle groen; de vorige set had 26 poorten), opnamen en uitleg in `docs/onderzoek/beslissingen.md`, punt 21.
-
-- Embleem: een doorlopende, gekantelde Suzuki-S met schuine punten in een donker matglanzend materiaal. Helderheid 1,5 tot 1,6 keer die van het gaas (was 4,9 tot 5,2 keer; eis hoogstens 2,0), in licht en donker, van dichtbij en van voren.
-- Afscherming onder de bumper: een donker lint van 50 mm dat de omtrek van de lip volgt en 40 mm achter de lipwand zit, in plaats van een voorschort van 90 mm en twee zijschermen van 760 mm. Het lint raakt de aandrijfas niet meer (0 hoekpunten binnen 10 mm, was 1.360). Onderplaat 2,4 keer het gaas in beeld (was 4,6). Zicht onder de bumper blijft onder de eis: 0,31 procent (eig), 0,28 (eig-r), 0,15 (eig-dicht), 0,00 (voor-laag).
-- Bumperwang: gladde normalen en geen halve-millimeterrijen meer; de doekachtige plooien en de V-vouw onder de hoekkap zijn weg (kijk naar de opnamen wiel-voor en dicht-hoek). Bumperschouder 19,0 graden.
-- Hoekkap van dichtbij: scherm 6 mm over de lamp (sikkel boven de hoekkap weg: Schutbord 4.569 naar 0 beeldpunten), ronde schotel in de hoekreflector, mat zwarte Lamprand, waterkast overlapt de deelnaad.
-- Carrosserie 97,7 duizend driehoeken (grens 98 duizend uit ronde 1; harde grens 105,7 duizend).
-- Nog open: de afscherming maakt de neus visueel zwaarder (verhouding bumper/lamp tot de onderrand van de afscherming 3,08; tot de lip 2,70), op te lossen met beslissing 17 (ronde 3). Voorkant pas publiceren als de basislijn van `visdiff` per beeld is beoordeeld en het laguna3-issue voor de uv-reparatie bestaat.
-
-## Voorkant, bijsturing na het advies (tak golf3-front, nog niet gepubliceerd)
-
-Aanleiding: het advies op ronde 1 (verdict bijsturen). Metingen met `meet.py` (id-pass zonder z- of y-filter, DPR 2, 18 camera's links en rechts, geijkt op V1); de plannen en cijfers staan in `docs/onderzoek/beslissingen.md`, punt 20.
-
-- Kaphoek en doorkijk dicht: hoekstuk van het voorscherm boven de hoekkap, strook langs de kaprand, lamp 8 mm dieper onder het scherm, lamphuis 8 mm hoger met een scheidingswand onder de Lamprand, kaprand ook achter, scharnieren onder de kap. Alle kierpoorten groen in 18 camera's: geen knoop uit de motorruimte of het onderstel boven 50 beeldpunten breed (lamphoek: 22.313 beeldpunten motorruimte voor, 0 breed na; naden van hoogstens 2 beeldpunten blijven).
-- Bumperschouder 18,2 graden (was 26,7) door 27 kolommen met 8 op de schouder. Lip sluit aan op de wang: aansluithoek gemiddeld 4,0 graden (was 50,9).
-- Onderplaat voorbumper met voorschort en twee zijschermen: zicht op onderstel en motor onder de bumper 0,00 tot 0,03 procent van het beeld (was 1,1 tot 1,4 procent). **Vervangen in de herbouw hieronder:** het voorschort en de zijschermen hingen als zwart bord onder de bumper en sneden door de aandrijfas.
-- Afwerking: bumpernaad onder de schermrand, verdiepte luchtsleuven, lichtere en glaziger hoekreflector, hoekige S van vijf balkjes als embleem (las als een 5, vervangen in de herbouw hieronder), Lamprand stopt op de lamponderrand, zwarte wielkastbekleding en donkerder binnenlak.
-- Carrosserie 97,6 duizend driehoeken (was 95,6 duizend; grens 105,7 duizend).
-- Nog open: neusprofiel (beslissing 17, ronde 3), basislijn van `visdiff` en de uv-reparatie naar laguna3 (orkestrator), `meet.py` in `tools/orkestratie` en `finaltests.sh`.
-
-## Voorkant, ronde 2 (tak golf3-front, nog niet gepubliceerd)
-
-Aanleiding: een premortem op ronde 1. Elke poort was groen, maar de lamp bleef een wit vlak en de grille grijs fijngaas. Metingen nu op de GPU (DPR 2) vanuit een camera die op de melding van de eigenaar is afgestemd. Zie `docs/onderzoek/beslissingen.md`, punt 17.
-
-- Koplamp: reflectorbak zonder raster (vlekken, heldere zone rond de lamp, lampkap, donkere rand); lens 0,52 tot 0,62 helder met een spreiding van 0,2 (was een egaal wit vlak van 0,9).
-- Grille: grof gaas met 25 kolommen, donker (0,12 tegen 0,38) en een donkere S zonder schijf.
-- Bumperlijn vrijwel waterpas: de hoekkap is geen hoektand meer en staat 4 mm boven de hoofdlens. Donkere voeg langs de bumperrand, lip op 225 mm, geen kier tussen scherm en bumper.
-- Lak dieper en matter: de kap is vanuit de lage blik van de eigenaar niet meer wit (verzadiging kap gedeeld door scherm 0,65 tot 0,73, was 0,30 tot 0,36).
-- Uitklappen: de naadvulling (zwart masker) is weg en de zijrepeaters blijven op het scherm.
-- Nog open: verlaging van het neusprofiel (verzoek aan de orkestrator), onafhankelijk oordeel, basislijn van `visdiff`, terugmelding van de uv-reparatie aan laguna3.
-
-## Voorkant, ronde 1 (tak golf3-front, nog niet gepubliceerd)
-
-Aanleiding: "de basis ziet er goed uit, maar de koplampen zien er ruk uit in combinatie met de grille". Zie `docs/onderzoek/beslissingen.md`, punt 16, voor wat anders is gedaan dan het ontwerpplan.
-
-- Hoofdoorzaak: de samenvoegmodus (`uiBatchAdd`, generiek) nam geen uv mee, waardoor grille, kentekenplaat en reflector in de standaardweergave zwart waren. Nu gebundeld gelijk aan los.
-- Gedeelde grenzen voor kap, lamp, paneel, scherm en bumper (`bodXP`, `bodYBT` en andere): minder kieren met zicht op motorruimte of onderstel (stralenraster: 0,0 tot 0,7 procent buiten de voorkantlijst, was 3 tot 11 procent). Dat raster sloot z < 1,25 en y > 0,95 uit en zag de kaphoek niet; zie het kopje Voorkant, bijsturing hieronder voor de meting zonder filter.
-- Kap met afgeronde voorhoeken (70 mm) en een zwarte afdichtrand; de kap oogt massief.
-- Koplamp: hoofdlens met ribbels, aparte gladde hoekkap, zilveren facettenreflector, zwarte scheiding en een gesloten huis; helder glas aan de buitenkant gezien.
-- Voorpaneel in carrosseriekleur vlak met de lampen, met één smalle gaasopening (650 x 76 mm) met fijn honingraatgaas en een donker embleem; het rode trapezium met het zwarte vlak is weg.
-- Bumper: bovenrand volgt de lamponderrand, zachte hoeken (analytische normalen), lip langs de onderkant (185 mm boven de grond), zwarte onderzijde, luchtsleuven links, rechts en onder het kentekenvlak, afgeronde oranje knipperlichten van 190 x 50 mm met rand en schroefjes.
-- Lak: minder clearcoat en een zachtere weerspiegeling; de kap is niet meer roze uitgewassen. Zijrepeaters op de voorschermen.
-- Carrosserie 94,6 duizend driehoeken (was 86,8 duizend; grens 105,7 duizend).
-- De basislijn van `visdiff` moet de orkestrator vernieuwen: de presets met de voorkant zijn bewust veranderd.
+- Koplamp: helder glas met zilveren facettenreflector, zonder raster; de hoekreflector is hoogstens 0,055 helderder dan de hoofdreflector, zwart binnen de lens hoogstens 0,14 procent (was tot 3,9). In de gespiegelde camera's (eig-r, lamphoek-r) is de hoekreflector 0,14 tot 0,24 donkerder; dat is nog niet door de eigenaar of de adviseur beoordeeld.
+- Grille en embleem: honingraatgaas in een smalle opening, donker; het embleem is een doorlopende, gekantelde S die niet meer als een 5 leest (helderheid 1,5 tot 1,6 keer die van het gaas).
+- Bumper en lak: zachte hoeken, lip langs de onderkant, bumperschouder 18,9 graden, de lijn is vrijwel waterpas (hoekkap +3,9 en -6,2 mm). Lak dieper en matter; de kap is niet meer wit. Verhouding bumper/lamp op x = 0: 2,70 tot de lip en 3,08 tot de afscherming.
+- Afscherming onder de bumper: antraciet lint van 50 mm langs de lip (0,55 tot 0,74 keer het luchtrooster); zicht op onderstel en motor onder de bumper 0,00 tot 0,32 procent van het beeld (grens 0,5).
+- Kieren en doorkijk: kaphoek, hoekstuk van het voorscherm, scharnieren onder de kap en de uv-fout in de samenvoegmodus (grille, kentekenplaat en reflector waren zwart) zijn hersteld.
+- Voorwielkast van opzij: het venster boven de band (Hoofdremcilinder 3.978 beeldpunten in wielkast-recht) en de gaten onderin de boog (langsligger, vloermat, scharnierblad) zijn dicht; de scharnieren staan hoger (y 0,53 en 0,62). Tegenover c9ce3fb: 0 nieuwe camera's met doorkijk (vrije sweep 923 naar 721, rondgang 811 naar 698); lamp, grille en bumper beeldpunt voor beeldpunt gelijk.
+- Voetruimte bij een open portier: de binnenplaat volgt de boog en de wandplaat is vervallen; Voetsteun 86 tot 88 procent van c9ce3fb (premortem: 90), koppelingspedaalarm 100 procent, vloermatten 98 procent.
+- Preset Cilinderkop en tuimelaars: pad 1,16 (was 1,04), zodat het kader in Chromium op Linux in het vrije beeld valt (itest controle 7).
+- Meting: `meet.py` ronde 4 (99 harde poorten, 13 zachte), op `976eaf2` door het advies zelf gedraaid: 99 van 99 harde en 12 van 13 zachte groen (zijhoek-r licht 0,80); op c9ce3fb 71 van 99. Lokaal en in de container alle losse tests groen behalve visdiff (container 0 van 34 beelden, lokaal 21 van 34 binnen de drempel; bekend: lettertypen en lak). De driehoekstelling in `docs/cijfers.md` is van `d2ae9f1` en nog niet opnieuw gemeten na het terugdraaien van de achterplaten.
+- Teruggedraaid: sluitplaten voor en achter de achterband (`d2ae9f1`, teruggedraaid in `dc4b70e`). Ze stonden op x 0,715, terwijl de huid achter het wiel op x 0,696 tot 0,716 ligt, en staken links tot 17 mm en rechts tot 23 mm door het achterscherm: een zwarte plaat in gewone zijblikken die geen poort zag. De achterwielkast valt buiten deze versie.
+- Door de orkestrator geaccepteerd als bekend punt: de buitenplaat als zwart blad vooraan in de deuropening bij een open portier (x 0,625, vanaf z 0,70) en de rode voorrand van het portier in de voorwielboog (8.587 beeldpunten in wielkast-recht, c9ce3fb 8.333; 16.914 tegen 8.405 in k-portier-scharnier). Beide zijn geen doorkijk.
+- Open voor een volgende golf: de achterwielkast (doorkijk naar achterbank, bagagebekleding en vloer, 18 van 21 achterste poorten rood; vraagt `interior.js`) en beslissing 17 (neus: kapvoorrand 0,745 tegen 0,685 tot 0,715 op de foto's; de lamp- en grillecamera's zijn daar niet door beoordeeld). Voor de orkestrator: `meet.py` en `rays.py` in `tools/` en in `finaltests.sh` (met een zijstraalcontrole voor platen die door de huid steken), de basislijn van `visdiff` na akkoord, de uv-reparatie naar laguna3 (controle `kentekenplaat gebundeld`) en itest controle 7, die in de container om en om valt.
 
 ## Versie 1 (16 oktober 2026)
 
