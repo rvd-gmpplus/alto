@@ -1,10 +1,10 @@
 {
- "commit": "c454cec Framework uit laguna3 57b4d18: uiPlaceMore wist de onthouden plek bij verbergen; omweg in itest weg (222 van 222)",
+ "commit": "",
  "viewport": "1280x800",
  "totaal": {
-  "labels": 239,
-  "eigen": 203,
-  "vrij": 176
+  "labels": 242,
+  "eigen": 210,
+  "vrij": 180
  },
  "presets": {
   "assembled": {
@@ -268,7 +268,7 @@
   "body": {
    "label": "Carrosserie en kooi",
    "labels": 18,
-   "eigen": 17,
+   "eigen": 18,
    "vrij": 12,
    "achter": [
     "Portier rechts achter Frontmodule",
@@ -278,9 +278,7 @@
     "Kentekenvlak achter achter Achterscherm links",
     "Tankvulopening achter Wielkast achter rechts"
    ],
-   "lucht": [
-    "Koplamp links"
-   ]
+   "lucht": []
   },
   "doorL": {
    "label": "Portier links",
@@ -302,16 +300,14 @@
   },
   "headlampL": {
    "label": "Koplamp links",
-   "labels": 6,
-   "eigen": 1,
-   "vrij": 1,
+   "labels": 9,
+   "eigen": 7,
+   "vrij": 5,
    "achter": [
-    "Lampfitting achter Afdekglas"
+    "Reflector achter Afdekglas",
+    "Lampfitting achter Lamphuis"
    ],
    "lucht": [
-    "Afdekglas",
-    "Reflector",
-    "Lamphuis",
     "Stofkap lamp",
     "Halogeenlamp"
    ]
