@@ -10,6 +10,7 @@ MAT.paintIn.color.setHex(0x7a2025); MAT.paintIn.metalness = 0; MAT.paintIn.rough
 MAT.lensClear.opacity = 0.26; MAT.lensClear.color.setHex(0xb9c6d0);
 MAT.glass.color.setHex(0x0d161c); MAT.glass.opacity = 0.8; MAT.glass.envMapIntensity = 0.35; MAT.glass.roughness = 0.06;
 std('bodBumper', 0x2b2d31, 0, 0.72);                                       // ongelakt kunststof van de GA-bumpers
+std('bodShield', 0x060607, 0, 0.8, { envMapIntensity: 0.12 });              // afscherming onder de bumper: zwart, nauwelijks omgevingsweerkaatsing (de onderzijde las anders als grijs)
 std('bodLiner', 0x1a1b1e, 0, 0.9);                                         // zwarte kunststof bekleding van de wielkasten
 std('bodBlack', 0x0f1012, 0, 0.62);                                        // zwart kunststof: spiegels, grepen, wissers
 std('bodPillar', 0x060607, 0, 0.8, { envMapIntensity: 0.12 });             // zwart rubber en kader
@@ -563,10 +564,10 @@ function bodBumperLip() {
     return [x - q.nx * k, yb + r - r * Math.sin(t), z - q.nz * k];                 // afronding naar binnen, loodrecht op het pad
   }, 0, N, N, () => [0, 1], 8);
 }
-// afscherming onder de bumper: een dun donker lint dat de omtrek van de lip volgt, 40 mm erachter, en vanaf de onderrand van de lip 'drop' omlaag loopt (alleen waar de lip volledig is, z > 1,5).
+// afscherming onder de bumper: een dun donker lint dat de omtrek van de lip volgt, 40 mm erachter, en vanaf de onderrand van de lip 'drop' omlaag loopt (loopt vloeiend op vanaf z 1,44, vol vanaf z 1,68).
 // Het verbergt de lage delen van het onderstel (carter, dwarsbalk, draagarmen) voor een lage camera zonder een plank te zijn: geen dwarsplaten, geen zijschermen langs de aandrijfas.
 function bodBumperShield() {
-  const { yBot, N, at } = bodLipPath(), INS = 0.04, DROP = 0.05, drop = z => DROP * sstep((z - 1.50) / 0.10);
+  const { yBot, N, at } = bodLipPath(), INS = 0.04, DROP = 0.05, drop = z => DROP * sstep((z - 1.44) / 0.24);   // de diepte loopt vloeiend op over de hele lipbocht (was z 1,50 tot 1,60: een tand van 50 mm onder de bumperhoek)
   return patch((u, v) => { const q = at(u), y0 = yBot(q.z); return [q.x - q.nx * INS, lerp(y0 + 0.02, y0 - drop(q.z), v), q.z - q.nz * INS]; }, 0, N, N, () => [0, 1], 2);
 }
 // Naad op de bovenrand van de bumper: een donkere voeg langs de rand waar paneel, lampen en scherm onder de bumper verdwijnen. Hij volgt de rand van links (z 1,381, het begin van de schaal) over
@@ -613,7 +614,7 @@ function bodFrontBumper() {
     P('Bumperschaal voor', merge([shell(1), shell(-1), face]), MAT.paint, { d: 'Kunststof bumperschaal in het rood met afgeronde hoeken die om de voorwielboog lopen; de bovenrand sluit op de lamp, het paneel en het scherm aan.', ex: [0, -0.02, 0.12] }),
     P('Bumpernaad voor', cache('bodBumperSeam', bodBumperSeam), MAT.bodSeal, { d: 'Donkere voeg van ongeveer 5 mm langs de bovenrand van de bumper, waar het voorpaneel, de koplampen en de schermen eronder verdwijnen: de bumper is een apart deel (de echte voeg is nauwelijks breder).', ex: [0, -0.02, 0.12] }),
     P('Bumperlip voor', bodBumperLip(), MAT.paint, { d: 'Rand in carrosseriekleur langs de onderkant van de bumper: de buitenwand van de schaal loopt door tot ongeveer 225 mm boven de grond en rondt daar af naar binnen (achter uitlopend naar niets), zodat de wang op de lip uitloopt. Hij houdt het zicht op onderstel en stabilisatorstang van normale hoogte af.', ex: [0, -0.05, 0.04] }),
-    P('Onderplaat voorbumper', merge([bodPatchN((z, p) => bodLow(z, p, 0.0), 1.425, zE, 18, () => [-S1, S1], 6, [], (n) => n), bodBumperShield()]), MAT.bodBumper, { d: 'Zwarte onderzijde van de bumper met een donker lint van 50 mm onder de lip, 40 mm achter de lipwand en met dezelfde omtrek als de lip, schematisch (de echte afscherming onder de bumper is niet vast te stellen): het houdt carter, dwarsbalk en draagarmen uit het zicht van een lage camera, zonder platen langs de aandrijfas.', ex: [0, -0.06, 0.02] }),
+    P('Onderplaat voorbumper', merge([bodPatchN((z, p) => bodLow(z, p, 0.0), 1.425, zE - 0.003, 18, () => [-S1, S1], 6, [], (n) => n), bodBumperShield()]), MAT.bodShield, { d: 'Zwarte onderzijde van de bumper met een donker lint van 50 mm onder de lip, 40 mm achter de lipwand en met dezelfde omtrek als de lip, schematisch (de echte afscherming onder de bumper is niet vast te stellen): het houdt carter, dwarsbalk en draagarmen uit het zicht van een lage camera, zonder platen langs de aandrijfas.', ex: [0, -0.06, 0.02] }),
     P('Luchtrooster voor', merge([slot(0.34, 0.415, 0.12, 0.06), slot(-0.34, 0.415, 0.12, 0.06), slot(0, 0.328, 0.54, 0.022)]), MAT.bodBlack, { d: 'Zwarte luchtsleuven: links en rechts van het kentekenvlak en een smalle sleuf eronder, voor extra koellucht.', ex: [0, -0.04, 0.1] }),
     P('Luchtroosterkader voor', merge([...kader(0.34, 0.415, 0.12, 0.06), ...kader(-0.34, 0.415, 0.12, 0.06), ...kader(0, 0.328, 0.54, 0.022)]), MAT.paint, { d: 'Kader van ongeveer 5 mm breed in carrosseriekleur om de luchtsleuven, 2 mm boven het bumpervlak: de sleuven liggen daardoor verdiept.', ex: [0, -0.04, 0.11] }),
     P('Luchtroosterribben voor', merge([...rib(0.34, 0.415, 0.12, 0.06, 2), ...rib(-0.34, 0.415, 0.12, 0.06, 2)]), MAT.bodBumper, { d: 'Horizontale ribben in de luchtsleuven naast het kentekenvlak.', ex: [0, -0.04, 0.12] }),
