@@ -137,6 +137,19 @@ function bodWheelHouse(s, az, yb = 0.21, hw = 0, xn = 0.58, ae = 0, dEnd = 0.20)
     const zr = az - hw - 0.004, zf = az + hw + 0.0165, t = 0.002, y0 = yn - 0.01, hh = 0.635 - y0, xm = (xb + xn) / 2;
     schot = plaat([[zr, y0], [zf, y0], [zf, 0.635], [zr, 0.635]], xb);
     extra.push(xf(new THREE.BoxGeometry(t, 0.08, zf - zr), [s * xn, 0.595, (zr + zf) / 2]), xf(new THREE.BoxGeometry(xn - xb, hh, t), [s * xm, y0 + hh / 2, zr]), xf(new THREE.BoxGeometry(xn - xb, hh, t), [s * xm, y0 + hh / 2, zf]));
+    // Gaten onderin de boog (poort `wielkast gat onder de boog`): sluitplaten voor en achter de band. Buitenplaten vlak binnen de huid (x 0,645 voor, x 0,625 achter) volgen de band op 6 mm (straal 0,2666 + 0,006);
+    // de band mag er niet binnen 5 mm van komen (poort `wielkastbekleding raakt onderstel en aandrijving niet`). Voor: z tot 1,435 (de bumperschaal begint op z 1,446, de onderplaat op 1,443). Achter: z vanaf 0,70 en tot y 0,50.
+    const RB = 0.2666 + 0.006, ar = y => Math.sqrt(RB * RB - (y - AY) * (y - AY)), ys = [0.245, 0.26, 0.28, 0.30, 0.32, 0.34, 0.36, 0.38, 0.40, 0.42], ys2 = [...ys, 0.45, 0.48, 0.50];
+    extra.push(plaat([...ys.map(y => [az + ar(y), y]), [az + ar(0.42), 0.60], [1.435, 0.60], [1.435, 0.245]], 0.645));
+    extra.push(plaat([[0.70, 0.245], ...ys2.map(y => [az - ar(y), y]), [0.70, 0.50]], 0.625));
+    // Binnenplaat achter op x 0,572 (de band begint op x 0,595; 17 mm van de voetsteun): vangt de blik door de spleet van 6 mm tussen band en buitenplaat op naar de voetsteun en de vloerbedekking. Tot z 0,79 ligt de onderrand op y 0,2865
+    // (3 mm boven de vloermat, die tot z 0,779 en y 0,282 loopt), daarachter op y 0,245 (daar loopt geen vloermat meer; de vloerbedekking ligt dan op x 0,50).
+    extra.push(plaat([[0.70, 0.2865], [0.79, 0.2865], [0.79, 0.245], [0.90, 0.245], [0.90, 0.50], [0.70, 0.50]], 0.572));
+    // Platen in het wandvlak tussen het einde van de sluitstukken (z az plus en min dEnd) en de bumper of de portierstijl; voor eindigt op z 1,427 omdat het sproeierreservoir (x 0,50 tot 0,61) op z 1,43 begint.
+    extra.push(plaat([[1.30, 0.245], [1.427, 0.245], [1.427, 0.485], [1.30, 0.485]], xin));
+    // Verlenging voor tot z 1,50 in de lage strook onder het sproeierreservoir (y 0,32), in twee delen met de onderplaat van de bumper (y 0,265) ertussen (2 mm vrij): de blik onder de zijrand van de bumper door bereikt de langsligger en het koppelingshuis niet meer.
+    extra.push(plaat([[1.427, 0.245], [1.50, 0.245], [1.50, 0.2628], [1.427, 0.2628]], xin), plaat([[1.427, 0.2672], [1.50, 0.2672], [1.50, 0.315], [1.427, 0.315]], xin));
+    extra.push(plaat([[0.68, 0.245], [az - dEnd, 0.245], [az - dEnd, 0.50], [0.68, 0.50]], xin));
   }
   return merge(schot ? [wall, arc, schot, ...extra] : [wall, arc]);
 }
@@ -748,7 +761,7 @@ function bodDoor(s) {
     ]),
     P('Portierrubber', tube([[z0 + 0.03, 0.80], [z0 + 0.03, 0.34], [zm, 0.34], [z1 - 0.03, 0.34], [z1 - 0.03, 0.80]].map(([z, y]) => { const p = bodAt(z, y, -0.05); return [s * p[0], p[1], p[2]]; }), 0.008, 72, 6), MAT.rubber, { d: 'Rubber afdichting langs de voorrand, onderrand en achterrand van het portier.', ex: [-s * 0.26, -0.1, -0.46] }),
     P('Deurvanger', G.rbox(0.012, 0.03, 0.2, 0.004), MAT.darkSteel, { d: 'Vanger die het portier in twee standen openhoudt.', p: [s * (surfX(z1 - 0.1, 0.62) - 0.022), 0.62, z1 - 0.1], ex: [-s * 0.05, 0, 0.06] }),
-    A('Scharnieren', { d: 'Twee portierscharnieren aan de voorrand met elk twee bouten.', ex: [-s * 0.04, 0, 0.1] }, [hinge('boven', 0.56), hinge('onder', 0.34)]),
+    A('Scharnieren', { d: 'Twee portierscharnieren aan de voorrand met elk twee bouten.', ex: [-s * 0.04, 0, 0.1] }, [hinge('boven', 0.72), hinge('onder', 0.53)]),
     bodMirror(s),
   ];
   const piv = [s * (surfX(z1, 0.62) + 0.012), 0.62, z1 + 0.012];
