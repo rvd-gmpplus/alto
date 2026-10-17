@@ -74,6 +74,7 @@ Achtermodus (--achter; open punt AWK, stage S1, 18 oktober 2026): de doorkijk do
             wielkast rondgang h<hoogte> r<afstand> achter <kant>   12 poorten
             wielkast midden onder de boog achter <kant>   strenger dan voor: achter loopt geen aandrijfas, dus de vrijstelling midden onder de boog (|z - as| < 0,20, y < 0,50) geldt hier niet;
                                                           50 px per knoop in zone_px.midden over de rondgang van die kant (de 21 poorten hierboven blijven zoals in meet_achter.py)
+            wielkastcamera's achter <kant>   de 12 wielkastcamera's achter van die kant (WIELKAST_ACHTER, zie daar): 50 px per knoop in de zones onder, venster, boven en midden
             console zonder fouten achter
   Controle  volle achtermodus (zonder --cams en --geen-rondgang): precies VERWACHT_HARD_ACHTER harde en VERWACHT_ZACHT_ACHTER zachte poorten (extra poort 'aantal poorten achter'), en de extra poort
             'interessegebied achterwielen in beeld' (minstens een rondgangcamera met het linker- en een met het rechterachterwiel, elke wielkastcamera achter met interessegebied). Een poort zonder
@@ -190,8 +191,30 @@ ROI_WIEL_R_ACHTER = {'re': r'^(Wiel rechtsachter/|.*/Wielkast achter rechts )', 
 ROI_WIEL_ACHTER = {'re': r'^(Wiel (links|rechts)achter/|.*/Wielkast achter )', 'marge': 0.25}   # wielkastcamera's achter: achterwielen en achterwielkasten samen, zoals ROI_WIEL voor
 ZONE_Z_ACHTER = [-1.628, -0.868]    # de achterboog (AXR -1,248 +- ARCH 0,30) plus 80 mm
 WK_HARDWARE_ACHTER = r'^(Remleiding voor|Remslang voor|Remleiding achter|Remslang achter|Slangbeugel|Remleidingklem)'
-# wielkastcamera's achter (achtermodus): naam -> (positie, doel), linkerkant; elk ook gespiegeld als <naam>-r
+# wielkastcamera's achter (achtermodus): naam -> (positie, doel), linkerkant; elk ook gespiegeld als <naam>-r. Reden: de rondgang ziet de achterboog alleen van 2 m en verder;
+# de lage blikken die voor de gaten onderin de voorboog vonden (WIELKAST_ZONE, ronde 4) bestonden achter niet. Twee overzettingen van die vier camera's naar het achterwiel:
+#   ach-sp-<naam>  gespiegeld rond de as: z' = AXR - (z - AXF) (de blik van achter de voorband wordt een blik van voor de achterband, dus vanaf het portier naar achteren)
+#   ach-vs-<naam>  verschoven: z' = z - AXF + AXR (dezelfde blikrichting als voor)
+# wk-zij-laag staat precies op de as (z = AXF), dus beide overzettingen geven dezelfde camera, en die is gelijk aan ach-zij-laag van de adviseur: hij staat er een keer in (als ach-zij-laag).
+# Plus de lage camera's van de adviseur (front-ronde4/adv/cams/achter.json) waarmee beslissing 25 punt 2 de achterwielkast en de platen van d2ae9f1 beoordeelde.
+AXF_VOOR = 1.087
+
+
+def _naar_achter(v, gespiegeld): return [v[0], v[1], round(AXR_ACHTER - (v[2] - AXF_VOOR), 4) if gespiegeld else round(v[2] - AXF_VOOR + AXR_ACHTER, 4)]
+
+
 WIELKAST_ACHTER = {}
+for _k in ('wielkast-recht', 'wielkast-achter', 'zij-laag'):
+    for _pre, _sp in (('ach-sp-', True), ('ach-vs-', False)):
+        WIELKAST_ACHTER[_pre + _k] = (_naar_achter(WIELKAST[_k][0], _sp), _naar_achter(WIELKAST[_k][1], _sp))
+WIELKAST_ACHTER.update({
+    'ach-zij-laag':  ([1.92, 0.35, -1.248], [0.62, 0.40, -1.248]),   # laag van opzij recht op de achterboog (= wk-zij-laag gespiegeld en verschoven)
+    'ach-zij-hurk':  ([2.20, 0.80, -1.00], [0.60, 0.45, -1.20]),     # gehurkt van opzij, iets van boven in de boog
+    'ach-34-laag':   ([1.60, 0.30, -2.60], [0.50, 0.40, -1.30]),     # laag van schuin achter de auto
+    'ach-voor-laag': ([1.60, 0.30, 0.20], [0.65, 0.40, -1.10]),      # laag van schuin voor, langs de dorpel naar de achterboog
+    'ach-dorpel':    ([1.30, 0.35, -0.75], [0.70, 0.33, -0.95]),     # dicht bij de dorpel, op de voorkant van de achterboog
+    'ach-bumper':    ([1.30, 0.35, -1.75], [0.70, 0.35, -1.55]),     # dicht bij de bumperhoek, op de achterkant van de achterboog
+})
 # ronde 3, afwerking a: 60 cm boven de bumperhoek (adv/cams-naad.json, Bumperbalk 5.646 px tussen lamphuis en bumpernaad)
 AFWERKING = {
     'bumpL-r0.6-a50-e70': ([0.6572, 0.8838, 1.7119], [0.5, 0.32, 1.58]),
@@ -581,7 +604,7 @@ def git_info():
 
 # Verwacht aantal poorten in volle achtermodus (--achter zonder --cams en --geen-rondgang). Bron: nulmeting van 18 oktober 2026 op fa5c619 (open punt AWK, stage S1): de 21 poorten van
 # front-ronde4/v2/meet_achter.py. Wie bewust een poort toevoegt of schrapt, past deze twee getallen mee aan. De extra controles ('interessegebied achterwielen in beeld', 'aantal poorten achter') tellen niet mee.
-VERWACHT_HARD_ACHTER = 23   # 21 van meet_achter.py plus 'wielkast midden onder de boog achter' links en rechts (nulmeting fa5c619: beide rood)
+VERWACHT_HARD_ACHTER = 25   # 21 van meet_achter.py, 'wielkast midden onder de boog achter' en 'wielkastcamera's achter', elk links en rechts (nulmeting fa5c619: alle vier rood)
 VERWACHT_ZACHT_ACHTER = 0
 
 
@@ -639,13 +662,32 @@ def poorten_achter(res, namen, poort):
         hits = sorted([(n['zone_px'].get('midden', 0), n['knoop'], n['klasse'], k) for k in ks for n in res['cams'][k]['gevlagd'] if n['zone_px'].get('midden', 0) > KAP_MAX_PX], reverse=True)
         cams_rood = sorted({h[3] for h in hits})
         poort(nm, not hits, f'ok ({len(ks)} camera\'s)' if not hits else f"{len(cams_rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {kn} ({kl}) {px}' for px, kn, kl, k in hits[:6]) + (f' (+{len(hits) - 6} meer)' if len(hits) > 6 else ''), eis)
+    # wielkastcamera's achter (WIELKAST_ACHTER): per kant een poort, 50 px per interieur- of motorruimteknoop binnen het interessegebied (achterwielen en achterwielkasten plus 25 procent)
+    # in de zones onder, venster en boven, zoals de wielkastpoort voor, en ook midden onder de boog (achter geen aandrijfas, zie hierboven)
+    wka = [k for k in namen if res['cams'][k]['soort'] == 'wielkast']
+    if wka or vol:
+        for kant in ('links', 'rechts'):
+            ks = [k for k in wka if res['cams'][k]['kant'] == kant]
+            nm = f"wielkastcamera's achter {kant}"
+            eis = (f"geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed in de {len(WIELKAST_ACHTER)} wielkastcamera's achter van deze kant, "
+                   f"binnen de omkadering van achterwiel en achterwielkast plus 25 procent, waar de blik door de achterwielkast gaat (zone onder, venster, boven en midden onder de boog: wielkastvlak |x| 0,50 op y {ZONE_Y[0]} tot {ZONE_Y[3]} en {zz})")
+            if not ks:
+                if vol: leeg(nm, eis, f"wielkastcamera's achter {kant}")
+                continue
+            hits = []
+            for k in ks:
+                for n in res['cams'][k]['gevlagd']:
+                    zp = n['zone_px']; px = sum(zp.get(q, 0) for q in ('onder', 'venster', 'boven', 'midden'))
+                    if px > KAP_MAX_PX: hits.append((px, n['knoop'], n['klasse'], max(('onder', 'venster', 'boven', 'midden'), key=lambda q: zp.get(q, 0)), k))
+            hits.sort(reverse=True)
+            cams_rood = sorted({h[4] for h in hits})
+            poort(nm, not hits, f"ok ({len(ks)} camera's)" if not hits else f"{len(cams_rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {kn} ({kl}, {z}) {px}' for px, kn, kl, z, k in hits[:6]) + (f' (+{len(hits) - 6} meer)' if len(hits) > 6 else ''), eis)
     # extra controle (volle modus): het interessegebied rond de achterwielen bestaat; zonder omkadering telt geen enkel beeldpunt en zou elke poort hierboven stil groen zijn
     if vol:
         gev = [0, 0]
         for k in rg:
             rv = res['cams'][k].get('roi_gevonden') or []
             if len(rv) == 2: gev[0] += bool(rv[0]); gev[1] += bool(rv[1])
-        wka = [k for k in namen if res['cams'][k]['soort'] == 'wielkast']
         zonder = [k for k in wka if not any(res['cams'][k].get('roi_gevonden') or [])]
         poort('interessegebied achterwielen in beeld', gev[0] > 0 and gev[1] > 0 and not zonder,
               f"rondgang: achterwiel links in {gev[0]}, rechts in {gev[1]} van {len(rg)} camera's" + (f"; wielkastcamera's achter zonder interessegebied: {', '.join(zonder)}" if zonder else (f"; wielkastcamera's achter: alle {len(wka)} met interessegebied" if wka else '')),
