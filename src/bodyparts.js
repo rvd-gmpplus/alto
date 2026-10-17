@@ -307,7 +307,7 @@ function bodReg(sd, z0, z1, nu, nv, lo, hi, inw = 0, breaks = []) {
 }
 // wand langs een rand: pt(u) geeft [z, s]; de diepte loopt van d0 tot d1
 function bodWall(sd, pt, u0, u1, nu, d0, d1, nv = 3) {
-  return patch((u, d) => { const [z, sv] = pt(u); return bodLow(z, sd > 0 ? sv : 2 - sv, d); }, u0, u1, nu, () => [d0, d1], nv);
+  return patch((u, d) => { const [z, sv] = pt(u); return bodLow(z, sd > 0 ? sv : 2 - sv, d); }, u0, u1, nu, u => [typeof d0 === 'function' ? d0(u) : d0, d1], nv);   // d0 mag een functie van u zijn
 }
 // zet de wikkeling zo dat de normalen naar buiten wijzen (nodig voor een FrontSide-lens): vergelijk met de richting weg van het midden van de voorbouw
 function bodOutward(g) {
@@ -348,10 +348,11 @@ function bodHeadlamp(s) {
   // Lamprand: 6 mm brede zwarte scheiding tussen hoofdlens en hoekkap, vlak met het glas
   const rim = bodReg(sd, bodZH, ZC, 8, 2, z => bodLSpl(z) - 0.0030, z => bodLSpl(z) + 0.0030, bodLampIn - 0.0004);
   // Lamphuis: gesloten kuip (vloer op 70 mm, vier wanden) zodat het zicht door het glas nooit op frontmodule, koelblok of waterkast valt
+  // de onderwand van het huis begint op de diepte van de bumperrand (niet vast 4 mm): tussen wand en bumperrand bleef een spleet waardoor je van boven de bumperbalk zag (afwerking a)
   const lo = z => bodLLo(z, 0.004), hi2 = z => Math.max(lo(z) + 0.0005, bodLHi2(z)), D = 0.07;
   const housing = merge([
     bodReg(sd, Z0, bodZH, 4, 3, lo, bodLHi1, D), bodReg(sd, bodZH, ZE, 8, 4, lo, hi2, D),
-    bodWall(sd, z => [z, lo(z)], Z0, ZE, 20, 0.004, D, 2), bodWall(sd, z => [z, bodLHi1(z)], Z0, bodZH, 6, 0.004, D, 2), bodWall(sd, z => [z, hi2(z)], bodZH, ZE, 10, 0.004, D, 2),
+    bodWall(sd, z => [z, lo(z)], Z0, ZE, 20, z => bodBumperInw(z) + 0.0005, D, 2), bodWall(sd, z => [z, bodLHi1(z)], Z0, bodZH, 6, 0.004, D, 2), bodWall(sd, z => [z, hi2(z)], bodZH, ZE, 10, 0.004, D, 2),
     bodWall(sd, t => [bodZH, lerp(bodLHi1(bodZH), hi2(bodZH), t)], 0, 1, 3, 0.004, D, 2), bodWall(sd, t => [Z0, lerp(lo(Z0), bodLHi1(Z0), t)], 0, 1, 4, 0.004, D, 2),
     bodWall(sd, z => [z, bodLSpl(z)], bodZH, ZC, 8, 0.004, D, 2)]);   // scheidingswand onder de Lamprand
   const bulb = bodLow(1.645, bodPp(sd, lerp(bodLmLo(1.645), bodLmHi(1.645), 0.5)), 0.06);
