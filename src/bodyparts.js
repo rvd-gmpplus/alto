@@ -460,13 +460,35 @@ const bodWarp = (a, b, t) => bodWI(bodWC(a) + (bodWC(b) - bodWC(a)) * t);
 // normaal van de onderbak in (z, p) voor beide helften (p > 1 is de rechterhelft)
 const bodNrm = (z, p) => { const q = ((p % 2) + 2) % 2, sd = q <= 1 ? 1 : -1, sv = q <= 1 ? q : 2 - q, n = bodN(z, sv); return [sd * n[0], n[1], n[2]]; };
 // zoals patch(), maar met normalen uit het analytische oppervlak in plaats van uit de driehoeken: geen naden of kreukels bij versprongen rijen of waar de uiteinden van het vlak samenkomen
-function bodPatchN(fn, u0, u1, nu, vr, nv, breaks = [], nfix = null, pOf = null) {
+function bodPatchN(fn, u0, u1, nu, vr, nv, breaks = [], nfix = null, pOf = null, diag = false, geomZ = 0) {
   const g = patch(fn, u0, u1, nu, vr, nv, breaks), us = [];
   for (let i = 0; i <= nu; i++) us.push(u0 + (u1 - u0) * i / nu);
   breaks.forEach(b => { if (b > u0 + 1e-4 && b < u1 - 1e-4) us.push(b); });
   us.sort((a, b) => a - b);
   const n = g.attributes.normal; let k = 0;
   for (const u of us) { const [v0, v1] = vr(u); for (let j = 0; j <= nv; j++, k++) { let q = bodNrm(u, pOf ? pOf(u, v0 + (v1 - v0) * j / nv) : v0 + (v1 - v0) * j / nv); if (nfix) q = nfix(q, u); n.setXYZ(k, q[0], q[1], q[2]); } }
+  // gladde normalen uit de driehoeken zelf (voor z < geomZ, daarna geleidelijk de analytische normalen): de analytische normalen kloppen niet met de gelineariseerde posities op de hoek van de
+  // bumper en gaven doekachtige plooien in de glans; aan het eindvlak blijven ze nodig omdat daar de naad met het eindvlak (bodEndBlend) op aansluit
+  if (geomZ) {
+    const pg = g.clone(); pg.deleteAttribute('normal'); const wg = THREE.BufferGeometryUtils.mergeVertices(pg, 1e-6); wg.computeVertexNormals();
+    const key = (x, y, z) => Math.round(x * 1e6) + ',' + Math.round(y * 1e6) + ',' + Math.round(z * 1e6), mp = new Map(), wp = wg.attributes.position, wn = wg.attributes.normal;
+    for (let i = 0; i < wp.count; i++) mp.set(key(wp.getX(i), wp.getY(i), wp.getZ(i)), [wn.getX(i), wn.getY(i), wn.getZ(i)]);
+    const P0 = g.attributes.position, N0 = g.attributes.normal;
+    for (let i = 0; i < P0.count; i++) {
+      const q = mp.get(key(P0.getX(i), P0.getY(i), P0.getZ(i))); if (!q) continue;
+      const w = 1 - sstep((P0.getZ(i) - geomZ) / 0.02), a = [N0.getX(i), N0.getY(i), N0.getZ(i)], sg = a[0] * q[0] + a[1] * q[1] + a[2] * q[2] < 0 ? -1 : 1, m = [lerp(a[0], sg * q[0], w), lerp(a[1], sg * q[1], w), lerp(a[2], sg * q[2], w)], l = Math.hypot(...m) || 1;
+      N0.setXYZ(i, m[0] / l, m[1] / l, m[2] / l);
+    }
+  }
+  // diagonaal per vlakje: kies de diagonaal tussen de hoekpunten met de meest gelijke normalen (de normalen van de driehoeken worden over de diagonaal geinterpoleerd; op lange smalle
+  // vlakjes gaf de vaste diagonaal zaagtand-plooien in de glans)
+  if (diag) {
+    const ii = g.index, nn0 = g.attributes.normal, ang = (p, q) => nn0.getX(p) * nn0.getX(q) + nn0.getY(p) * nn0.getY(q) + nn0.getZ(p) * nn0.getZ(q);
+    for (let q = 0; q < ii.count; q += 6) {
+      const a = ii.getX(q), b = ii.getX(q + 1), d0 = ii.getX(q + 2), c = ii.getX(q + 4);
+      if (ang(a, c) > ang(b, d0)) { ii.setX(q, a); ii.setX(q + 1, b); ii.setX(q + 2, c); ii.setX(q + 3, a); ii.setX(q + 4, c); ii.setX(q + 5, d0); }
+    }
+  }
   // de wikkeling moet bij de normalen passen (DoubleSide keert de normaal om voor achterkanten): keer de driehoeken om als de meeste ervan achterstevoren staan
   const ix = g.index, pos = g.attributes.position; let d = 0; const a = V3(), b = V3(), c = V3(), nn = V3();
   for (let t = 0; t < ix.count; t += 3) {
@@ -574,7 +596,10 @@ function bodFrontBumper() {
   const zS = 1.381, zE = ZF, sbF = z => Math.max(S1 + 0.002, sAtY(z, bodBumperTop(z)));
   const nfix = (n, z) => bodEndBlend(n, z, 1), NR = bodNC;
   const pW = (s, z, t) => (s > 0 ? bodWarp(S1, sbF(z), t) : 2 - bodWarp(S1, sbF(z), t));
-  const shell = s => bodPatchN((z, t) => bodLow(z, pW(s, z, t), bodBumperInw(z)), zS, zE, 28, () => [0, 1], NR, [1.50, 1.56, 1.62, 1.70, 1.72, 1.735, ...Array.from({ length: 14 }, (_, k) => 1.658 + k * 0.0026)], nfix, (z, t) => pW(s, z, t));
+  // extra rijen op de plaatsen waar de schaal sterk draait; een extra rij die binnen 1,6 mm van een bestaande rij valt maakt een sliert van een halve millimeter en wordt weggelaten
+  const rijen = Array.from({ length: 29 }, (_, k) => zS + (zE - zS) * k / 28), breaks = [];
+  [1.50, 1.56, 1.62, 1.70, 1.72, 1.735, ...Array.from({ length: 14 }, (_, k) => 1.658 + k * 0.0026)].forEach(b => { if (!rijen.concat(breaks).some(r => Math.abs(r - b) < 0.0016)) breaks.push(b); });
+  const shell = s => bodPatchN((z, t) => bodLow(z, pW(s, z, t), bodBumperInw(z)), zS, zE, 28, () => [0, 1], NR, breaks, nfix, (z, t) => pW(s, z, t), true, 1.70);
   // eindvlak: rijen op dezelfde hoogtes als de laatste rij van de schaal (zelfde z, zelfde s-verdeling), zodat er geen sliert tussen vlak en schaal overblijft
   const face = patch((j, t) => { const [x, y] = halfPt(ZF, bodWarp(S1, 1, j / NR)); return [lerp(x, -x, t), y, ZF]; }, 0, NR, NR, () => [0, 1], 14);
   // luchtsleuven: de sleuf ligt vrijwel vlak met het vlak (0,5 mm erboven), een kader van 5 mm breed en 2 mm hoog in carrosseriekleur eromheen laat hem 1,5 mm verdiept ogen
