@@ -90,21 +90,43 @@ const bodZGR = -1.17;
 const bodTkZ = [-1.52, -1.38], bodTkY = [0.66, 0.78];   // opening van de tankklep in het rechter achterscherm                              // voorrand achterklep (achterrand dak)
 
 /* ---------- wielkast: binnenscherm en bekleding ---------- */
+const WH_AE = 0.34;   // hoek (radialen, ongeveer 19 graden) waarover de koker onder de boog doorloopt (0,26 liet bij de bumperhoek nog het sproeierreservoir zien)
 // Binnenscherm van de wielkast: een wand op |x| 0,50 en een koker (dak) tot |x| 0,68. De wand begint pas op yb: eronder lopen de
 // aandrijfas, de stuurstangen, de draagarmen en de achteras vrij door (golf 2: ze doorboorden de wand). Voor staat een inkeping
 // (halve breedte hw, tot x 0,58) voor de veerpoot, die door de wand en het dak naar de veerpoottoren loopt.
-function bodWheelHouse(s, az, yb = 0.21, hw = 0, xn = 0.58) {
-  const R = ARCH + 0.012, xin = 0.50, xout = 0.68, a0 = Math.asin((yb - AY) / R), c0 = R * Math.cos(a0), V = (z, y) => new THREE.Vector2(z, y);
+function bodWheelHouse(s, az, yb = 0.21, hw = 0, xn = 0.58, ae = 0, dEnd = 0.20) {
+  const R = ARCH + 0.012, xin = 0.50, a0 = Math.asin((yb - AY) / R), c0 = R * Math.cos(a0), V = (z, y) => new THREE.Vector2(z, y);
   const arcPt = a => V(az + R * Math.cos(a), AY + R * Math.sin(a)), N = 12;
+  // buitenrand van de koker: de binnenkant van het scherm op de boogrand (1 mm erachter), in plaats van een vaste |x| 0,68: het scherm begint op |x| 0,70 tot 0,747 en het Schutbord
+  // (tot |x| 0,69) lichtte als donkerrode sikkel op in de spleet tussen koker en scherm
+  const xo = a => { const q = arcPt(a); return Math.max(xin + 0.05, ringX(q.x, q.y) - 0.001); };
   const half = (zA, aA, zB, aB) => {   // stuk wand tussen twee hoeken op de boog, onderrand yb
     const pts = [V(zA, yb)]; for (let k = 0; k <= N; k++) pts.push(arcPt(aA + (aB - aA) * k / N)); pts.push(V(zB, yb)); return pts;
   };
   const aN = hw > 0 ? Math.acos(hw / R) : 0;
-  const polys = hw > 0 ? [half(az + c0, a0, az + hw, aN), half(az - hw, PI - aN, az - c0, PI - a0)] : [half(az + c0, a0, az - c0, PI - a0)];
+  // de inkeping in de wand volgt de schroefveer (z 1,047 tot 1,144, vanaf y 0,474) in plaats van de veerpoottoren (z 1,017 tot 1,157): breder liet schuin de motorruimte zien (de rembekrachtiger);
+  // onder y 0,46 is de wand dicht; achter de inkeping staat een schot (x 0,46, 14 mm achter de veer) dat de blik tot y 0,555 opvangt (daarboven staat de veerpoottoren). Het dak (de koker) houdt de volle inkeping van de toren (hw).
+  const wl = 0.05, wr = 0.067, yn = 0.46, xb = 0.46;   // xb: vlak van het schot achter de inkeping
+  const polys = hw > 0 ? [(() => {
+    const aR = Math.acos(wr / R), aL = Math.acos(-wl / R), pts = [V(az + c0, yb)];
+    for (let k = 0; k <= N; k++) pts.push(arcPt(a0 + (aR - a0) * k / N));
+    pts.push(V(az + wr, yn), V(az - wl, yn));
+    for (let k = 0; k <= N; k++) pts.push(arcPt(aL + (PI - a0 - aL) * k / N));
+    pts.push(V(az - c0, yb)); return pts;
+  })()] : [half(az + c0, a0, az - c0, PI - a0)];
+  // sluitstukken: aan beide einden van de boog loopt de bekleding onder yb door tot hoek -ae (en PI + ae), alleen waar |z - az| groter is dan dEnd: daar kruist geen aandrijfas,
+  // stuurstang of draagarm de wand. Zonder deze stukken bleef onder de boog een sleuf waardoor je schuin de motorruimte en de cabine zag.
+  if (ae > 0) {
+    const eP = (aA, aB, dz) => { const pts = [V(az + dz, yb)], n = 8; for (let k = 0; k <= n; k++) pts.push(arcPt(aA + (aB - aA) * k / n)); pts.push(V(az + dz, AY + R * Math.sin(aB))); return pts; };
+    const eW = Math.asin((AY - 0.245) / R);   // de wand loopt tot y 0,245: lager ligt de stabilisatorstang (y 0,227) in het vlak x 0,50; de koker (x 0,50 tot het scherm) loopt door tot -ae
+    polys.push(eP(a0, -eW, dEnd), eP(PI - a0, PI + eW, -dEnd));
+  }
   const wall = merge(polys.map(pp => { const g = new THREE.ShapeGeometry(new THREE.Shape(pp), 1); g.rotateY(-HALF); g.translate(s * xin, 0, 0); return g; }));
-  const tN = (xn - xin) / (xout - xin), inN = a => (hw > 0 && a > aN && a < PI - aN) ? tN : 0;
-  const arc = patch((a, t) => [s * lerp(xin, xout, t), AY + R * Math.sin(a), az + R * Math.cos(a)], a0, PI - a0, 28, a => [inN(a), 1], 3, hw > 0 ? [aN - 1e-4, aN + 1e-4, PI - aN - 1e-4, PI - aN + 1e-4] : []);
-  return merge([wall, arc]);
+  const inN = a => (hw > 0 && a > aN && a < PI - aN) ? (xn - xin) / (xo(a) - xin) : 0;
+  const arc = patch((a, t) => [s * lerp(xin, xo(a), t), AY + R * Math.sin(a), az + R * Math.cos(a)], a0 - ae, PI - a0 + ae, 28 + Math.round(ae / 0.0436), a => [inN(a), 1], 3, hw > 0 ? [aN - 1e-4, aN + 1e-4, PI - aN - 1e-4, PI - aN + 1e-4] : []);
+  let schot = null;
+  if (hw > 0) { const g = new THREE.ShapeGeometry(new THREE.Shape([V(az - wl - 0.01, yn - 0.01), V(az + wr + 0.01, yn - 0.01), V(az + wr + 0.01, 0.555), V(az - wl - 0.01, 0.555)]), 1); g.rotateY(-HALF); g.translate(s * xb, 0, 0); schot = g; }
+  return merge(schot ? [wall, arc, schot] : [wall, arc]);
 }
 /* ---------- carrosserieschil ---------- */
 function bodSkinParts() {
@@ -144,7 +166,12 @@ function bodSkinParts() {
     P('Rubber hoekruit', bodRim(s, -1.169, -0.741, z => bodQy(z, YT(z) + 0.013), z => Math.min(bodQGl(z), Math.max(bodQy(z, YT(z) + 0.013) + 1e-4, bodQSlant(z)))), MAT.bodSeal,
       { d: 'Zwart rubber dat de ruit in de sponning houdt en afdicht.', ex: [s * 0.06, 0.03, 0] }),
   ]);
-  kids.push(...bodBoth(fender), ...bodBoth(quarter), ...bodBoth(rails), ...bodBoth(aPillar), ...bodBoth(bPillar), ...bodBoth(cPillar));
+  // afdekstrook achter de portierspleet (z 0,780 tot 0,784, tussen de voorrand van het portier en het scherm): een strook van 28 mm breed (z 0,768 tot 0,796) die 3 mm achter de huid meeloopt,
+  // van y 0,30 tot onder de bovenrand. Zonder strook zag je door de spleet (3 tot 4 beeldpunten breed) het Schutbord en de zijkap van het dashboard; een vlak dwars op de spleet vangt de
+  // schuine blikken niet die de spleet binnenkomen en pas bij z > 0,784 de huid van het scherm passeren. Zwart, zoals de spleet er in het echt uitziet.
+  const flange = s => P(`Schermflens ${bodSn(s)}`, patch((y, t) => { const z = lerp(0.768, 0.796, t); return [s * (ringX(z, y) - 0.003), y, z]; }, 0.30, Math.min(0.90, bodSec(0.78).yd - 0.02), 12, () => [0, 1], 2), MAT.bodLiner,
+    { d: 'Strook langs de achterrand van het voorscherm, achter de portierspleet: sluit de spleet tussen scherm en portier af, zodat je er niet in de motorruimte of de cabine kijkt.', ex: [s * 0.46, 0.06, 0.1] });
+  kids.push(...bodBoth(fender), ...bodBoth(flange), ...bodBoth(quarter), ...bodBoth(rails), ...bodBoth(aPillar), ...bodBoth(bPillar), ...bodBoth(cPillar));
   return { kids, qGlass };
 }
 /* ---------- kas: dak, voorruit, achterruit ---------- */
@@ -196,7 +223,7 @@ function bodStructure() {
   ]);
   return [floor, front, rear];
 }
-const bodWheelHousePart = (s, fr) => P(`Wielkast ${fr ? 'voor' : 'achter'} ${bodSn(s)}`, fr ? bodWheelHouse(s, AXF, 0.42, 0.075) : bodWheelHouse(s, AXR, 0.485), MAT.bodLiner,
+const bodWheelHousePart = (s, fr) => P(`Wielkast ${fr ? 'voor' : 'achter'} ${bodSn(s)}`, fr ? bodWheelHouse(s, AXF, 0.42, 0.075, 0.58, WH_AE) : bodWheelHouse(s, AXR, 0.485, 0, 0.58, WH_AE), MAT.bodLiner,
   { d: `Binnenscherm van de ${fr ? 'voor' : 'achter'}wielkast met zwarte kunststof bekleding: een halve koker om het wiel met een wand aan de binnenzijde, gelast aan langsligger, vloer en buitenscherm. De wand begint boven de aandrijfas, de draagarmen en de achteras${fr ? '; voor heeft hij een uitsparing waar de veerpoot naar de veerpoottoren loopt' : ''}.`, ex: [s * 0.12, 0.04, 0] });
 function bodSill(s) {
   return P(`Dorpel ${bodSn(s)}`, patch((z, p) => bodLow(z, p), AXR + ARCH + 0.002, AXF - ARCH - 0.002, 40, z => sideR(s, S1 * 0.55, sAtY(z, bodYSill - 0.006)), 8), MAT.paint,
