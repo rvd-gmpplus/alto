@@ -155,7 +155,14 @@ function bodWheelHouse(s, az, yb = 0.21, hw = 0, xn = 0.58, ae = 0, dEnd = 0.20)
     // Verlenging voor tot z 1,50 in de lage strook onder het sproeierreservoir (y 0,32), in twee delen met de onderplaat van de bumper (y 0,265) ertussen (2 mm vrij): de blik onder de zijrand van de bumper door bereikt de langsligger en het koppelingshuis niet meer.
     extra.push(plaat([[1.427, 0.245], [1.50, 0.245], [1.50, 0.2628], [1.427, 0.2628]], xin), plaat([[1.427, 0.2672], [1.50, 0.2672], [1.50, 0.315], [1.427, 0.315]], xin));
   }
-  return merge(schot ? [wall, arc, schot, ...extra] : [wall, arc]);
+  // Achterwielkast (hw 0): sluitplaten voor en achter de band, op x 0,715 (vlak binnen de huid, buiten de zijbekleding achter die op x 0,702 tot 0,712 tot z -1,17 doorloopt) en op 6 mm van de band.
+  // De koker begint achter pas op y 0,40 (voor y 0,32): zonder platen zag je door de spleet tussen band en boograad de zijbekleding en de achterbank (rondgang baanv-r3.0-h0.23-a160: 25.014 beeldpunten). Voor tot z -0,86 (de dorpel eindigt op z -0,946), achter tot z -1,55 (de bumperschaal begint op z -1,556).
+  if (hw === 0 && ae > 0) {
+    const RB = 0.2666 + 0.006, ar = y => Math.sqrt(RB * RB - (y - AY) * (y - AY)), ys = [0.245, 0.26, 0.28, 0.30, 0.32, 0.34, 0.36, 0.38, 0.40, 0.42, 0.45, 0.48, 0.50], xr = 0.715, zD = -0.86, zB = -1.55;
+    extra.push(plaat([...ys.map(y => [az + ar(y), y]), [zD, 0.50], [zD, 0.245]], xr));
+    extra.push(plaat([...ys.map(y => [az - ar(y), y]), [zB, 0.50], [zB, 0.245]], xr));
+  }
+  return merge(schot ? [wall, arc, schot, ...extra] : [wall, arc, ...extra]);
 }
 /* ---------- carrosserieschil ---------- */
 function bodSkinParts() {
