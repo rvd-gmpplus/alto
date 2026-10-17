@@ -51,6 +51,25 @@ Eerlijk benoemd, zodat het de volgende stap is en geen verrassing:
 - De poortcamera's (`gallery.py`, `gateshots.py`, `poort.js`) en `rays_bagage.py` zijn per auto.
 - Het ontwerpdocument en `testen.md` mengen generieke uitleg met Laguna-feiten; ze staan onder sjabloon.
 
+## Extra tests per auto (`extraTests`)
+
+De vaste testlijst van `finaltests.sh` is generiek en blijft letterlijk gelijk (CI bewaakt de `TESTS`-regel). Wil een auto er eigen tests bij, zoals een meetscript of een poort die alleen voor haar model zin heeft, dan meldt ze die aan in `auto.json`; de generieke laag blijft autoneutraal. Het veld is optioneel en ontbreekt bij een auto zonder extra tests (dan is de uitvoer, `tests.txt` en de exitcode precies als zonder de haak).
+
+```json
+"extraTests": [
+  {"naam": "meet", "cmd": ["python3", "tools/meet.py", "--uit", "{uit}/meet"], "uitleg": "meetpoort van deze auto"}
+]
+```
+
+- `naam`: past op `^[a-z][a-z0-9_-]*$`, is uniek en botst niet met een vaste testnaam uit de `TESTS`-regel. De naam wordt de bestandsnaam `NAAM.txt` in de uitvoermap.
+- `cmd`: een niet-lege lijst van teksten, het commando met argumenten (geen shell). `{uit}` wordt de absolute uitvoermap van de run en `{root}` de repowortel; het commando draait vanuit de repowortel. Een pad dat met `tools/` begint (ook als `{root}/tools/`) moet bestaan.
+- `uitleg`: vrije tekst voor wie het leest; geen invloed op de run.
+- Andere velden zijn een fout, zodat een typefout niet stil een test laat vervallen.
+
+Hoe het werkt: `python3 tools/framework.py check` valideert het veld (rood bij een fout). `framework.py extra-namen` drukt de namen op één regel af (niets als het veld ontbreekt) en geeft exit 1 bij een ongeldig veld; `finaltests.sh` stopt dan meteen met een melding. Anders start `finaltests.sh` de extra tests als derde parallelle reeks naast de twee vaste, elk via `framework.py extra NAAM UITMAP`, dat de exitcode van het commando ongewijzigd doorgeeft (onbekende naam: 2). Elke extra test schrijft `NAAM.txt` met als laatste regel `exit N (Ns)`, telt in de eindlus mee (een ontbrekend `NAAM.txt` is FOUT) en staat na de vaste lijst in `tests.txt`.
+
+Eigen scripts van de auto horen in het manifest onder `auto` (niet onder `generiek`), want ze verschillen per auto.
+
 ## Een nieuwe auto in stappen
 
 Elke stap eindigt met een poort; pas als die groen is, begint de volgende.
@@ -73,6 +92,32 @@ Elke stap eindigt met een poort; pas als die groen is, begint de volgende.
 - **Ontstaat een verbetering in een andere auto** (zoals het documentgeraamte in espace5), dan wordt die eerst hier overgenomen en daarna geëxporteerd. Nooit in twee repo's apart.
 - **Afwijking meten:** `python3 tools/framework.py vergelijk ../andere-repo` geeft per generiek bestand gelijk, afwijkend of ontbrekend.
 - **Bewaken:** `python3 tools/framework.py check` draait in CI; een autonaam of motorcode in een generiek bestand is rood.
+
+## Wat golf 5b-2 aan de generieke laag toevoegde
+
+Op 16 oktober 2026 kwamen in laguna3 (golf 5b-2, versie 9, in `main` sinds `3be230e`) de volgende generieke wijzigingen. Ze staan in `framework.json` bij de generieke bestanden en zijn dezelfde avond met `framework.py export` naar espace5 gebracht, op de tak `framework-laguna3-v9` (niet in de `main` van espace5, want die publiceert de pagina van espace5):
+
+- `tools/harness.py`: Google Fonts-verzoeken worden uit een lokale cache beantwoord (`~/.cache/explosietekening/fonts`), omdat Chromium op macOS met `net::ERR_SOCKET_NOT_CONNECTED` faalde zodra een tweede pagina laadde terwijl de eerste nog renderde. Een auto die op macOS test, heeft dit nodig.
+- `tools/orkestratie/finaltests.sh`: `VISDIFF_BASIS` kiest een andere basislijn voor `visdiff`. De basislijn (`docs/baseline`) hoort bij een auto en bij een platform: software-rendering wijkt tussen macOS, een Linux-container en een Linux-VM 2 tot 33 procent per beeld af. Een nieuwe auto maakt dus eigen basislijnen en meet op een ander platform eerst een eigen basis van een groene startstand.
+- `tools/orkestratie/clash.py`, `huid.py` en `meetlib.js`: meting van doordringing tussen delen (ook binnen een hoofdgroep, waar `integrity.py` niet kijkt) en van de afwijking van een buitenhuid. Ze kennen geen onderdeelnamen; een toegestaan paar staat per auto in `data/clash-toegestaan.json` (autobestand). Bij een nieuwe auto is `clash.py` de eerste maat om de eigen kalibratie te toetsen: kies een bekend geval, zoals de laguna3-meting op het Leidingblok met de Koude laadluchtslang (-10,5 mm), en kijk of het script het vindt.
+- `tools/orkestratie/mergecheck.py`: `src/core.js` en `src/body.js` zijn voor domeineigenaren alleen-lezen (voorheen telde "eigen" vóór "alleen-lezen").
+- `tools/orkestratie/shots.py`: wacht twee animatieframes en gebruikt `MODEL_TIMEOUT_MS`.
+- `src/core.js`: `hexBolt` met steel 6 en ring 8 segmenten (minder driehoeken per bout in elke auto; de tekenopdrachten blijven gelijk). De verdere generieke opschoning van `core.js` (G8e: gedeelde constructies als bellows, slangklem en Sutherland-Hodgman) is in golf 5b-3 gedaan (zie hieronder) en gaat eenmalig met een export naar espace5, niet in twee repo's apart.
+
+Wat dit voor het framework betekent: de premortem van de golf leverde een patroon voor elke auto. Een poort die alleen het bestaande meet (`integrity.py` slaat de Carrosserie over), laat de schade van nieuwe geometrie door; meet dus eerst met `clash.py` en `huid.py` op een bekend geval, en geef elke tak een presetlijst vooraf zodat elk rood beeld aan één wijziging hangt.
+
+## Wat golf 5b-3 aan de generieke laag toevoegde
+
+Op 17 oktober 2026 kwamen in laguna3 (golf 5b-3, versie 10, gepubliceerd vanaf `main` op `d3fe58f`; inhoud van de tak `golf-5b3` tot en met ronde 9, stand `b775511`) de volgende generieke wijzigingen. `framework.py check` is groen (45 generieke bestanden). De export naar espace5 (stap 3.3 van het plan) staat op de espace5-tak `golf-5b3-export` (nu `bcb15a4`, export `3606ebe` uit laguna3 `3e5e491`, plus `index.html` herbouwd; Mac-set functioneel groen, itest 152 van 152; `visdiff` op de Mac tegen de eigen Mac-basis van espace5 `main` 49 van 51, rood 11-injection en 44-openHood): de export zelf en een eigen commit die de lokale kopieën weghaalt, geometrie-hash gelijk. De tak is nog niet samengevoegd; dat gebeurt pas na een eigen testset in espace5 en een `visdiff` tegen een basis van hetzelfde platform als de espace5-basislijn (los van versie 10).
+
+- `src/core.js`: nieuwe generieke helpers `bellows` (verplaatst uit `drivetrain.js`), `hexNut`, `hoseClamp` (met en zonder schroef), `hinge`, `follow`, `clipPoly`, `weldAll`, `creasedWeld` en `ringPattern`, en `spring()` met de parameter `per` (punten per winding, standaard 14; bestaande sleutels en aanroepen blijven gelijk, ook in espace5). Een lokale const of function met een van deze namen op het hoogste niveau botst; lokale namen binnen een functie niet.
+- In laguna3 zijn de lokale kopieën weg: `chsNut`, `chsClamp`, `sysClampGeo`, `intHinge`, `intFollow`, `intClip`, `engClip`, `bodWeldAll`, `panWeld` en `drvRing`; `engNut` blijft als dunne wrapper op `hexNut`. In espace5 zijn ze met de export weggehaald en de aanroepen omgezet, behalve `chsClamp`: daar zit het slotblokje op een andere plek dan `hoseClamp` kan maken.
+- `build.py`: de tekstcontrole `lint_texts` leest nu `d`, `spec`, `note` en `label`; R1, R2, R4, R5 en R7 zijn fouten (R4, R5 en R7 waren meldingen). R7 leest de tabel `_voorvoegsels` in `auto.json` (per auto, dus niet in het generieke bestand): een auto zonder die tabel wordt niet op cachesleutels getoetst. Meet in espace5 eerst R4 en R5 als melding en los de treffers in de eigen teksten in dezelfde commit op, of laat ze daar als melding met een reden; laguna3 houdt dat niet op.
+- `src/body.js`: `REAR_SPR`, `REAR_BEAM` en `SUB_ROD` (gedeelde maten voor achterveer, torsiebalk en koppelstang). Dit is auto-specifiek en niet generiek; espace5 heeft eigen maten.
+- `src/app1.js` (commit `f63b185`, van `origin/main`, uit een andere sessie; ontstaan in Alto, `d3f8223`): de samenvoegmodus (gebundeld renderen, `uiBatchAdd`) kopieerde alleen `position` en `normal`, zodat onderdelen met een textuur in de samengevoegde stand zwart werden. Nu krijgt elke materiaalgroep met minstens één mesh met uv een uv-attribuut (nullen voor meshes zonder uv), en `uiGeoBytes` en de bytetelling rekenen 8 byte per vertex extra, zodat `uiBatchCap` klopt. Generiek, dus mee in de export; de batches zijn er groter door (zie [cijfers.md](cijfers.md)). Controleer in espace5 dat de export de huidige `app1.js` bevat (anders `framework.py export` opnieuw) en kijk handmatig naar een textuuronderdeel in de standaardmodus.
+- `src/app1.js`, `src/app2.js` en `src/presets.js`: herkadrering als de layout van het dock verandert (`uiFitFree`, `uiRefitSoon`), en `uiRestore` herstelt kader, vrij beeld en gebruikerscamera. Dit gaat mee met de export. In laguna3 vangt itest controle 5 nu de camera na Stap terug; in espace5 is die fout nog niet getoetst, dus draai daar `tools/itest.py` na de export en kijk handmatig naar Stap terug op een preset met een andere kadrering.
+- `tools/itest.py` is een autobestand en gaat dus niet mee: neem de controle 5 (camera na Stap terug) en de aanvulling van controle 7 (ook na 1,5 s) zelf over in de itest van espace5. Generiek: `tools/orkestratie/mergecheck.py` (testscripts en de VM-scripts zijn alleen-lezen voor domeineigenaren, ook `tools/visdiff.py`, `tools/anchorcheck.py`, `tools/lag3-vm.sh` en `tools/vm/*`; sinds `3673b17` is het domein docs wel eigenaar van `README.md`, `docs/*.md`, `CHANGELOG.md` en `handomdraai.md`, terwijl `docs/cijfers.md` van de orkestrator blijft: eerder woog alleen-lezen zwaarder dan het eigendom, zodat een docs-tak nooit groen kon worden) en `tools/orkestratie/cijfers.py` (de koptekst van de opstarttijdlijn zegt dat de tijden van de Mac komen, niet van de container).
+- `tools/orkestratie/meetlib.js` (commit `a000772`, ronde 3 van golf 5b-3): de cache van de wereldgeometrie per mesh gold voor de hele paginasessie, zodat `clash.py` en `huid.py` in een open stand de geometrie van de eerste (dichte) stand gebruikten. De cache geldt nu per stand en ververst op geometrie, geometrieversie en `matrixWorld`. Een auto die metingen in open stand deed met een oudere `meetlib.js`, moet die metingen opnieuw doen; dichte metingen waren niet geraakt. De fix is geëxporteerd naar espace5 op de tak `golf-5b3-export` (nog niet samengevoegd). Bij een nieuwe auto: kalibreer `clash.py` ook in een open stand, op een bekend verschil (Portier linksvoor dicht tegen open geeft nu 1,18 m, was 0).
 
 ## espace5 naar het framework
 

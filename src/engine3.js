@@ -183,7 +183,7 @@ function engBuildHarness() {
 function buildEngine() {
   return A('Motor G10BB', {
     d: 'Suzuki G10BB: dwars voorin geplaatste vloeistofgekoelde viercilinder in lijn van 993 cc met 16 kleppen en meerpuntsinspuiting (Euro 3), blok en kop van aluminium. Krukaspoelie en distributie zitten rechts in de auto, koppeling en bak links; inlaat voor, uitlaat achter. Alleen boring x slag en inhoud komen uit het handboek; de opbouw en alle overige maten zijn schematisch en geschat.',
-    spec: [['Motorcode', 'G10BB'], ['Opbouw', 'viercilinder in lijn, 16 kleppen'], ['Cilinderinhoud', '993 cm³'], ['Boring x slag', '72,0 x 61,0 mm'], ['Vermogen', '43 kW (58 pk) bij 6000 tpm'], ['Koppel', '78 Nm bij 4500 tpm'], ['Inspuiting', 'elektronisch, meerpunts'], ['Emissie', 'Euro 3']],
+    spec: [['Motorcode', 'G10BB'], ['Opbouw', 'viercilinder in lijn, 16 kleppen'], ['Cilinderinhoud', '993 cm³'], ['Boring x slag', '72,0 x 61,0 mm'], ['Vermogen', '43 kW (58 pk) bij 6.000 tpm'], ['Koppel', '78 Nm bij 4.500 tpm'], ['Inspuiting', 'elektronisch, meerpunts'], ['Emissie', 'Euro 3']],
     p: PT_POS.toArray(), r: [PT_TILT, 0, 0], ex: [-0.24, 0.12, 0],
   }, [
     engBuildBlock(), engBuildCrank(), engBuildHead(), engBuildTiming(), engBuildAccessory(), engBuildCooling(), engBuildLube(),

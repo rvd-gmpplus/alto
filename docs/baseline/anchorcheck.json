@@ -3,7 +3,7 @@
  "viewport": "1280x800",
  "totaal": {
   "labels": 242,
-  "eigen": 210,
+  "eigen": 211,
   "vrij": 180
  },
  "presets": {
@@ -117,7 +117,7 @@
   "timing": {
    "label": "Distributie",
    "labels": 8,
-   "eigen": 7,
+   "eigen": 8,
    "vrij": 3,
    "achter": [
     "Pakking distributiekap achter Distributiekap",
@@ -126,9 +126,7 @@
     "Spanner distributieriem achter Distributiekap",
     "Krukastandwiel distributie achter Distributiekap"
    ],
-   "lucht": [
-    "Nokkenwielbout"
-   ]
+   "lucht": []
   },
   "intake": {
    "label": "Inlaat en injectie",

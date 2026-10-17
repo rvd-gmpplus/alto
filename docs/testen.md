@@ -23,6 +23,8 @@ Chromium start met `--use-angle=swiftshader --enable-unsafe-swiftshader --ignore
 
 `harness.page()` neemt een `query` (bijvoorbeeld `'?preset=engine'`) voor de deelbare stand en de debug-overlay. De pagina zet `window.__model` met hulpfuncties voor tests, waaronder `version` (het versiestempel), `finishAll()` om animaties direct af te ronden, `state()`, `preset(id)`, `checkPresets()`, `pickNodeAt(x, y)`, `hoverTarget(x, y)`, `setExplode(v)`, `labelRects()`, `freeView()`, `profileFrames(naam, aantal)`, `timing()` (de opstarttijdlijn in milliseconden sinds het begin van de navigatie), `batchFlush()` (alle wachtende batches direct bouwen) en `batchStats()`. Een eigen `THREE.Raycaster` in een testscript moet `ray.layers.enableAll()` aanzetten: gebundeld renderen zet de losse meshes van gesloten groepen op laag 1, en een raycaster die alleen laag 0 ziet, mist ze (`integrity.py`, `silhouette.py` en `ui_inner.py` doen dit). De oude functies blijven werken; nieuwe haken komen erbij.
 
+De Google Fonts-verzoeken beantwoordt de harness zelf (`Session.page`): uit `~/.cache/explosietekening/fonts`, eenmaal met Python opgehaald; lukt ophalen niet, dan een leeg antwoord zonder consolefout. Zo hangt een test niet af van het netwerk en blijven de letters gelijk aan die van de echte pagina; een leeg antwoord alleen liet de tekst op een systeemletter terugvallen en gaf bij `visdiff` een afwijking over het hele beeld. `tools/itest.py` heeft dezelfde route in `fault_page` (`FONT_HOSTS` en `_font_route` uit de harness), want die context maakt zelf een pagina buiten `Session.page`. `pubsmoke.py` houdt de bereikbaarheid van de stylesheet met `curl` bij. De cache is per platform: de Google Fonts-stylesheet verschilt per user-agent (op Linux 9.700 bytes, op macOS 9.828 bytes, andere woff2-bestanden), dus de Linux-container heeft een eigen cache (zie de sectie Linux-container).
+
 Het gebruikte bestand is de testversie (`python3 build.py --test-only MAP`): die laadt three.js lokaal. De gepubliceerde `index.html` laadt het van jsDelivr en wordt door `pubsmoke.py` apart getoetst.
 
 ## CI op GitHub
@@ -160,7 +162,47 @@ Dezelfde controle met alles open: welke ingesloten knopen worden zichtbaar als d
 
 ### `tools/orkestratie/finaltests.sh UITVOERMAP`
 
-Draait de volledige testset in twee parallelle reeksen: lint, smoke, integrity, silhouette, `ui_inner.py --open --strict` en `opentest.py --strikt-min` in de ene reeks; `itest.py` met poorten, `tri.py --gate`, pubsmoke en stats in de andere. De uitvoer per test staat in de map, met per test de duur en de exitcode op de laatste regel, en `start.txt` en `einde.txt`. Het script geeft exitcode 1 zodra één test faalt en weigert zonder uitvoermap. De lijst van tests staat in `tests.txt`, zodat CI kan zien of er een test uit de set is gevallen.
+Draait de volledige testset in twee parallelle reeksen (plus een derde met de extra tests van de auto, zie onder): lint, smoke, integrity, silhouette, `ui_inner.py --open --strict` en `opentest.py --strikt-min` in de ene reeks; `itest.py` met poorten, `tri.py --gate`, pubsmoke en stats in de andere. De uitvoer per test staat in de map, met per test de duur en de exitcode op de laatste regel, en `start.txt` en `einde.txt`. Het script geeft exitcode 1 zodra één test faalt en weigert zonder uitvoermap. De lijst van tests staat in `tests.txt`, zodat CI kan zien of er een test uit de set is gevallen.
+
+Extra tests per auto: het generieke veld `extraTests` in `auto.json` (uitleg: `docs/framework.md`, sectie "Extra tests per auto") meldt eigen tests aan. `finaltests.sh` start ze als derde parallelle reeks naast de twee vaste, elk via `python3 tools/framework.py extra NAAM UITMAP`, dat de exitcode van het commando ongewijzigd doorgeeft. Voor de Alto zijn dat `meet` en `zijstraal`, in die volgorde en achter elkaar in de derde reeks. Elke extra test schrijft `NAAM.txt` met als laatste regel `exit N (Ns)`, telt mee in de eindlus en de exitcode (een ontbrekend `NAAM.txt` is FOUT) en staat na de vaste namen in `tests.txt`, dat daarmee `lint smoke integ sil inner opentest itest tri pub stats shots visdiff anchor meet zijstraal` bevat. Naast `meet.txt` en `zijstraal.txt` staan `meet.json` en `zijstraal.json` in de uitvoermap. Een ongeldig `extraTests`-veld maakt de set meteen rood, vóór het werk begint (`framework.py extra-namen` geeft exit 1). Zonder het veld is de set precies de vaste lijst.
+
+CI bewaakt de haak zelf: de stap "haak voor extra tests in finaltests.sh" in `.github/workflows/ci.yml` controleert met `grep -F` dat `finaltests.sh` zowel `framework.py extra-namen` als `framework.py extra "$n"` bevat en drukt de aangemelde namen af; `framework.py check` valideert het veld (rood bij een fout). De haak komt uit laguna3, tak `finaltests-extra`, commit `0c58c83`, en is geëxporteerd in `8b85200`. CI draait de metingen zelf niet; die staan in de lokale set en in de Linux-container.
+
+Resultaten, aantallen, duur en herhaalbaarheid: sectie "Resultaten P1: meet en zijstraal in finaltests (17 oktober 2026)" hieronder; kerngetallen van de pagina: `docs/cijfers.md`.
+
+### `python3 tools/meet.py [--root WERKBOOM] [--uit MAP] [--json BESTAND] [--cams a,b,c|rondgang|wielkast] [--geen-rondgang] [--sw] [--geen-geo] [--geen-png] [--shots] [--basis EERDERE.json]`
+
+Meting van de voorkant, uit de front-rondes (versie 2) overgenomen in `tools/`. Het script rendert per camera een id-pass (elke knoop een eigen kleur, zonder antialias, helder glas verborgen) en telt de beeldpunten per knoop. Elke knoop krijgt een klasse (buitenkant, wiel, wielkast, interieur, motorruimte, onderstel, overig); een knoop uit de motorruimte of het onderstel die door een kier zichtbaar is, staat met aantal beeldpunten, omkadering en een voorbeeldbeeldpunt in `meet.json` (voor `rays.py`). Daarnaast meet het geometrie: bumperschouderhoek, lip-aansluiting, hoogteverschil van hoekkap en hoofdlens, verhouding bumper/lamp en driehoeken. De volledige uitleg per poort staat in de docstring van het script.
+
+- Poortgroepen (aantallen: sectie "Resultaten P1" hieronder): kier in de hoekcamera's (doorkijk naar motorruimte of onderstel), zicht onder de bumper, bumperschouderhoek, hoekkap boven en onder, lip (afstand, aansluithoek, normaalsprong), verhouding bumper/lamp, helderheid van de onderplaat en afscherming onder de bumper, wielkastcamera's met een kierpoort per kant (venster boven de band, gat onder de boog, opening boven het venster, scharnier achter de band) en een lage rondgang om de auto, wielkastbekleding tegenover onderstel en aandrijving, en een console zonder fouten. De afwerkingsmetingen (a tot en met e) zijn zachte poorten.
+- Harde en zachte poorten: 99 harde poorten en 13 zachte. Een zachte poort is in `meet.json` gemarkeerd met `zacht: true` (uitkomst in `ok_afwerking`), staat in `meet.txt` als `GEEL` wanneer hij niet groen is, en telt niet mee voor de exitcode. Op de huidige stand is 12 van de 13 zachte poorten groen; de gele is `afwerking e: embleem leesbaar zijhoek-r light` (embleem 0,80 tot 1,87 keer de helderheid van het gaas, ondergrens 0,9).
+- Exitcode: 0 alle harde poorten groen, 1 minstens een harde poort rood, 2 de meting is mislukt (een uitzondering in het script, of `tools/harness.py` ontbreekt in de gekozen wortel). `finaltests.sh` telt 1 en 2 allebei als FOUT.
+- Controle op het aantal poorten (alleen in volle modus, dus zonder `--cams`, `--geen-geo` en `--geen-rondgang`): `VERWACHT_HARD = 99` en `VERWACHT_ZACHT = 13` in het script (nulmeting 17 oktober 2026 op `d044bae`). Wijkt het gevonden aantal af, dan is de extra harde poort `aantal poorten` rood en is de exitcode 1; wie bewust een poort toevoegt of schrapt, past die twee getallen mee aan. De controle staat ook in het groene geval in `meet.json` (`extra: true`, `meta.aantal_poorten`) en telt niet mee in de 99. In de beperkte modus meldt het script `aantal poorten niet gecontroleerd (beperkte modus)`.
+- Ontbrekende invoer geeft rood: in volle modus worden de geometriepoorten (bumperschouderhoek, hoekkap boven en onder, de drie lippoorten, de twee verhoudingspoorten, afscherming onder de lip, afscherming raakt aandrijving niet, wielkastbekleding raakt onderstel niet) en `onderplaat tegenover gaas in eig` altijd aangemaakt. Ontbreekt hun invoer (een hernoemde knoop, een geometriemeting die `null` of de beginwaarde geeft), dan staat de poort rood met de waarde `invoer ontbreekt: <sleutel>` en verdwijnt hij niet stil uit de lijst. `Onderplaat voorbumper` is daarbij een verplichte, vaste knoop. De zachte poort `afwerking d` blijft zacht en wordt via het aantal zachte poorten bewaakt.
+- Argumenten: `--root` (standaard de repowortel boven `tools/`, daarna `$MEET_ROOT`), `--uit` (uitvoermap; `finaltests.sh` geeft `{uit}/meet`), `--json`, `--cams` (een lijst, of `rondgang` of `wielkast`), `--geen-rondgang` (snelle tussenmeting zonder de lage rondgang, de rondgangpoorten ontbreken dan), `--sw`, `--geen-geo`, `--geen-png` (geen beelden schrijven; zo staat het in `auto.json`), `--shots` (gewone opnamen, donker en licht) en `--basis` (verschil met een eerdere `meet.json`).
+- Renderer: standaard ANGLE Metal (GPU) op macOS en SwiftShader in Linux; `--sw` dwingt SwiftShader af. De keuze is bewust de standaard van het script (zie het item `meet` in `auto.json`). Gelijkheid: alle 112 poorten hebben dezelfde kleur (groen of rood) op macOS-GPU, macOS-SwiftShader en Linux-SwiftShader (nulmeting uit `auto.json`, 17 oktober 2026). SwiftShader geeft op macOS en Linux dezelfde beeldpunttellingen; de GPU wijkt tot enkele tientallen beeldpunten af. Vergeleken in de uitvoer van deze fase (macOS-GPU tegen de Linux-container): dezelfde kleur voor alle 112 poorten, en 88 van de 112 met exact dezelfde waardetekst. De kleinste marge van een harde doorkijkpoort op de GPU is 35 van 50 beeldpunten.
+- Duur: zie "Resultaten P1". Kort: ca. 4 minuten op macOS met de GPU, 12 tot 20 minuten in de Linux-container met SwiftShader, afhankelijk van of er andere tests naast draaien.
+
+Gebruik: `. ~/.config/web3d/env.sh`, dan `python3 -I tools/meet.py --uit UITMAP --json UITMAP/meet.json`. Voor een snelle tussenmeting: `--geen-rondgang`. Een rode poort uitzoeken: `rays.py` (hieronder).
+
+### `python3 tools/rays.py --cam CAMERA --px X,Y [--px ...] [--n 5] [--ring N] [--sw] [--root WERKBOOM]`
+
+Beantwoordt de vraag "wat ligt er achter dit beeldpunt van `meet.py`?". Het script zet dezelfde camera als `meet.py` (zelfde cameralijst, DPR 2, 2000 x 1476), schiet met `THREE.Raycaster` een straal door elk opgegeven beeldpunt en toont de eerste treffers: knoop, afstand, punt en normaal, met het glas verborgen zoals in de id-pass. `--n` is het aantal treffers per straal, `--ring N` schiet er acht buurstralen op N beeldpunten afstand bij (toont wat de opening begrenst), en `--box x0,y0,x1,y1 --stap N` schiet een raster binnen een omkadering uit `meet.json` (`gevlagd[].box`; het voorbeeldbeeldpunt staat in `gevlagd[].voorbeeld_px`). Het script laadt `meet.py` uit dezelfde map en leest geen bestanden. Het is een hulpmiddel bij een rode poort, geen poort; het zit niet in `finaltests.sh`. Exitcode 2 als `tools/harness.py` in de gekozen wortel ontbreekt.
+
+### `python3 tools/zijstraal.py [--root WERKBOOM] [--json BESTAND] [--uit MAP] [--stap MM] [--sw] [--straal Y,Z ...]`
+
+Harde poort voor platen en onderdelen die zijdelings door de buitenhuid van de carrosserie steken. Aanleiding: `d2ae9f1` (sluitplaten achter de achterband) kwam door alle poorten (zie `docs/onderzoek/beslissingen.md`), omdat `integrity.py` alleen onderdelen buiten de carrosserie toetst en `clash.py` een dunne plaat door een open schaal niet als doordringing ziet.
+
+- De regel: stralen evenwijdig aan de x-as, van beide kanten van buiten naar binnen, op een raster van 5 mm in (y, z), tussen onderkant (YB) en schouderlijn (YT min 1 cm) en tussen ZR plus 5 cm en ZF min 5 cm, in de gesloten stand. Per straal tellen alle treffers. De buitenste treffer van een huidknoop (maximum over de stralen binnen 5 mm) is de huid van die kant. Een zichtbare knoop die geen huid is, is rood als hij meer dan 2 mm (of zijn toegestane uitsteek) buiten die huid ligt.
+- Huidlijst (`HUID` in het script, met een reden per item): schermen en de schermflens, A-, B- en C-stijlen, achterpaneel, dorpels, buitenpaneel en rand van het portier, voorbumper (schaal, lip, onderplaat), achterbumperschaal, motorkap (buitenpaneel en rand) en het buitenpaneel van de achterklep.
+- Uitzonderingslijst (`UITZONDERING`, met reden en toegestane uitsteek): koplampunit, buitendeurgreep (15 mm), zijlijsten (8 mm), zijrepeater (5 mm) en de bumpernaad voor (5 mm). De lijst van `integrity.py` (banden, velgen, tankklep, uitlaateindstukken en dergelijke) is bewust niet overgenomen, zodat een band die door het scherm steekt rood blijft.
+- Rekenwijze: analytisch per driehoek in het (y, z)-vlak, zonder renderer; als controle schiet het script een vaste steekproef van echte `THREE.Raycaster`-stralen en vergelijkt alle treffers. Een verschil bij meer dan 1 procent van de steekproef is een mislukte meting.
+- Dekking per patroon: de JSON heeft `dekking` met per patroon van `HUID` en `UITZONDERING` het aantal gematchte zichtbare meshes (`{huid: {patroon: n}, uit: {patroon: n}}`; de telling van `uit` slaat knopen over die al onder `HUID` vallen). Een patroon zonder mesh (n = 0), bijvoorbeeld na het hernoemen van een knoop, is een mislukte meting: het script meldt `METING MISLUKT: huidpatroon zonder mesh: <patroon>` of `METING MISLUKT: uitzondering zonder mesh: <patroon>` en geeft exitcode 2. Voorheen controleerde de meting alleen of elke kant in totaal stralen met huid had, zodat de dekking van een weggevallen patroon stil verdween en de poort groen bleef. De telling is per patroon, niet per alternatief in een groep: valt alleen `Voorscherm` uit `(Voorscherm|Achterscherm|Schermflens)` weg, dan wordt dat patroon 4 in plaats van 6 meshes en blijft de melding uit, maar de poort zelf wordt dan rood (exitcode 1). Op de huidige stand: huid 6, 6, 1, 2, 4, 3, 1, 2 en 1 meshes, uitzondering 14, 4, 4, 2 en 1.
+- Exitcode: 0 groen, 1 rood (een knoop door de huid, of een consolefout), 2 meting mislukt (raycaster-controle wijkt af, geen huid geraakt of een patroon zonder mesh). Uitvoer: `zijstraal.json` met per kant de stralen, de knopen door de huid, de grootste uitsteek in mm met een voorbeeldpunt, de lijsten en de controle. Argumenten: `--root`, `--json`, `--uit`, `--stap` (rasterstap in mm, standaard 5), `--sw`, `--straal Y,Z` (alle treffers van een straal, met soort: huid, kandidaat, uitzondering).
+- Ijking (stap 5 mm, uit het commitbericht van `d044bae`): `f3b77bd` en `dc4b70e` groen; `d2ae9f1` rood met Wielkast achter links 239 stralen tot 17,5 mm en rechts 355 stralen tot 26,6 mm door het achterscherm (23,0 mm op een raster van 1 cm, zoals de eerdere meting). HEAD (`d044bae`) groen: 0 stralen door de huid. Synthetisch: de buitenplaten van Wielkast voor links op x 0,72 rood (54 mm); de hele wielkast 30 mm naar buiten rood (11 stralen, 10,9 mm). Twee runs en `--sw` geven dezelfde JSON.
+- Zwaktes (uit de docstring): de poort ziet niets boven de schouderlijn (ruiten, stijlen, dak, spiegel), onder de onderkant, op de voor- en achterkant en bovenkant, en in de eerste en laatste 5 cm van de lengte; ziet een onderdeel niet dat buiten de huid staat waar binnen 5 mm geen huid van dezelfde kant ligt (op `d2ae9f1` links ziet hij de plaat alleen boven y 0,375); mist vlakken evenwijdig aan de straal (de hele wielkast 30 mm naar buiten geeft maar 11 stralen); mist uitsteeksels onder de 2 mm of smaller dan de stap; en kijkt niet naar verborgen knopen (`inner`, `hideWhen`), doorzichtige meshes en de open stand (die dekken `opentest.py` en `clash.py`).
+
+`VISDIFF_BASIS` kiest een andere basislijn voor `visdiff` dan `docs/baseline`. Software-rendering is niet vergelijkbaar tussen platforms: `docs/baseline` komt uit de Linux-container, en op de Mac wijken alle 34 beelden daar 6,01 tot 25,48 procent van af (gemiddeld 8,58 procent, gemeten op `b0201d0`), ver boven de drempel van 1,5 procent. Een run op de Mac meet daarom eerst een eigen basis B0 op dezelfde machine, van een groene startstand: `python3 tools/visdiff.py --basislijn UITVOER_VAN_PRESETSHOTS B0MAP`, met de presets van die stand (`presetshots.py`). Voor versie 3 is B0 gemaakt van `ccf90b8` met `harness.py` en `shots.py` uit de bijgewerkte werkboom (34 presetbeelden, 1.794.468 bytes op 640 x 400, schaal 2); daarna `VISDIFF_BASIS=B0MAP tools/orkestratie/finaltests.sh UITMAP`. Zwakte: een afwijking die al in B0 zit, is onzichtbaar. De functietests zijn platformonafhankelijk; `visdiff` is op Linux de poort en op de Mac informatief.
 
 ## Bevroren testcontract
 
@@ -196,6 +238,22 @@ Golf 5 bracht de hulpmiddelen van de visuele poort en van het nameten in de repo
 | `phone.py` | Twee telefoonbeelden (390 x 844) en de scrollbreedte. |
 | `dumptree.py` | De hele boom als JSON. |
 
+### Meetscripts van de orkestrator buiten `finaltests.sh`: `clash.py` en `huid.py`
+
+`tools/orkestratie/clash.py KNOOP... [--tegen KNOOP...] [--straal MM] [--toegestaan BESTAND]` meet doordringing en kleinste afstand van knopen tegen het model, ook binnen dezelfde hoofdgroep (waar `integrity.py` niet kijkt); `--toegestaan` verwijst naar een lijst toegestane paren (`data/clash-toegestaan.json`, hier `[]`) en moet expliciet worden meegegeven, het script heeft geen standaardpad. `huid.py --bewaar` legt de huid van een knoop vast en `huid.py --vergelijk` meet later de afwijking (maximum, 95-percentiel, gemiddelde). Beide gebruiken `meetlib.js`. Ze staan bewust buiten de testlijst: het zijn meetscripts voor een golf met nieuwe geometrie (vooraf, na elke stap en na elke samenvoeging), geen poort die de set rood maakt. Dat geldt voor `clash.py` en `huid.py`, niet meer voor `meet.py` en `zijstraal.py`: die draaien sinds versie 3 als extra tests in `finaltests.sh` (zie hierboven); `rays.py` blijft een hulpmiddel buiten de set.
+
+Kalibratie op de Alto (17 oktober 2026, op `b0201d0`):
+
+- `huid.py`: `--bewaar` en direct `--vergelijk` op dezelfde stand (`assembled`) geeft 0,000 mm voor maximum, 95-percentiel en gemiddelde, voor Motorkap (20 meshes, 3.463 punten) en Bumperschaal voor (1 mesh, 2.471 punten). Exitcode 0.
+- `clash.py` op het bekende geval `d2ae9f1` (sluitplaten op x 0,715, samengevoegd in de mesh Wielkast achter links en rechts; zij stonden links tot 17 mm en rechts tot 23 mm door het achterscherm): aanroep `clash.py "Wielkast achter links" "Wielkast achter rechts" --tegen "Achterscherm links" "Achterscherm rechts" --straal 30 --toegestaan data/clash-toegestaan.json`. Drie runs, alle exitcode 0 en 0 doordringend:
+
+| Paar | Met platen (`d2ae9f1`) | Zonder platen (`61831c0`, gelijk aan de werkboom) |
+|---|---|---|
+| links | kleinste afstand 0,052 mm op x 714,9; ONZEKER, NIET GESLOTEN; punten achter het oppervlak 2.687 en 272 (tot 78,2 mm) | 0,321 mm op x 697,5; ONZEKER, NIET GESLOTEN; 1.244 en 0 |
+| rechts | 0,055 mm op x -715,0; ONZEKER, NIET GESLOTEN; 215 en 1.484 (tot 26,6 mm) | 0,746 mm op x -705,1; ONZEKER, NIET GESLOTEN; 0 en 89 (tot 12,7 mm) |
+
+Uitkomst: gedeeltelijk. `clash.py` ziet dat er iets verandert (afstand van 0,3 en 0,7 mm naar 0,05 mm op de plaatstand, meer punten achter het oppervlak), maar niet de 17 en 23 mm doordringing: het achterscherm is een open schaal en de plaat een dunne plaat erdoorheen, dus de afstand ligt rond 0 in plaats van negatief, en het oordeel ONZEKER telt niet mee voor de exitcode. De "tot"-waarden zijn de afstand van een punt achter het oppervlak, geen doordringdiepte. Op dit type geval geeft `clash.py` dus geen poortsignaal; daar is `huid.py` of een stralenmeting nodig. Die stralenmeting is `tools/zijstraal.py`, geijkt op ditzelfde geval en sinds versie 3 een poort in `finaltests.sh`.
+
 ## Resultaten
 
 De kolom "Na golf 1" is de tussenstand van 13 oktober 2026 rond 11:30 UTC, ongewijzigd uit het overdrachtsdocument van golf 1. De kolom "Eind golf 2" is gemeten op commit `ead92f6`, behalve waar een rij anders zegt. De derde kolom is gemeten op `d6d0456`, na de visuele herstelronde (`index.html` gebouwd in `60909fe`). De laatste kolom is de carrosserieronde: de volledige testset (uitvoer in het scratchpad, `g3final5`) draaide op `9c731c8` op 13 oktober rond 23:45 UTC. De eindstand van de code is `ff42dbd`; die commit verandert alleen de eindstukken van de uitlaat (`src/systems.js`). Daarop zijn alleen `integrity.py`, `ui_inner.py`, `smoke.py` en de publicatierooktest opnieuw gedraaid, en die waren groen. De overige scripts zijn niet op `ff42dbd` gedraaid; hun getallen horen bij `9c731c8`. `index.html` is gebouwd in `5b6cefa` uit `ff42dbd`. Alle tijden komen uit een container met software-rendering.
@@ -218,6 +276,78 @@ De kolom "Na golf 1" is de tussenstand van 13 oktober 2026 rond 11:30 UTC, ongew
 | `pubsmoke.py` | OK | OK: `ready` na 14,8 s (1280 x 800) en 7,2 s (390 x 844), grens 20 s; three r147; geen horizontale scroll | OK: `ready` na 7,5 s (1280 x 800) en 7,7 s (390 x 844), grens 20 s; three r147; geen horizontale scroll | OK: `ready` na 5,2 s (1280 x 800) en 8,0 s (390 x 844), grens 20 s; three r147; geen horizontale scroll. Op `ff42dbd` opnieuw OK: `ready` na 12,2 s en 9,9 s onder belasting |
 | `ui_inner.py` | bestond nog niet | 0 eerste treffers op 256 ingesloten knopen (na golf 2 waren het er 52) | 0 eerste treffers op 256 ingesloten knopen | 0 eerste treffers op 253 ingesloten knopen (39.200 stralen op de hele auto, 20.000 per hoofdgroep). Op `ff42dbd` hetzelfde |
 | URL na publicatie gelijk aan `index.html` | niet van toepassing | Gelijk. Versie 2 van de URL, teruggelezen op 13 oktober om 17:00 UTC, bevat `index.html` van `8095a3e` (618.341 bytes, md5 `dc2bc3b0…`) precies één keer en aaneengesloten. Daaromheen staan alleen het vaste paginaskelet van de host (531 bytes: doctype, charset, viewport en basisstijl tot en met `<body>`) en de afsluiting `</body></html>` (15 bytes). | Gelijk. Versie 3 van de URL, teruggelezen op 13 oktober om 17:37 UTC, bevat `index.html` van `60909fe` (620.025 bytes, md5 `d92a8bb2…`) precies één keer en aaneengesloten, met hetzelfde paginaskelet ervoor (531 bytes) en dezelfde afsluiting erna (15 bytes). | Gelijk. Versie 4 van de URL bevat `index.html` uit `ec92a53` (commit `9c03015`, 663.654 bytes, md5 `70b2e62a426312ec788fc851086ab4c6`) precies één keer, met alleen het paginaskelet van de host eromheen (531 bytes ervoor, 15 erna). Versie 5, gepubliceerd op 14 oktober en teruggelezen om 00:02 UTC, bevat `index.html` uit `ff42dbd` (commit `5b6cefa`, 678.887 bytes, md5 `649cbf95397d877f6a361600c42a4afd`) precies één keer en byte voor byte gelijk, met hetzelfde skelet (531 bytes ervoor, 15 erna) |
+
+## Resultaten P1: meet en zijstraal in finaltests (17 oktober 2026)
+
+Open punt P1: `meet.py`, `rays.py` en `zijstraal.py` in `tools/`, en `meet` en `zijstraal` als `extraTests` in `finaltests.sh`. Werkboom `golf4-basis` op `d044bae` (commits `04f0805` meet en rays, `f3b77bd` `meet` in `auto.json`, `d044bae` zijstraal en `zijstraal` in `auto.json`; de haak zelf in `8b85200`). Uitvoer: container `~/alto-linux/run-aqHG/uit/ft` (`tests.txt`, `meet.json`, `zijstraal.json`) en macOS `~/alto-wt/s4-meet/ft-mac`. Aantallen poorten, camera's en rasters: de lijst "Aantallen" onder de bewuste fouten.
+
+| Test | Linux-container (`explosie-test:1`, 15 cpu) | macOS (GPU, `VISDIFF_BASIS` op B0) |
+|---|---|---|
+| lint | 0 (0 s) | 0 (0 s) |
+| smoke | 0 (31 s) | 0 (16 s) |
+| integ | 0 (13 s) | 0 (8 s) |
+| sil | 0 (23 s) | 0 (8 s) |
+| inner | 0 (30 s) | 0 (25 s) |
+| opentest | 0 (74 s) | 0 (47 s) |
+| itest | 0 (500 s): 222 van 222 | 0 (362 s): 222 van 222 |
+| tri | 0 (7 s), budgetpoort ok | 0 (8 s), budgetpoort ok |
+| pub | 0 (17 s) | 0 (18 s); alleen de ANGLE-melding `GPU stall due to ReadPixels` (bekende ruis) |
+| stats | 0 (11 s) | 0 (8 s) |
+| shots | 0 (47 s) | 0 (38 s) |
+| visdiff | 0 (1 s): 34 van 34 | 0 (1 s): 34 van 34 tegen B0 |
+| anchor | 0 (18 s): poort ok | 0 (18 s): poort ok |
+| meet | 0 (1228 s): ALLES GROEN, 99 van 99 harde poorten; zacht 12 van 13 groen | 0 (243 s): ALLES GROEN; zacht 12 van 13 groen |
+| zijstraal | 0 (16 s): GROEN, 0 knopen door de huid, raycaster-controle 1.774 stralen, 0 verschil | 0 (2 s): GROEN, hetzelfde |
+| Totaal (klok van de run) | 20 min 46 s | 7 min 33 s |
+
+Zonder de extra tests (zelfde ref, container, `~/alto-linux/run-Q8hF`): alles groen in 6 min 52 s; de twee extra tests kosten in de container dus ca. 14 minuten, vrijwel alleen `meet`. De tijden in de container zijn gemeten met de tests van de andere reeksen tegelijk (15 cpu); stand-alone is `meet` sneller (zie herhaalbaarheid). Een stand-alone meting van `zijstraal` in de container is niet gemeten.
+
+De bewuste fouten (op macOS, `VISDIFF_BASIS` op B0, op een kopie van `d044bae` met een opzettelijke wijziging; elke run is rood zoals bedoeld). De precieze wijziging per fout staat niet in de bewaarde uitvoer; de kolom beschrijft alleen wat de set meldde:
+
+| Fout | Wat de set meldde | Wat de set zag |
+|---|---|---|
+| a: een deel door de huid | `zijstraal` rood (exit 1, 2 s), de rest groen, ook `meet` (ALLES GROEN, 99 van 99) | Wielkast voor links en rechts: elk 39 stralen (y 0,265 tot 0,285, z 1,380 tot 1,430), tot 25,87 mm buiten Bumperschaal voor. `meet` ziet deze fout niet; `zijstraal` wel. De totale set was rood in 6 min 45 s. |
+| b: een wijziging die de motorruimte vanaf de kap zichtbaar maakt | `meet` rood (exit 1, 242 s): 6 rode poorten van 99 (kier hoekboven, hoekboven-r, bovenlamp, bovenlamp-r, flankhoog, flankhoog-r); ook `opentest` rood (Motorkap: blootleggen, 1 treffer op een verborgen knoop, Tuimelaar inlaat 2a) en `visdiff` rood (33 van 34, rood: 30-openHood.png); `zijstraal` groen | Het zicht door de kier op accu, luchtfilter, inlaatspruitstuk en frontmodule. Totale set rood in 6 min 33 s. |
+| c: een uitzondering in `meet.py` | `meet` exit 2 (1 s): `RuntimeError: bewuste fout (c)`, `METING MISLUKT: bewuste fout (c)`; de rest groen | De set is rood (exit 1): een mislukte meting telt als FOUT, niet als stil groen. Totale set rood in 6 min 30 s. |
+
+Aantallen (opgenomen uit de handmatige sectie van `docs/cijfers.md`, die niet door `tools/orkestratie/cijfers.py` wordt gegenereerd; de duren staan hierboven):
+
+- `meet.py`: 484 camera's in `meet.json`. De aantallen poorten (harde, zachte, de ene gele) staan in de sectie `tools/meet.py`; sinds `63314de` bewaakt het script ze in volle modus.
+- `zijstraal.py`: stap 5 mm, 88.454 stralen per kant, 1.041 meshes (26 huid, 14 uitzondering). De uitkomst van de controle met de Raycaster staat in de tabel; de dekking per patroon in de sectie `tools/zijstraal.py`.
+- Bronnen: `meet.json`, `zijstraal.json` en `tests.txt` van de volledige set (container `~/alto-linux/run-aqHG/uit/ft`, macOS `~/alto-wt/s4-meet/ft-mac`).
+
+Herhaalbaarheid:
+
+- `meet` in de container, drie runs: `f3b77bd` (`run-Mjan`, 992 s), `d044bae` los (`run-PXBQ`, 704 s) en `d044bae` in de volledige set (`run-aqHG`, 1228 s). De 112 poorten zijn in alle drie volledig gelijk (kleur en waardetekst). De verschillen in duur komen vermoedelijk van de belasting door de andere tests; dat is niet apart gemeten. Elke run: 99 van 99 harde poorten groen.
+- `meet` op macOS tegen Linux: dezelfde kleur voor alle 112 poorten, 88 van de 112 met exact dezelfde waardetekst (de rest verschilt in beeldpunttellingen van enkele tientallen beeldpunten, zoals de GPU-nulmeting uit `auto.json` zegt, bijvoorbeeld onderplaat in eig donker 49.473 tegen 49.430 px).
+- `zijstraal`: `zijstraal.json` van macOS (GPU) en Linux (SwiftShader) is, afgezien van tijden en `meta`, gelijk; twee runs en `--sw` gaven op de ijking dezelfde JSON (commitbericht van `d044bae`).
+- Niet gemeten: een tweede reeks `meet` op de macOS-GPU zonder wijziging op dezelfde stand (de enige onaangepaste macOS-run is `ft-mac`); `meet` met een lege lettertypencache; `zijstraal` stand-alone in de container.
+- Duur van `meet` in `auto.json`: het item `meet` noemde "ca. 20 minuten" voor SwiftShader op macOS en "ca. 17 minuten" voor de Linux-run. Gemeten: macOS-SwiftShader 701 s los en 19 min 56 s naast andere belasting; Linux-container 704 s los en 846 tot 1347 s in de volledige set (`run-RdPa` 846 s, `run-3qin` 991 s, `run-aqHG` 1228 s, `run-v9eG` 1347 s). Het item geeft nu een bereik dat daarbij past (cyclus 2 van open punt P1).
+
+## Resultaten framework f63b185 (17 oktober 2026)
+
+Werkboom `golf4-basis` op `b0201d0` (export van laguna3 `f63b185`, geen gecommitte wijziging erna). Driehoeken totaal 343.116 naar 338.988 (-4.128): Aandrijflijn 108.132, Carrosserie 96.964, Onderstel 62.460, Interieur 49.156, Koeling en luchtinlaat 6.036, Uitlaatsysteem 5.820, Elektrisch systeem 5.716, Brandstofsysteem 4.704; de andere cijfers staan in `docs/cijfers.md`. Alle tests: lint, smoke, integrity, silhouette, inner, opentest, itest, tri, stats, shots, visdiff en anchor groen, `pub` rood alleen door de bedoelde meting (zie onder).
+
+| Test | Linux-container (`explosie-test:1`, Fonts-hosts geblokkeerd) | macOS (`https_proxy` op een dode proxy, `VISDIFF_BASIS` op B0) |
+|---|---|---|
+| lint | 0 (0 s) | 0 (0 s) |
+| smoke | 0 (15 s) | 0 (13 s) |
+| integ | 0 (7 s) | 0 (8 s) |
+| sil | 0 (16 s) | 0 (7 s) |
+| inner | 0 (26 s) | 0 (24 s) |
+| opentest | 0 (53 s): 13 openers getoetst, 0 fouten, 5 meldingen `open.min` ontbreekt (volger) | 0 (46 s): 0 fouten, meldingen alleen `open.min` ontbreekt (volger) bij Zijruit |
+| itest | 0 (405 s): 222 van 222 (`ITEST_GATES=1`) | 0 (333 s): 222 van 222 |
+| tri | 0 (7 s), budgetpoort ok | 0 (6 s), budgetpoort ok |
+| pub | 1 (18 s): enige foutregel `Google Fonts geeft HTTP 000` (bedoeld onder blokkade); zonder blokkade `PUBLICATIEROOKTEST OK` bij de eerste poging | 1 (13 s): vijf CDN-regels en `Google Fonts geeft HTTP 000`, alle HTTP 000 door de dode proxy; `pubsmoke.py` los zonder proxy: OK |
+| stats | 0 (8 s) | 0 (7 s) |
+| shots | 0 (40 s) | 0 (38 s) |
+| visdiff | 0 (1 s): 34 van 34 binnen 1,50 procent tegen `docs/baseline`, hoogste 0,146 procent (08-head) | 0 (1 s): 34 van 34 tegen B0, hoogste 0,14 procent (08-head) |
+| anchor | 0 (15 s): poort ok, labels 242, eigen 211, vrij 180 | 0 (17 s): poort ok, timing eigen 8 |
+| Totaal | 8 min 15 s | 6 min 55 s |
+
+Visdiff per beeld (Linux, procent afwijkend): 06 engine 0,02, 07 engineAll 0,02, 08 head 0,15, 09 crank 0,01, 10 timing 0,04, 11 intake 0,01, de overige 28 beelden 0,00 (01 tot en met 05 en 12 tot en met 34). Op de Mac tegen B0 hetzelfde patroon (0,02, 0,02, 0,14, 0,01, 0,03, 0,01), dus de afwijking is niet platformgebonden maar komt van de bronwijziging. Op `08-head` zijn 1.175 pixels afwijkend na het kanaalverschil van 16 (van 1280 x 800); de bouten en tekst zien er op het oog gelijk uit, het zichtbare verschil zit in de ankerpunten van de labels 3, 4, 5, 6 en 8 en in de randpixels van de boutkoppen (6 of 8 facetten door `hexBolt`). Een precieze oorzaak per pixel is niet uitgezocht. Het besluit over de basislijn: geen vernieuwing nodig, `docs/baseline` en `anchorcheck.json` zijn niet aangeraakt.
+
+Lettertypencache: op Linux 7 bestanden (1 stylesheet, 6 woff2) en op de Mac 7 bestanden; de sha256-lijsten zijn voor en na de runs gelijk. Op Linux stond de cache alleen-lezen en waren de Fonts-hosts geblokkeerd; er is geen enkele netwerkmelding in de uitvoer (gezocht op `fonts.g`, `ERR_NAME_NOT_RESOLVED`, `ERR_NETWORK_CHANGED`, `ERR_SOCKET_NOT_CONNECTED`, `Failed to load resource`). `visdiff` bleef op 0,00 procent tegenover de Linux-basislijn, dus de letters kwamen uit de cache; een run met een lege cache is niet apart gemeten. Bijzonderheid: `finaltests.sh` doet in de git-archive-kopie `git log` (`fatal: not a git repository`), waardoor `commit.txt` leeg is; geen testfout. Bij de export meette de smoke op de Mac eenmalig een laadtijd van 35,76 s op 1280 x 800; dat is niet herhaald of nader onderzocht, en de smoke duurde in de volledige set 13 s.
 
 ## Resultaten framework (16 oktober 2026)
 
@@ -355,6 +485,14 @@ De onderkant is nagelopen met stralen. Deze controles zijn handmatig gedaan met 
 - Van onderen in zeven richtingen: 2 randgevallen op ruim 60.000 stralen.
 
 Aanleiding was de melding van de gebruiker dat het interieur (beige leder, de bagagevloer en de hemelbekleding) door de wielbogen en van onderen te zien was. De oorzaken en de reparatie (commit `9c731c8`) staan in [ontwerp-en-architectuur.md](ontwerp-en-architectuur.md), punt 7 van de ontwikkelgeschiedenis.
+
+## Linux-container
+
+`visdiff` is op Linux de poort. De container (Apple container, image `explosie-test:1`, 15 cpu, 16 GB) draait een git-ref in een schone kopie (`git archive`, dus eerst committen): `~/alto-linux/run.sh WERKBOOM REF 'commando'`. Voor een run met de lettertypencache gebruik je `~/alto-linux/run-fonts.sh`, een kopie van `run.sh` met een extra koppeling: `fonts-linux` (standaard `~/.cache/explosietekening/fonts-linux`) komt alleen-lezen op `/root/.cache/explosietekening/fonts` (in de container is `HOME` gelijk aan `/root`).
+
+- Cache vullen: eenmaal met `FONTS_MODE=` (leeg, dus schrijfbaar) bijvoorbeeld `FONTS_MODE= ~/alto-linux/run-fonts.sh WERKBOOM REF 'python3 tools/smoke.py'`; de harness haalt de stylesheet en de woff2-bestanden dan op. De Linux-cache is niet gelijk aan die van macOS (andere inhoud van de stylesheet per user-agent), dus houd hem apart.
+- Bewijs zonder netwerk: laat het commando de Fonts-hosts (`fonts.googleapis.com`, `fonts.gstatic.com`) in `/etc/hosts` naar `127.0.0.1` en `::1` zetten, controleer met `curl` dat de verbinding mislukt, en draai dan de volledige set met de cache alleen-lezen. Alleen `pub` wordt rood, door de bewust gemeten bereikbaarheid van de stylesheet (`HTTP 000`); draai `pubsmoke.py` daarom apart, zonder blokkade, met dezelfde alleen-lezen cache.
+- Vergelijk de sha256-lijst van de cachemap voor en na de run: gelijk betekent dat de run niet naar het netwerk is gegaan voor lettertypen.
 
 ## Bekende beperkingen
 
