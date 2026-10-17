@@ -27,6 +27,15 @@ taal van code-commentaar, beschrijvingen, docs en commits. Geen em-dashes in tek
 - Het chassisnummer en het kenteken van de gebruiker komen nooit in de repo, de pagina of een commitbericht.
 - Nummers in de docs: één bron (`docs/cijfers.md`); elders ernaar verwijzen in plaats van getallen herhalen.
 
+## Klaar en bekende ruis
+
+- Klaar is: volledige set groen op macOS én op Linux (Linux-VM of Actions-job), visuele poort (visdiff) groen op Linux, open-stand-
+  botsingsmeting zonder nieuwe doordringingen, advisor-oordeel pass. Een groene macOS-run alleen is geen oordeel over visdiff.
+- De front-end-verfijning liep ver over de schatting van 30 tot 35 minuten omdat de advisor bleef bijsturen. Daarom vooraf de
+  beslislijst en de verwachte rondes geven (zie `~/.claude/CLAUDE.md`, Lange orkestraties); max 6 reparatierondes per golf,
+  daarna een beslisnotitie aan de gebruiker in plaats van nog een ronde.
+- Ruis op macOS: GPU-prestatiehints van ANGLE (zoals `GPU stall due to ReadPixels`) in de lokale smoketest. Melden, niet blokkeren.
+
 ## Werkwijze
 
 - Golven per domein in eigen worktrees; `tools/orkestratie/mergecheck.py` vóór samenvoegen; na samenvoegen de volledige
