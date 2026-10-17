@@ -24,6 +24,10 @@ Poorten
   lip afstand / aansluithoek / normaalsprong   <= 3 mm / <= 30 graden / <= 25 graden
   verhouding bumper/lamp   <= 2,8
   console                  geen fouten of waarschuwingen
+  aantal poorten           alleen in volle modus (zonder --cams, --geen-geo en --geen-rondgang): precies VERWACHT_HARD (99) harde en VERWACHT_ZACHT (13) zachte poorten; anders is deze extra poort rood (exitcode 1).
+                           Staat ook in het groene geval in de lijst (extra: true in de JSON) en telt niet mee in de 99. In de beperkte modus meldt het script 'aantal poorten niet gecontroleerd (beperkte modus)'.
+  invoer ontbreekt         in volle modus worden de geo-poorten (bumperschouderhoek, hoekkap, lip, verhouding bumper/lamp, afscherming, wielkastbekleding) en 'onderplaat tegenover gaas in eig' altijd
+                           aangemaakt: ontbreekt hun invoer (hernoemde knoop, geo-meting null), dan staan ze rood met de waarde 'invoer ontbreekt: <sleutel>' in plaats van te verdwijnen
 
 Toegevoegd in ronde 3 (adv.nodig 1, 2 en afwerking a tot e; kolom 'zacht' = telt niet mee voor de exitcode, regel begint met GEEL)
   helderheid onderplaat <cam> <licht|donker>   luminantie Onderplaat voorbumper hoogstens die van Luchtrooster voor, in eig, eig-r, eig-dicht, eig-dicht-r, recht-lamp en voor-laag
@@ -466,6 +470,10 @@ SPLEET_MAX_PX = 200       # afwerking a: Bumperbalk voor in de hoekspleet (voors
 SIKKEL_MAX_PX = 50        # adv.nodig 2: Schutbord door de wielboog in eig (HEAD 698)
 EMBLEEM_MIN_LAAG = 0.9    # afwerking e: embleem in de lage blik minstens zo helder als het gaas (voorstel; foto F1: 1,0)
 DEV30_MAX_N, DEV30_MAX_MM2 = 12, 319   # afwerking d: driehoeken met een afwijking > 30 graden tussen vlak- en hoekpuntnormaal (stand voor ronde 2: 12 driehoeken, 319 mm2; HEAD: 22, 990)
+# Verwacht aantal poorten in volle modus (zonder --cams, --geen-geo en --geen-rondgang). Bron: nulmeting van 17 oktober 2026 op d044bae (run-v9eG): 112 poorten, waarvan 99 harde en 13 zachte.
+# Wie bewust een poort toevoegt of schrapt, past deze twee getallen mee aan (en docs/cijfers.md). De controle zelf ('aantal poorten') telt niet mee in de 99.
+VERWACHT_HARD = 99
+VERWACHT_ZACHT = 13
 ONDERZICHT_MAX_PCT = 0.5   # motorruimte en onderstel van de voorste helft hoogstens 0,5 procent van het beeld in de lage camera's (HEAD eig 1,6; V1: zie nul/README)
 
 
@@ -623,7 +631,8 @@ def main():
 
     # ---- poorten
     P = res['poorten']
-    def poort(naam, ok, waarde, eis, zacht=False): P.append({'naam': naam, 'groen': bool(ok), 'waarde': waarde, 'eis': eis, 'zacht': bool(zacht)})
+    def poort(naam, ok, waarde, eis, zacht=False, extra=False):
+        P.append({'naam': naam, 'groen': bool(ok), 'waarde': waarde, 'eis': eis, 'zacht': bool(zacht), **({'extra': True} if extra else {})})   # extra: controle op de meting zelf, niet een van de 99 harde poorten
     def lum(e, th, nm): return (e.get('helderheid') or {}).get(th, {}).get(nm)
     for k in namen:
         e = res['cams'][k]
@@ -714,36 +723,62 @@ def main():
                     poort(f'wielkast rondgang h{h} r{r} {kant}', not rood, f"ok ({len(ks)} camera's)" if not rood else f"{len(rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {sl[0][1]} ({sl[0][2]}, {sl[0][3]}) {sl[0][0]}' for k, sl in sorted(rood, key=lambda t: -t[1][0][0])[:5]),
                           f'lage rondgang op {h} m hoogte en {r} m van het doel (baanm en baanv, om de 10 graden): geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed (smalle en brede beeldpunten) waar de blik door de wielkast gaat (zone onder, venster of boven: camera naast de auto, wielkastvlak |x| 0,50 gepasseerd op y {ZONE_Y[0]} tot {ZONE_Y[3]} en z {ZONE_Z[0]} tot {ZONE_Z[1]}; onder de auto door telt niet). Veerpoottoren en Langsligger tellen mee, remhardware in de wielkast niet')
     g = res['geo']
+    # Volle modus: alle camera's, de geo-meting en de rondgang. Daar moet elke harde poort bestaan: ontbreekt de invoer van een poort (hernoemde knoop, geo-meting die null of een beginwaarde geeft),
+    # dan komt de poort alsnog in de lijst, rood, met 'invoer ontbreekt: <sleutel>'. In de beperkte modus blijft het oude gedrag: een poort zonder invoer wordt overgeslagen.
+    vol = not (a.cams or a.geen_geo or a.geen_rondgang)
+    gg = g or {}
+    def heeft(sl):   # is de geo-invoer 'sl' echt gemeten? (de beginwaarden van GEO_JS tellen niet: [1e9, -1e9] voor hoek en afdek, 9 voor de laagste punten, 0 voor bumperTop)
+        v = gg.get(sl)
+        if sl in ('hoek', 'afdek'): return bool(v) and v[0] < 1e8 and v[1] > -1e8
+        if sl in ('lipOnder', 'plaatOnder'): return v is not None and v < 9
+        if sl == 'bumperTop': return bool(v) and v > 0
+        if sl == 'lipNaad': return v is not None and v.get('n', 0) > 0   # n = 0: geen enkel lippunt binnen 15 mm van de schaal, dus de poorten zouden vanzelf groen zijn
+        return v is not None
+    def geo_poort(naam, nodig, ok, waarde, eis):
+        ontbr = [sl for sl in nodig if not heeft(sl)]
+        if ontbr:
+            if vol: poort(naam, False, 'invoer ontbreekt: ' + ', '.join(ontbr), eis)
+            return
+        poort(naam, ok(), waarde(), eis)
+    geo_poort('bumperschouderhoek', ['bumperAt'], lambda: gg['bumper'] <= SCHOUDER_MAX, lambda: f"{gg['bumper']:.1f} graden bij {gg['bumperAt']}", f'<= {SCHOUDER_MAX} graden (streef 20)')
+    hk = lambda: ((gg['hoek'][1] - gg['afdek'][1]) * 1000, (gg['hoek'][0] - gg['afdek'][0]) * 1000)   # (boven, onder) in mm
+    geo_poort('hoekkap boven hoofdlens', ['hoek', 'afdek'], lambda: hk()[0] <= 15, lambda: f'{hk()[0]:.1f} mm', '<= 15 mm')
+    geo_poort('hoekkap onder hoofdlens', ['hoek', 'afdek'], lambda: hk()[1] >= -10, lambda: f'{hk()[1]:.1f} mm', '>= -10 mm')
+    geo_poort('lip afstand tot schaal', ['lipNaad'], lambda: gg['lipNaad']['afstand_mm_max'] <= 3, lambda: f"{gg['lipNaad']['afstand_mm_max']} mm", '<= 3 mm')
+    geo_poort('lip aansluithoek (normaal)', ['lipNaad'], lambda: gg['lipNaad']['hoek_max'] <= 30, lambda: f"max {gg['lipNaad']['hoek_max']} gem {gg['lipNaad']['hoek_gem']} graden bij {gg['lipNaad']['hoek_at']}", '<= 30 graden')
+    geo_poort('lip normaalsprong langs de rand', ['lipSprong'], lambda: gg['lipSprong']['hoek_max'] <= 25, lambda: f"{gg['lipSprong']['hoek_max']} graden bij {gg['lipSprong']['at']}", '<= 25 graden')
+    # de neus: lamphoogte uit de motorkap en de hoekkap, bumperhoogte op x = 0, tot de liponderrand en tot het laagste zichtbare voordeel (lip of afscherming, premortem H5)
+    noem = lambda: gg['kapVoorrand'][1] - gg['afdek'][0]
+    ver_lip = lambda: (gg['bumperTop'] - gg['lipOnder']) / max(1e-6, noem())
+    ver_afs = lambda: (gg['bumperTop'] - min(gg['lipOnder'], gg['plaatOnder'])) / max(1e-6, noem())
+    geo_poort('verhouding bumper/lamp op x=0 (tot de lip)', ['lipOnder', 'kapVoorrand', 'afdek', 'bumperTop'], lambda: ver_lip() <= 2.8, lambda: round(ver_lip(), 3), '<= 2,8 (tot de liponderrand)')
+    # plaatOnder (Onderplaat voorbumper, bodyparts.js onder Voorbumper) bestaat op de huidige stand altijd: een vaste knoop zonder hideWhen of opener, ook in de luminantiepoorten en in 'onderplaat tegenover gaas in eig' verplicht.
+    # Daarom is plaatOnder hier invoer van de poort zoals de rest; de oude terugval 'zonder plaat alleen de lip' (min met 9) is vervallen.
+    geo_poort('verhouding bumper/lamp op x=0 (tot de afscherming)', ['lipOnder', 'plaatOnder', 'kapVoorrand', 'afdek', 'bumperTop'], lambda: ver_afs() <= VERH_AFSCH_MAX,
+              lambda: f"{ver_afs():.3f} tot {min(gg['lipOnder'], gg['plaatOnder']):.3f} m", f'<= {VERH_AFSCH_MAX} (bewaking: de afscherming mag de neus niet zwaarder maken; doel 2,8 bij beslissing 17)')
+    geo_poort('afscherming onder de lip', ['lipOnder', 'plaatOnder'], lambda: (gg['lipOnder'] - gg['plaatOnder']) * 1000 <= SCHERM_DIEP_MAX_MM, lambda: f"{(gg['lipOnder'] - gg['plaatOnder']) * 1000:.0f} mm onder de liponderrand", f'<= {SCHERM_DIEP_MAX_MM} mm (een lint, geen plank)')
     if g:
-        poort('bumperschouderhoek', g['bumper'] <= SCHOUDER_MAX, f"{g['bumper']:.1f} graden bij {g['bumperAt']}", f'<= {SCHOUDER_MAX} graden (streef 20)')
-        if g.get('hoek') and g.get('afdek'):
-            hb = (g['hoek'][1] - g['afdek'][1]) * 1000; ho = (g['hoek'][0] - g['afdek'][0]) * 1000
-            poort('hoekkap boven hoofdlens', hb <= 15, f'{hb:.1f} mm', '<= 15 mm'); poort('hoekkap onder hoofdlens', ho >= -10, f'{ho:.1f} mm', '>= -10 mm')
-        if g.get('lipNaad') is not None:
-            poort('lip afstand tot schaal', g['lipNaad']['afstand_mm_max'] <= 3, f"{g['lipNaad']['afstand_mm_max']} mm", '<= 3 mm')
-            poort('lip aansluithoek (normaal)', g['lipNaad']['hoek_max'] <= 30, f"max {g['lipNaad']['hoek_max']} gem {g['lipNaad']['hoek_gem']} graden bij {g['lipNaad']['hoek_at']}", '<= 30 graden')
-            poort('lip normaalsprong langs de rand', g['lipSprong']['hoek_max'] <= 25, f"{g['lipSprong']['hoek_max']} graden bij {g['lipSprong']['at']}", '<= 25 graden')
-        if g.get('lipOnder') is not None and g.get('kapVoorrand') and g.get('afdek'):
-            laag = min(g['lipOnder'], g.get('plaatOnder') if g.get('plaatOnder') is not None else 9)   # het laagste zichtbare voordeel op x = 0: lip of afscherming (premortem H5)
-            noem = g['kapVoorrand'][1] - g['afdek'][0]
-            ver_lip = (g['bumperTop'] - g['lipOnder']) / max(1e-6, noem); ver = (g['bumperTop'] - laag) / max(1e-6, noem)
-            poort('verhouding bumper/lamp op x=0 (tot de lip)', ver_lip <= 2.8, round(ver_lip, 3), '<= 2,8 (tot de liponderrand)')
-            poort('verhouding bumper/lamp op x=0 (tot de afscherming)', ver <= VERH_AFSCH_MAX, f'{ver:.3f} tot {laag:.3f} m', f'<= {VERH_AFSCH_MAX} (bewaking: de afscherming mag de neus niet zwaarder maken; doel 2,8 bij beslissing 17)')
-            if g.get('plaatOnder') is not None:
-                dr = (g['lipOnder'] - g['plaatOnder']) * 1000
-                poort('afscherming onder de lip', dr <= SCHERM_DIEP_MAX_MM, f'{dr:.0f} mm onder de liponderrand', f'<= {SCHERM_DIEP_MAX_MM} mm (een lint, geen plank)')
         print(f"info: vlaknormaalhoek tussen aangrenzende driehoeken in het hoekgebied {g['facet']:.1f} graden bij {g['facetAt']} (meet slanke driehoeken op de neusbovenrand, geen poort: zie beslissing 21)")
-        if g.get('plaatNabij') is not None:
-            poort('afscherming raakt aandrijving niet', g['plaatNabij']['n'] == 0, f"{g['plaatNabij']['n']} hoekpunten binnen 10 mm {g['plaatNabij']['per_knoop']}", '0 hoekpunten van Klemmen, Hoes, Koppelingsklok en Draagarm binnen 10 mm van Onderplaat voorbumper')
-        if g.get('wielkastNabij') is not None:
-            poort('wielkastbekleding raakt onderstel en aandrijving niet', g['wielkastNabij']['n'] == 0, f"{g['wielkastNabij']['n']} hoekpunten binnen 5 mm {g['wielkastNabij']['per_knoop']}", '0 hoekpunten van Onderstel, Aandrijflijn of Uitlaatsysteem (zonder remleidingen en slangbeugels, die zitten vast aan de wand: HEAD 17 hoekpunten) binnen 5 mm van Wielkast voor links (bewaking bij het sluiten van de doorkijk)')
-        if g.get('dev30') is not None:
-            poort('afwerking d: plooien in de glans (bumperbovenrand bij de hoek)', g['dev30']['n'] <= DEV30_MAX_N and g['dev30']['mm2'] <= DEV30_MAX_MM2, f"{g['dev30']['n']} driehoeken, {g['dev30']['mm2']:.0f} mm2 met afwijking > 30 graden",
-                  f'<= {DEV30_MAX_N} driehoeken en <= {DEV30_MAX_MM2} mm2 (stand voor ronde 2; streef 0)', zacht=True)
+    geo_poort('afscherming raakt aandrijving niet', ['plaatNabij'], lambda: gg['plaatNabij']['n'] == 0, lambda: f"{gg['plaatNabij']['n']} hoekpunten binnen 10 mm {gg['plaatNabij']['per_knoop']}", '0 hoekpunten van Klemmen, Hoes, Koppelingsklok en Draagarm binnen 10 mm van Onderplaat voorbumper')
+    geo_poort('wielkastbekleding raakt onderstel en aandrijving niet', ['wielkastNabij'], lambda: gg['wielkastNabij']['n'] == 0, lambda: f"{gg['wielkastNabij']['n']} hoekpunten binnen 5 mm {gg['wielkastNabij']['per_knoop']}",
+              '0 hoekpunten van Onderstel, Aandrijflijn of Uitlaatsysteem (zonder remleidingen en slangbeugels, die zitten vast aan de wand: HEAD 17 hoekpunten) binnen 5 mm van Wielkast voor links (bewaking bij het sluiten van de doorkijk)')
+    if g and g.get('dev30') is not None:   # zacht: ontbreken van de invoer blijft zonder gevolg voor de exitcode; het aantal zachte poorten wordt apart bewaakt
+        poort('afwerking d: plooien in de glans (bumperbovenrand bij de hoek)', g['dev30']['n'] <= DEV30_MAX_N and g['dev30']['mm2'] <= DEV30_MAX_MM2, f"{g['dev30']['n']} driehoeken, {g['dev30']['mm2']:.0f} mm2 met afwijking > 30 graden",
+              f'<= {DEV30_MAX_N} driehoeken en <= {DEV30_MAX_MM2} mm2 (stand voor ronde 2; streef 0)', zacht=True)
+    eis_plaat = f'<= {PLAAT_MAX} keer het gaas (a9035fc: 4,6 keer)'
     if 'eig' in res['cams']:
         px = res['cams']['eig']['px_per_knoop']; op = sum(v for kk, v in px.items() if kk.endswith('Onderplaat voorbumper')); gz = sum(v for kk, v in px.items() if kk.endswith('Honingraatgrille'))
-        poort('onderplaat tegenover gaas in eig', gz > 0 and op <= PLAAT_MAX * gz, f'{op} px tegen {gz} px gaas ({op / max(gz, 1):.2f} keer)', f'<= {PLAAT_MAX} keer het gaas (a9035fc: 4,6 keer)')
+        poort('onderplaat tegenover gaas in eig', gz > 0 and op <= PLAAT_MAX * gz, f'{op} px tegen {gz} px gaas ({op / max(gz, 1):.2f} keer)', eis_plaat)
+    elif vol:
+        poort('onderplaat tegenover gaas in eig', False, 'invoer ontbreekt: cams.eig', eis_plaat)
     poort('console zonder fouten', res['meta'].get('console_ok', False), res['meta'].get('console_ok'), 'geen fouten of waarschuwingen')
+    # aantal poorten: een poort die stilletjes verdwijnt (hernoemde knoop, camera of lijst die korter wordt) mag niet als ALLES GROEN eindigen. Alleen in volle modus; de controle is een extra harde poort buiten de 99
+    # en staat ook in het groene geval in de lijst (extra: true in de JSON), zodat in meet.txt en meet.json te zien is dat de controle gedraaid heeft.
+    gev_h, gev_z = sum(not p['zacht'] for p in P), sum(p['zacht'] for p in P)
+    res['meta']['aantal_poorten'] = {'harde': gev_h, 'zachte': gev_z, 'verwacht_harde': VERWACHT_HARD, 'verwacht_zachte': VERWACHT_ZACHT, 'gecontroleerd': vol}
+    if vol:
+        poort('aantal poorten', gev_h == VERWACHT_HARD and gev_z == VERWACHT_ZACHT, f'{gev_h} harde en {gev_z} zachte poorten gevonden, verwacht {VERWACHT_HARD} en {VERWACHT_ZACHT}',
+              f'precies {VERWACHT_HARD} harde en {VERWACHT_ZACHT} zachte poorten in volle modus (VERWACHT_HARD en VERWACHT_ZACHT; nulmeting 17 oktober 2026); een poort die verdwijnt maakt de meting rood', extra=True)
     res['ok'] = all(p['groen'] for p in P if not p['zacht'])
     res['ok_afwerking'] = all(p['groen'] for p in P if p['zacht'])
     jp = a.json or os.path.join(a.uit, 'meet.json')
@@ -760,8 +795,10 @@ def main():
             if k in B['cams']:
                 o, nw = B['cams'][k], res['cams'][k]
                 print(f'  {k:18s} motorruimte {o["motorruimte_pct"]} -> {nw["motorruimte_pct"]} %   onderstel {o["onderstel_pct"]} -> {nw["onderstel_pct"]} %   max knoop {o["motorruimte_max_knoop_px"]} -> {nw["motorruimte_max_knoop_px"]} px')
-    harde = [p for p in P if not p['zacht']]; zachte = [p for p in P if p['zacht']]
-    print('\nALLES GROEN' if res['ok'] else f"\n{sum(not p['groen'] for p in harde)} RODE POORTEN van {len(harde)}", f"| afwerking (zacht, telt niet mee): {sum(p['groen'] for p in zachte)} van {len(zachte)} groen", f'| json: {jp}')
+    harde = [p for p in P if not p['zacht'] and not p.get('extra')]; zachte = [p for p in P if p['zacht']]; extra = [p for p in P if p.get('extra')]
+    if not vol: print('\naantal poorten niet gecontroleerd (beperkte modus: --cams, --geen-geo of --geen-rondgang)')
+    elif not all(p['groen'] for p in extra): print(f"\nAANTAL POORTEN WIJKT AF: {gev_h} harde en {gev_z} zachte gevonden, verwacht {VERWACHT_HARD} en {VERWACHT_ZACHT}: een poort ontbreekt of is erbij gekomen (meting rood)")
+    print('\nALLES GROEN' if res['ok'] else f"\n{sum(not p['groen'] for p in harde)} RODE POORTEN van {len(harde)}" + (' en de controle op het aantal poorten is rood' if not all(p['groen'] for p in extra) else ''), f"| afwerking (zacht, telt niet mee): {sum(p['groen'] for p in zachte)} van {len(zachte)} groen", f'| json: {jp}')
     return 0 if res['ok'] else 1
 
 
