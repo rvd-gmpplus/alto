@@ -59,7 +59,7 @@ function bodZAtYd(y) { let lo = 1.6, hi = ZF; for (let i = 0; i < 40; i++) { con
 const bodZDF = 0.78, bodZDR = -0.56;              // voorrand en achterrand van het portier
 const bodYSill = 0.268;                            // onderrand portier; de dorpel eindigt 6 mm lager
 const bodZFe = 1.54, bodZLh = 1.60;                // achterrand koplamp (voorscherm tot hier), voorrand motorkap
-const bodZCe = bodZLh - 0.015;                       // einde van het hoekstuk en de bovenstrook van het scherm: 15 mm voor de voorrand van de motorkap
+const bodZCe = bodZLh - 0.008;                       // einde van het hoekstuk en de bovenstrook van het scherm: 8 mm voor de voorrand van de motorkap (was 15 mm: in dicht-lamp-zij sprong de rode rand ongeveer 3 mm en lag de kaprand als donkere wig onder het glas)
 const bodYBF = 0.50, bodYBR = 0.575;                // bovenrand van de voor- en achterbumper op de flank
 const bodZT0 = -1.62;                              // voorrand achterlicht en bumperhoek achter
 const bodZHB = 0.917;                              // achterrand motorkap
