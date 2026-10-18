@@ -217,7 +217,7 @@ function buildExhaust() {
     sysPart('Hitteschild middendemper', plate(0.18, 0.40), MAT.heat, [X_T, 0.2155, zM], 'Geribd aluminium schild boven de middendemper, direct onder de vloer.', [0, 0.1, 0]),
     sysPart('Hitteschild einddemper', plate(0.21, 0.36), MAT.heat, [X_T, 0.2485, zEnd], 'Geribd aluminium schild boven de einddemper.', [0, 0.1, 0]),
   ]);
-  return A('Uitlaatsysteem', { d: 'Uitlaat vanaf de achterzijde van de motor: voorpijp met flexstuk, driewegkatalysator met twee lambdasondes, middendemper en einddemper rechts onder de vloer, met ophangrubbers en hitteschilden onder de vloer. Plaatsen van de dempers zijn aangenomen.', ex: [-0.4, -1.5, -0.6] },
+  return A('Uitlaatsysteem', { d: 'Uitlaat vanaf de achterzijde van de motor: voorpijp met flexstuk, driewegkatalysator met twee lambdasondes, middendemper en einddemper rechts onder de vloer, met ophangrubbers en hitteschilden onder de vloer. Plaatsen van de dempers zijn aangenomen.', ex: [1.0, -1.5, -0.6] },
     [voorpijp, cat, midPijp, mid, verbinding, eind, ophanging, schilden]);
 }
 
