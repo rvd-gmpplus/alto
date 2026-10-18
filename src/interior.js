@@ -257,13 +257,20 @@ function intWheelQ(dir) {
   const z = dir.clone().multiplyScalar(-1).normalize(), x = V3(-1, 0, 0), y = z.clone().cross(x).normalize();
   return new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
 }
+// platte spaak van de naaf naar de krans in het vlak van het stuurwiel; uur is de plaats op de klok vanuit de bestuurder gezien (4 uur is rechtsonder)
+const INT_SPOKES = [4, 6, 8];
+function intSpoke(uur) {
+  const hoek = (uur % 12) / 12 * 2 * PI, dx = Math.sin(hoek), dy = Math.cos(hoek), r0 = 0.07, r1 = 0.168;
+  return xf(G.rbox(0.055, r1 - r0, 0.018, 0.007), [dx * (r0 + r1) / 2, dy * (r0 + r1) / 2, 0], [0, 0, Math.atan2(-dx, dy)]);
+}
 function intSteering() {
   const dir = V3(...INT_COLDIR), bx = intBx, cy = intCy;
-  return A('Stuurwiel met kolomkap', { d: 'Stuurwiel met naaf, claxonpad en schakelaars, en de kunststof kap rond de stuurkolom tot het dashboard. De stuurkolom zelf hoort bij het onderstel en draagt het stuurwiel op de naaf. Geen airbag.',
-    p: INT_WHEEL, q: intWheelQ(dir), ex: [0, 0.18, -0.35] }, [
+  return A('Stuurwiel met kolomkap', { d: 'Driespaaks stuurwiel met een groot ovaal kussen op de naaf, platte brede spaken en schakelaars, en de kunststof kap rond de stuurkolom tot het dashboard. De stuurkolom zelf hoort bij het onderstel en draagt het stuurwiel op de naaf. Geen airbag.',
+    spec: [['Stuur', 'driespaaks, zonder airbag']], p: INT_WHEEL, q: intWheelQ(dir), ex: [0, 0.18, -0.35] }, [
     intPart('Stuurwielkrans', G.torus('z', 0.17, 0.0135, 36, 8), MAT.plastic, 'Rubber kunststof stuurkrans met een doorsnede van 36 cm (maat geschat); geen stuurbekrachtiging.', { ex: [0, 0, -0.1] }),
-    intPart('Stuurwielspaken', merge([rodBetween([0.04, 0, 0], [0.16, 0, 0.0], 0.011, 8), rodBetween([-0.04, 0, 0], [-0.16, 0, 0], 0.011, 8), rodBetween([0, -0.04, 0], [0, -0.16, 0], 0.011, 8)]), MAT.plastic, 'Drie spaken tussen naaf en krans.', { ex: [0, 0, -0.06] }),
-    intPart('Stuurwielnaaf', merge([cy('z', 0.05, 0.04, [0, 0, 0.0], 20), bx(0.09, 0.07, 0.014, 0.015, [0, 0, 0.026])]), MAT.plastic, 'Naaf met claxonpad; de naaf zit met een gekartelde as op de stuurkolom.', { ex: [0, 0, -0.1] }),
+    intPart('Stuurwielspaken', merge(INT_SPOKES.map(a => intSpoke(a))), MAT.plastic, 'Drie platte, brede spaken (ongeveer 55 mm) van de naaf naar de krans, naar 4, 6 en 8 uur (Beslissing INT-7); met leer of kunststof bekleed.', { ex: [0, 0, -0.06] }),
+    intPart('Claxonkussen', G.rbox(0.2, 0.15, 0.05, 0.04), MAT.plastic, 'Groot ovaal kussen van de naaf (ongeveer 200 x 150 x 50 mm, afgeronde hoeken) met het claxonpad; geen airbag.', { p: [0, 0, 0.012], ex: [0, 0, -0.14] }),
+    intPart('Stuurwielnaaf', cy('z', 0.05, 0.04, [0, 0, 0.0], 20), MAT.plastic, 'Naaf waarop de spaken en het kussen zitten; de naaf zit met een gekartelde as op de stuurkolom.', { ex: [0, 0, -0.1] }),
     // taps: straal 48 mm bij het stuur, 32 mm bij het dashboard, zodat de kap onder het instrumentenglas blijft (B-031) en de kolombuis (straal 27,5 mm) omsluit
     intPart('Kolomkap boven', xf(G.cyl('z', 0.048, 0.032, 0.14, 16), [0, 0, -0.1]), MAT.plastic, 'Bovenste helft van de kap om de stuurkolom, tot het dashboard; loopt taps toe onder het instrumentenpaneel.', { ex: [0, 0.06, 0] }),
     intPart('Kolomkap onder', bx(0.1, 0.05, 0.14, 0.015, [0, -0.04, -0.1]), MAT.plastic, 'Onderste helft van de kap om de stuurkolom met het contactslot.', { ex: [0, -0.06, 0] }),
