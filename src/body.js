@@ -3,8 +3,8 @@
 // Alle steunpunten komen uit data/silhouet.json (zijaanzicht en bovenaanzicht van de 3-deurs hatchback, geschat uit foto's;
 // fout ca. 3 cm tussen de assen, 5 cm in de overhang). De onderbak is een loft in (z, s), de kas een loft in (z, q).
 // Uitzondering: de neus van YT, bodC en HW vanaf z 1,40 volgt de foto van de modelreeks 1993-2001 (beslissing 29, golf 6; keuze van de eigenaar): een vrijwel
-// verticaal front (helling ca. 11 graden: op x = 0 van y 0,697 op z 1,663 naar 0,555 op z 1,691) met de kapvoorrand op z 1,66 en y 0,704, een vrijwel rechte
-// kapvoorrand (bodC 0,012 op de neus: 12 mm daling van x 0 naar x 0,6) en vollere hoeken (halve breedte 0,658 op y 0,62 en z 1,65; HW tot z 1,70 boven 0,645 en een schouderstraal van 15 mm
+// verticaal front (helling ca. 10 graden: op x = 0 van y 0,697 op z 1,663 naar 0,555 op z 1,688) met de kapvoorrand op z 1,66 en y 0,704, een vrijwel rechte
+// kapvoorrand (bodC 0,006 op de neus: 6 mm daling van x 0 naar x 0,6) en vollere hoeken (halve breedte 0,646 op y 0,62 en z 1,65; HW tot z 1,70 boven 0,645 en een schouderstraal van 15 mm
 // op de neus, zodat het vlakke front tot x 0,60 reikt). De lijn van de flank
 // (YT) loopt vloeiend van 0,81 op z 1,35 naar 0,69 op de neus. De stations van data/silhouet.json blijven binnen hun tolerantie (top z 1,6: 0,744 tegen 0,746).
 // Daarvoor (beslissing 17, golf 4) helde het front 34 graden en zakte de kaprand 45 mm naar buiten.
@@ -38,11 +38,11 @@ const YB = pchip([[-1.7475, 0.34], [-1.73, 0.30], [-1.70, 0.285], [-1.60, 0.275]
   [1.2, 0.25], [1.42, 0.265], [1.55, 0.265], [1.68, 0.27], [1.73, 0.285], [1.7475, 0.31]]);
 // schouderlijn van de onderbak = gordellijn (onderkant zijruiten) in de kas; voor en achter de rand van motorkap en staartplaat
 const YT = pchip([[-1.7475, 0.85], [-1.70, 0.875], [-1.62, 0.893], [-1.50, 0.915], [-1.35, 0.940], [-1.20, 0.955], [-1.0, 0.960], [-0.8, 0.955], [-0.4, 0.936],
-  [-0.2, 0.925], [0.0, 0.913], [0.2, 0.901], [0.4, 0.894], [0.6, 0.897], [0.85, 0.903], [0.975, 0.895], [1.10, 0.875], [1.225, 0.845], [1.35, 0.8101], [1.40, 0.7930], [1.45, 0.7680], [1.50, 0.7460], [1.55, 0.7300], [1.60, 0.7180], [1.63, 0.7090], [1.65, 0.7000], [1.66, 0.6920], [1.664, 0.6820], [1.67, 0.6520], [1.68, 0.5950], [1.688, 0.5480], [1.70, 0.5320], [1.71, 0.5240], [1.725, 0.5150], [1.7475, 0.5000]]);   // neus, beslissing 29: vlak tot z 1,66, dan het steile front tot de bumper op z 1,70 (beslissing 17 had 1,50 0,722; 1,60 0,654; 1,65 0,616; 1,70 0,530; 1,7475 0,472). HW: vollere neus (was 1,60 0,662; 1,68 0,62; 1,73 0,555; 1,7475 0,50)
+  [-0.2, 0.925], [0.0, 0.913], [0.2, 0.901], [0.4, 0.894], [0.6, 0.897], [0.85, 0.903], [0.975, 0.895], [1.10, 0.875], [1.225, 0.845], [1.35, 0.8101], [1.40, 0.7930], [1.45, 0.7680], [1.50, 0.7460], [1.55, 0.7300], [1.60, 0.7200], [1.63, 0.7130], [1.65, 0.7050], [1.66, 0.6980], [1.664, 0.6880], [1.67, 0.6560], [1.68, 0.5950], [1.688, 0.5480], [1.70, 0.5320], [1.71, 0.5240], [1.725, 0.5150], [1.7475, 0.5000]]);   // neus, beslissing 29: vlak tot z 1,66, dan het steile front tot de bumper op z 1,70 (beslissing 17 had 1,50 0,722; 1,60 0,654; 1,65 0,616; 1,70 0,530; 1,7475 0,472). HW: vollere neus (was 1,60 0,662; 1,68 0,62; 1,73 0,555; 1,7475 0,50)
 // bolling van het dek boven de schouderlijn (motorkap, staartplaat); in de kas is het dek onder de ruiten verborgen
-// bolling: tussen z 1,44 en 1,55 iets groter (tot 0,040), naar de neus toe 0,012: de kapvoorrand loopt vrijwel recht (beslissing 29; in beslissing 17 tot 0,070 voor een
+// bolling: tussen z 1,44 en 1,55 iets groter (tot 0,040), naar de neus toe 0,006: de kapvoorrand loopt vrijwel recht (beslissing 29; in beslissing 17 tot 0,070 voor een
 // flank die naar de lamp zakte); de rest ongewijzigd
-const bodC = pchip([[-1.7475, 0.015], [-1.62, 0.012], [0.3, 0.012], [0.9, 0.026], [1.30, 0.02464], [1.38, 0.0241], [1.44, 0.035], [1.50, 0.040], [1.55, 0.036], [1.60, 0.026], [1.63, 0.018], [1.65, 0.013], [1.66, 0.012], [1.7475, 0.012]]);
+const bodC = pchip([[-1.7475, 0.015], [-1.62, 0.012], [0.3, 0.012], [0.9, 0.026], [1.30, 0.02464], [1.38, 0.0241], [1.44, 0.035], [1.50, 0.040], [1.55, 0.036], [1.60, 0.024], [1.63, 0.014], [1.65, 0.008], [1.66, 0.006], [1.7475, 0.006]]);
 const bodDP = pchip([[-1.7475, 3], [-1.0, 3.5], [0.9, 3.5], [1.3, 4], [1.7475, 3]]);   // exponent van het dekprofiel (vlak midden, afgeronde randen)
 // daklijn op de hartlijn: voorruit, dak, achterruit (bij de voorruit en achterruit op de bovengrens van de silhouettolerantie)
 const YR = pchip([[-1.7475, 0.862], [-1.70, 0.900], [-1.60, 1.010], [-1.45, 1.170], [-1.30, 1.290], [-1.15, 1.382], [-1.0, 1.400], [-0.65, 1.405], [-0.4, 1.405],
