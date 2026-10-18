@@ -485,9 +485,11 @@ function bodHoodParts() {
       open: { type: 'hinge', pivot: bodStF, axis: bodStRot.ax, angle: bodStRot.ang, follow: 'Motorkap', label: 'Motorkapsteun' } }),
     P('Steunopvanger', merge([G.rbox(0.03, 0.016, 0.03, 0.005), xf(G.rbox(0.03, 0.012, 0.03, 0.005), [0, -0.012, 0])]), MAT.plastic, { d: 'Kunststof opvanger in het binnenframe waarin de bovenkant van de steunstang valt.', p: [bodStG[0], bodStG[1] + 0.012, bodStG[2]], ex: [0, -0.06, 0] }),
     P('Kapafdichting', tube([-0.55, -0.3, 0, 0.3, 0.55].map(x => [x, bodSec(0.96).yd - 0.035 - 0.1 * x * x, 0.96]), 0.007, 20, 6), MAT.rubber, { d: 'Rubber afdichting tussen kap en waterkast.', stay: true, ex: [0, -0.05, -0.04] }),
+    // de slang is niet ingesloten (inner): bij een open kap zie je hem van voren over het voorpaneel, maar zijn groep (Ruitensproeier) opent zelf niet, dus de app hield hem
+    // verborgen (ui_inner --open: 1 treffer met alle openers open)
     ...both(s => A(`Ruitensproeier ${sn(s)}`, { d: 'Sproeier van de ruitensproeierinstallatie aan de achterrand van de kap.', ex: [0, 0.05, 0] }, [
       P('Sproeierkop', G.lathe('y', [[0, 0.0045], [0.004, 0.0043], [0.0085, 0.003], [0.0112, 0.0008], [0.0112, -0.005], [0, -0.005]], 20, 'bodSprHead'), MAT.plasticGrey, { d: 'Grijze kunststof sproeierkop, half in de kap verzonken.', p: [s * 0.28, halfPt(1.0, bodSAtX(1.0, 0.28))[1] - 0.0015, 1.0], ex: [0, 0.04, 0] }),
-      P('Sproeierslang', tube([[s * 0.28, 0.87, 1.0], [s * 0.3, 0.87, 1.1], [s * 0.4, 0.86, 1.2]], 0.0025, 12, 5), MAT.rubber, { d: 'Dunne slang van de sproeier naar het sproeierreservoir.', inner: true, ex: [0, -0.04, 0.05] }),
+      P('Sproeierslang', tube([[s * 0.28, 0.87, 1.0], [s * 0.3, 0.87, 1.1], [s * 0.4, 0.86, 1.2]], 0.0025, 12, 5), MAT.rubber, { d: 'Dunne slang van de sproeier naar het sproeierreservoir, onder de kap; bij een open kap van voren te zien.', ex: [0, -0.04, 0.05] }),
     ])),
   ]);
 }
