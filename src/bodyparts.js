@@ -171,11 +171,15 @@ function bodSkinParts() {
   const fender = s => P(`Voorscherm ${bodSn(s)}`, merge([lowSide(s, bodZDF + 0.004, bodZFe, 44, z => [fenderLo(z), fenderHi(z)], 18, ARCH_BREAKS), lowSide(s, bodZFe - 0.002, bodZCe, 12, z => [fenderCLo(z), fenderHi(z)], 6), fenderTop(s)]), MAT.paint,
     { d: 'Voorscherm van plaatstaal met de uitsparing voor het voorwiel, gelakt in het rood. Zit met bouten aan de A-stijl, de veerpoottoren en de voorkopplaat.', ex: [s * 0.46, 0.06, 0.1] });
   // achterscherm: van de portierspleet tot het achterlicht, boven de wielboog, tot de schouderlijn
-  const quarterLo = z => bodArchLo(z, AXR, zz => (zz > AXR ? bodYSill + 0.004 : bodYBR + 0.003));
+  // Onderrand boven de achterboog met een epsilon: bodArchLo en archS vergelijken |z - AXR| exact met ARCH, en op de breekkolom z = AXR - ARCH geeft de afronding
+  // 0,30000000000000004; dan lag de onderrand daar op de bumperlijn (0,578) in plaats van op de boog, en links (kolommen 22 mm uit elkaar) bleef achter de boog een driehoek
+  // zonder huid. De extra breekkolommen QB laten de rand de boog aan het achtereinde volgen (een koorde van 22 mm zakte tot 2 cm onder de boog).
+  const quarterLo = z => { const dz = Math.abs(z - AXR); return dz <= ARCH + 1e-9 ? sAtY(z, AY + Math.sqrt(Math.max(0, ARCH * ARCH - dz * dz))) : sAtY(z, z > AXR ? bodYSill + 0.004 : bodYBR + 0.003); };
+  const QB = ARCH_BREAKS.concat([AXR - ARCH + 0.004, AXR - ARCH + 0.010, AXR - ARCH + 0.020]);
   const quarterGeo = s => {
-    if (s > 0) return lowSide(s, bodZT0, bodZDR - 0.004, 46, z => [quarterLo(z), S4], 18, ARCH_BREAKS);
+    if (s > 0) return lowSide(s, bodZT0, bodZDR - 0.004, 46, z => [quarterLo(z), S4], 18, QB);
     const [k0, k1] = bodTkZ, [y0, y1] = bodTkY;   // rechts: opening voor de tankklep
-    return merge([lowSide(s, bodZT0, k0, 12, z => [quarterLo(z), S4], 12, ARCH_BREAKS), lowSide(s, k1, bodZDR - 0.004, 30, z => [quarterLo(z), S4], 14, ARCH_BREAKS),
+    return merge([lowSide(s, bodZT0, k0, 12, z => [quarterLo(z), S4], 12, QB), lowSide(s, k1, bodZDR - 0.004, 30, z => [quarterLo(z), S4], 14, QB),
       lowSide(s, k0, k1, 6, z => [quarterLo(z), sAtY(z, y0)], 6), lowSide(s, k0, k1, 6, z => [sAtY(z, y1), S4], 4)]);
   };
   const quarter = s => P(`Achterscherm ${bodSn(s)}`, quarterGeo(s), MAT.paint,
@@ -802,7 +806,8 @@ function bodRearPanel() {
 function bodRearBumper() {
   const both = bodBoth;
   return A('Achterbumper', { d: 'Bumperschaal in carrosseriekleur (Twist) met kentekenvlak, reflectoren en richel onder de achterklep; erachter de stalen bumperbalk.', ex: [0, -0.04, -0.7] }, [
-    P('Bumperschaal achter', bodBumperGeo(bodYBR, -1.556, ZR, -1), MAT.paint, { d: 'Kunststof bumperschaal in het rood met afgeronde hoeken die om de achterwielboog lopen.', ex: [0, -0.02, -0.12] }),
+    // de schaal begint op z -1,550 (was -1,556): de kier met het boogeinde van het achterscherm (z -1,548) is 2 mm in plaats van 8, zoals de dorpel voor de boog
+    P('Bumperschaal achter', bodBumperGeo(bodYBR, -1.550, ZR, -1), MAT.paint, { d: 'Kunststof bumperschaal in het rood met afgeronde hoeken die om de achterwielboog lopen.', ex: [0, -0.02, -0.12] }),
     ...both(s => P(`Reflector achter ${bodSn(s)}`, bodHalfFace(ZR, -1, s, 0.30, 0.43, 0.48, -0.002, 2, 5), MAT.lensRed, { d: 'Rode reflector laag in de bumperhoek.', ex: [s * 0.05, 0, -0.08] })),
     P('Onderrand achterbumper', bodFace(ZR, -1, -0.30, 0.30, 0.345, 0.38, -0.002, 2, 14), MAT.bodBumper, { d: 'Zwarte kunststof afwerkstrook onder in de bumper.', ex: [0, -0.04, -0.1] }),
   ]);
