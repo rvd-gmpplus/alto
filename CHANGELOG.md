@@ -2,7 +2,7 @@
 
 ## Versie 5 (in voorbereiding)
 
-- Achterkant en zijkant naar de modelreeks 1993-2001 (golf 6, pakket ACHTER, keuzes van de eigenaar naar de foto): achterbumper in ongelakt zwart kunststof (`MAT.bodBumperZwart`) met een vlakke bovenrichel die 40 mm onder de klep uitsteekt (knopen `Achterbumper` en `Kentekenvlak achter` met `uitsteek`, lengte daar 3535 mm) en reflectoren van 60 x 25 mm; liggende achterlichten (hoogte 210 mm, lichter helder deel en reflector); embleem ALTO SUZUKI op de klep; B-stijl in carrosseriekleur met 30 mm zwart rubber; zwarte stootstrip van 30 x 6 mm op portier en achterscherm (tot z -0,95).
+- Achterkant en zijkant naar de modelreeks 1993-2001 (golf 6, pakket ACHTER, keuzes van de eigenaar naar de foto): achterbumper in ongelakt zwart kunststof (`MAT.bodBumperZwart`) als achterste punt op `ZR` (lengte blijft 3495 mm) met een vlakke bovenrichel die 40 mm onder de klep uitsteekt en reflectoren van 60 x 25 mm; daarvoor eindigt het staartvlak (klep, achterpaneel, achterlichten, achterruit, zijwand erachter) 40 mm eerder, op `BOD_ZE` (`body.js`: profielen `HW`, `YB`, `YT`, `bodC`, `bodDP`, `YR` achter z -1,55 naar voren geschoven, `bodTwz`); liggende achterlichten (hoogte 210 mm, lichter helder deel en reflector); embleem ALTO SUZUKI op de klep; B-stijl in carrosseriekleur met 30 mm zwart rubber; zwarte stootstrip van 30 x 6 mm op portier en achterscherm (tot z -0,95).
 
 ## Versie 4 (18 oktober 2026)
 
