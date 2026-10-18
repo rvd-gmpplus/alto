@@ -81,7 +81,7 @@ De kap is 0,62 m halfbreed tot z 1,2 en versmalt naar 0,55 bij de neus; de kopla
 | Wielkasten: binnenwand op |x| = 0,50, boog met straal 0,312 om (z 1,087, y 0,265); de wand begint pas op y 0,42 (voor) en y 0,485 (achter), daaronder lopen aandrijfas, stuurstangen, draagarmen en achteras vrij; voor heeft de wand en het dak een uitsparing (halve breedte 7,5 cm, tot |x| 0,58) voor de veerpoot | de motor blijft binnen |x| < 0,49 onder y 0,58 | motor, aandrijving, onderstel |
 | Frontmodule (z 1,575 tot 1,625) en koelpakket (z 1,44 tot 1,575) | radiator, koelventilator, slot, bumperbalk (z 1,66, y 0,40) | systemen, carrosserie |
 | Motorkapsteun (x = -0,575, voet op z 1,0 en y 0,84; open tot y 1,29) | stang van 0,51 m met de voet naast de rechter veerpoottoren; in rust ligt hij schuin naar voren langs de rechter binnenwand; houd x -0,60 tot -0,55 tussen z 1,0 en 1,37 vrij | carrosserie |
-| Accu | links voor, tussen luchtfilterhuis en wielkast (x 0,305 tot 0,495, y 0,50 tot 0,69, z 1,40 tot 1,53): vrij onder de tabel hierboven en 38 cm voor de rembekrachtiger | systemen |
+| Accu | links voor, tussen luchtfilterhuis en wielkast (x 0,305 tot 0,495, y 0,50 tot 0,69, z 1,378 tot 1,508, sinds golf 5 22 mm naar achteren): vrij onder de tabel hierboven en 38 cm voor de rembekrachtiger | systemen |
 
 De motor (met inlaat) houdt tot de samenvoeging de hoogte van de tabel aan; het ventieldeksel reikt tot y 0,76 (krukas plus 0,40) en de inlaatkast tot y 0,79; bij z 1,35 is 0,79 de grens.
 
@@ -171,7 +171,7 @@ Na de samenvoeging van de vijf domeinen is elk paar meshes uit verschillende hoo
 |---|---|
 | Veerpoot, schroefveer, veerschotel en lagerplaat in de veerpoottoren | de veerpoot loopt in de toren (bedoeld); de uitsparing in de wielkastwand voor staat voor de doorgang |
 | Stuurkolom, onderste en bovenste kruiskoppeling, duwstang en kabelboom in het dashboardblok | het dashboard is een gesloten blok; kolom, pedaalarmen en kabels lopen er verborgen in |
-| Handremhendel en -steun van het onderstel in de tunnelconsole | de hendel zit in de tunnel; het zichtbare deel is van het interieur |
+| Handremkabel voor in de tunnelconsole en de vloerbedekking | de kabel loopt van de vereffenaar naar het aansluitpunt van de interieurhendel (`INT_PORTS.handremkabel`); de hendel zelf is van het interieur |
 | Buitenste homokineet in de fusee, vulhals in de tankkom, naaf op de stuuras, bout in de lagerbus | bevestigingen: het ene deel zit in het andere |
 | Linker aandrijfas (binnenste homokineet en hoes) tegen de beugel en de bouten van de dwarsbalk, tot 2,7 cm | beugel en bouten zitten op de plaats van de homokineet; oplossing is een herontwerp van het hulpframe (beugel lager, bouten naast de as) |
 | Panhardbus in de langsligger achter, remslangbeugels op de wielkastwand, vulpijp door de bumperrand (1,5 cm) | bevestigingen en een plaats waar de pijp de rand van de bumper raakt |
