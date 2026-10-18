@@ -1,5 +1,12 @@
 # Wijzigingen
 
+## Versie 4 (in voorbereiding)
+
+- Docs (golf 5, review B-045, B-027, B-047, B-046, B-025, B-034): een eigen `CLAUDE.md` voor de Alto in plaats van de briefing van laguna3; `docs/ontwerp-en-architectuur.md`, `docs/testen.md`, `docs/contract.md` en `docs/telefoontest.md` zonder Laguna-feiten (openers, presets, `ZF`, wortel, sleutels), met tellingen via `docs/cijfers.md`; contract paragraaf 9 met alle leiders, paragraaf 11 met drie bedoelde contacten (kabelboom in de wissermotor, hemelbekleding om de klepscharnieren, C-stijlbekleding om de gasveer).
+- Hulpscripts: `tools/orkestratie/gallery.py` en `gateshots.py` voor deze auto, zodat `pickview.py` weer werkt; `poort.js` en `rays_bagage.py` uit laguna3 zijn Laguna-specifiek en niet overgenomen.
+- `tools/opentest.py`: een benoemde tolerantie `EPS` (1e-6) voor de ondergrens. Generiek bestand: dezelfde wijziging moet naar laguna3, anders draait de volgende export haar terug.
+- Nog open: de beschrijving van de wortel in `src/systems.js` noemt aandrijflijn, onderstel en interieur nog plaatshouders (eigenaar systemen); `auto.json` mist het veld `docshots`, zodat `docshots.py` stopt.
+
 ## Versie 3 (18 oktober 2026)
 
 Aanleiding: de open punten uit Versie 2. De neus stond nog 30 tot 60 mm te hoog, zodat de klacht over de koplampen en de grille niet volledig was opgelost; de achterwielkast liet doorkijk naar het interieur zien; en de meetscripts van de voorkant draaiden niet in de volledige set. Deze versie werkt het framework bij, neemt de metingen op in de set, verlaagt de neus en sluit de achterwielkast. Uitleg, cijfers en afwijkingen per stap staan in `docs/testen.md` en `docs/onderzoek/beslissingen.md` (punt 17, 26 en 27); kerncijfers in `docs/cijfers.md`. Alleen wat een meting draagt staat hier.
