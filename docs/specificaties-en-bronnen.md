@@ -26,7 +26,7 @@ Onderzoek van 16 oktober 2026 (stap 1 van het framework, zie [framework.md](fram
 | Leeggewicht | 705 kg (3-deurs, RDW en Autoweek) of 725 kg; 5-deurs 730 of 750 kg. Maruti noemt 765 kg voor de Zen: Indiase uitvoering. | Bevestigd (RDW) |
 | Stuurbekrachtiging | Geen op de Alto 1.0 16V in Nederland (Autoweek: "stuurbekrachtiging nee" bij de GA; de Twist-test noemt een "vage besturing" en geen assistentie). De Indiase Zen had wel elektrische stuurbekrachtiging. Stuurbekrachtiging kwam in Nederland pas met de Alto 1.1 GL van 2002. | Aannemelijk |
 | Airbags | Geen (Autoweek Twist 2001: "stuur zonder airbag"). Pas de Alto 1.1 van 2002 had er twee standaard. | Bevestigd |
-| Hoofdsteunen achter | Autoweek (Twist 3-deurs): alleen voorin. Autowereld (Twist 3-deurs, uitrustingslijst op 18 oktober 2026 letterlijk nagelezen): "Hoofdsteunen achter" en "In delen neerkl. achterb." standaard. Het model volgt besluit 4 en Beslissing INT-1: hoofdsteunen voor en achter, zonder spec. | Aannemelijk |
+| Hoofdsteunen achter | Geen hoofdsteunen achter: de eigenaar bevestigt het (golf 6), en Autoweek (Twist 3-deurs) noemt alleen hoofdsteunen voorin. De uitrustingslijst van Autowereld (Twist 3-deurs, op 18 oktober 2026 letterlijk nagelezen) noemt wel "Hoofdsteunen achter" en "In delen neerkl. achterb." als standaard: de lijst klopt op dit punt niet voor deze auto. Het model heeft geen hoofdsteunen achter (Beslissing INT-1). | Bevestigd (eigenaar) |
 | Velgmaat | 13 inch stalen velg met band 145/70 TR13 (Autoweek). De 145/80 R12 en 12 inch uit de Zen-literatuur zijn de oudere en Indiase maat. | Bevestigd (band), Aannemelijk (velg) |
 | Rode lak | Naam en code niet uit een Nederlandse kleurkaart gehaald. Zie het onderdeel Voertuig voor de aannemelijke code. | Aannemelijk |
 
@@ -109,10 +109,10 @@ Onderzoek van 16 oktober 2026 (stap 1 van het framework, zie [framework.md](fram
 
 | Gegeven | Waarde | Bron | Status |
 |---|---|---|---|
-| Voorstoelen | Twee losse stoelen met hoofdsteunen; in de 3-deurs schuift de stoel naar voren om in te stappen; verstelling beperkt tot lengte en leuning (Autoweek). De uitrustingslijst van Autowereld (Twist) noemt "Stoelen in hoogte verst." zowel standaard als optie; het model volgt Autoweek (Beslissing INT-2) | Autoweek (Twist), Autowereld | Bevestigd (lengte en leuning), Open (hoogte) |
-| Achterbank | Neerklapbaar (in delen volgens Autowereld); geen hoofdsteunen achter volgens Autoweek, wel volgens Autowereld (zie Hoofdsteunen achter en Beslissing INT-1) | Autoweek, Autowereld | Aannemelijk |
+| Voorstoelen | Twee losse stoelen met hoofdsteunen; in de 3-deurs schuift de stoel naar voren om in te stappen; verstelling beperkt tot lengte en leuning (Autoweek), dus geen hoogteverstelling van de bestuurdersstoel (bevestigd door de eigenaar, golf 6). De uitrustingslijst van Autowereld (Twist) noemt "Stoelen in hoogte verst." zowel standaard als optie: die lijst klopt op dit punt niet voor deze auto (Beslissing INT-2) | Autoweek (Twist), eigenaar; Autowereld spreekt tegen | Bevestigd (lengte, leuning en geen hoogteverstelling) |
+| Achterbank | Neerklapbaar (in delen volgens Autowereld); geen hoofdsteunen achter (bevestigd door de eigenaar; zie Hoofdsteunen achter en Beslissing INT-1) | Autoweek, Autowereld, eigenaar | Aannemelijk (deelbaar), Bevestigd (geen hoofdsteunen) |
 | Dashboard | Hard kunststof, instrumentenpaneel met snelheidsmeter, kilometerteller, dagteller, brandstofmeter, koelvloeistoftemperatuurmeter en waarschuwingslampjes; geen toerenteller; handschoenenvak; ventilatieroosters midden, zijkant en zijruit; bedieningspaneel voor de verwarming; sigarettenaansteker; asbak; ontgrendelknop van de motorkap in het interieur | Nimag-werkplaatshandboek (1.2), Autoweek | Bevestigd |
-| Stuur | Driespaaks stuur zonder airbag | Autoweek | Bevestigd |
+| Stuur | Driespaaks stuur zonder airbag, met een groot ovaal kussen op de naaf (foto van de eigenaar); de plaats van de derde spaak is geschat (Beslissing INT-7) | Autoweek, eigenaar | Bevestigd (driespaaks), Geschat (spaakindeling) |
 | Uitrusting GA | Geen centrale vergrendeling, geen elektrische ruiten, geen stuurbekrachtiging, geen cruise control; airco was een optie (1.586 euro); achterruitwisser, startblokkering en hoofdsteunen voor standaard | Autoweek (GA), viabovag | Bevestigd |
 | Uitrusting Twist | Elektrische ruiten voor, centrale vergrendeling, bumpers in carrosseriekleur (één advertentie) | huntingad (advertentie) | Aannemelijk |
 | Tank | 35 l; brandstofpomp en niveausensor in de tank, brandstoffilter in de leiding, onderdrukvuldop; plaats in de auto niet gevonden | Nimag-werkplaatshandboek (4.2), Autoweek | Bevestigd (inhoud), Niet gevonden (plaats) |
@@ -128,7 +128,7 @@ De eigenaar bevestigt: 3-deurs, motor G10BB, Bright Red 2 (Z9T). De uitvoering i
 | Gegeven | Waarde | Bron | Status |
 |---|---|---|---|
 | Uitvoering | Twist (vervangt de aanname GA uit onderzoek/beslissingen.md, besluit 4) | eigenaar | Bevestigd |
-| Bumpers | Volgens de bron in carrosseriekleur (rood). In het model sinds golf 6 (beslissing 29): voorbumper van ongelakt zwart kunststof, achterbumper rood; keuze van de eigenaar naar de foto van de modelreeks 1993-2001 | Autowereld Twist, eigenaar | Aannemelijk (bron); model: keuze eigenaar |
+| Bumpers | Volgens de bron in carrosseriekleur (rood). In het model sinds golf 6 (beslissing 29): voor- en achterbumper van ongelakt zwart kunststof (achter: pakket ACHTER); keuze van de eigenaar naar de foto van de modelreeks 1993-2001 | Autowereld Twist, eigenaar | Aannemelijk (bron); model: keuze eigenaar |
 | Dakrails | Aanwezig; in het model losse onderdelen, zodat ze weg kunnen als de eigenaar ze afwijst | Autowereld Twist | Aannemelijk |
 | Ruiten | Elektrisch bediend (voor), getint glas | Autowereld Twist | Aannemelijk |
 | Vergrendeling | Centrale vergrendeling | Autowereld Twist | Aannemelijk |
@@ -140,7 +140,7 @@ De eigenaar bevestigt: 3-deurs, motor G10BB, Bright Red 2 (Z9T). De uitvoering i
 | Emissie | De pagina noemt E2; handboek en RDW geven Euro 3 voor de G10BB. Niet overgenomen: het motorplaatje beslist | Autowereld Twist | Open |
 | Transmissie | Handgeschakelde 5-bak, geen automaat. De opgave "automaat" op de Autowereld-pagina geldt niet voor deze auto | eigenaar | Bevestigd |
 
-Gevolgen voor het model: rode achterbumper (de voorbumper is sinds beslissing 29 zwart, keuze eigenaar), dakrails als losse onderdelen, elektrische raambediening (raammotoren in plaats van handslingers), slotmotoren voor de centrale vergrendeling, verwarmde spiegels met verstelmotoren, getinte ruiten. De hoofdsteunen achter en de deelbare achterbank horen bij het interieur.
+Gevolgen voor het model: bumpers sinds golf 6 zwart (keuze eigenaar, beslissing 29 en pakket ACHTER), dakrails als losse onderdelen, elektrische raambediening (raammotoren in plaats van handslingers), slotmotoren voor de centrale vergrendeling, verwarmde spiegels met verstelmotoren, getinte ruiten. De hoofdsteunen achter en de deelbare achterbank horen bij het interieur.
 
 ## Silhouet
 
@@ -160,7 +160,7 @@ De meetpunten staan in `data/silhouet.json` in het formaat van laguna3 (autofram
 2. Voorzijde (uitvoering 2000 tot 2002 volgens de bronnen): kleine donkere gaas- of honingraatgrille met het Suzuki-embleem, brede rechthoekige koplampen met helder glas die naar de zijkant doorlopen in het scherm, oranje knipperlichten laag in de hoeken van de bumper, en een brede bumper die vrijwel de volle breedte van de auto beslaat. **Model sinds golf 6 (beslissing 29, keuze eigenaar naar de foto van de modelreeks 1993-2001):** vrijwel verticaal front met een rechte kapvoorrand, een zwart grilleraam met vier horizontale lamellen en een verchroomde S, rechthoekige koplampen met een aparte heldere hoeklens, een voorbumper van ongelakt zwart kunststof en oranje knipperlichten hoog in de bumperhoeken. De bronnen noemen voor de 16V van 2000 tot 2002 een honingraatgrille; dit is dus een bewuste afwijking op verzoek van de eigenaar, zonder `spec`.
 3. Achterzijde: verticale achterlichtunits (rood met helder deel) laag in de achterhoeken van de carrosserie, een vlakke klep met grote ruit, en een bumper met ruimte voor de kentekenplaat en reflectoren laag.
 4. Raamlijn en ramen: lage voorruit met sterk hellende A-stijlen, hoog en groot glas rondom, een raamlijn die van achter naar voren enkele centimeters daalt (zie `belt`), en bij de 3-deurs één lange portierruit met een kleine hoekruit erachter.
-5. Dak en onderkant: vlak dak zonder spoiler, volle kunststof wieldoppen op 13 inch stalen velgen, bumpers ongelakt zwart of (Twist) in carrosseriekleur (model: voor zwart, achter rood; beslissing 29), en zwarte spiegels en deurgrepen.
+5. Dak en onderkant: vlak dak zonder spoiler, volle kunststof wieldoppen op 13 inch stalen velgen, bumpers ongelakt zwart of (Twist) in carrosseriekleur (model: voor en achter zwart, keuze eigenaar; beslissing 29), en zwarte spiegels en deurgrepen.
 
 ## Leverbaarheid in Nederland
 

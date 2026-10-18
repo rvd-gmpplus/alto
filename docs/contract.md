@@ -8,11 +8,11 @@ Dit contract legt vast wat de domeineigenaars van elkaar mogen verwachten. Het v
 |---|---|---|
 | Model en fase | Suzuki Alto, Zen-gebaseerde Europese uitvoering ("Alto 16V", 2000 tot 2002), 3-deurs hatchback, bouwjaar 2001 | onderzoek, eigenaar |
 | Uitvoering | 1.0-16V Twist (geleverd november 2000 tot april 2002) | eigenaar, Autowereld (aannemelijk) |
-| Lak | Bright Red 2, code Z9T (aannemelijk), effen rood zonder metallic; kleurwaarde ongeveer #C8323C (geschat); achterbumper in carrosseriekleur, voorbumper van ongelakt zwart kunststof (keuze eigenaar naar de foto van de modelreeks 1993-2001, beslissing 29; de bron noemt voor de Twist bumpers in carrosseriekleur) | eigenaar, RDW-kleurverdeling, foto's |
+| Lak | Bright Red 2, code Z9T (aannemelijk), effen rood zonder metallic; kleurwaarde ongeveer #C8323C (geschat); voor- en achterbumper van ongelakt zwart kunststof (keuze eigenaar naar de foto van de modelreeks 1993-2001, beslissing 29 en pakket ACHTER van golf 6; de bron noemt voor de Twist bumpers in carrosseriekleur) | eigenaar, RDW-kleurverdeling, foto's |
 | Wielen en banden | 145/70 R13 (TR) op stalen velgen van 13 inch met volle kunststof wieldoppen; vier bouten, steek 4 x 100 mm (geschat); bandstraal 0,2666 m | Autoweek, foto's |
 | Motor | G10BB: viercilinder in lijn, 16 kleppen, SOHC, 993 cc, 72,0 x 61,0 mm, 43 kW (58 pk) bij 6000 tpm, 78 Nm bij 4500 tpm, multipoint-inspuiting, Euro 3 | werkplaatshandboek, Autoweek |
 | Bak | Handgeschakelde 5-bak, voorwielaandrijving | eigenaar (bevestigd) |
-| Bijzonderheden | Twist-uitrusting: elektrische ramen voor, centrale vergrendeling, elektrisch verstelbare en verwarmde buitenspiegels (handmatig inklapbaar), getint glas, dakrails (los te verwijderen), hoofdsteunen voor en achter, deelbare achterbank. Geen stuurbekrachtiging, geen airbags, geen ABS, geen glazen dak (`panorama.js` blijft leeg) | eigenaar, Autowereld (aannemelijk), Autoweek |
+| Bijzonderheden | Twist-uitrusting: elektrische ramen voor, centrale vergrendeling, elektrisch verstelbare en verwarmde buitenspiegels (handmatig inklapbaar), getint glas, dakrails (los te verwijderen), hoofdsteunen voor (geen achter, bevestigd door de eigenaar), deelbare achterbank. Geen stuurbekrachtiging, geen airbags, geen ABS, geen glazen dak (`panorama.js` blijft leeg) | eigenaar, Autowereld (aannemelijk), Autoweek |
 | Tank, gewicht | 35 l; leeggewicht 705 of 725 kg | Autoweek, RDW, Autowereld |
 
 Open punten bij de eigenaar: of het motorplaatje G10BB (43 kW, Euro 3) zegt, gezien de vermelding "E2" en "145 km/u" op de Autowereld-pagina van de Twist; de exacte lakcode; een recht zijaanzicht om het silhouet te verscherpen.
@@ -115,7 +115,7 @@ Elke naam komt precies een keer voor in de boom; `tools/anchors.json` is de lijs
 |---|---|
 | Carrosserie | Carrosseriekooi (Vloer en dorpels met Bodemplaat, Voorbouw met Schutbord en Frontmodule, Achterbouw, Zijwanden en dak met Dakpaneel, Waterkast, Hoekruit links en rechts), Motorkap (met Motorkapsteun), Achterklep (met Gasveer links en rechts), Voorbumper, Achterbumper, Portier links en rechts (met Buitenspiegel links en rechts, elk met Zijruit), Voorruit, Koplamp links en rechts, Achterlicht links en rechts, Grille en voorpaneel, Kentekenvlak achter, Ruitenwissers, Tankvulopening (met Tankklep), Dakrail links en rechts |
 | Aandrijflijn | Motor G10BB (Motorblok, Krukmechanisme, Cilinderkop, Distributie, Hulpaandrijving, Smering, Inlaatspruitstuk, Uitlaatspruitstuk), Handbak 5-versnellingen (Koppeling, Differentieel), Aandrijfassen (Aandrijfas links, Aandrijfas rechts), Startmotor |
-| Interieur | Dashboard, Middenconsole, Stoelen (Bestuurdersstoel, Passagiersstoel, Achterbank met deelbare rugleuning en hoofdsteunen), Bekleding |
+| Interieur | Dashboard, Middenconsole, Stoelen (Bestuurdersstoel, Passagiersstoel, Achterbank met deelbare rugleuning), Bekleding |
 | Onderstel | Vooras en stuurinrichting (Stuurinrichting met Stuurwiel, Wielophanging linksvoor en rechtsvoor), Achteras (Wielophanging linksachter en rechtsachter), Wielen (Wiel linksvoor, rechtsvoor, linksachter, rechtsachter), Remsysteem (Handrem) |
 | Koeling en luchtinlaat | Radiateur, Koelventilator, Expansievat, Luchtfilter |
 | Uitlaatsysteem | Katalysator, Middendemper, Einddemper |
@@ -142,18 +142,19 @@ In `tools/anchors.json` (`triangle_budgets`): de driehoeken per hoofdgroep en in
 
 ## 9. Openers (modus Openen)
 
-De leiders hieronder zijn de openers van de pagina (de openerlijst in de modus Openen; `tools/anchors.json: openers`); `tools/opentest.py --strikt-min` toetst ze. Hoeken in graden, slag in meter; `open.min` is minstens 0,8 maal de volle hoek of slag. De hoeken en slagen zijn geschat. De waarden komen uit `src/bodyparts.js` en `src/interior.js` en zijn nagemeten met `opentest.py` op `658afcf`.
+De leiders hieronder zijn de openers van de pagina (de openerlijst in de modus Openen; `tools/anchors.json: openers`); `tools/opentest.py --strikt-min` toetst ze. Hoeken in graden, slag in meter; `open.min` is minstens 0,8 maal de volle hoek of slag. De hoeken en slagen zijn geschat. De waarden komen uit `src/bodyparts.js` en `src/interior.js` en zijn nagemeten met `opentest.py` op `658afcf` (de Achterzijruit uit golf 6 op `57fd751` plus pakket KIEP).
 
 | Opener | Soort | Eindstand | Ondergrens | Bijzonderheden |
 |---|---|---|---|---|
 | Motorkap | scharnier achterrand (z 0,925, y 0,915) | 65 | 55 | steunstang van 0,51 m als volger (`Motorkapsteun`, rechter veerpoottoren); camera van linksvoor |
 | Portier links, rechts | scharnier vlak voor de voorrand (z 0,79, verticale as) | 62 | 52 | lang portier (3-deurs); scharnierbladen op de A-stijl blijven staan (`stay`); de spiegel hoort bij het portier |
 | Zijruit (links, rechts) | schuif in het portier, langs het eigen vlak (helling 0,28) | 0,25 omlaag en 0,07 naar buiten (0,26 totaal) | 0,21 | volgers: Ruitdrager en Rubber zijruit; de elektrische raambediening zit in het portier |
+| Achterzijruit (Hoekruit links, rechts) | scharnier aan de voorrand van de ruit (z -0,74, bij de B-stijl); de as loopt langs die schuine voorrand (ongeveer 15 graden uit het verticaal, 5 mm achter het glas) | 4 (kiepstand: ongeveer 30 mm open bij de onderste achterhoek, 0,43 m van de as) | 3,3 | twee scharniertjes (het blad op de stijl blijft staan), kiepslot met kiephendel, slotplaat (blijft staan) en uitzetter als volger (ongeveer 23 graden, `open.min` 18,5), rubber hoekruit draait mee, sponningrubber blijft staan; camera van linksachter boven, label Achterzijruit links en rechts; eigenaar carrosserie |
 | Buitenspiegel links, rechts | scharnier aan de achterbinnenkant van het huis | 80 naar achteren | 64 | de voet blijft staan |
 | Achterklep | scharnier dakrand (z -1,165, y 1,385) | 66 | 60 | twee gasveren als telescoop (0,30 m in, 0,50 m uit), onderaan tegen de C-stijl, bovenaan op de zijrand van de klep; de hoedenplank is een volger (31,5, ondergrens 26,4) |
 | Tankklep | scharnier voorrand (z -1,38), rechter achterscherm | 140 | 112 | opening met tankkom in het scherm; de vulhals zit in het brandstofsysteem |
 | Rugleuning bestuurder, Rugleuning passagier (label Rugleuning bestuurdersstoel en passagiersstoel) | scharnier onderaan de rugleuning | 40,1 naar voren | 33,2 | needs het portier aan dezelfde kant; eigenaar interieur |
-| Rugleuning groot deel (rechts), Rugleuning klein deel (links) | scharnier onderaan de achterbank | 104,3 naar voren | 83,7 | needs Achterklep; de hoofdsteun achter gaat mee als volger; eigenaar interieur |
+| Rugleuning groot deel (rechts), Rugleuning klein deel (links) | scharnier onderaan de achterbank | 104,3 naar voren | 83,7 | needs Achterklep; eigenaar interieur |
 
 Uitzonderingen op de botsingstoets staan in `tools/open_allow.json` (nu geen). Wat een opening laat zien, heeft een eigenaar: de tankkom (carrosserie), de vulhals (brandstofsysteem), de achterbank en de bagageruimte (interieur), het motorcompartiment (motor, aandrijving, systemen).
 

@@ -45,6 +45,6 @@ const PRESETS = [
   { id: 'openDoors', cat: 'Openen', label: 'Instappen', note: 'Beide portieren open, schuin van boven.', opens: ['Portier links', 'Portier rechts'], frame: [appCar], cam: { dir: [1, 0.85, 0.55], pad: 1.04 } },
   { id: 'openTrunk', cat: 'Openen', label: 'Bagageruimte', note: 'Achterklep open en het grote deel van de achterbank neergeklapt.', opens: ['Achterklep', 'Rugleuning groot deel'], frame: [appCar], cam: { dir: [-0.8, 0.6, -1], pad: 1.05 } },
   { id: 'openFuel', cat: 'Openen', label: 'Tanken', note: 'Tankklep open met de vulopening.', opens: ['Tankklep'], frame: ['Tankvulopening', 'Achterlicht links'], cam: { dir: [1, 0.3, -0.5], pad: 1.5 } },
-  { id: 'openAll', cat: 'Openen', label: 'Alles open', note: 'Elke opener open: portieren, kap, klep, ruiten, spiegels en rugleuningen.', opens: 'all', frame: [appCar], cam: { dir: [1, 0.55, 1.08], pad: 1.04 } },
+  { id: 'openAll', cat: 'Openen', label: 'Alles open', note: 'Elke opener open: portieren, kap, klep, zijruiten, achterzijruiten, spiegels en rugleuningen.', opens: 'all', frame: [appCar], cam: { dir: [1, 0.55, 1.08], pad: 1.04 } },
 ];
 const appTourSteps = ['assembled', 'main', 'bodyOff', 'engine', 'head', 'intake', 'gearbox', 'frontAxle', 'brakeLF', 'chassis', 'interior', 'assembled'];
