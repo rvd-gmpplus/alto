@@ -309,7 +309,7 @@ function chsRearCorner(sg) {
     P('Wiellager buiten', chsLathe('x', [[0.0155, -0.030], [0.0255, -0.030], [0.0255, -0.020], [0.0155, -0.020], [0.0155, -0.030]], 24, 'RBo'), MAT.bearing, { d: 'Buitenste kegelrollager van de naaf.', p: H, ex: [0.1, 0.1, 0], inner: true }),
     P('Naafmoer achter', chsNut('x', 0.0125, 0.0105), MAT.steel, { d: 'Moer op de astap die het lagerspel instelt.', p: [H[0] + 0.0052, AY, z0], ex: [0.35, 0, 0] }),
     P('Naafdop', chsLathe('x', [[0, 0.0145], [0.0255, 0.0145], [0.0295, 0.0105], [0.0295, -0.004], [0.0255, -0.004]], 22, 'RCap'), MAT.steel, { d: 'Stofdop met vet over het naafuiteinde.', p: H, ex: [0.42, 0, 0] }),
-    P('Schroefveer achter', chsCoil(0.045, 0.0055, 0.175, 7), MAT.chsSpring, { d: 'Schroefveer die het achtergewicht draagt; staat op de langsarm vlak voor de wielas.', p: [SX, 0.3705, SZ], ex: [0, 0.2, 0] }),
+    P('Schroefveer achter', chsCoil(0.045, 0.0055, 0.175, 7), MAT.chsSpring, { d: 'Schroefveer die het achtergewicht draagt; staat op de langsarm vlak voor de wielas.', p: [SX, 0.3705, SZ], ex: [-0.2, 0.2, 0] }),
     P('Veerzetel', G.lathe('y', [[0.022, 0], [0.052, 0.002], [0.054, 0.008], [0.051, 0.010], [0.022, 0.005]], 28, 'chsRSeat'), MAT.darkSteel, { d: 'Onderste veerzetel op de langsarm.', p: [SX, 0.275, SZ], ex: [0, 0.07, 0] }),
     P('Veerrubber boven', annulus(0.02, 0.053, 0.012, 'y', 28), MAT.rubber, { d: 'Rubber steunring tussen veer en carrosserie.', p: [SX, 0.466, SZ], ex: [0, 0.35, 0] }),
     P('Aanslagrubber achter', G.cyl('y', 0.02, 0.015, 0.05, 14), MAT.rubber, { d: 'Rubberen aanslag in de veer; vangt het inveren op.', p: [SX, 0.435, SZ], ex: [0, 0.3, 0] }),
@@ -435,8 +435,8 @@ function chsHydraulics() {
   const bk = sg => P(`Slangbeugel ${chsSn(sg)}`, xf(G.box(0.03, 0.02, 0.012), [sg * 0.515, 0.50, 1.16]), MAT.chsZinc, { d: 'Beugel op de wielkastwand waar de stijve leiding in de remslang overgaat.', ex: [sg * 0.15, 0.1, 0] });
   const clip = (z, i) => P(`Remleidingklem ${i}`, merge([xf(G.box(0.03, 0.008, 0.02), [0.36, 0.2105, z]), xf(G.cyl('x', 0.006, 0.006, 0.02, 8), [0.36, 0.208, z])]), MAT.plasticGrey, { d: 'Klem die de remleiding onder de vloer vasthoudt.', ex: [0, -0.1, 0] });
   return A('Remleidingen', { d: 'Stijve remleidingen en flexibele remslangen: twee circuits (voor en achter, geschat) van de hoofdcilinder naar de vier wielen. De routes zijn schematisch.', ex: [0, -0.3, 0] }, [
-    P('Remleiding voor links', chsLine(FL, 0.003), MAT.chsZinc, { d: 'Verzinkte stalen leiding van de hoofdcilinder naar de linker voorwielkast.', ex: [0, 0.1, 0] }),
-    P('Remleiding voor rechts', chsLine(FR, 0.003), MAT.chsZinc, { d: 'Verzinkte stalen leiding langs het schutbord naar de rechter voorwielkast.', ex: [0, 0.15, 0] }),
+    P('Remleiding voor links', chsLine(FL, 0.003), MAT.chsZinc, { d: 'Verzinkte stalen leiding van de hoofdcilinder naar de linker voorwielkast.', ex: [0, 0.12, 0] }),
+    P('Remleiding voor rechts', chsLine(FR, 0.003), MAT.chsZinc, { d: 'Verzinkte stalen leiding langs het schutbord naar de rechter voorwielkast.', ex: [0, 0.12, 0] }),
     P('Remleiding achter', chsLine(RM, 0.003), MAT.chsZinc, { d: 'Leiding van de hoofdcilinder achter het stuurhuis langs, onder de vloer naar de achterwielen.', ex: [0, -0.1, 0] }),
     P('Remverdeler achter', merge([xf(G.box(0.03, 0.02, 0.03), [0.40, 0.213, -0.98])]), MAT.chsZinc, { d: 'T-stuk dat het achtercircuit naar links en rechts verdeelt.', ex: [0, -0.1, 0] }),
     P('Remleiding achter links', chsLine(RL, 0.003), MAT.chsZinc, { d: 'Leiding van het T-stuk naar de linker achterlangsligger.', ex: [0.1, -0.1, 0] }),

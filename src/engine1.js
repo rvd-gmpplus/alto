@@ -186,13 +186,13 @@ function engBuildBlock() {
     ]),
     P('Centreerbus voor', G.cyl('y', 0.0065, 0.0065, 0.016, 10), MAT.steel, { d: 'Holle centreerbus die de kop op het blok positioneert (plaats geschat).', p: [-0.158, ENG_DECK, 0.062], ex: [0, 0.05, 0] }),
     P('Centreerbus achter', G.cyl('y', 0.0065, 0.0065, 0.016, 10), MAT.steel, { d: 'Tweede centreerbus tussen blok en kop.', p: [0.158, ENG_DECK, -0.062], ex: [0, 0.05, 0] }),
-    A('Vorstpluggen', { d: 'Ingeperste expansiepluggen in de watermantel van het blok (aantal en plaats geschat).', ex: [0, 0, 0.0] }, [
+    A('Vorstpluggen', { d: 'Ingeperste expansiepluggen in de watermantel van het blok (aantal en plaats geschat).', ex: [0, 0, 0.1] }, [
       P('Vorstplug 1', plug, MAT.steel, { d: 'Expansieplug van de watermantel aan de poeliezijde.', p: [-0.1835, 0.1, 0.03], ex: [-0.05, 0, 0] }),
       P('Vorstplug 2', plug, MAT.steel, { d: 'Expansieplug van de watermantel aan de poeliezijde.', p: [-0.1835, 0.1, -0.03], ex: [-0.05, 0, 0] }),
       P('Vorstplug 3', plug, MAT.steel, { d: 'Expansieplug van de watermantel aan de bakzijde.', p: [0.1835, 0.1, 0.03], ex: [0.05, 0, 0] }),
       P('Vorstplug 4', plug, MAT.steel, { d: 'Expansieplug van de watermantel aan de bakzijde.', p: [0.1835, 0.1, -0.03], ex: [0.05, 0, 0] }),
     ]),
-    A('Carterpan', { d: 'Plaatstalen oliecarter onder het blok met een diepere oliebak aan de poeliezijde. De inhoud van circa 3,6 liter olie is niet voor deze auto bevestigd.', ex: [0, -0.3, 0] }, [
+    A('Carterpan', { d: 'Plaatstalen oliecarter onder het blok met een diepere oliebak aan de poeliezijde. De inhoud van circa 3,6 liter olie is niet voor deze auto bevestigd.', ex: [0, -0.5, 0] }, [
       P('Pakking carter', plan(engRing(rrectPts(0.358, 0.182, 0.02), rrectPts(0.34, 0.164, 0.014)), 0.0008), MAT.rubber, { d: 'Rubber pakking tussen de carterflens en het blok.', p: [0, -0.0653, 0], ex: [0, 0.04, 0] }),
       P('Oliecarter', engPanGeo(), MAT.darkSteel, { d: 'Geperst plaatstalen carter met flens en ribben. De bodem ligt 190 mm onder de krukas (geschat), de onderkant van de pan op circa 0,17 m boven de grond.', ex: [0, 0, 0] }),
       P('Aftapplug', hexBolt(0.012, 0.016), MAT.steel, { d: 'Aftapplug in de bodem van de oliebak.', p: [-0.05, -0.1925, 0], ex: [0, -0.08, 0] }),

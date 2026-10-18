@@ -30,7 +30,7 @@ function engBuildLube() {
       P('Zuigkorf', strainer, MAT.steel, { d: 'Zuigkorf met fijn gaas dat vuil tegenhoudt.', p: [-0.115, -0.17, 0], ex: [0, -0.03, 0] }),
     ]),
     A('Oliefilter', { d: 'Wegwerp-schroeffilter op de voorzijde van het blok; de filtermaat is niet voor deze auto bevestigd.', ex: [0, -0.04, 0.15] }, [
-      P('Filterhuis', filt, MAT.oilFilter, { d: 'Blauw gelakt plaatstalen filterhuis met rubber afdichtring.', p: [fx, fy, zf], ex: [0, 0, 0.05] }),
+      P('Filterhuis', filt, MAT.oilFilter, { d: 'Blauw gelakt plaatstalen filterhuis met rubber afdichtring.', p: [fx, fy, zf], ex: [0, 0, 0.12] }),
       P('Filterelement', elem, MAT.filter, { d: 'Papieren filterelement in het huis (schematisch).', p: [fx, fy, zf], ex: [0, 0, 0.0], inner: true }),
       P('Filterpakking', annulus(0.027, 0.036, 0.003, 'z', 24), MAT.rubber, { d: 'Rubber ring tussen filter en blok.', p: [fx, fy, zf - 0.001], ex: [0, 0, 0.02] }),
       P('Filternippel', merge([G.cyl('z', 0.0085, 0.0085, 0.05, 12)]), MAT.steel, { d: 'Draadnippel in het blok waarop het filter geschroefd wordt.', p: [fx, fy, zf + 0.0], ex: [0, 0, 0.03] }),
