@@ -121,7 +121,7 @@ function intRearHead(x, name, lead) {
   ]);
 }
 function intRearBench() {
-  // zitting en rugleuningen blijven 5 mm binnen de wand van de achterwielkast (|x| 0,50): de bekleding stak er tot 10 mm doorheen of lag er precies in (open punt AWK)
+  // zitting en rugleuningen blijven binnen de wand van de achterwielkast (|x| 0,50): de zitting 10 mm (bekleding 0,98 breed, tot |x| 0,49), de rugleuningen 5 mm (tot |x| 0,495); de bekleding stak er tot 10 mm doorheen of lag er precies in (open punt AWK)
   const bx = intBx;
   const cush = A('Zitting achterbank', { d: 'Zitkussen van de achterbank: plaat, schuim en stoffen bekleding, met de gordelsloten.', p: [0, 0, -0.81], ex: [0, 0.06, 0.14] }, [
     intPart('Zitplaat achter', intBx(0.94, 0.012, 0.4, 0.004, [0, 0.414, 0]), MAT.darkSteel, 'Stalen plaat onder het zitschuim.', { inner: true, ex: [0, 0.02, 0] }),
