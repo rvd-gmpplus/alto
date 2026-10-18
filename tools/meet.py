@@ -326,7 +326,9 @@ IDPASS_JS = r"""(opt) => {
   const bg = scene.background, fog = scene.fog; scene.background = null; scene.fog = null;
   const cc = renderer.getClearColor(new THREE.Color()), ca = renderer.getClearAlpha();
   const sz = renderer.getDrawingBufferSize(new THREE.Vector2()), W = sz.x, H = sz.y;
-  const rt = new THREE.WebGLRenderTarget(W, H, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.UnsignedByteType, depthBuffer: true });
+  // stencilBuffer: true dwingt bij three r147 een 24-bit dieptebuffer af (DEPTH24_STENCIL8); zonder stencil wordt het DEPTH_COMPONENT16,
+  // ongeveer 7 mm precisie op 1,8 m en 17 mm op 4,5 m, en dan lekt wat net achter een wand ligt erdoorheen. De app tekent op een canvas met 24-bit diepte.
+  const rt = new THREE.WebGLRenderTarget(W, H, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.UnsignedByteType, depthBuffer: true, stencilBuffer: true });
   renderer.setClearColor(0x000000, 1); renderer.setRenderTarget(rt); renderer.clear(); renderer.render(scene, camera);
   const buf = new Uint8Array(W * H * 4); renderer.readRenderTargetPixels(rt, 0, 0, W, H, buf); renderer.setRenderTarget(null); rt.dispose();
   const herstel = () => { saved.forEach(([m, mt]) => { m.material = mt; }); hid.forEach(o => { o.visible = true; }); glas.forEach(m => { m.visible = true; });
@@ -394,7 +396,7 @@ IDPASS_JS = r"""(opt) => {
   if (opt && opt.zone && any) {
     const pm = new THREE.ShaderMaterial({ vertexShader: 'varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }', fragmentShader: 'varying vec3 vW; void main(){ gl_FragColor = vec4(vW, 1.0); }', side: THREE.DoubleSide });
     L.MESHES.forEach(m => { m.material = pm; });
-    const rtf = new THREE.WebGLRenderTarget(W, H, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.FloatType, depthBuffer: true });
+    const rtf = new THREE.WebGLRenderTarget(W, H, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.FloatType, depthBuffer: true, stencilBuffer: true });   // 24-bit diepte, zie rt hierboven
     renderer.setClearColor(0x000000, 1); renderer.setRenderTarget(rtf); renderer.clear(); renderer.render(scene, camera);
     const fb = new Float32Array(W * H * 4); renderer.readRenderTargetPixels(rtf, 0, 0, W, H, fb); renderer.setRenderTarget(null); rtf.dispose(); pm.dispose();
     const cp = camera.position, sg = Math.sign(cp.x), vlak = sg * 0.5, kant = Math.abs(cp.x) > 0.6;
