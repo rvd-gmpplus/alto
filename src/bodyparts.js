@@ -308,7 +308,9 @@ function bodStructure() {
       { d: 'Gelakte sluitplaat aan het achtereinde van de dorpel, voor de achterwielboog: sluit de koker tussen dorpel, bodemplaat en vloer af, zodat je van onderen niet op de vloerbedekking kijkt.', ex: [s * 0.14, -0.05, 0] })),
   ]);
   const front = A('Voorbouw', { d: 'Dragende voorbouw: langsliggers, veerpoottorens, schutbord, frontmodule en bumperbalk.', ex: [0, 0.05, 0.42] }, [
-    ...both(s => P(`Langsligger voor ${sn(s)}`, G.box(0.05, 0.09, 0.80), MAT.paintIn, { d: 'Kokerprofiel in de motorruimte dat botsenergie opvangt (plaats en maten schematisch).', p: [s * 0.42, 0.33, 1.20], ex: [s * 0.08, 0, 0] })),
+    // 65 mm hoog (y 0,306 tot 0,371) in plaats van 90 mm (0,285 tot 0,375): de linker aandrijfas (tripodehuis tot y 0,3005, klem tot 0,303)
+    // loopt eronder door en de spoorstang en de accusteun liggen erboven; op de oude maat stak de as 15 mm in de ligger (B-030). Beide kanten gelijk.
+    ...both(s => P(`Langsligger voor ${sn(s)}`, G.box(0.05, 0.065, 0.80), MAT.paintIn, { d: 'Kokerprofiel in de motorruimte dat botsenergie opvangt (plaats en maten schematisch).', p: [s * 0.42, 0.3385, 1.20], ex: [s * 0.08, 0, 0] })),
     // onderkant op y 0,62 (was 0,56): hij lag onder de bovenkant van de wielkastbekleding (y 0,577) en stak als rood blok boven de band uit in de wielkastcamera's van opzij
     ...both(s => P(`Veerpoottoren ${sn(s)}`, merge([G.cyl('y', 0.05, 0.07, 0.14, 24, true), xf(G.cyl('y', 0.05, 0.05, 0.006, 24), [0, 0.07, 0])]), MAT.paintIn, { d: 'Bevestigingspunt van de veerpoot in de carrosserie.', p: [s * 0.50, 0.69, AXF], ex: [s * 0.1, 0.06, 0] })),
     // onder y 0,58 loopt het schutbord alleen tot de wielkastwanden (|x| 0,50): daarbuiten zit het voorwiel (de band stak erdoorheen)
