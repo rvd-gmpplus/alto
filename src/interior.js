@@ -336,8 +336,10 @@ function intTrim() {
   const arch = (() => { const y0 = 0.47, ring = R => { const t0 = Math.asin((y0 - AY) / R), pts = []; for (let i = 0; i <= 10; i++) { const t = t0 + (PI - 2 * t0) * i / 10; pts.push([AXR + R * Math.cos(t), AY + R * Math.sin(t)]); } return pts; };
     return ring(0.35).concat(ring(0.322).reverse()); })();
   const wheelCover = s => intPart(`Wielkastbekleding ${sideName(s)}`, intSideBlock(arch.map(p => [p[0], p[1]]), s > 0 ? 0.51 : -0.7, s > 0 ? 0.7 : -0.51), MAT.intFelt, 'Beklede verhoging over de achterwielkast in de bagageruimte, tot de zijbekleding.', { ex: [s * 0.1, 0.06, 0] });
-  // boven de achterband (y 0,53) langs de wielkast begint de zijbekleding op y 0,56
-  const bootSide = s => intPart(`Zijbekleding bagageruimte ${sideName(s)}`, intPanel(s, -1.17, -1.66, z => 0.47 + 0.09 * sstep((z + 1.56) / 0.04), () => 0.64, 0.03, 20, 3), MAT.intFelt, 'Beklede zijwand van de bagageruimte in donker vilt, onder het achterscherm.', { ex: [s * 0.12, 0, -0.08] });
+  // boven de achterband (y 0,53) langs de wielkast begint de zijbekleding op y 0,56, en boven de boog niet lager dan straal 0,326 om de as (binnen de wielkastbekleding, straal 0,322
+  // tot 0,35): op y 0,56 stak de onderrand tot 13 mm onder de koker van de achterwielkast (straal 0,312) uit en zag je het vilt bovenin de boog (open punt AWK, cyclus 2)
+  const bootLo = z => { const dz = Math.abs(z - AXR), R = 0.326; return Math.max(0.47 + 0.09 * sstep((z + 1.56) / 0.04), dz < R ? AY + Math.sqrt(R * R - dz * dz) : 0); };
+  const bootSide = s => intPart(`Zijbekleding bagageruimte ${sideName(s)}`, intPanel(s, -1.17, -1.66, bootLo, () => 0.64, 0.03, 20, 3), MAT.intFelt, 'Beklede zijwand van de bagageruimte in donker vilt, onder het achterscherm.', { ex: [s * 0.12, 0, -0.08] });
   // vloer: vloerbedekking in een stuk over de voetruimte en onder de achterbank; naast de achterwielkast tot |x| 0,495, 5 mm binnen de wand (lag er precies in)
   const carpet = (() => { const hx = 0.62, g = roundPlate([[-0.495, -1.02], [0.495, -1.02], [0.495, -0.9], [hx, -0.9], [hx, 0.775], [0.5, 0.775], [0.5, 0.85], [-0.5, 0.85], [-0.5, 0.775], [-hx, 0.775], [-hx, -0.9], [-0.495, -0.9]], 0.008, 0.003); g.rotateX(HALF); g.translate(0, INT_YF - 0.004, 0); return g; })();
   const mat = (s, n, z) => intPart(`Vloermat ${n}`, bx(0.4, 0.008, 0.52, 0.003, [s * 0.38, INT_YF + 0.004, z]), MAT.rubber, 'Losse rubber vloermat in de voetruimte.', { ex: [0, 0.12, 0.1] });
