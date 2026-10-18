@@ -312,8 +312,8 @@ function drvSeals() {
   const [dy, dz] = DRV_DIFFYZ;
   const seal = cache('drvSeal', () => drvAn(0.0125, 0.0255, 0.011));
   return [
-    drvP('Aandrijfas-afdichting links', seal, MAT.rubber, 'Keerring waar de linker aandrijfas het bakhuis verlaat; houdt de bakolie binnen.', [0.509, dy, dz], [0.16, -0.06, 0]),
-    drvP('Aandrijfas-afdichting rechts', seal, MAT.rubber, 'Keerring waar de rechter aandrijfas het bakhuis verlaat; houdt de bakolie binnen.', [0.351, dy, dz], [-0.16, -0.06, 0], { s: [-1, 1, 1] }),
+    drvP('Aandrijfas-afdichting links', seal, MAT.rubber, 'Keerring waar de linker aandrijfas het bakhuis verlaat; houdt de bakolie binnen.', [0.509, dy, dz], [0.16, -0.15, 0]),
+    drvP('Aandrijfas-afdichting rechts', seal, MAT.rubber, 'Keerring waar de rechter aandrijfas het bakhuis verlaat; houdt de bakolie binnen.', [0.351, dy, dz], [-0.16, -0.15, 0], { s: [-1, 1, 1] }),
   ];
 }
 

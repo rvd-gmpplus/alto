@@ -174,7 +174,7 @@ function engBuildSensors() {
     P('Koelvloeistoftemperatuursensor', merge([G.cyl('z', 0.005, 0.005, 0.02, 8), xf(G.cyl('z', 0.008, 0.008, 0.006, 6), [0, 0, 0.012])]), MAT.copper, { d: 'Voeler in het thermostaathuis die de temperatuur van de koelvloeistof doorgeeft.', p: [-0.162, 0.245, 0.1245], ex: [0, 0, 0.08] }),
     P('Inlaatdruksensor', merge([G.box(0.026, 0.02, 0.014), xf(G.cyl('z', 0.004, 0.004, 0.012, 8), [0.0, 0.0, -0.012])]), MAT.engCoil, { d: 'MAP-sensor aan de achterzijde van de inlaatkast die de inlaatdruk meet.', p: [-0.06, 0.283, 0.1245], ex: [0, 0.05, -0.04] }),
     P('Gaskleppositiesensor', merge([G.box(0.02, 0.02, 0.014)]), MAT.engCoil, { d: 'Sensor op de gasklepas die de stand van de gasklep aan de regeleenheid doorgeeft.', p: [0.166, py, pz - 0.0415], ex: [0, 0, -0.07] }),
-    P('Oliedrukschakelaar', merge([G.cyl('z', 0.006, 0.006, 0.02, 8), xf(engNut(0.016, 0.008, 'z'), [0, 0, 0.002])]), MAT.steel, { d: 'Schakelaar die het waarschuwingslampje van de oliedruk bedient.', p: [0.025, 0.03, 0.099], ex: [0, 0, 0.06] }),
+    P('Oliedrukschakelaar', merge([G.cyl('z', 0.006, 0.006, 0.02, 8), xf(engNut(0.016, 0.008, 'z'), [0, 0, 0.002])]), MAT.steel, { d: 'Schakelaar die het waarschuwingslampje van de oliedruk bedient.', p: [0.025, 0.03, 0.099], ex: [0, 0, 0.12] }),
   ]);
 }
 

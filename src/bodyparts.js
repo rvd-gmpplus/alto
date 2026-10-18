@@ -1216,8 +1216,9 @@ function bodTailgate() {
     ...both(s => { const q = bodGsPts(s); return P(`Gasveerbeugel ${sn(s)}`, merge([G.sphere(0.012, 10), xf(G.rbox(0.03, 0.02, 0.02, 0.004), [0, 0.016, 0])]), MAT.darkSteel, { d: 'Beugel met kogelpen aan de zijrand van de klep waarop de gasveer draait (plaats geschat).', p: q.b, ex: [s * 0.04, 0.05, 0] }); }),
     ...both(s => P(`Klepscharnierblad ${sn(s)}`, G.rbox(0.026, 0.007, 0.06, 0.003), MAT.bodPillar, { d: 'Plat zwart scharnierblad aan de achterklep, draait om de scharnierpen op de dakrand.', p: [s * 0.42, bodGhHalf(-1.19, bodQAtX(-1.19, 0.42))[1] + 0.001, -1.19], ex: [0, 0.05, -0.02] })),
     ...both(s => P(`Klepscharnier ${sn(s)}`, G.rbox(0.03, 0.014, 0.08, 0.005), MAT.darkSteel, { d: 'Scharnier tussen dak en achterklep, het deel aan de carrosseriezijde; blijft staan als de klep opent.', p: [s * 0.42, bodGh(-1.15).yre - 0.019, -1.15], stay: true, ex: [0, 0.04, 0.04] })),
-    // aanslag op de sponning naast de opening, 0,5 mm achter het binnenpaneel van de klep (de klep sluit er tegenaan)
-    ...both(s => P(`Klepbuffer ${sn(s)}`, G.cyl('z', 0.009, 0.009, 0.0055, 10), MAT.rubber, { d: 'Rubberen aanslag op de sponning naast de bagageopening die het rammelen van de klep voorkomt.', stay: true, p: [s * 0.375, 0.80, bodZFl - 0.00275], ex: [s * 0.03, 0, 0.04] })),
+    // aanslag op de sponning naast de opening, 0,5 mm achter het binnenpaneel van de klep (de klep sluit er tegenaan); klapt naar achteren
+    // uit, van de sponning af en voorbij de buitenhuid van de klep, zodat hij in de preset Achterklep niet achter het buitenpaneel valt
+    ...both(s => P(`Klepbuffer ${sn(s)}`, G.cyl('z', 0.009, 0.009, 0.0055, 10), MAT.rubber, { d: 'Rubberen aanslag op de sponning naast de bagageopening die het rammelen van de klep voorkomt.', stay: true, p: [s * 0.375, 0.80, bodZFl - 0.00275], ex: [s * 0.03, 0, -0.14] })),
   ]);
 }
 // gasveerbevestigingen op de C-stijl (carrosseriezijde)

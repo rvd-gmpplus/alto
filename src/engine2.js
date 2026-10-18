@@ -200,7 +200,7 @@ function engBuildAccessory() {
   return A('Hulpaandrijving', { d: 'Multiriem (poly-V) van de krukaspoelie naar de dynamo en de waterpomp, met spanrol. Het handboek noemt alleen een eigen riem van de krukaspoelie naar de koelvloeistofpomp; de dynamo-aandrijving en de lusvorm zijn hier aangenomen.', ex: [-0.26, 0, 0] }, [
     P('Krukaspoelie', engPoly(0.052, 'engCPul'), MAT.steel, { d: 'Stalen poelie met vier groeven op de krukasneus voor de multiriem (diameter geschat).', p: [XA, 0, 0], ex: [-0.04, 0, 0] }),
     P('Krukasbout', hexBolt(0.032, 0.016, 'x'), MAT.darkSteel, { d: 'Centrale bout die de poelie op de krukasneus vastzet.', p: [XA - 0.0125, 0, 0], ex: [-0.12, 0, 0] }),
-    P('Multiriem', belt, MAT.belt, { d: 'Geribde riem (ribben niet getekend) over krukaspoelie, spanrol, dynamo en waterpomp; breedte en lengte geschat.', p: [XA, 0, 0], ex: [-0.07, 0, 0] }),
+    P('Multiriem', belt, MAT.belt, { d: 'Geribde riem (ribben niet getekend) over krukaspoelie, spanrol, dynamo en waterpomp; breedte en lengte geschat.', p: [XA, 0, 0], ex: [-0.13, 0, 0] }),
     A('Spanrol multiriem', { d: 'Rol met arm en as die de multiriem onder de krukaspoelie aanspant (aangenomen).', ex: [-0.1, -0.1, 0] }, [
       P('Spanrol', rolG, MAT.darkSteel, { d: 'Gladde rol tegen de rug van de multiriem.', p: [XA, rol[1], rol[0]], ex: [-0.05, 0, 0] }),
       P('Spanarm', arm, MAT.steel, { d: 'Draaiarm van de spanrol.', p: [-0.2285, 0, 0], ex: [-0.02, 0, 0] }),
