@@ -46,7 +46,9 @@ const INT_PORTS = {
   rempedaal: [0.37, 0.58, 0.835],
   koppelingspedaal: [0.47, 0.60, 0.835],
   gaspedaal: [0.255, 0.42, 0.84],
-  handremhendel: [0.065, 0.40, -0.02],
+  // scharnier van de handremhendel (as langs x), in de console boven de tunnel; de kabel van het onderstel sluit aan op `handremkabel`, 40 mm onder het scharnier
+  handremhendel: [0.065, 0.34, 0.104],
+  handremkabel: [0.065, 0.30, 0.104],
 };
 
 /* ---------- voorstoelen ---------- */
@@ -218,7 +220,8 @@ function intDashboard() {
   ]);
   const spk = intPart('Luidsprekerroosters', merge([1, -1].map(s => bx(0.1, 0.004, 0.06, 0.002, [s * 0.46, 0.9255, 0.7]))), MAT.plastic, 'Twee roosters boven de luidsprekers van het audiopakket, links en rechts in de bovenkant van het dashboard (plaats aangenomen).', { ex: [0, 0.14, 0.1] });
   const rel = A('Dashboardbediening', { d: 'Schakelaars en ontgrendelingen onder het dashboard bij de bestuurder: zekeringkast, kapontgrendeling.', ex: [0.1, -0.1, -0.2] }, [
-    intPart('Zekeringkastklep', bx(0.1, 0.07, 0.01, 0.004, [0.47, 0.64, 0.495], [0.1, 0, 0]), MAT.plasticGrey, 'Klepje onder het dashboard waarachter de zekeringen zitten.', { ex: [0.04, -0.04, -0.06] }),
+    // op het voorvlak van de kniebeschermer (lokaal 105 mm naar buiten, 30 mm omhoog, 0,5 mm voor het vlak); lag 25 mm diep in de kniebeschermer (B-043)
+    intPart('Zekeringkastklep', bx(0.1, 0.07, 0.01, 0.004, [0.455, 0.6197, 0.462], [-0.3, 0, 0]), MAT.plasticGrey, 'Klepje in de kniebeschermer onder het dashboard waarachter de zekeringen zitten (plaats aangenomen).', { ex: [0.04, -0.04, -0.06] }),
     intPart('Motorkapontgrendeling', merge([bx(0.035, 0.012, 0.05, 0.004, [0.5, 0.58, 0.51]), rodBetween([0.5, 0.58, 0.535], [0.5, 0.58, 0.8], 0.002, 4)]), MAT.plasticGrey, 'Trekgreep onder het dashboard die de motorkap via een kabel ontgrendelt.', { ex: [0.04, -0.04, -0.06] }),
   ]);
   return A('Dashboard', { d: 'Dashboard met instrumentenpaneel, luchtroosters, handschoenenkastje en de luidsprekers van het audiopakket; kappen en bedieningspanelen rond de stuurkolom.', spec: [['Instrumenten', 'snelheidsmeter met kilometer- en dagteller, brandstofmeter, temperatuurmeter, waarschuwingslampjes; geen toerenteller']], ex: [0, 0.2, 0.55] }, [dashShell, cluster, hood, gk, vents, spk, rel]);
@@ -261,7 +264,7 @@ function intPedals() {
     intPart('Koppelingspedaalrubber', padAt(0.47, 0.375, 0.738, 0.08, 0.07, -0.28), MAT.rubber, 'Rubber pad van het koppelingspedaal.', { ex: [0.1, 0, -0.06] }),
     intPart('Gaspedaalarm', merge([rodBetween([0.255, 0.31, 0.72], [0.255, 0.43, 0.8], 0.008, 8), rodBetween([0.255, 0.43, 0.8], [0.255, 0.43, 0.84], 0.004, 6)]), MAT.steel, 'Arm van het gaspedaal, scharnierend op de vloer; de gaskabel gaat door het schutbord (INT_PORTS.gaspedaal).', { ex: [-0.04, 0, 0.04] }),
     intPart('Gaspedaalrubber', bx(0.06, 0.016, 0.18, 0.006, [0.255, 0.395, 0.775], [0.9, 0, 0]), MAT.rubber, 'Gaspedaal met rubber pad, schuin vooruit omhoog.', { ex: [-0.06, 0, -0.06] }),
-    intPart('Remlichtschakelaar', xf(G.cyl('z', 0.012, 0.012, 0.04, 8), [0.37, 0.67, 0.81]), MAT.plasticGrey, 'Schakelaar die de remlichten inschakelt.', { ex: [0, 0.06, 0] }),
+    intPart('Remlichtschakelaar', xf(G.cyl('z', 0.012, 0.012, 0.04, 8), [0.37, 0.67, 0.81]), MAT.plasticGrey, 'Schakelaar op de pedaalbok boven de pedaalarm die de remlichten inschakelt; zit binnen het dashboard.', { inner: true, ex: [0, 0.06, 0] }),
     intPart('Voetsteun', bx(0.05, 0.17, 0.02, 0.006, [0.53, 0.33, 0.77], [-0.7, 0, 0]), MAT.satin, 'Steun voor de linkervoet.', { ex: [0.08, 0, -0.04] }),
   ]);
 }
@@ -296,12 +299,15 @@ function intConsole() {
     intPart('Pookstang', cy('y', 0.0075, 0.19, [0, 0.17, 0], 10), MAT.steel, 'Stalen pookstang die door de hoes naar de schakelmechaniek loopt.', { ex: [0, 0.06, 0] }),
     intPart('Pookknop', merge([G.sphere(0.026, 16), xf(G.box(0.002, 0.002, 0.002), [0, 0, 0])]), MAT.plastic, 'Zwarte pookknop met het schakelschema (schematisch).', { p: [0, 0.285, 0], ex: [0, 0.12, 0] }),
   ]);
-  // handrem: hendel met knop en hoes naast de pook, tegen de tunnel (kabels van het remsysteem sluiten aan op INT_PORTS.handremhendel)
-  const hx = INT_PORTS.handremhendel;
-  const hb = A('Handremhendel met hoes', { d: 'Handremhendel naast de pook, op de console. De kabels van de handrem lopen onder de console naar achter (aansluitpunt INT_PORTS.handremhendel).', p: [hx[0], hx[1], hx[2]], ex: [0.06, 0.12, -0.06] }, [
-    intPart('Handremhendel', merge([rodBetween([0, 0.0, 0.04], [0, 0.1, -0.1], 0.008, 8), bx(0.032, 0.03, 0.1, 0.012, [0, 0.12, -0.13], [0.3, 0, 0])]), MAT.plastic, 'Hendel met grip die de handrem aantrekt; ratelt vast met een pal.', { ex: [0, 0.08, -0.04] }),
-    intPart('Handremknop', bx(0.014, 0.012, 0.02, 0.004, [0, 0.14, -0.175], [0.3, 0, 0]), MAT.plasticGrey, 'Drukknop in de grip om de handrem te ontgrendelen.', { ex: [0, 0.1, -0.06] }),
-    intPart('Handremhoes', bx(0.07, 0.01, 0.18, 0.004, [0, 0.008, -0.02]), MAT.rubber, 'Rubber hoes over de gleuf waar de handremhendel door de console steekt.', { ex: [0, 0.03, 0] }),
+  // handrem: hendel met knop en hoes naast de pook, op de console tussen de voorstoelen. De oorsprong van de groep is het scharnier
+  // (INT_PORTS.handremhendel); de korte kabelarm wijst omlaag naar het aansluitpunt van de kabel (INT_PORTS.handremkabel). Trekken
+  // aan de grip draait de hendel om x en trekt de kabelarm naar achter.
+  const hx = INT_PORTS.handremhendel, hk = INT_PORTS.handremkabel;
+  const hb = A('Handremhendel met hoes', { d: 'Handremhendel naast de pook, op de console tussen de voorstoelen. De hendel scharniert in de console boven de tunnel; de handremkabel loopt van daar onder de vloer naar de achterwielen.', p: [hx[0], hx[1], hx[2]], ex: [0.06, 0.12, -0.06] }, [
+    intPart('Handremhendel', merge([rodBetween([0, 0, 0], [0, 0.16, -0.224], 0.008, 8), bx(0.032, 0.03, 0.1, 0.012, [0, 0.18, -0.254], [0.3, 0, 0])]), MAT.plastic, 'Hendel met grip die de handrem aantrekt; ratelt vast met een pal.', { ex: [0, 0.08, -0.04] }),
+    intPart('Handremknop', bx(0.014, 0.012, 0.02, 0.004, [0, 0.2, -0.299], [0.3, 0, 0]), MAT.plasticGrey, 'Drukknop in de grip om de handrem te ontgrendelen.', { ex: [0, 0.1, -0.06] }),
+    intPart('Handremhoes', bx(0.07, 0.01, 0.18, 0.004, [0, 0.068, -0.144]), MAT.rubber, 'Rubber hoes over de gleuf waar de handremhendel door de console steekt.', { ex: [0, 0.03, 0] }),
+    intPart('Handremscharnier', merge([cy('x', 0.008, 0.04, [0, 0, 0], 10), intBox(0.004, 0.05, 0.06, [-0.012, -0.005, 0.01]), rodBetween([0, 0, 0], [hk[0] - hx[0], hk[1] - hx[1], hk[2] - hx[2]], 0.005, 6)]), MAT.darkSteel, 'Scharnierpen met palsegment en de korte kabelarm waaraan de handremkabel trekt; zit in de console.', { inner: true, ex: [0, -0.06, 0.04] }),
   ]);
   return A('Middenconsole', { d: 'Console over de tunnel met de middenstapel (radio, kachelbediening), pook met hoes en handrem.', ex: [0, 0.3, 0.1] }, [tunnel, stack, radio, heater, small, shifter, hb]);
 }
