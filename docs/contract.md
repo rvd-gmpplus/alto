@@ -141,13 +141,14 @@ In `tools/anchors.json` (`triangle_budgets`): de driehoeken per hoofdgroep en in
 
 ## 9. Openers (modus Openen)
 
-De leiders hieronder zijn de openers van de pagina (de openerlijst in de modus Openen; `tools/anchors.json: openers`); `tools/opentest.py --strikt-min` toetst ze. Hoeken in graden, slag in meter; `open.min` is minstens 0,8 maal de volle hoek of slag. De hoeken en slagen zijn geschat. De waarden komen uit `src/bodyparts.js` en `src/interior.js` en zijn nagemeten met `opentest.py` op `658afcf`.
+De leiders hieronder zijn de openers van de pagina (de openerlijst in de modus Openen; `tools/anchors.json: openers`); `tools/opentest.py --strikt-min` toetst ze. Hoeken in graden, slag in meter; `open.min` is minstens 0,8 maal de volle hoek of slag. De hoeken en slagen zijn geschat. De waarden komen uit `src/bodyparts.js` en `src/interior.js` en zijn nagemeten met `opentest.py` op `658afcf` (de Achterzijruit uit golf 6 op `57fd751` plus pakket KIEP).
 
 | Opener | Soort | Eindstand | Ondergrens | Bijzonderheden |
 |---|---|---|---|---|
 | Motorkap | scharnier achterrand (z 0,925, y 0,915) | 65 | 55 | steunstang van 0,51 m als volger (`Motorkapsteun`, rechter veerpoottoren); camera van linksvoor |
 | Portier links, rechts | scharnier vlak voor de voorrand (z 0,79, verticale as) | 62 | 52 | lang portier (3-deurs); scharnierbladen op de A-stijl blijven staan (`stay`); de spiegel hoort bij het portier |
 | Zijruit (links, rechts) | schuif in het portier, langs het eigen vlak (helling 0,28) | 0,25 omlaag en 0,07 naar buiten (0,26 totaal) | 0,21 | volgers: Ruitdrager en Rubber zijruit; de elektrische raambediening zit in het portier |
+| Achterzijruit (Hoekruit links, rechts) | scharnier aan de voorrand van de ruit (z -0,74, bij de B-stijl); de as loopt langs die schuine voorrand (ongeveer 15 graden uit het verticaal, 5 mm achter het glas) | 4 (kiepstand: ongeveer 30 mm open bij de onderste achterhoek, 0,43 m van de as) | 3,3 | twee scharniertjes (het blad op de stijl blijft staan), kiepslot met kiephendel, slotplaat (blijft staan) en uitzetter als volger (ongeveer 23 graden, `open.min` 18,5), rubber hoekruit draait mee, sponningrubber blijft staan; camera van linksachter boven, label Achterzijruit links en rechts; eigenaar carrosserie |
 | Buitenspiegel links, rechts | scharnier aan de achterbinnenkant van het huis | 80 naar achteren | 64 | de voet blijft staan |
 | Achterklep | scharnier dakrand (z -1,165, y 1,385) | 66 | 60 | twee gasveren als telescoop (0,30 m in, 0,50 m uit), onderaan tegen de C-stijl, bovenaan op de zijrand van de klep; de hoedenplank is een volger (31,5, ondergrens 26,4) |
 | Tankklep | scharnier voorrand (z -1,38), rechter achterscherm | 140 | 112 | opening met tankkom in het scherm; de vulhals zit in het brandstofsysteem |

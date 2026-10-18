@@ -47,13 +47,13 @@ function bodMould(s, y0, y1, zA, zB, hgt, nz = 36, nv = 6) {
   }, zA, zB, nz, () => [0, 1], nv);
 }
 // rand (rubber) rond een ruit: gesloten buis langs de ruitrand, qLo(z) onderrand, qHi(z) bovenrand, tussen z0 en z1
-function bodRim(s, z0, z1, qLo, qHi, r = 0.0045, out = 0.003, n = 26, open = false) {
+function bodRim(s, z0, z1, qLo, qHi, r = 0.0045, out = 0.003, n = 26, open = false, segs = 120, rad = 5) {
   const at = (z, q) => { const p = bodGhAt(z, q, out); return [s * p[0], p[1], p[2]]; }, pts = [];
   if (!open) for (let i = 0; i <= n; i++) { const z = z0 + (z1 - z0) * i / n; pts.push(at(z, qLo(z))); }
   else pts.push(at(z0, qLo(z0)));
   for (let i = n; i >= 0; i--) { const z = z0 + (z1 - z0) * i / n; pts.push(at(z, qHi(z))); }
   if (open) pts.push(at(z1, qLo(z1)));
-  return tube(pts, r, 120, 5, !open);
+  return tube(pts, r, segs, rad, !open);
 }
 // z waar de hartlijn van het dek op het voorvlak hoogte y heeft (z > 1,6, de neus loopt steil omlaag)
 function bodZAtYd(y) { let lo = 1.6, hi = ZF; for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (YT(m) + bodC(m) > y) lo = m; else hi = m; } return (lo + hi) / 2; }
@@ -92,6 +92,26 @@ const bodQGl = z => Math.max(bodQy(z, YT(z) + 0.013) + 1e-4, bodQy(z, bodGh(z).y
 const bodQLoW = z => bodQAtX(z, bodGh(z).xr - 0.04);
 const bodQLoH = z => bodQAtX(z, bodGh(z).xr - 0.05);
 const bodQSlant = z => bodQy(z, YT(z) + 0.013) + clamp((z + 1.17) / 0.10, 0, 1) * 0.5;
+// Kiepstand van de hoekruit (achterzijruit): de ruit scharniert aan de voorrand (z -0,74, bij de B-stijl) om een as langs die rand en klapt aan de achterkant naar buiten,
+// gehouden door de uitzetter. De voorrand helt met de ruit mee (ongeveer 15 graden uit het verticaal), dus de as helt ook. Alles in de linkerhelft; per zijde gespiegeld.
+// De kiephoek volgt uit de opening die de uitzetter achter laat: ongeveer 30 mm bij de onderste achterhoek, 0,43 m van de as (4 graden; geschat, geen maat van de fabrikant).
+const bodKpZF = -0.74, bodKpZE = -1.14;                  // voorrand van de ruit; plek van de kiephendel op de achterrand
+const bodKpTh = 4 * PI / 180, bodKpMin = 3.3 * PI / 180; // eindhoek en ondergrens (0,8 maal de eindhoek is 3,2 graden)
+const bodKpLo = z => bodQy(z, YT(z) + 0.013);
+const bodKp = (() => {
+  const zF = bodKpZF, gB = V3(...bodGhAt(zF, bodKpLo(zF), -0.003)), gT = V3(...bodGhAt(zF, bodQGl(zF), -0.003));   // onder- en bovenhoek van de voorrand op het glasvlak
+  const a = gT.clone().sub(gB).normalize(), n = V3(a.y, -a.x, 0);                                                  // as langs de voorrand; n = normaal van het glasvlak, naar buiten en omhoog
+  const dep = 0.005, pv = gB.clone().addScaledVector(n, -dep);                                                     // de as ligt 5 mm achter het glas, zodat de scharnierpennen niet door het glas steken
+  const at = (z, q, d) => V3(...bodGhAt(z, q, -0.003)).addScaledVector(n, -d);                                      // punt op het glasvlak, d mm achter het glas (naar binnen)
+  const hinge = t => gB.clone().lerp(gT, t).addScaledVector(n, -dep);
+  const E = at(bodKpZE, bodQSlant(bodKpZE), 0);                                                                  // punt op de achterrand
+  // uitzetter: draait om een nagel in de slotplaat, 12 mm voor de achterrand, en loopt naar voren naar de sleufpen van de kiephendel
+  const Pb = E.clone().add(V3(0, 0, 0.012)).addScaledVector(n, -0.0105), T0 = Pb.clone().add(V3(0, 0, 0.055));
+  const T1 = T0.clone().sub(pv).applyAxisAngle(a, -bodKpTh).add(pv);                                              // de sleufpen na het openen (de ruit draait met -hoek om de as, links)
+  const v0 = T0.clone().sub(Pb), v1 = T1.clone().sub(Pb); v1.addScaledVector(a, -a.dot(v1));
+  const phi = Math.atan2(a.dot(v0.clone().cross(v1)), v0.dot(v1));
+  return { a, n, pv, hinge, at, E, Pb, phi, glide: v1.length() - v0.length(), lean: Math.atan2(-a.x, a.y) };
+})();
 const bodZW0 = 0.16, bodZW1 = 0.875;               // voorruit: bovenrand en onderrand
 const bodZH0 = -1.20, bodZH1 = -1.64;              // achterruit: bovenrand en onderrand
 const bodZGR = -1.17;
@@ -249,12 +269,42 @@ function bodSkinParts() {
     { d: 'Zwarte afdekking op de middenstijl tussen portierruit en hoekruit; de sluitplaat van het portierslot zit erachter.', ex: [s * 0.1, 0.04, 0] });
   const cPillar = s => P(`C-stijl ${bodSn(s)}`, bodGhSide(s, BOD_ZG0, -1.07, 40, z => [z < bodZGR ? 0.004 : bodQSlant(z) + 0.004, bodQR], 12, bodDense(-1.27, -1.1, 6)), MAT.paint,
     { d: 'Achterste dakstijl die de hoekruit en de achterklep omlijst; schuin hellend naar de achterkant.', ex: [s * 0.1, 0.05, -0.1] });
-  const qGlass = s => A(`Hoekruit ${bodSn(s)}`, { d: 'Vaste hoekruit achter het portier, in de carrosserie gelijmd en omlijst met zwart rubber.', ex: [s * 0.2, 0.06, -0.08] }, [
-    P('Ruit', bodGhSide(s, -1.17, -0.74, 22, z => [bodQy(z, YT(z) + 0.013), Math.min(bodQGl(z), Math.max(bodQy(z, YT(z) + 0.013) + 1e-4, bodQSlant(z)))], 7, bodDense(-1.17, -1.07, 6), -0.003), MAT.glass,
-      { d: 'Vast veiligheidsglas, licht getint.', ex: [s * 0.04, 0, 0] }),
-    P('Rubber hoekruit', bodRim(s, -1.169, -0.741, z => bodQy(z, YT(z) + 0.013), z => Math.min(bodQGl(z), Math.max(bodQy(z, YT(z) + 0.013) + 1e-4, bodQSlant(z)))), MAT.bodSeal,
-      { d: 'Zwart rubber dat de ruit in de sponning houdt en afdicht.', ex: [s * 0.06, 0.03, 0] }),
-  ]);
+  // Hoekruit = achterzijruit: op de 3-deurs kiept hij aan de achterkant een paar cm naar buiten (kiepstand, zie bodKp). Rubber, scharniertjes, kiephendel en uitzetter horen erbij.
+  const qTop = z => Math.min(bodQGl(z), Math.max(bodKpLo(z) + 1e-4, bodQSlant(z)));
+  const qGlass = s => {
+    const n = bodSn(s), K = bodKp, M = v => [s * v.x, v.y, v.z], lean = s * K.lean, ax = [s * K.a.x, K.a.y, 0], path = `Hoekruit ${n}`;
+    const bx = (w, h, d, c) => xf(G.box(w, h, d), M(c), [0, 0, lean]);                 // plaatje evenwijdig aan het glasvlak (x = normaal, y = langs de voorrand)
+    const back = (c, d) => c.clone().addScaledVector(K.n, -d);                           // d meter achter het glasvlak
+    // scharniertje: blad aan de ruit (draait mee), blad op de stijl (blijft staan) en de pen op de draaias
+    const hinge = (nm, t) => {
+      const c = K.hinge(t), cr = c.clone().addScaledVector(K.n, -0.0015);
+      return A(`Scharniertje ${nm}`, { d: `${nm === 'boven' ? 'Bovenste' : 'Onderste'} scharniertje van de kiepruit: een klein blad aan de ruit en een blad op de achterkant van de B-stijl, met een pen op de draailijn langs de voorrand van de ruit. Plaats en maten geschat.`, ex: [-s * 0.05, 0, 0.08] }, [
+        P('Scharnierblad ruit', bx(0.003, 0.04, 0.032, cr.clone().add(V3(0, 0, -0.016))), MAT.darkSteel, { d: 'Stalen blad dat aan de binnenkant van de ruit zit; draait met de ruit mee.', ex: [-s * 0.02, 0, -0.05] }),
+        P('Scharnierblad stijl', bx(0.003, 0.04, 0.032, cr.clone().add(V3(0, 0, 0.016))), MAT.darkSteel, { d: 'Stalen blad dat aan de achterkant van de B-stijl zit, achter de afdekking; blijft staan als de ruit kiept.', stay: true, ex: [-s * 0.02, 0, 0.05] }),
+        P('Scharnierpen', rodBetween(M(c.clone().addScaledVector(K.a, -0.022)), M(c.clone().addScaledVector(K.a, 0.022)), 0.0032, 8), MAT.steel, { d: 'Pen die de twee bladen verbindt; ligt op de draailijn van de ruit.', ex: [-s * 0.04, 0, 0] }),
+      ]);
+    };
+    // kiepslot: kiephendel op de ruit, slotplaat op de stijl en de uitzetter die de ruit in de kiepstand houdt
+    const T0 = K.Pb.clone().add(V3(0, 0, 0.055)), lever = back(K.E.clone().add(V3(0, 0, 0.0425)), 0.006);
+    const slot = A(`Kiepslot ${n}`, { d: 'Kiepslot aan de achterrand van de ruit: een kiephendel op de ruit, een slotplaat op de C-stijl en een uitzetter die de ruit ongeveer 30 mm naar buiten open houdt (maat geschat).', ex: [-s * 0.06, 0, -0.1] }, [
+      P('Kiephendel', merge([bx(0.004, 0.045, 0.075, lever), rodBetween(M(back(T0, -0.003)), M(back(T0, 0.002)), 0.0025, 8)]), MAT.plastic, { d: 'Zwart kunststof hendeltje dat op de achterrand van de ruit zit en de ruit sluit; met een pen die in de sleuf van de uitzetter loopt. Zo wordt de ruit ontgrendeld, naar buiten gekanteld en weer vergrendeld.', ex: [-s * 0.04, 0, -0.04] }),
+      P('Slotplaat', bx(0.003, 0.06, 0.085, back(K.E.clone().add(V3(0, 0, -0.0125)), 0.0155)), MAT.darkSteel, { d: 'Stalen plaat op de C-stijl, achter de rand van de ruit; draagt de draaipen van de uitzetter en blijft staan als de ruit kiept.', stay: true, ex: [-s * 0.08, 0, 0] }),
+      P('Uitzetter', merge([xf(G.box(0.003, 0.012, 0.081), [0, 0, 0.0345]), xf(G.cyl('x', 0.004, 0.004, 0.006, 10), [-0.0005, 0, 0])]), MAT.steel,
+        { d: `Stalen arm die om een pen in de slotplaat draait en de ruit in de kiepstand houdt (ongeveer ${Math.round(K.phi * 180 / PI)} graden bij een ruithoek van 4 graden, geschat); de pen van de kiephendel glijdt in een sleuf in de arm (de sleuf is niet gemodelleerd).`, p: M(K.Pb), r: [0, 0, lean], stay: true, ex: [-s * 0.05, 0, -0.04],
+          open: { type: 'hinge', pivot: M(K.Pb), axis: ax, angle: s * K.phi, min: 0.82 * K.phi, follow: path, label: `Uitzetter ${n}` } }),
+    ]);
+    return A(path, { d: 'Achterzijruit in de C-stijl (3-deurs): een vaste ruit in een kiepframe. Hij scharniert aan de voorrand, bij de B-stijl, en klapt aan de achterkant ongeveer 30 mm naar buiten; de uitzetter en het kiepslot zitten aan de achterrand. Kiephoek ongeveer 4 graden (geschat).', ex: [s * 0.2, 0.06, -0.08],
+      open: { type: 'hinge', pivot: M(K.pv), axis: ax, angle: -s * bodKpTh, min: bodKpMin, label: `Achterzijruit ${n}`, look: { dir: [s * 0.7, 0.75, -0.55], nodes: [path] } } }, [
+      P('Ruit', bodGhSide(s, -1.17, -0.74, 22, z => [bodKpLo(z), qTop(z)], 7, bodDense(-1.17, -1.07, 6), -0.003), MAT.glass,
+        { d: 'Veiligheidsglas, licht getint, in een kiepframe; kiept mee met het scharnier aan de voorrand.', ex: [s * 0.04, 0, 0] }),
+      P('Rubber hoekruit', bodRim(s, -1.169, -0.741, bodKpLo, qTop), MAT.bodSeal,
+        { d: 'Zwart rubber langs de rand van de ruit dat de ruit in het kiepframe houdt en tegen de sponning afdicht; kiept met de ruit mee.', ex: [s * 0.06, 0.03, 0] }),
+      P('Sponningrubber hoekruit', bodRim(s, -1.169, -0.741, bodKpLo, qTop, 0.002, -0.0097, 14, false, 70, 4), MAT.bodSeal,
+        { d: 'Dun zwart rubber op de rand van de sponning in de carrosserie waar de gesloten ruit tegenaan valt; blijft staan als de ruit kiept.', stay: true, ex: [-s * 0.06, 0, 0] }),
+      A('Scharniertjes', { d: 'Twee kleine scharniertjes aan de voorrand van de ruit, bij de B-stijl.', ex: [-s * 0.04, 0, 0.1] }, [hinge('boven', 0.78), hinge('onder', 0.22)]),
+      slot,
+    ]);
+  };
   // afdekstrook achter de portierspleet (z 0,780 tot 0,784, tussen de voorrand van het portier en het scherm): een strook van 28 mm breed (z 0,768 tot 0,796) die 3 mm achter de huid meeloopt,
   // van y 0,30 tot onder de bovenrand. Zonder strook zag je door de spleet (3 tot 4 beeldpunten breed) het Schutbord en de zijkap van het dashboard; een vlak dwars op de spleet vangt de
   // schuine blikken niet die de spleet binnenkomen en pas bij z > 0,784 de huid van het scherm passeren. Zwart, zoals de spleet er in het echt uitziet.

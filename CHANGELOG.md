@@ -1,5 +1,9 @@
 # Wijzigingen
 
+## Versie 5 (in voorbereiding)
+
+- Carrosserie (golf 6, pakket KIEP): de achterzijruit (Hoekruit links en rechts) staat op kiepstand: scharnier aan de voorrand bij de B-stijl met een as langs de schuine voorrand, ongeveer 4 graden (geschat; ongeveer 30 mm open bij de onderste achterhoek), twee scharniertjes, kiepslot met kiephendel, slotplaat en uitzetter (volger), rubber aan de ruit en een vast sponningrubber; twee nieuwe openers (Achterzijruit links en rechts, 15 in totaal).
+
 ## Versie 4 (18 oktober 2026)
 
 Aanleiding: de spiegels lazen als staand formaat, het vloergat voor de achterboog (open punt uit Versie 3) en review 5: een volledige controle van alle knopen tegen de echte auto, met bevindingen per domein in `bevindingen.json`. Keuzes van de gebruiker: achterkant nu herbouwen, tankklep en uitlaat spiegelen op twee foto's, interieur volgens de bronnen, budget Carrosserie tot 160.000 driehoeken, EGR houden. Keuzes per pakket staan in `docs/onderzoek/beslissingen.md`; kerncijfers in `docs/cijfers.md`.
