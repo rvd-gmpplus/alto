@@ -400,7 +400,7 @@ function chsRearBrake(sg) {
     P('Terugtrekveer boven', chsCoil(0.0035, 0.0009, 0.05, 7, 'z', 6, 3), MAT.steel, { d: 'Veer die de schoenen bij de cilinder naar elkaar trekt.', p: [H[0] - 0.044, H[1] + 0.05, H[2]], ex: [0.1, 0.1, 0], inner: true }),
     P('Terugtrekveer onder', chsCoil(0.0035, 0.0009, 0.066, 8, 'z', 6, 3), MAT.steel, { d: 'Veer die de schoenen bij het steunblok naar elkaar trekt.', p: [H[0] - 0.044, H[1] - 0.060, H[2]], ex: [0.1, -0.1, 0], inner: true }),
     P('Schoenhouders', holder, MAT.steel, { d: 'Twee pennen met kopjes en veertjes die de schoenen tegen de plaat houden.', p: H, ex: [0.05, 0.0, 0.2], inner: true }),
-    P('Handremhefboom', rodBetween([-0.046, 0.075, -0.022], [-0.065, 0.03, -0.085], 0.0045, 8), MAT.steel, { d: 'Hefboom op de achterste schoen: de handremkabel trekt eraan en spreidt de schoenen mechanisch.', p: H, ex: [0.0, 0.1, -0.2], inner: true }),
+    P('Handremhefboom', rodBetween([-0.046, 0.075, -0.022], [-0.065, 0.03, -0.085], 0.0045, 8), MAT.steel, { d: 'Hefboom op de achterste schoen: de handremkabel trekt eraan en spreidt de schoenen mechanisch.', p: H, ex: [0.0, 0.1, -0.2] }),
     P('Ontluchtingsnippel achter', G.cyl('x', 0.0035, 0.0045, 0.012, 8), MAT.steel, { d: 'Nippel om lucht uit de wielremcilinder te laten.', p: [H[0] - 0.061, H[1] + 0.0795, H[2] + 0.012], ex: [-0.15, 0.1, 0] }),
   ]);
 }
