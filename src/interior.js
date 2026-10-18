@@ -131,14 +131,6 @@ function intRearBack(cx, w, name, d, label) {
     intPart('Scharnierbeugels', merge([bx(0.05, 0.03, 0.06, 0.008, [hw - 0.045, 0.02, -0.04]), bx(0.05, 0.03, 0.06, 0.008, [-hw + 0.045, 0.02, -0.04])]), MAT.darkSteel, 'Beugels waarmee het rugleuningdeel om de onderrand scharniert.', { ex: [0, -0.06, -0.06] }),
   ]);
 }
-function intRearHead(x, name, lead) {
-  const t = INT_RBH, bx = intBx, cy = intCy;
-  return A(name, { d: 'Achterhoofdsteun met twee geleidestangen; twee stuks, een per buitenste zitplaats (uitrusting van de Twist volgens Autowereld, aannemelijk).', p: [x, INT_RB.y + t * Math.cos(INT_RB.tilt), INT_RB.z + t * Math.sin(INT_RB.tilt)], r: [INT_RB.tilt, 0, 0], ex: [0, 0.22, 0],
-    open: follow(lead, [x, INT_RBP.y, INT_RBP.z], [1, 0, 0], INT_RBP.ang, { min: 1.46 }) }, [
-    intPart('Hoofdsteunkussen', bx(0.22, 0.13, 0.08, 0.035, [0, 0.07, 0]), MAT.intCloth, 'Gevoerd kussen met stoffen bekleding.', { ex: [0, 0.07, 0] }),
-    intPart('Hoofdsteunstangen', merge([cy('y', 0.006, 0.12, [0.06, -0.01, 0], 8), cy('y', 0.006, 0.12, [-0.06, -0.01, 0], 8)]), MAT.chrome, 'Twee stangen die in de rugleuning schuiven.', { ex: [0, -0.05, 0] }),
-  ]);
-}
 function intRearBench() {
   // zitting en rugleuningen blijven binnen de wand van de achterwielkast (|x| 0,50): de zitting 10 mm (bekleding 0,98 breed, tot |x| 0,49), de rugleuningen 5 mm (tot |x| 0,495); de bekleding stak er tot 10 mm doorheen of lag er precies in (open punt AWK)
   const bx = intBx;
@@ -148,12 +140,11 @@ function intRearBench() {
     intPart('Zitbekleding achter', bx(0.98, 0.1, 0.44, 0.032, [0, 0.45, 0]), MAT.intCloth, 'Stoffen bekleding van de zitting.', { ex: [0, 0.1, 0.04] }),
     ...[[0.33, 'links'], [-0.33, 'rechts']].map(([x, n]) => intPart(`Gordelslot achter ${n}`, merge([bx(0.03, 0.05, 0.04, 0.008, [x, 0.5, -0.2]), bx(0.014, 0.01, 0.02, 0.003, [x, 0.528, -0.2])]), MAT.plastic, 'Gordelslot van de achterbank.', { ex: [0, 0.1, 0] })),
   ]);
-  // geen spec: deelbare rugleuning en hoofdsteunen achter staan in de uitrustingslijst van de Twist bij Autowereld, maar Autoweek noemt alleen hoofdsteunen voor (aannemelijk, Beslissing INT-1)
-  return A('Achterbank', { d: 'Achterbank met in delen neerklapbare rugleuning (een derde en twee derde, verdeling geschat), twee hoofdsteunen en de gordelsloten voor de twee buitenste zitplaatsen. De deelbare rugleuning en de hoofdsteunen achter volgen de uitrustingslijst van de Twist (Autowereld); aannemelijk, niet bevestigd.', ex: [0, 0.1, -0.36] }, [
+  // geen hoofdsteunen achter (de eigenaar bevestigt het, Beslissing INT-1); de deelbare rugleuning staat in de uitrustingslijst van de Twist bij Autowereld (aannemelijk, geen spec)
+  return A('Achterbank', { d: 'Achterbank met in delen neerklapbare rugleuning (een derde en twee derde, verdeling geschat) en de gordelsloten voor de twee buitenste zitplaatsen, zonder hoofdsteunen (bevestigd door de eigenaar). De deelbare rugleuning volgt de uitrustingslijst van de Twist (Autowereld); aannemelijk, niet bevestigd.', ex: [0, 0.1, -0.36] }, [
     cush,
-    intRearBack(-0.1675, 0.655, 'Rugleuning groot deel', 'Het grote (twee derde) deel van de gedeelde rugleuning; de verdeling en de zijde zijn geschat. Klapt om de onderrand naar voren neer (geschat 104 graden), met de hoofdsteun.', 'Rugleuning groot deel (rechts)'),
-    intRearBack(0.3325, 0.325, 'Rugleuning klein deel', 'Het kleine (een derde) deel van de gedeelde rugleuning; klapt om de onderrand naar voren neer (geschat 104 graden), met de hoofdsteun.', 'Rugleuning klein deel (links)'),
-    intRearHead(0.335, 'Hoofdsteun achter links', 'Rugleuning klein deel'), intRearHead(-0.335, 'Hoofdsteun achter rechts', 'Rugleuning groot deel'),
+    intRearBack(-0.1675, 0.655, 'Rugleuning groot deel', 'Het grote (twee derde) deel van de gedeelde rugleuning; de verdeling en de zijde zijn geschat. Klapt om de onderrand naar voren neer (geschat 104 graden).', 'Rugleuning groot deel (rechts)'),
+    intRearBack(0.3325, 0.325, 'Rugleuning klein deel', 'Het kleine (een derde) deel van de gedeelde rugleuning; klapt om de onderrand naar voren neer (geschat 104 graden).', 'Rugleuning klein deel (links)'),
   ]);
 }
 
