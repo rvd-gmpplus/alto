@@ -180,31 +180,40 @@ function intDashboard() {
     intPart('Kniebeschermer', bx(0.36, 0.2, 0.05, 0.015, [0.35, 0.6, 0.5], [-0.3, 0, 0]), MAT.dash, 'Gevoerde plaat onder de stuurkolom die de knieën van de bestuurder beschermt.', { ex: [0, -0.05, -0.14] }),
     ...[1, -1].map(s => intPart(`Dashboardzijkap ${sideName(s)}`, bx(0.02, 0.35, 0.36, 0.006, [s * (intDashHW + 0.01), 0.72, 0.67]), MAT.plastic, 'Zijkap die het uiteinde van het dashboard afsluit tegen de portierstijl.', { ex: [s * 0.1, 0, 0] })),
   ]);
-  // instrumenten voor de bestuurder: wijzerplaten kijken schuin naar boven naar de ogen
-  const cl = { x: 0.37, y: 0.855, z: 0.545 };
-  const dial = (x, label) => merge([xf(G.cyl('z', 0.04, 0.04, 0.004, 24), [x, 0, -0.031]), xf(G.torus('z', 0.0415, 0.0035, 24, 5), [x, 0, -0.033])]);
-  const cluster = A('Instrumentenpaneel', { d: 'Instrumentenpaneel met twee ronde wijzerplaten (snelheidsmeter en toerenteller), twee kleine meters en een rij waarschuwingslampjes (indeling schematisch).', p: [cl.x, cl.y, cl.z], r: [0.35, 0, 0], ex: [0, 0.05, -0.15] }, [
+  // instrumenten voor de bestuurder: wijzerplaten kijken schuin naar boven naar de ogen. Volgens de bron (handboek 1.2, Autoweek):
+  // snelheidsmeter met kilometer- en dagteller, brandstofmeter, temperatuurmeter en waarschuwingslampjes; geen toerenteller.
+  // Het paneel staat 20 mm hoger dan in golf 4, zodat de kolomkap en de kolombuis van het onderstel eronder vrij blijven (B-031).
+  const cl = { x: 0.37, y: 0.875, z: 0.545 };
+  const dial = (x, y, r) => merge([xf(G.cyl('z', r, r, 0.004, 24), [x, y, -0.031]), xf(G.torus('z', r + 0.0015, 0.0035, 24, 5), [x, y, -0.033])]);
+  // schaalstreepjes over een boog van 220 graden rond (x, y)
+  const ticks = (x, y, r, n) => Array.from({ length: n }, (_, i) => { const a = -1.92 + i * 3.84 / (n - 1); return xf(G.box(0.003, 0.008, 0.001), [x + r * Math.sin(a), y + r * Math.cos(a), -0.0335], [0, 0, -a]); });
+  const needle = (x, y, len, a) => xf(G.box(0.003, len, 0.002), [x - len / 2 * Math.sin(a), y + len / 2 * Math.cos(a), -0.036], [0, 0, a]);
+  const SP = [0, 0.003, 0.042], KL = [0.095, 0, 0.024];   // snelheidsmeter (x, y, straal) en de kleine meters op x = +-0,095
+  const cluster = A('Instrumentenpaneel', { d: 'Instrumentenpaneel met een grote snelheidsmeter met kilometer- en dagteller in het midden, links de temperatuurmeter, rechts de brandstofmeter en daarboven waarschuwingslampjes; geen toerenteller. De plaats van de kleine meters en de lampjes is schematisch (aangenomen).', p: [cl.x, cl.y, cl.z], r: [0.35, 0, 0], ex: [0, 0.05, -0.15] }, [
     intPart('Instrumentenbehuizing', bx(0.3, 0.11, 0.06, 0.012), MAT.plastic, 'Behuizing met printplaat achter het glas.', { ex: [0, 0, 0.06] }),
-    intPart('Snelheidsmeter', dial(0.08), MAT.screen, 'Snelheidsmeter met chromen ring.', { ex: [0, 0, -0.03] }),
-    intPart('Toerenteller', dial(-0.08), MAT.screen, 'Toerenteller met chromen ring.', { ex: [0, 0, -0.03] }),
-    intPart('Schaalverdeling', merge([0.08, -0.08].map(x => merge(Array.from({ length: 9 }, (_, i) => { const a = -2.2 + i * 0.55; return xf(G.box(0.003, 0.009, 0.001), [x + 0.031 * Math.sin(a), 0.031 * Math.cos(a), -0.0335], [0, 0, -a]); })))), MAT.intDial, 'Streepjes van de schaalverdeling op de twee wijzerplaten.', { ex: [0, 0, -0.05] }),
-    intPart('Wijzers', merge([xf(G.box(0.003, 0.034, 0.002), [0.08 + 0.012, 0.012, -0.036], [0, 0, 0.7]), xf(G.box(0.003, 0.034, 0.002), [-0.08 - 0.01, 0.01, -0.036], [0, 0, -0.9])]), MAT.red, 'Wijzers van snelheidsmeter en toerenteller.', { ex: [0, 0, -0.08] }),
-    intPart('Brandstof- en temperatuurmeter', merge([xf(G.cyl('z', 0.014, 0.014, 0.004, 14), [0, 0.022, -0.031]), xf(G.cyl('z', 0.014, 0.014, 0.004, 14), [0, -0.022, -0.031])]), MAT.screen, 'Twee kleine meters tussen de wijzerplaten: brandstofvoorraad en koelwatertemperatuur.', { ex: [0, 0, -0.04] }),
-    intPart('Waarschuwingslampjes', merge([-0.12, -0.08, -0.04, 0, 0.04, 0.08, 0.12].map(x => intBox(0.016, 0.006, 0.002, [x, 0.047, -0.0315]))), MAT.amber, 'Rij waarschuwingslampjes boven de wijzerplaten (richtingaanwijzers, accu, olie, handrem).', { ex: [0, 0.03, -0.06] }),
+    intPart('Snelheidsmeter', dial(SP[0], SP[1], SP[2]), MAT.screen, 'Snelheidsmeter met chromen ring, in het midden voor de bestuurder.', { ex: [0, 0, -0.03] }),
+    intPart('Kilometer- en dagteller', merge([intBox(0.032, 0.008, 0.001, [0, -0.017, -0.0335]), intBox(0.022, 0.007, 0.001, [0, -0.028, -0.0335])]), MAT.intDial, 'Telwerken in de snelheidsmeter: kilometerteller en daaronder de dagteller.', { ex: [0, -0.02, -0.05] }),
+    intPart('Temperatuurmeter', dial(KL[0], KL[1], KL[2]), MAT.screen, 'Koelvloeistoftemperatuurmeter links van de snelheidsmeter.', { ex: [0.03, 0, -0.04] }),
+    intPart('Brandstofmeter', dial(-KL[0], KL[1], KL[2]), MAT.screen, 'Brandstofmeter rechts van de snelheidsmeter.', { ex: [-0.03, 0, -0.04] }),
+    intPart('Schaalverdeling', merge([...ticks(SP[0], SP[1], SP[2] - 0.008, 11), ...ticks(KL[0], KL[1], KL[2] - 0.006, 5), ...ticks(-KL[0], KL[1], KL[2] - 0.006, 5)]), MAT.intDial, 'Streepjes van de schaalverdeling op de drie wijzerplaten.', { ex: [0, 0, -0.05] }),
+    intPart('Wijzers', merge([needle(SP[0], SP[1], 0.036, 0.9), needle(KL[0], KL[1], 0.02, 0.3), needle(-KL[0], KL[1], 0.02, -0.5)]), MAT.red, 'Wijzers van de snelheidsmeter, de temperatuurmeter en de brandstofmeter.', { ex: [0, 0, -0.08] }),
+    intPart('Waarschuwingslampjes', merge([0.063, 0.085, 0.107, 0.129].flatMap(x => [intBox(0.014, 0.006, 0.002, [x, 0.038, -0.0315]), intBox(0.014, 0.006, 0.002, [-x, 0.038, -0.0315])])), MAT.amber, 'Twee rijen waarschuwingslampjes boven de kleine meters, links en rechts van de snelheidsmeter (welke lampjes en hun plaats schematisch).', { ex: [0, 0.03, -0.06] }),
     intPart('Instrumentenglas', G.box(0.29, 0.1, 0.004), MAT.lensClear, 'Doorzichtig kapglas voor de instrumenten.', { p: [0, 0, -0.037], ex: [0, 0, -0.14] }),
   ]);
-  const hood = intPart('Instrumentenkap', bx(0.36, 0.05, 0.2, 0.02, [cl.x, 0.945, 0.615], [0.05, 0, 0]), MAT.dash, 'Kap boven de instrumenten tegen reflecties in de voorruit.', { ex: [0, 0.1, 0] });
+  // de kap volgt het paneel: aan de bestuurderszijde hoger, aan de voorruitzijde op het dashboard
+  const hood = intPart('Instrumentenkap', bx(0.36, 0.05, 0.2, 0.02, [cl.x, 0.955, 0.615], [0.1, 0, 0]), MAT.dash, 'Kap boven de instrumenten tegen reflecties in de voorruit.', { ex: [0, 0.1, 0] });
   // handschoenenkastje: open bak met bodem en wanden; de klep sluit af
   const gk = A('Handschoenenkastje', { d: 'Handschoenenkastje voor de voorpassagier: bak in het dashboard met klep.', ex: [-0.14, -0.02, -0.18] }, [
     intPart('Handschoenenkastbak', merge([intBox(0.32, 0.008, 0.2, [-0.34, 0.545, 0.64]), intBox(0.32, 0.008, 0.2, [-0.34, 0.685, 0.64]), intBox(0.008, 0.14, 0.2, [-0.5, 0.615, 0.64]), intBox(0.008, 0.14, 0.2, [-0.18, 0.615, 0.64]), intBox(0.32, 0.14, 0.008, [-0.34, 0.615, 0.74])]), MAT.plastic, 'Open bak van het handschoenenkastje, in het dashboard weggewerkt achter de klep.', { inner: true, ex: [0, 0, 0.1] }),
     intPart('Handschoenenkastklep', bx(0.34, 0.17, 0.02, 0.008, [-0.34, 0.615, 0.512], [-0.3, 0, 0]), MAT.dash, 'Klep van het handschoenenkastje (in dit model dicht).', { ex: [0, -0.06, -0.12] }),
     intPart('Handschoenenkastslot', bx(0.045, 0.02, 0.012, 0.005, [-0.34, 0.67, 0.5], [-0.3, 0, 0]), MAT.plasticGrey, 'Drukknop van het slot.', { ex: [0, 0.03, -0.1] }),
   ]);
+  // de zijroosters zitten onder de hoogte van het instrumentenpaneel; op y 0,84 stond het rooster bij de bestuurder voor de onderhoek van het paneel
   const vents = A('Luchtroosters dashboard', { d: 'Luchtroosters voor de verwarming en de ventilatie: twee in het midden, twee aan de zijkanten, en de ontwasemroosters onder de voorruit en bij de zijruiten.', ex: [0, 0.1, 0.1] }, [
     intVent('Rooster midden bestuurder', 'Verstelbaar luchtrooster met horizontale lamellen links in het midden van het dashboard.', [0.095, 0.845, 0.495], [0.19, 0, 0], 0.09, 0.045),
     intVent('Rooster midden passagier', 'Verstelbaar luchtrooster met horizontale lamellen rechts in het midden van het dashboard.', [-0.095, 0.845, 0.495], [0.19, 0, 0], 0.09, 0.045),
-    intVent('Rooster zijkant bestuurder', 'Luchtrooster aan de uiterste zijde van het dashboard bij de bestuurder.', [0.475, 0.84, 0.502], [0.19, 0, 0], 0.075, 0.045),
-    intVent('Rooster zijkant passagier', 'Luchtrooster aan de uiterste zijde van het dashboard bij de passagier.', [-0.475, 0.84, 0.502], [0.19, 0, 0], 0.075, 0.045),
+    intVent('Rooster zijkant bestuurder', 'Luchtrooster aan de uiterste zijde van het dashboard bij de bestuurder.', [0.475, 0.79, 0.493], [0.19, 0, 0], 0.075, 0.045),
+    intVent('Rooster zijkant passagier', 'Luchtrooster aan de uiterste zijde van het dashboard bij de passagier.', [-0.475, 0.79, 0.493], [0.19, 0, 0], 0.075, 0.045),
     intPart('Ontwasemrooster voorruit', merge(Array.from({ length: 9 }, (_, i) => intBox(0.04, 0.003, 0.012, [-0.4 + i * 0.1, 0, 0]))), MAT.plastic, 'Gleuf op de bovenkant van het dashboard die lucht tegen de voorruit blaast.', { p: [0, 0.9255, 0.8], ex: [0, 0.1, 0.0] }),
     intPart('Ontwasemroosters zijruit', merge([1, -1].map(s => intBox(0.07, 0.004, 0.02, [s * 0.48, 0.9235, 0.8]))), MAT.plastic, 'Twee kleine roosters aan de uiteinden van het dashboard die lucht langs de zijruiten blazen.', { ex: [0, 0.08, 0] }),
   ]);
@@ -213,7 +222,7 @@ function intDashboard() {
     intPart('Zekeringkastklep', bx(0.1, 0.07, 0.01, 0.004, [0.47, 0.64, 0.495], [0.1, 0, 0]), MAT.plasticGrey, 'Klepje onder het dashboard waarachter de zekeringen zitten.', { ex: [0.04, -0.04, -0.06] }),
     intPart('Motorkapontgrendeling', merge([bx(0.035, 0.012, 0.05, 0.004, [0.5, 0.58, 0.51]), rodBetween([0.5, 0.58, 0.535], [0.5, 0.58, 0.8], 0.002, 4)]), MAT.plasticGrey, 'Trekgreep onder het dashboard die de motorkap via een kabel ontgrendelt.', { ex: [0.04, -0.04, -0.06] }),
   ]);
-  return A('Dashboard', { d: 'Dashboard met instrumentenpaneel, luchtroosters, handschoenenkastje en de luidsprekers van het audiopakket; kappen en bedieningspanelen rond de stuurkolom.', spec: [['Instrumenten', 'snelheidsmeter, toerenteller, brandstof, temperatuur']], ex: [0, 0.2, 0.55] }, [dashShell, cluster, hood, gk, vents, spk, rel]);
+  return A('Dashboard', { d: 'Dashboard met instrumentenpaneel, luchtroosters, handschoenenkastje en de luidsprekers van het audiopakket; kappen en bedieningspanelen rond de stuurkolom.', spec: [['Instrumenten', 'snelheidsmeter met kilometer- en dagteller, brandstofmeter, temperatuurmeter, waarschuwingslampjes; geen toerenteller']], ex: [0, 0.2, 0.55] }, [dashShell, cluster, hood, gk, vents, spk, rel]);
 }
 
 /* ---------- stuurwiel met kolomkap ---------- */
@@ -231,11 +240,12 @@ function intSteering() {
     intPart('Stuurwielkrans', G.torus('z', 0.17, 0.0135, 36, 8), MAT.plastic, 'Rubber kunststof stuurkrans met een doorsnede van 36 cm (maat geschat); geen stuurbekrachtiging.', { ex: [0, 0, -0.1] }),
     intPart('Stuurwielspaken', merge([rodBetween([0.04, 0, 0], [0.16, 0, 0.0], 0.011, 8), rodBetween([-0.04, 0, 0], [-0.16, 0, 0], 0.011, 8), rodBetween([0, -0.04, 0], [0, -0.16, 0], 0.011, 8)]), MAT.plastic, 'Drie spaken tussen naaf en krans.', { ex: [0, 0, -0.06] }),
     intPart('Stuurwielnaaf', merge([cy('z', 0.05, 0.04, [0, 0, 0.0], 20), bx(0.09, 0.07, 0.014, 0.015, [0, 0, 0.026])]), MAT.plastic, 'Naaf met claxonpad; de naaf zit met een gekartelde as op de stuurkolom.', { ex: [0, 0, -0.1] }),
-    intPart('Kolomkap boven', cy('z', 0.048, 0.14, [0, 0.005, -0.1], 16), MAT.plastic, 'Bovenste helft van de kap om de stuurkolom, tot het dashboard.', { ex: [0, 0.06, 0] }),
+    // taps: straal 48 mm bij het stuur, 32 mm bij het dashboard, zodat de kap onder het instrumentenglas blijft (B-031) en de kolombuis (straal 27,5 mm) omsluit
+    intPart('Kolomkap boven', xf(G.cyl('z', 0.048, 0.032, 0.14, 16), [0, 0, -0.1]), MAT.plastic, 'Bovenste helft van de kap om de stuurkolom, tot het dashboard; loopt taps toe onder het instrumentenpaneel.', { ex: [0, 0.06, 0] }),
     intPart('Kolomkap onder', bx(0.1, 0.05, 0.14, 0.015, [0, -0.04, -0.1]), MAT.plastic, 'Onderste helft van de kap om de stuurkolom met het contactslot.', { ex: [0, -0.06, 0] }),
     intPart('Combischakelaar links', merge([rodBetween([-0.04, 0.0, -0.05], [-0.14, 0.01, -0.03], 0.007, 8), bx(0.03, 0.024, 0.024, 0.008, [-0.15, 0.012, -0.03])]), MAT.plasticGrey, 'Hendel links van de kolom voor de richtingaanwijzers en de verlichting.', { ex: [-0.08, 0, 0] }),
     intPart('Combischakelaar rechts', merge([rodBetween([0.04, 0.0, -0.05], [0.14, 0.01, -0.03], 0.007, 8), bx(0.03, 0.024, 0.024, 0.008, [0.15, 0.012, -0.03])]), MAT.plasticGrey, 'Hendel rechts van de kolom voor de voor- en achterruitwissers.', { ex: [0.08, 0, 0] }),
-    intPart('Contactslot', merge([cy('z', 0.015, 0.02, [0.045, -0.04, -0.045], 12), bx(0.006, 0.014, 0.008, 0.002, [0.045, -0.04, -0.056])]), MAT.chrome, 'Contactslot met sleutel rechts op de kolomkap.', { ex: [0.04, -0.04, 0] }),
+    intPart('Contactslot', merge([cy('z', 0.015, 0.02, [0.048, -0.04, -0.045], 12), bx(0.006, 0.014, 0.008, 0.002, [0.048, -0.04, -0.056])]), MAT.chrome, 'Contactslot met sleutel rechts op de kolomkap.', { ex: [0.04, -0.04, 0] }),
   ]);
 }
 
