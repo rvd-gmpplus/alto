@@ -303,7 +303,7 @@ function intConsole() {
   const ZF = 0.455;
   const stack = intPart('Middenstapel', bx(0.27, 0.345, 0.1, 0.012, [0, 0.6875, 0.505]), MAT.plasticGrey, 'Middenpaneel in het dashboard: boven twee ventilatieroosters, daaronder de kachelbediening en een bakje, onderaan de radio (aannemelijk).', { ex: [0, 0.04, -0.16] });
   const grilles = A('Ventilatieroosters midden', { d: 'Twee verstelbare luchtroosters naast elkaar in een gezamenlijke rand, boven in de middenstapel.', ex: [0, 0.06, -0.12] }, [
-    intPart('Roosterrand', merge([[0.262, 0.01, 0, 0.035], [0.262, 0.01, 0, -0.035], [0.011, 0.08, 0.1255, 0], [0.011, 0.08, -0.1255, 0], [0.02, 0.08, 0, 0]].map(([w, h, x, y]) => intBx(w, h, 0.015, 0.003, [x, 0.815 + y, ZF + 0.002]))), MAT.plasticGrey, 'Gezamenlijke rand om de twee ventilatieroosters in het midden van het dashboard.', { ex: [0, 0.02, -0.06] }),
+    intPart('Roosterrand', merge([[0.262, 0.01, 0, 0.035], [0.262, 0.01, 0, -0.035], [0.011, 0.08, 0.1255, 0], [0.011, 0.08, -0.1255, 0], [0.02, 0.08, 0, 0]].map(([w, h, x, y]) => intBox(w, h, 0.015, [x, 0.815 + y, ZF + 0.002]))), MAT.plasticGrey, 'Gezamenlijke rand om de twee ventilatieroosters in het midden van het dashboard.', { ex: [0, 0.02, -0.06] }),
     intVent('Rooster midden bestuurder', 'Verstelbaar luchtrooster met horizontale lamellen links in het midden van het dashboard (ongeveer 110 x 60 mm).', [0.065, 0.815, ZF + 0.009], [0, 0, 0], 0.11, 0.06, MAT.plastic),
     intVent('Rooster midden passagier', 'Verstelbaar luchtrooster met horizontale lamellen rechts in het midden van het dashboard (ongeveer 110 x 60 mm).', [-0.065, 0.815, ZF + 0.009], [0, 0, 0], 0.11, 0.06, MAT.plastic),
   ]);
