@@ -110,7 +110,7 @@ function chsBuildWheels() {
 }
 
 /* ---------- vooras: veerpoot, fusee, draagarm, stuurinrichting ---------- */
-const chsSB = V3(0.552, 0.36, 1.107), chsST = V3(0.50, 0.745, 1.087);        // veerpootvoet (fuseeklem) en top (veerpoottoren)
+const chsSB = V3(0.552, 0.36, 1.107), chsST = V3(0.50, 0.745, AXF);        // veerpootvoet (fuseeklem) en top (veerpoottoren)
 const chsSD = chsST.clone().sub(chsSB).normalize(), chsSQ = quatFromTo(V3(0, 1, 0), chsSD);
 const chsQM = new THREE.Matrix4().compose(chsSB, chsSQ, V3(1, 1, 1));
 const chsSA = p => chsPt(chsQM, p);                      // punt in het veerpootframe (y langs de poot) naar het autoframe
@@ -273,7 +273,7 @@ function chsBuildFront() {
 }
 
 /* ---------- achteras: torsie-as met langsarmen, schroefveren, schokdempers en panhardstang ---------- */
-const chsRArm = [[0.505, 0.195, -0.80], [0.518, 0.216, -0.92], [0.530, 0.240, -1.07], [0.540, 0.260, -1.20], [0.545, 0.265, AXR]];
+const chsRArm = [[0.505, 0.195, -0.80], [0.518, 0.216, -0.92], [0.530, 0.240, -1.07], [0.540, 0.260, -1.20], [0.545, AY, AXR]];
 
 function chsDamper(sg, n) {
   const B = [0.552, 0.29, -1.31], T = [0.534, 0.545, -1.305], d = V3(T[0] - B[0], T[1] - B[1], T[2] - B[2]), L = d.length();
