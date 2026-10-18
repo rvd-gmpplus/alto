@@ -1236,11 +1236,14 @@ function bodRearBumperGeo() {
   const z0 = -1.550, zB = -1.568, zE = BOD_ZE + 0.0005, zv = p => lerp(zB, z0, sstep((Math.abs(p) - 0.100) / 0.010));
   const zb = BOD_ZE + bodPlD, X = bodPlX;
   const wand = (f, nu) => patch(f, 0, 1, nu, () => [0, 1], 1);
+  // eindvlak als bodFace, maar de zijrand volgt de doorsnede op de rand van de schil (zE), niet op BOD_ZE: de staart loopt daar scherp samen (2,3 mm in x op 0,5 mm in z) en bodFace liet
+  // een kier van 2 mm tussen eindvlak en schil; de buitenste kolom ligt ook op die z, zodat er geen kier in z blijft
+  const vlak = (x0, x1, y0, y1, ny, nx, kw = 1) => patch((u, t) => { const y = lerp(y0, y1, Math.pow(u, kw)), X = ringX(zE, y), xa = clamp(x0, -X, X), xb = Math.max(xa, clamp(x1, -X, X)), rand = (t === 0 && x0 <= -X) || (t === 1 && x1 >= X); return [xa + (xb - xa) * t, y, rand ? zE : BOD_ZE]; }, 0, 1, ny, () => [0, 1], nx);
   // alles behalve de binnenlip wordt met bodBpMove 40 mm naar achteren verschoven (alleen midden van de staart, zie bodBpD)
   const schil = [
     patch((z, p) => bodLow(lerp(zE, zv(p), (z - zE) / (z0 - zE)), p, 0), zE, z0, 36, z => { const sb = sAtY(z, bodYBR); return [-sb, sb]; }, 34),
-    bodFace(BOD_ZE, -1, -9, 9, YB(BOD_ZE) + 0.001, bodPlY0, 0, 2, 30), bodFace(BOD_ZE, -1, -9, 9, bodPlY1, bodYBR, 0, 3, 30),
-    bodHalfFace(BOD_ZE, -1, 1, X, bodPlY0, bodPlY1, 0, 3, 8), bodHalfFace(BOD_ZE, -1, -1, X, bodPlY0, bodPlY1, 0, 3, 8),
+    vlak(-9, 9, YB(BOD_ZE) + 0.001, bodPlY0, 16, 30, 2), vlak(-9, 9, bodPlY1, bodYBR, 8, 30),
+    vlak(X, 9, bodPlY0, bodPlY1, 6, 8), vlak(-9, -X, bodPlY0, bodPlY1, 6, 8),
     wand((u, t) => [lerp(-X, X, u), lerp(bodPlY0, bodPlY1, t), zb], 4),
     wand((u, t) => [lerp(-X, X, u), bodPlY0, BOD_ZE + bodPlD * t], 4), wand((u, t) => [lerp(-X, X, u), bodPlY1, BOD_ZE + bodPlD * t], 4),
     wand((u, t) => [X, lerp(bodPlY0, bodPlY1, u), BOD_ZE + bodPlD * t], 1), wand((u, t) => [-X, lerp(bodPlY0, bodPlY1, u), BOD_ZE + bodPlD * t], 1)].map(bodBpMove);
