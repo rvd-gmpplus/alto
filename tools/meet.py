@@ -67,7 +67,8 @@ Achtermodus (--achter; open punt AWK, stage S1, 18 oktober 2026): de doorkijk do
             2. zone ZONE_Z_ACHTER z -1,628 tot -0,868 (de achterboog AXR -1,248 +- ARCH 0,30 plus 80 mm)
             3. as van de vrijstelling midden onder de boog: AXR_ACHTER -1,248 in plaats van 1,087 (ZONE_DEND 0,20 en ZONE_Y ongewijzigd)
             4. WK_HARDWARE_ACHTER: ook Remleiding achter en Remslang achter tellen als remhardware in de wielkast, niet als doorkijk
-  Camera's  de lage rondgang (432 camera's, als voor), de wielkastcamera's achter (WIELKAST_ACHTER) en de onderdoorcamera's achter het achterwiel (ONDERDOOR_ACHTER, cyclus 2);
+  Camera's  de lage rondgang (432 camera's, als voor), de wielkastcamera's achter (WIELKAST_ACHTER), de onderdoorcamera's achter het achterwiel (ONDERDOOR_ACHTER, cyclus 2) en de
+            vloercamera's (VLOER_ACHTER, open punt VLOER: nog lager, h 0,08 en 0,12 m, azimut 110 tot 175 graden);
             geen hoek-, eigenaar-, voor-, detail-, afwerking- of beeldcamera's en geen geometrie.
   Poorten   drempels als voor: 50 px (smal en breed) per interieur- of motorruimteknoop, tussenpoort 2.500 px per camera. Namen met 'achter' voor de kant:
             wielkast venster boven de band achter <kant>, wielkast gat onder de boog achter <kant>, wielkast opening boven het venster achter <kant>   over de rondgang van die kant
@@ -83,17 +84,22 @@ Achtermodus (--achter; open punt AWK, stage S1, 18 oktober 2026): de doorkijk do
                                                           achterbank (open punt AWK, cyclus 2, B3). Wat het vlak verder naar voren onder y 0,26 passeert (onder de dorpel van het achterportier)
                                                           staat als zone_px.onderdoor_voor in de JSON maar telt hier niet. Alleen interieurknopen: de kabelboom achter (klasse motorruimte),
                                                           uitlaat en onderstel horen onder de auto en tellen hier niet
+            onderdoorkijk onder de dorpel achter <kant>   open punt VLOER: de 10 onderdoorcamera's en de 32 vloercamera's van die kant (VLOER_ACHTER: h 0,08 en 0,12 m, r 1,2 en 2,0 m,
+                                                          azimut 110 tot 170 om de 10 en 175 graden): 50 px per interieurknoop in onderdoor plus onderdoor_voor, dus elke blik die het
+                                                          wielkastvlak |x| 0,50 onder y 0,26 passeert (onder de auto door), ook voor de achterboog. Daar keek je onder de dorpel van het
+                                                          achterportier door het open achtereinde van de vloerkoker (tussen Bodemplaat, Dwarsbalk achterbank en Dorpel) op de onderkant van
+                                                          de Vloerbedekking. Alleen interieurknopen, zoals de poort hierboven
             console zonder fouten achter
   Controle  volle achtermodus (zonder --cams en --geen-rondgang): precies VERWACHT_HARD_ACHTER harde en VERWACHT_ZACHT_ACHTER zachte poorten (extra poort 'aantal poorten achter'), en de extra poort
             'interessegebied achterwielen in beeld' (minstens een rondgangcamera met het linker- en een met het rechterachterwiel, elke wielkastcamera achter met interessegebied). Een poort zonder
             invoer (geen camera van die kant) staat in volle modus rood met 'invoer ontbreekt: ...'. Beide extra poorten tellen niet mee in het aantal, wel in de exitcode.
   JSON      per gevlagde knoop ook zone_px.midden: de beeldpunten die de vrijstelling midden onder de boog (|z - as| < 0,20) naar 'overig' zet (een deel van overig); per camera roi_gevonden.
-            Bij de onderdoorcamera's ook zone_px.onderdoor en zone_px.onderdoor_voor (beide een deel van overig) en geen interessegebied (het hele beeld telt).
+            Bij de onderdoor- en vloercamera's ook zone_px.onderdoor en zone_px.onderdoor_voor (beide een deel van overig) en geen interessegebied (het hele beeld telt).
   Gebruik   python3 -I tools/meet.py --achter --uit MAP --json MAP/meet-achter.json --geen-png   (--cams rondgang: alleen de rondgang, de 21 poorten van meet_achter.py; beperkte modus)
 
 Gebruik
   . ~/.config/web3d/env.sh
-  python3 -I tools/meet.py [--achter] [--root WERKBOOM] [--uit MAP] [--json BESTAND] [--cams a,b,c|rondgang|wielkast|onderdoor] [--geen-rondgang] [--sw] [--geen-geo] [--geen-png] [--shots] [--basis EERDERE.json]
+  python3 -I tools/meet.py [--achter] [--root WERKBOOM] [--uit MAP] [--json BESTAND] [--cams a,b,c|rondgang|wielkast|onderdoor|vloer] [--geen-rondgang] [--sw] [--geen-geo] [--geen-png] [--shots] [--basis EERDERE.json]
   --achter  achtermodus (zie hierboven)
   --root    werkboom met tools/harness.py en src/ (standaard: de repowortel waarin tools/meet.py staat, anders $MEET_ROOT; ontbreekt tools/harness.py in de gekozen wortel, dan een duidelijke fout met exitcode 2); in de container: de uitgepakte ref
   --uit     map voor de id-beelden <cam>-ids.png (grijs = buitenkant, magenta = motorruimte, oranje = onderstel); standaard een nieuwe tijdelijke map (het pad staat in de uitvoer); verplicht kiezen als de uitvoer bewaard moet blijven, zoals in finaltests
@@ -230,6 +236,11 @@ WIELKAST_ACHTER.update({
 ONDERDOOR_DOEL = [0.55, 0.40, AXR_ACHTER]
 ONDERDOOR_ACHTER = {f'onder-h0.15-r{_r}-a{_az}': ([round(ONDERDOOR_DOEL[0] + _r * math.sin(math.radians(_az)), 4), 0.15, round(ONDERDOOR_DOEL[2] + _r * math.cos(math.radians(_az)), 4)], ONDERDOOR_DOEL)
                     for _r in (1.2, 2.0) for _az in (135, 140, 145, 150, 155)}
+# vloercamera's (achtermodus, open punt VLOER): naam -> (positie, doel), linkerkant; elk ook gespiegeld als <naam>-r. Nog lager dan de onderdoorcamera's en over een bredere boog
+# (van naast het achterwiel tot bijna recht erachter), zelfde doel. Uit de uitgebreide onderdoorset van de review van AWK cyclus 2 (~/alto-wt/awk-meet/c2/s4/ondcams.json, reeks x-):
+# Vloerbedekking tot 1.876 px in x-h0.08-r1.2-a170-r door het open achtereinde van de vloerkoker voor de achterboog. Eigen soort 'vloer', zodat de poort hierboven ongewijzigd blijft.
+VLOER_ACHTER = {f'vloer-h{_h}-r{_r}-a{_az}': ([round(ONDERDOOR_DOEL[0] + _r * math.sin(math.radians(_az)), 4), _h, round(ONDERDOOR_DOEL[2] + _r * math.cos(math.radians(_az)), 4)], ONDERDOOR_DOEL)
+                for _h in (0.08, 0.12) for _r in (1.2, 2.0) for _az in (110, 120, 130, 140, 150, 160, 170, 175)}
 # ronde 3, afwerking a: 60 cm boven de bumperhoek (adv/cams-naad.json, Bumperbalk 5.646 px tussen lamphuis en bumpernaad)
 AFWERKING = {
     'bumpL-r0.6-a50-e70': ([0.6572, 0.8838, 1.7119], [0.5, 0.32, 1.58]),
@@ -286,7 +297,7 @@ def rondgang_cams(c):
 
 
 def cam_lijst_achter():
-    """achtermodus: dezelfde lage rondgang als de voormodus (432 camera's, doelen baanm en baanv) plus de wielkastcamera's achter (WIELKAST_ACHTER) en de onderdoorcamera's (ONDERDOOR_ACHTER), elk ook gespiegeld als -r"""
+    """achtermodus: dezelfde lage rondgang als de voormodus (432 camera's, doelen baanm en baanv) plus de wielkastcamera's achter (WIELKAST_ACHTER), de onderdoorcamera's (ONDERDOOR_ACHTER) en de vloercamera's (VLOER_ACHTER), elk ook gespiegeld als -r"""
     c = {}
     rondgang_cams(c)
     for k, (p, t) in WIELKAST_ACHTER.items():
@@ -295,6 +306,9 @@ def cam_lijst_achter():
     for k, (p, t) in ONDERDOOR_ACHTER.items():   # cyclus 2: onderdoorcamera's met een eigen poort (zie poorten_achter)
         c[k] = dict(p=p, t=t, soort='onderdoor', kant='links', flag=[4, 5], maskers=None, zoned=True)
         c[k + '-r'] = dict(p=spiegel(p), t=spiegel(t), soort='onderdoor', kant='rechts', flag=[4, 5], maskers=None, zoned=True)
+    for k, (p, t) in VLOER_ACHTER.items():   # open punt VLOER: vloercamera's met een eigen poort (zie poorten_achter); gemeten als de onderdoorcamera's
+        c[k] = dict(p=p, t=t, soort='vloer', kant='links', flag=[4, 5], maskers=None, zoned=True)
+        c[k + '-r'] = dict(p=spiegel(p), t=spiegel(t), soort='vloer', kant='rechts', flag=[4, 5], maskers=None, zoned=True)
     return c
 
 
@@ -626,7 +640,7 @@ def git_info():
 
 # Verwacht aantal poorten in volle achtermodus (--achter zonder --cams en --geen-rondgang). Bron: nulmeting van 18 oktober 2026 op fa5c619 (open punt AWK, stage S1): de 21 poorten van
 # front-ronde4/v2/meet_achter.py. Wie bewust een poort toevoegt of schrapt, past deze twee getallen mee aan. De extra controles ('interessegebied achterwielen in beeld', 'aantal poorten achter') tellen niet mee.
-VERWACHT_HARD_ACHTER = 27   # 21 van meet_achter.py, 'wielkast midden onder de boog achter' en 'wielkastcamera's achter', elk links en rechts (nulmeting fa5c619: alle vier rood), en sinds cyclus 2 'onderdoorkijk achter het achterwiel' links en rechts
+VERWACHT_HARD_ACHTER = 29   # 21 van meet_achter.py, 'wielkast midden onder de boog achter' en 'wielkastcamera's achter', elk links en rechts (nulmeting fa5c619: alle vier rood), sinds cyclus 2 'onderdoorkijk achter het achterwiel' links en rechts, en sinds open punt VLOER 'onderdoorkijk onder de dorpel achter' links en rechts
 VERWACHT_ZACHT_ACHTER = 0
 
 
@@ -727,6 +741,30 @@ def poorten_achter(res, namen, poort):
             hits.sort(reverse=True)
             cams_rood = sorted({h[3] for h in hits})
             poort(nm, not hits, f"ok ({len(ks)} camera's)" if not hits else f"{len(cams_rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {kn} ({z}) {px}' for px, kn, z, k in hits[:6]) + (f' (+{len(hits) - 6} meer)' if len(hits) > 6 else ''), eis)
+    # onderdoorkijk onder de dorpel (open punt VLOER): de onderdoor- en vloercamera's van een kant, 50 px per interieurknoop in onderdoor plus onderdoor_voor (elke blik die het wielkastvlak
+    # onder y 0,26 passeert, ook voor de achterboog). Daar keek je onder de dorpel van het achterportier door het open achtereinde van de vloerkoker op de onderkant van de Vloerbedekking.
+    # Bij de onderdoorcamera's telt onderdoor ook in de poort hierboven; hier gaat het om onderdoor_voor. Nulmeting op 658afcf (macOS-GPU): rood, zie docs/testen.md.
+    vl = [k for k in namen if res['cams'][k]['soort'] in ('onderdoor', 'vloer')]
+    if vl or vol:
+        for kant in ('links', 'rechts'):
+            ks = [k for k in vl if res['cams'][k]['kant'] == kant]
+            nm = f'onderdoorkijk onder de dorpel achter {kant}'
+            eis = (f"geen interieurknoop boven {KAP_MAX_PX} px breed onder de auto door in de {len(ONDERDOOR_ACHTER)} onderdoorcamera's en de {len(VLOER_ACHTER)} vloercamera's van deze kant "
+                   f"(h 0,08 tot 0,15 m, azimut 110 tot 175 graden, het hele beeld): de blik passeert het wielkastvlak |x| 0,50 onder y {ZONE_Y[0]} (zone_px.onderdoor en onderdoor_voor), ook voor de achterboog onder de dorpel")
+            if not ks:
+                if vol: leeg(nm, eis, f"onderdoor- en vloercamera's {kant}")
+                continue
+            if vol and len(ks) != len(ONDERDOOR_ACHTER) + len(VLOER_ACHTER):
+                poort(nm, False, f"invoer ontbreekt: {len(ks)} van {len(ONDERDOOR_ACHTER) + len(VLOER_ACHTER)} onderdoor- en vloercamera's {kant}", eis); continue
+            hits = []
+            for k in ks:
+                for n in res['cams'][k]['gevlagd']:
+                    if n['klasse'] != 'interieur': continue
+                    zp = n['zone_px']; zq = ('onderdoor', 'onderdoor_voor'); px = sum(zp.get(q, 0) for q in zq)
+                    if px > KAP_MAX_PX: hits.append((px, n['knoop'], max(zq, key=lambda q: zp.get(q, 0)), k))
+            hits.sort(reverse=True)
+            cams_rood = sorted({h[3] for h in hits})
+            poort(nm, not hits, f"ok ({len(ks)} camera's)" if not hits else f"{len(cams_rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {kn} ({z}) {px}' for px, kn, z, k in hits[:6]) + (f' (+{len(hits) - 6} meer)' if len(hits) > 6 else ''), eis)
     # extra controle (volle modus): het interessegebied rond de achterwielen bestaat; zonder omkadering telt geen enkel beeldpunt en zou elke poort hierboven stil groen zijn
     if vol:
         gev = [0, 0]
@@ -748,7 +786,7 @@ def main():
         a.uit = tempfile.mkdtemp(prefix='meet-uit-'); print('uitvoermap (tijdelijk):', a.uit)
     os.makedirs(a.uit, exist_ok=True)
     cams = cam_lijst_achter() if a.achter else cam_lijst()
-    groepen = {g: [k for k, c in cams.items() if c['soort'] == g] for g in ('rondgang', 'wielkast', 'onderdoor')}   # --cams rondgang,wielkast,onderdoor,eig
+    groepen = {g: [k for k, c in cams.items() if c['soort'] == g] for g in ('rondgang', 'wielkast', 'onderdoor', 'vloer')}   # --cams rondgang,wielkast,onderdoor,vloer,eig
     namen = [x for k in a.cams.split(',') for x in (groepen[k] if k in groepen else [k])] if a.cams else list(cams)
     if not a.cams and 'assembled' in cams: namen.remove('assembled')   # de kale beginstand is een uitgebreide camera: alleen op verzoek (--cams assembled)
     if not a.cams and a.geen_rondgang: namen = [k for k in namen if cams[k]['soort'] != 'rondgang']
@@ -779,13 +817,13 @@ def main():
             c = cams[k]
             pg.evaluate(SETCAM, [c['p'], c['t'], c.get('oy', 0), c['soort'] in ('wielkast', 'afwerking', 'rondgang')])   # nieuwe camera's: near/far zoals uiNearFar in de app (dichtbij); de camera's van ronde 2 blijven ongewijzigd, zodat de cijfers vergelijkbaar blijven
             pg.wait_for_timeout(250)
-            wk = c['soort'] in ('wielkast', 'rondgang', 'onderdoor')   # wielkastcamera's, rondgang en onderdoorcamera's (achter): glas zichtbaar, interessegebied rond voorwiel en voorwielkast, remhardware in de wielkast geen doorkijk, zones van de doorkijk
+            wk = c['soort'] in ('wielkast', 'rondgang', 'onderdoor', 'vloer')   # wielkastcamera's, rondgang en onderdoorcamera's (achter): glas zichtbaar, interessegebied rond voorwiel en voorwielkast, remhardware in de wielkast geen doorkijk, zones van de doorkijk
             opt = {'png': not a.geen_png and c['soort'] != 'rondgang', 'masks': c.get('maskers'), 'flag': c.get('flag'), 'glas': not wk,
                    'roi': (ROI_WIEL if c['soort'] == 'wielkast' else [ROI_WIEL_L, ROI_WIEL_R]) if wk else None, 'wkhw': WK_HARDWARE if wk else None, 'zone': wk, 'zoneY': ZONE_Y, 'zoneZ': ZONE_Z, 'zoneAx': 1.087, 'zoneDz': ZONE_DEND}
             if a.achter:   # de vier verschillen van meet_achter.py: interessegebied achterwielen, zone van de achterboog, as AXR, remhardware achter; plus de telling midden onder de boog (info)
                 opt.update(roi=(ROI_WIEL_ACHTER if c['soort'] == 'wielkast' else [ROI_WIEL_L_ACHTER, ROI_WIEL_R_ACHTER]) if wk else None, wkhw=WK_HARDWARE_ACHTER if wk else None,
                            zoneZ=ZONE_Z_ACHTER, zoneAx=AXR_ACHTER, midden=True)
-                if c['soort'] == 'onderdoor': opt.update(roi=None, onderdoor=True)   # onderdoorcamera's: het hele beeld, plus de telling onder de auto door (zoneZ[1] is de voorgrens)
+                if c['soort'] in ('onderdoor', 'vloer'): opt.update(roi=None, onderdoor=True)   # onderdoorcamera's: het hele beeld, plus de telling onder de auto door (zoneZ[1] is de voorgrens)
             r = pg.evaluate(IDPASS_JS, opt)
             r2 = r
             W, H = r['W'], r['H']
@@ -802,7 +840,7 @@ def main():
             if a.achter:   # midden: beeldpunten die de vrijstelling midden onder de boog naar 'overig' zet (een deel van overig); roi_gevonden: welke omkadering van het interessegebied in beeld is
                 for gv, n in zip(ent['gevlagd'], flagged):
                     gv['zone_px']['midden'] = int(n['midden'])
-                    if c['soort'] == 'onderdoor': gv['zone_px'].update(onderdoor=int(n['onderdoor']), onderdoor_voor=int(n['onderdoorVoor']))
+                    if c['soort'] in ('onderdoor', 'vloer'): gv['zone_px'].update(onderdoor=int(n['onderdoor']), onderdoor_voor=int(n['onderdoorVoor']))
                 ent['roi_gevonden'] = r.get('roiGevonden')
             if c['soort'] == 'rondgang': ent.update(kant=c['kant'], r=c['r'], h=c['h'], az=c['az'], doel=c['doel'])
             mr = [n['px'] for n in ent['gevlagd'] if n['klasse'] == 'motorruimte']; os_ = [n['px'] for n in ent['gevlagd'] if n['klasse'] == 'onderstel']
