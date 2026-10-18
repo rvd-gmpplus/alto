@@ -240,6 +240,7 @@ function bodStructure() {
     P('Dwarsbalk voorstoelen', G.box(0.86, 0.05, 0.08), MAT.paintIn, { d: 'Dwarsbalk onder de voorstoelen die vloer en dorpels verbindt.', p: [0, 0.245, 0.15], ex: [0, 0.06, 0.04] }),
     P('Dwarsbalk achterbank', G.box(0.86, 0.05, 0.08), MAT.paintIn, { d: 'Dwarsbalk onder de achterbank, vóór de brandstoftank.', p: [0, 0.245, -0.92], ex: [0, 0.06, -0.04] }),
     ...both(s => P(`Langsligger achter ${sn(s)}`, G.box(0.05, 0.1, 0.62), MAT.paintIn, { d: 'Langsligger onder de bagageruimte die de achterbumperbalk draagt (plaats schematisch).', p: [s * 0.42, 0.34, -1.40], ex: [s * 0.06, -0.06, 0] })),
+    P('Achtervloer', bodAchtervloer(), MAT.underbody, { d: 'Gelaste achtervloer boven de achteras: de bodem onder de bagagevloer tussen de wielkasten, de hielplaat achter de achterbank en de vloerstrook tot de dwarsbalk achterbank, met donkere onderbodembescherming.', ex: [0, -0.1, 0] }),
     ...both(s => bodSill(s)),
     // flens achter de naad tussen dorpel (tot y 0,262) en achterscherm (vanaf 0,272), van z -0,935 (1 mm voor het vooreinde van de koker achter, die tot z -0,936 loopt)
     // tot 4 cm achter de portierspleet, 4 mm binnen de huid: door de naad keek je anders vanuit de lage rondgang op de vloerbedekking (open punt AWK). Gelakt, zodat de naad
@@ -316,6 +317,22 @@ function bodWheelHouseAchter(s) {
   const lo = z => { const dz = Math.abs(z - az); return dz < ARCH + 1e-9 ? AY + Math.sqrt(Math.max(0, ARCH * ARCH - dz * dz)) + 0.004 : 0.27; };   // tolerantie zoals quarterLo: |-1,548 + 1,248| is 0,30000000000000004
   const kier = lowSide(s, -1.572, -1.536, 10, z => [sAtY(z, lo(z)), sAtY(z, 0.585)], 10, [az - ARCH + 1e-6], 0.004);
   return merge([wall, arc, binnen, zijA, zijV, dak, kier]);
+}
+// Achtervloer (open punt AWK, B3): tussen de achterwielkasten is de bodemplaat maar 0,14 breed (de achteras loopt eronder door), en de bagagevloer (interieur, y 0,455)
+// was van onderen de enige afsluiting. Vanuit een lage blik achter het achterwiel (h 0,15 m) keek je onder de bumper door, onder de bagagevloer langs tot onder de
+// achterbank (zijbekleding achter en achterbank, zitting). Drie platen, alle drie binnen de wanden van de wielkast (|x| 0,498) en boven alle asdelen:
+// - bodem 8 mm onder de bagagevloer (y 0,447) van z -1,595 (10 mm voor de bumperbalk) tot de hielplaat; achter de boog tot |x| 0,56 (vulpijp vanaf |x| 0,597), bij de
+//   veerkoker tot |x| 0,465 (binnenplaat op 0,466) en links om de kabelboom achter tot |x| 0,476 (die kruist y 0,447 bij |x| 0,486 tot 0,504, z -1,543 tot -1,511);
+// - hielplaat op z -1,036 (6 mm achter de zitting, z -1,030) van y 0,262 tot 0,447;
+// - vloerstrook op y 0,262 (5 mm onder de vloerbedekking, 6 mm boven de langsarm) van de hielplaat tot de dwarsbalk achterbank (z -0,961) en naast de dwarsbalk tot z -0,947.
+function bodAchtervloer() {
+  const V = (a, b) => new THREE.Vector2(a, b), xw = 0.498, xa = 0.56, xv = 0.465, xk = 0.476, yB = 0.447, yV = 0.262, zH = -1.036, zA = -1.595;
+  const vlak = (pts, y) => { const g = new THREE.ShapeGeometry(new THREE.Shape(pts.map(([x, z]) => V(x, z))), 1); g.rotateX(HALF); g.translate(0, y, 0); return g; };   // (x, z) -> (x, y, z)
+  const bodem = vlak([[-xa, zA], [xa, zA], [xa, -1.556], [xk, -1.556], [xk, -1.480], [xw, -1.480], [xw, -1.175], [xv, -1.175], [xv, -1.055], [xw, -1.055], [xw, zH],
+    [-xw, zH], [-xw, -1.055], [-xv, -1.055], [-xv, -1.175], [-xw, -1.175], [-xw, -1.556], [-xa, -1.556]], yB);
+  const hiel = (() => { const g = new THREE.ShapeGeometry(new THREE.Shape([V(-xw, yV), V(xw, yV), V(xw, yB), V(-xw, yB)]), 1); g.translate(0, 0, zH); return g; })();
+  const strook = vlak([[-xw, zH], [xw, zH], [xw, -0.947], [0.431, -0.947], [0.431, -0.961], [-0.431, -0.961], [-0.431, -0.947], [-xw, -0.947]], yV);
+  return merge([bodem, hiel, strook]);
 }
 function bodSill(s) {
   return P(`Dorpel ${bodSn(s)}`, patch((z, p) => bodLow(z, p), AXR + ARCH + 0.002, AXF - ARCH - 0.002, 40, z => sideR(s, S1 * 0.55, sAtY(z, bodYSill - 0.006)), 8), MAT.paint,
