@@ -25,6 +25,7 @@ std('bodSeal', 0x151618, 0, 0.9);
 std('bodEmblem', 0x26292e, 0, 0.85, { envMapIntensity: 0.12 });          // embleem 2001: graphietgrijs, mat (ruw 0,85): minder kijkhoekafhankelijk dan het vorige donkere, glanzende (0,55 tot 1,6 keer het gaas, nu 0,8 tot 1,9); op het gaas hoogstens twee keer zo helder
 std('bodAmber', 0xe05a08, 0, 0.42, { emissive: 0x4d1c00, emissiveIntensity: 0.3, envMapIntensity: 0.3, transparent: true, opacity: 0.82 });   // oranje knipperlichtlens: echt oranje, niet bleekgeel; doorschijnend (B-044), het lamphuis schemert erdoorheen
 std('bodPlate', 0xffffff, 0.05, 0.42);                                     // Nederlandse plaat: geel met zwarte rand, blauwe EU-strook en streepjes (map volgt in bodPlateTex)
+std('bodEmbleemAchter', 0xffffff, 0.85, 0.25, { envMapIntensity: 0.9 });  // embleem ALTO / SUZUKI op de klep: chroom met donkere letters (map volgt in bodEmbleemTex)
 std('bodLamp', 0xc4c9ce, 0.3, 0.42, { envMapIntensity: 0.7 });                                       // binnenkant van de koplamp: twee verchroomde reflectorbakken (map volgt in bodLampTex)
 phys('bodLens', { color: 0xe4edf5, metalness: 0, roughness: 0.03, transparent: true, opacity: 0.10, depthWrite: false, envMapIntensity: 0.6, clearcoat: 0.5, clearcoatRoughness: 0.04, side: THREE.FrontSide });   // helder koplampglas: aan de buitenkant gezien (FrontSide), dunner dan lensClear zodat de reflector zichtbaar blijft
 phys('bodLensRib', { color: 0xe4edf5, metalness: 0, roughness: 0.03, transparent: true, opacity: 0.10, depthWrite: false, envMapIntensity: 0.6, clearcoat: 0.5, clearcoatRoughness: 0.04, side: THREE.FrontSide });   // hoofdlens met ribbelnormaal (prismaglas); de map volgt in bodHeadlamp
@@ -622,6 +623,17 @@ function bodHeadlamp(s) {
 }
 // Nederlandse kentekenplaat (520 x 110 mm) zonder echte tekens: geel met zwarte rand, blauwe EU-strook met sterren en NL, zes streepjes.
 // Het kenteken van de eigenaar komt nergens in het model.
+// Embleem op de achterklep (90 x 40 mm): chroomplaatje met een donkere rand, ALTO groot en SUZUKI klein eronder
+function bodEmbleemTex() {
+  const W = 450, H = 200, c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
+  const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#f4f6f8'); gr.addColorStop(1, '#cdd2d7');
+  g.fillStyle = '#3a3d42'; g.fillRect(0, 0, W, H);
+  g.fillStyle = gr; g.fillRect(10, 10, W - 20, H - 20);
+  g.fillStyle = '#23262a'; g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+  g.font = 'bold 96px sans-serif'; g.fillText('ALTO', W / 2, 98);
+  g.font = 'bold 54px sans-serif'; g.fillText('SUZUKI', W / 2, 170);
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; return t;
+}
 function bodPlateTex() {
   const W = 1040, H = 220, c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
   const rr = (x, y, w, h, r) => { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); };
@@ -1237,6 +1249,8 @@ function bodTailgate() {
     P('Achterruit', bodGhDeck(bodZH1, bodZH0, 22, lo, 18, [], -0.003), MAT.glass, { d: 'Verwarmde achterruit van gehard, licht getint glas.', ex: [0, 0.14, 0.02] }),
     P('Rubber achterruit', bodDeckRim(bodZH1 + 0.002, bodZH0 - 0.002, z => lo(z) + 0.01, 0.0045), MAT.bodSeal, { d: 'Zwart afdichtrubber rond de achterruit.', ex: [0, 0.05, 0] }),
     P('Achterruitverwarming', heat, MAT.copper, { d: 'Dunne verwarmingsdraden in de achterruit tegen condens en ijs (patroon schematisch).', ex: [0, 0.1, 0.06] }),
+    P('Embleem ALTO SUZUKI', (() => { if (!MAT.bodEmbleemAchter.map) { MAT.bodEmbleemAchter.map = bodEmbleemTex(); MAT.bodEmbleemAchter.needsUpdate = true; } return G.rbox(0.09, 0.04, 0.003, 0.002); })(), MAT.bodEmbleemAchter,
+      { d: 'Chroomplaatje van ongeveer 90 x 40 mm met de letters ALTO en SUZUKI, links op de klep (keuze eigenaar naar foto 1993-2001); geplakt op het staartvlak.', p: [0.25, 0.70, ZR - 0.0015], ex: [0.04, 0, -0.1] }),
     wiper,
     A('Achterklepslot', { d: 'Slot onderin de klep met slotmotor voor de centrale vergrendeling en een slotcilinder in het staartvlak; de vanghaak grijpt om de slotbeugel in de laaddrempel.', ex: [0, -0.08, -0.06] }, [
       P('Slotkast achterklep', G.rbox(0.08, 0.05, 0.03, 0.008), MAT.darkSteel, { d: 'Slot met vanghaak onderin de klep, tussen buitenhuid en binnenpaneel.', p: [0, bodKlY0 + 0.03, ZR + 0.022], ex: [0, -0.04, 0] }),
