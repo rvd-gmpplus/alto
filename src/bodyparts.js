@@ -24,10 +24,10 @@ std('bodSeal', 0x151618, 0, 0.9);
 std('bodEmblem', 0x26292e, 0, 0.85, { envMapIntensity: 0.12 });          // embleem 2001: graphietgrijs, mat (ruw 0,85): minder kijkhoekafhankelijk dan het vorige donkere, glanzende (0,55 tot 1,6 keer het gaas, nu 0,8 tot 1,9); op het gaas hoogstens twee keer zo helder
 std('bodAmber', 0xe05a08, 0, 0.42, { emissive: 0x4d1c00, emissiveIntensity: 0.3, envMapIntensity: 0.3, transparent: true, opacity: 0.82 });   // oranje knipperlichtlens: echt oranje, niet bleekgeel; doorschijnend (B-044), het lamphuis schemert erdoorheen
 std('bodPlate', 0xffffff, 0.05, 0.42);                                     // Nederlandse plaat: geel met zwarte rand, blauwe EU-strook en streepjes (map volgt in bodPlateTex)
-std('bodLamp', 0xc4c9ce, 0.3, 0.42, { envMapIntensity: 0.7 });                                       // binnenkant van de koplamp: twee verchroomde reflectorbakken (map volgt in bodLampTex)
+std('bodLamp', 0xe6eaed, 0.3, 0.38, { envMapIntensity: 0.8 });                                       // binnenkant van de koplamp: zilverwitte verchroomde reflectorbak (map volgt in bodLampTex; beslissing 29: lichter, was 0xc4c9ce)
 phys('bodLens', { color: 0xe4edf5, metalness: 0, roughness: 0.03, transparent: true, opacity: 0.10, depthWrite: false, envMapIntensity: 0.6, clearcoat: 0.5, clearcoatRoughness: 0.04, side: THREE.FrontSide });   // helder koplampglas: aan de buitenkant gezien (FrontSide), dunner dan lensClear zodat de reflector zichtbaar blijft
 phys('bodLensRib', { color: 0xe4edf5, metalness: 0, roughness: 0.03, transparent: true, opacity: 0.10, depthWrite: false, envMapIntensity: 0.6, clearcoat: 0.5, clearcoatRoughness: 0.04, side: THREE.FrontSide });   // hoofdlens met ribbelnormaal (prismaglas); de map volgt in bodHeadlamp
-std('bodLampC', 0x9a9fa5, 0.3, 0.45, { envMapIntensity: 0.25 });          // hoekreflector: dezelfde map als de hoofdreflector, maar donkerder en minder weerkaatsend (de hoekkap zit schuin op de omgeving en las als witte vlek)
+std('bodLampC', 0xd0d5da, 0.3, 0.42, { envMapIntensity: 0.45 });          // hoekreflector: dezelfde map als de hoofdreflector, iets minder weerkaatsend (de hoekkap zit schuin op de omgeving); zilverwit zoals op de foto 1993-2001 (beslissing 29; was 0x9a9fa5)
 std('bodLampRim', 0x2a2c30, 0, 0.5, { envMapIntensity: 0.2 });           // lamprand tussen hoofdlens en hoekkap: donkergrijs kunststof met een lichte glans, geen zwart gat
 std('bodRefl', 0x5f656c, 0.7, 0.5);                                    // reflectorschaal achter helder glas (donkerder dan spiegelend chroom)
 const bodBoth = f => [1, -1].map(f);
@@ -61,12 +61,11 @@ function bodZAtYd(y) { let lo = 1.6, hi = ZF; for (let i = 0; i < 40; i++) { con
 const bodZDF = 0.78, bodZDR = -0.56;              // voorrand en achterrand van het portier
 const bodYSill = 0.268;                            // onderrand portier; de dorpel eindigt 6 mm lager
 const bodZFe = 1.63, bodZLh = 1.66;                // achterrand koplamp (voorscherm tot hier), voorrand motorkap (beslissing 29: was 1,54 en 1,60; de kap loopt door tot het steile front)
-const bodZCe = bodZLh - 0.008;                       // einde van het hoekstuk en de bovenstrook van het scherm: 8 mm voor de voorrand van de motorkap (was 15 mm: in dicht-lamp-zij sprong de rode rand ongeveer 3 mm en lag de kaprand als donkere wig onder het glas)
 const bodYBF = 0.50, bodYBR = 0.575;                // bovenrand van de voor- en achterbumper op de flank
 const bodZT0 = -1.62;                              // voorrand achterlicht en bumperhoek achter
 const bodZHB = 0.917;                              // achterrand motorkap
 // Motorkap: halve breedte, met een afgeronde voorhoek (straal bodHoodR) in bovenaanzicht; de rand loopt via een kwartcirkel naar de voorrand bij bodZLh
-const bodHoodR = 0.07;
+const bodHoodR = 0.025;
 const bodHoodX0 = z => 0.62 - 0.07 * sstep((z - 1.2) / 0.4);
 const bodHoodX = z => {
   const z0 = bodZLh - bodHoodR; if (z <= z0) return bodHoodX0(z);
@@ -77,7 +76,7 @@ const bodHoodArcZ = (n = 14) => Array.from({ length: n }, (_, k) => bodZLh - bod
 /* ---------- gedeelde grenzen van de voorkant (links; rechts gespiegeld) ----------
    De echte voorkant is één band van ca. 130 mm: koplamp, lichaamskleurig paneel met een smalle gaasstrook, koplamp. Alle onderdelen van die band
    (lamp, paneel, grille, bumper, scherm, kap) lezen hun grenzen uit deze constanten, zodat er geen naden met eigen getallen ontstaan. */
-const bodXP = 0.355;                              // halve breedte van het paneel: grens paneel en lamp
+const bodXP = 0.385;                              // grens grille en lamp: buitenrand van het grilleraam (beslissing 29; was 0,355, de rand van het rode paneel)
 const bodXG = 0.325;                              // halve breedte van de gaasopening
 // gaasopening: 76 mm hoog, breedte 650 mm (verhouding 8,5); verticaal in de band tussen lamponderrand (0,550) en kapvoorrand (0,702) op de neus: 33 mm boven de
 // lamponderrand en 41 mm onder de kap (dezelfde verdeling als voor beslissing 17: 0,637 en 0,713 in de band 0,612 tot 0,745)
@@ -527,12 +526,19 @@ function bodHoodParts() {
 // Koplamp: wrap-around eenheid op de hoek van de neus. Flank (z 1,534 tot de kapvoorrand, onder scherm en kap) en het stuk op het voorvlak (z > 1,60).
 // Onderrand = bumperbovenrand (bodYBT), binnenrand = paneel (bodXP); alle randen lopen 6 tot 8 mm onder het bovenliggende deel (kap, scherm, paneel, bumper),
 // zodat er geen kier ontstaat (regel R1). Het glas ligt 4 mm onder de huid, het paneel 2,5 mm.
-const bodLampZ0 = bodZFe - 0.014, bodLampIn = 0.004, bodZH = bodZLh - 0.0003;
+const bodHoodFrontY = halfPt(bodZLh - 0.0003, 1)[1];                // hoogte van de voorrand van de motorkap op de hartlijn (0,704 sinds beslissing 29; 0,702 na en 0,745 voor beslissing 17)
+// grens tussen hoekdeel en front van de lamp en bovenrand van de hoofdlens: waar het front op de hartlijn 6 mm onder de kapvoorrand ligt (z ca. 1,663). Beslissing 29: op de
+// voorrand van de kap zelf (bodZLh) ligt het dek nog vlak, de wanden van het lamphuis liepen daar omlaag in plaats van naar achteren en tussen kaprand en reflector keek je
+// onder de kap door de motorruimte in (kier dicht-lamp). Zo ligt de bovenrand op het steile front en sluit de kaprand (18 mm) de naad erboven af.
+const bodLampZ0 = bodZFe - 0.014, bodLampIn = 0.004, bodZH = bodZAtYd(bodHoodFrontY - 0.006);
+// einde van het hoekstuk van het scherm boven de lamp: tot de bovenrand van de hoofdlens op het front (beslissing 29). Daarvoor 8 mm voor de voorrand van de kap
+// (en eerder 15 mm, beslissing 23): met het steile front bleef tussen de afgeronde kaphoek en het einde van het hoekstuk een gat waardoor je onder de kap keek.
+const bodZCe = bodZH;
 const bodLLo = (z, d = -0.004) => sAtY(z, bodYBT(z) + d);                  // onderrand ten opzichte van de bumperbovenrand
-const bodHoodFrontY = halfPt(bodZLh - 0.0003, 1)[1];                // hoogte van de voorrand van de motorkap op de hartlijn (0,702; voor beslissing 17 0,745)
 const bodLHi1 = z => Math.min(bodSAtX(z, bodHoodX(z) - 0.008), sAtY(z, bodHoodFrontY));   // bovenrand flank: 8 mm onder de kap, hoogstens op de voorrand van de kap (0,702; afgeleid van de kapvorm in body.js, zodat een lagere neus de hoekkap meeneemt) (hoekkap hoogstens 4 mm boven de hoofdlens (gemeten +3,7 mm), foto's: lager)
 const bodLHi2 = z => bodSAtX(z, bodXP - 0.008);                             // binnenrand neus: 8 mm onder het paneel
-const bodLSpl = z => bodSAtX(z, bodSec(z).xe - 0.012);                      // scheiding hoofdlens en hoekkap, op de dekrand
+const bodXS = 0.59;                                                         // scheiding hoofdlens en hoeklens: verticaal op x 0,59 (foto 1993-2001; beslissing 29)
+const bodLSpl = z => bodSAtX(z, Math.min(bodXS, bodSec(z).xe - 0.006));      // op het vlakke front (xe 0,61 tot 0,62); de klem houdt hem op het dek
 const bodLampZE = (() => { let z = bodZH; while (z < ZF - 0.01 && bodLHi2(z) - bodLLo(z, 0.002) > 0.006) z += 0.001; return z - 0.001; })();   // einde lens op de neus: onderrand snijdt binnenrand
 const bodLampZC = (() => { let z = bodZH; while (z < bodLampZE && bodLSpl(z) - 0.0025 - bodLLo(z, 0.002) > 0.004) z += 0.001; return z; })();    // einde hoekkap op de neus
 const bodLmLo = z => Math.max(bodLLo(z, 0.002), bodLSpl(z) + 0.0025);
@@ -578,12 +584,12 @@ function bodHeadlamp(s) {
   const n = bodSn(s), sd = s, Z0 = bodLampZ0, ZE = bodLampZE, ZC = bodLampZC;
   const mainLens = bodOutward(bodLensUV(bodReg(sd, bodZH, ZE, 14, 8, bodLmLo, bodLmHi, bodLampIn)));
   const capLens = merge([bodReg(sd, Z0, bodZH, 8, 8, bodLcLo, z => Math.max(bodLcLo(z) + 0.001, bodLHi1(z)), bodLampIn), bodReg(sd, bodZH, ZC, 8, 8, bodLcLo, bodLcHi, bodLampIn)].map(bodOutward));
-  const refl = bodPlanarUV(bodReg(sd, bodZH, ZE, 14, 10, bodLmLo, bodLmHi, bodRefBowl), 0.34, 0.60, bodYBT(1.43), bodHoodFrontY);   // v over het lampbereik: bumperlijn op de flank tot de kapvoorrand
+  const refl = bodPlanarUV(bodReg(sd, bodZH, ZE, 14, 10, bodLmLo, bodLmHi, bodRefBowl), bodXP - 0.008, bodXS, bodYBT(ZF), bodHoodFrontY);   // v over het lampbereik: bumperlijn op de flank tot de kapvoorrand
   // hoekreflector: een zilveren vlak onder de hoekkap met een kleine schotel (positielicht)
   // schotel in het vlakke deel van de hoekkap, rand 1,5 mm vóór het vlak met een kraag van 3 mm terug: bij de lagere, bollere neus van beslissing 17 lag het vlak
   // (12 mm) op z 1,578 aan de onderkant vóór de rand en las de ring als sikkel (cyclus 2, bevinding 2). Straal 22,4 mm (was 28), hart z 1,565 en 0,65 (was 1,578 en 0,42);
   // zichtbare ring rondom ca. 2 tot 8 mm (was 0 op de halve omtrek)
-  const zD = 1.565, sD = lerp(bodLcLo(zD), bodLHi1(zD) - 0.03, 0.65), pD = bodLow(zD, bodPp(sd, sD), 0.0105), nD = bodN(zD, sD);
+  const zD = bodZH - 0.022, sD = lerp(bodLcLo(zD), bodLHi1(zD), 0.5), pD = bodLow(zD, bodPp(sd, sD), 0.0105), nD = bodN(zD, sD);
   const dish = G.lathe('x', [[0, -0.0096], [0.0064, -0.0084], [0.0128, -0.0058], [0.0184, -0.0024], [0.0224, 0], [0.0224, -0.003]], 28, 'bodHLdish2').clone().applyQuaternion(quatFromTo(V3(1, 0, 0), V3(sd * nD[0], nD[1], nD[2]))).translate(pD[0], pD[1], pD[2]);
   // dezelfde textuur als de hoofdreflector, maar alleen het deel zonder gloeilamp: u loopt langs de hoek (zijkant z, dan voorkant x), v over de hoogte
   // fijner dan eerst (5 x 5) en 3 mm over de grens bodZH heen: bij de lagere, sterker gebogen neus (beslissing 17) liet de koorde tussen de twee vlakken een spleet.
@@ -605,7 +611,7 @@ function bodHeadlamp(s) {
     bodReg(sd, Z0, bodZH + 0.003, 12, 8, lo, bodLHi1, D), bodReg(sd, bodZH, ZE, 14, 8, lo, hi2, D),
     bodWall(sd, z => [z, lo(z)], Z0, ZE, 20, z => bodBumperInw(z) + 0.0005, D, 2), bodWall(sd, z => [z, bodLHi1(z)], Z0, bodZH, 16, 0.004, D + 0.003, 3), bodWall(sd, z => [z, hi2(z)], bodZH, ZE, 14, 0.004, D + 0.003, 3),
     bodWall(sd, t => [bodZH, lerp(bodLHi1(bodZH), hi2(bodZH), t)], 0, 1, 3, 0.004, D, 2), bodWall(sd, t => [Z0, lerp(lo(Z0), bodLHi1(Z0), t)], 0, 1, 4, 0.004, D, 2)]);
-  const bulb = bodLow(1.645, bodPp(sd, lerp(bodLmLo(1.645), bodLmHi(1.645), 0.5)), 0.06);
+  const zB = lerp(bodZH, ZE, 0.4), bulb = bodLow(zB, bodPp(sd, lerp(bodLmLo(zB), bodLmHi(zB), 0.5)), 0.06);   // midden achter de hoofdlens, iets boven het midden
   return A(`Koplamp ${n}`, { d: 'Rechthoekige koplamp met helder glas, om de hoek van de neus gewikkeld naar het scherm: een hoofdlens met ribbels, een gladde hoekkap, een zilveren reflector en een zwart huis. De onderrand volgt de bumper, de kap en het scherm lopen erover.', ex: [s * 0.32, 0.1, 0.55] }, [
     P('Afdekglas', mainLens, MAT.bodLensRib, { d: 'Heldere hoofdlens met fijne verticale ribbels (prismaglas), vlak met het voorpaneel en onder de kap en de bumperrand geschoven.', ex: [s * 0.1, 0.04, 0.2] }),
     P('Hoekkap', capLens, MAT.bodLens, { d: 'Gladde heldere hoekkap die om de voorhoek van het scherm loopt (positielicht, schematisch), met een donkergrijze scheiding naar de hoofdlens.', ex: [s * 0.14, 0.04, 0.12] }),
@@ -637,24 +643,24 @@ function bodPlateTex() {
 // Foto's (F1, F2): helderheid gemiddeld 0,50 tot 0,58, spreiding 0,24 tot 0,26, donker 24 tot 32 procent, glans 12 tot 20 procent.
 function bodLampTex() {
   const W = 512, H = 256, c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
-  g.fillStyle = '#101113'; g.fillRect(0, 0, W, H);
+  g.fillStyle = '#4c5258'; g.fillRect(0, 0, W, H);
   const bx = W * 0.115, by = H * 0.13, iw = W - 2 * bx, ih = H - 2 * by, lx = W * 0.5, ly = H * 0.34;
   g.save(); g.beginPath(); g.rect(bx, by, iw, ih); g.clip();
-  const rg = g.createRadialGradient(lx, ly, 6, W * 0.5, H * 0.55, W * 0.58); rg.addColorStop(0, '#d0d5d9'); rg.addColorStop(0.2, '#8f979e'); rg.addColorStop(0.55, '#4d535a'); rg.addColorStop(1, '#1f2226');
+  const rg = g.createRadialGradient(lx, ly, 6, W * 0.5, H * 0.55, W * 0.58); rg.addColorStop(0, '#f6f8f9'); rg.addColorStop(0.2, '#dfe3e6'); rg.addColorStop(0.55, '#b8bec3'); rg.addColorStop(1, '#8a9097');
   g.fillStyle = rg; g.fillRect(bx, by, iw, ih);
   // facetten: zachte vlekken (spiegelende vlakken van de bak die licht of donker vangen), geen regelmatig raster en geen lijnen
   const blob = (x, y, rx, ry, k) => {
     g.save(); g.translate(x * W, y * H); g.scale(rx * W, ry * H);
-    const q = g.createRadialGradient(0, 0, 0, 0, 0, 1); const col = k > 0 ? '240,244,247' : '10,12,14', a = Math.abs(k);
+    const q = g.createRadialGradient(0, 0, 0, 0, 0, 1); const col = k > 0 ? '250,252,253' : '70,76,82', a = Math.abs(k) * (k > 0 ? 1 : 0.45);
     q.addColorStop(0, `rgba(${col},${a})`); q.addColorStop(0.6, `rgba(${col},${a * 0.6})`); q.addColorStop(1, `rgba(${col},0)`);
     g.fillStyle = q; g.beginPath(); g.arc(0, 0, 1, 0, PI * 2); g.fill(); g.restore();
   };
   [[0.27, 0.30, 0.16, 0.20, 0.30], [0.72, 0.34, 0.15, 0.22, -0.38], [0.50, 0.62, 0.20, 0.17, 0.26], [0.18, 0.66, 0.12, 0.20, -0.40], [0.82, 0.70, 0.13, 0.18, 0.24],
     [0.38, 0.80, 0.18, 0.12, -0.42], [0.63, 0.20, 0.12, 0.14, 0.26], [0.10, 0.28, 0.10, 0.28, -0.40], [0.92, 0.40, 0.10, 0.26, -0.42], [0.55, 0.88, 0.22, 0.10, -0.40], [0.80, 0.18, 0.10, 0.12, -0.34], [0.28, 0.52, 0.09, 0.14, -0.30]].forEach(b => blob(...b));
   // schaduwband in het onderste derde en donkere ringen aan de zijkanten (de bak loopt steil op)
-  const sg = g.createLinearGradient(0, by + ih * 0.42, 0, by + ih); sg.addColorStop(0, 'rgba(8,9,10,0)'); sg.addColorStop(1, 'rgba(8,9,10,0.9)');
+  const sg = g.createLinearGradient(0, by + ih * 0.42, 0, by + ih); sg.addColorStop(0, 'rgba(60,64,68,0)'); sg.addColorStop(1, 'rgba(60,64,68,0.45)');
   g.fillStyle = sg; g.fillRect(bx, by, iw, ih);
-  const sg2 = g.createLinearGradient(bx, 0, bx + iw, 0); sg2.addColorStop(0, 'rgba(8,9,10,0.7)'); sg2.addColorStop(0.2, 'rgba(8,9,10,0)'); sg2.addColorStop(0.8, 'rgba(8,9,10,0)'); sg2.addColorStop(1, 'rgba(8,9,10,0.7)');
+  const sg2 = g.createLinearGradient(bx, 0, bx + iw, 0); sg2.addColorStop(0, 'rgba(60,64,68,0.4)'); sg2.addColorStop(0.2, 'rgba(60,64,68,0)'); sg2.addColorStop(0.8, 'rgba(60,64,68,0)'); sg2.addColorStop(1, 'rgba(60,64,68,0.4)');
   g.fillStyle = sg2; g.fillRect(bx, by, iw, ih);
   // heldere zone rond de lamp: de bak vangt hier het licht van de gloeidraad
   const hz = g.createRadialGradient(W * 0.46, H * 0.44, 4, W * 0.46, H * 0.44, W * 0.2); hz.addColorStop(0, 'rgba(250,252,255,0.78)'); hz.addColorStop(1, 'rgba(250,252,255,0)');
@@ -672,11 +678,11 @@ function bodPlanarUV(g, x0, x1, y0, y1) {
   for (let i = 0; i < p.count; i++) { uv[2 * i] = clamp((Math.abs(p.getX(i)) - x0) / (x1 - x0), 0, 1); uv[2 * i + 1] = clamp((p.getY(i) - y0) / (y1 - y0), 0, 1); }
   g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); return g;
 }
-// uv voor de hoekreflector: langs de hoek (|x| van de zijkant naar de voorkant gerekend als z + (0,671 - |x|)) en over de hoogte, in het deel van de lamptextuur zonder gloeilamp (u 0,22 tot 0,44, v 0,38 tot 0,88)
+// uv voor de hoekreflector: langs de hoek (|x| van de zijkant naar de voorkant gerekend als z - bodLampZ0 + (0,662 - |x|), over 120 mm) en over de hoogte, in het deel van de lamptextuur zonder gloeilamp (u 0,22 tot 0,44, v 0,38 tot 0,88)
 function bodArcUV(g, U0 = 0.22, U1 = 0.44, V0 = 0.38, V1 = 0.88) {
   const p = g.attributes.position, uv = new Float32Array(p.count * 2);
   for (let i = 0; i < p.count; i++) {
-    const a = clamp(((p.getZ(i) - 1.521) + (0.671 - Math.abs(p.getX(i)))) / 0.34, 0, 1), y0 = bodYBT(1.43), b = clamp((p.getY(i) - y0) / (bodHoodFrontY - 0.005 - y0), 0, 1);
+    const a = clamp(((p.getZ(i) - bodLampZ0) + (0.662 - Math.abs(p.getX(i)))) / 0.12, 0, 1), y0 = bodYBT(1.43), b = clamp((p.getY(i) - y0) / (bodHoodFrontY - 0.005 - y0), 0, 1);
     uv[2 * i] = U0 + (U1 - U0) * a; uv[2 * i + 1] = V0 + (V1 - V0) * b;
   }
   g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); return g;
