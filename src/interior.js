@@ -352,7 +352,10 @@ function intTrim() {
   const sill = s => intPart(`Instaplijst ${sideName(s)}`, bx(0.09, 0.012, 1.3, 0.004, [s * 0.575, 0.262, 0.07]), MAT.plasticGrey, 'Kunststof dorpellijst bij het instappen.', { ex: [s * 0.1, 0.05, 0] });
   // bagageruimte: vloer tussen de wielkasten (tot |x| 0,495, 5 mm binnen de wand van de wielkast, met een uitsparing tot |x| 0,461 om de veerkoker vanaf z -1,205: de afronding van de binnenhoek (straal 29 mm) bolt in de uitsparing uit en sneed de achterste zijplaat), afdekplaat (hoedenplank) boven de bagage
   const bootFloor = (() => { const g = roundPlate([[-0.6, -1.63], [0.6, -1.63], [0.6, -1.52], [0.495, -1.52], [0.495, -1.205], [0.461, -1.205], [0.461, -1.02], [-0.461, -1.02], [-0.461, -1.205], [-0.495, -1.205], [-0.495, -1.52], [-0.6, -1.52]], 0.015, 0.004); g.rotateX(HALF); g.translate(0, 0.4625, 0); return g; })();
-  const plankY = 0.85, plankZ0 = -1.075, plankZ1 = -1.625, plankHW = (z) => surfX(z, plankY) - 0.05;
+  // voorrand achter de rugleuning achter: de achterkant van de rugleuning (met de bekleding aan de bagagezijde) ligt op de hoogte van de plank op z -1,207 tot -1,213;
+  // op -1,075 sneed de plank 54 mm door de rugleuning en 24 mm door de gordelrolautomaten achter (B-032)
+  // de zijranden 53 mm binnen de huid: met 50 mm raakte de schuine rand de C-stijlbekleding links op z -1,33 na het verplaatsen van de voorrand
+  const plankY = 0.85, plankZ0 = -1.22, plankZ1 = -1.625, plankHW = (z) => surfX(z, plankY) - 0.053;
   const plankGeo = (() => { const hw0 = plankHW(plankZ0), hw1 = plankHW(plankZ1), zc = (plankZ0 + plankZ1) / 2, hd = (plankZ0 - plankZ1) / 2;
     const g = roundPlate([[-hw1, -hd], [hw1, -hd], [hw0, hd], [-hw0, hd]], 0.012, 0.004); g.rotateX(HALF); return g; })();
   const tgNode = NODES.find(n => n.name === 'Achterklep'), tgOpen = !!(tgNode && tgNode.opn);
@@ -361,9 +364,9 @@ function intTrim() {
   const uit = n => { n.hideWhen = plankHide; return n; };
   const hw0 = plankHW(plankZ0), hw1 = plankHW(plankZ1), pc = (plankZ0 + plankZ1) / 2;
   const cords = [1, -1].map(s => {
-    const a = [s * (hw1 - 0.05), plankY + 0.006, plankZ1 + 0.03], b = [s * 0.5, 0.98, -1.57], dir = V3(b[0] - a[0], b[1] - a[1], b[2] - a[2]), L = dir.length();
+    const a = [s * (hw1 - 0.047), plankY + 0.006, plankZ1 + 0.03], b = [s * 0.5, 0.98, -1.57], dir = V3(b[0] - a[0], b[1] - a[1], b[2] - a[2]), L = dir.length();
     const o = { d: 'Koordje dat de hoedenplank aan de achterklep hangt (plaats geschat): een dun nylon koord van de achterhoek van de plank naar de binnenkant van de klep, dat strak komt als de klep omhoog gaat.', p: a, q: quatFromTo(V3(0, 0, 1), dir), ex: [s * 0.1, 0.1, -0.1] };
-    if (tgOpen) o.strut = { a: { node: 'Hoedenplank', p: [s * (hw1 - 0.05), 0.006, plankZ1 + 0.03 - pc] }, b: { node: intPath('Achterklep'), p: b }, rod: 'Koordstuk', lead: intPath('Achterklep'), restLen: L };
+    if (tgOpen) o.strut = { a: { node: 'Hoedenplank', p: [s * (hw1 - 0.047), 0.006, plankZ1 + 0.03 - pc] }, b: { node: intPath('Achterklep'), p: b }, rod: 'Koordstuk', lead: intPath('Achterklep'), restLen: L };
     return uit(A(`Hoedenplankkoord ${sideName(s)}`, o, [
       intPart('Koordhuls', merge([xf(G.cyl('z', 0.0028, 0.0028, L * 0.5, 6), [0, 0, L * 0.25]), G.sphere(0.007, 8)]), MAT.fabric, 'Koordhuls met oog aan de hoedenplank.', { ex: [0, 0.04, -0.04] }),
       intPart('Koordstuk', merge([xf(G.cyl('z', 0.0022, 0.0022, L * 0.5, 6), [0, 0, L * 0.75]), xf(G.sphere(0.006, 8), [0, 0, L])]), MAT.fabric, 'Beweegbaar deel van het koordje met oog aan de achterklep.', { ex: [0, 0.04, 0.04] }),
