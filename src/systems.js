@@ -70,7 +70,7 @@ function buildCooling() {
     sysPart('Ventilatorstekker', G.box(0.03, 0.022, 0.02), MAT.plastic, [0.20, FY - 0.08, FZ - 0.05], 'Stekker met de voeding van de ventilatormotor.', [0.05, -0.08, -0.1]),
   ]);
   // ---------- expansievat ----------
-  const EV = [-0.41, 0.60, 1.48];                // links van het koelpakket, onder de kap, boven de rechter langsligger
+  const EV = [-0.41, 0.60, 1.458];               // rechts naast het koelpakket, onder de kap, boven de rechter langsligger; z 1,458 houdt het vat 5 mm achter de stofkap van de rechter koplamp (B-028)
   const vatGeo = cache('sysVat', () => merge([G.rbox(0.10, 0.12, 0.11, 0.015), xf(G.cyl('y', 0.025, 0.025, 0.03, 16), [0, 0.075, 0]), xf(G.cyl('x', 0.006, 0.006, 0.02, 8), [0.06, 0.02, 0.04]), xf(G.cyl('z', 0.006, 0.006, 0.02, 8), [0, 0.02, -0.065])]));
   const expansie = A('Expansievat', { d: 'Doorzichtig kunststof expansievat met min- en maxmarkering; vangt de uitzetting van de koelvloeistof op en houdt het systeem onder druk. Plaats rechts voor naast het koelpakket aangenomen.', ex: [-0.2, 0.18, 0] }, [
     sysPart('Vat', vatGeo, MAT.tank, EV, 'Vat met de niveaumarkering voor koelvloeistof, met stompen voor de overloopslang en de ontluchtingsslang.', [-0.05, 0, 0]),
@@ -99,7 +99,7 @@ function buildCooling() {
   ]);
   const OV = sysPlus(EV, 0.0, 0.02, 0.04);
   const slangOverloop = P('Overloopslang', sysTube([[-0.31, 0.63, RZ], [-0.335, 0.632, RZ - 0.01], [OV[0] + 0.05, OV[1], OV[2] + 0.005]], 0.0065, 6, 0.02), MAT.sysHose, { d: 'Dunne slang tussen de overloopstomp van de radiateur en het expansievat; het vat vangt de vloeistof op die bij het opwarmen uitzet.', ex: [-0.04, 0.1, 0.06] });
-  const slangOntlucht = P('Ontluchtingsslang', sysTube([sysPlus(Tp, -0.015, -0.005, 0.02), [-0.36, 0.665, 1.36], [-0.39, 0.65, 1.40], [EV[0], EV[1] + 0.025, EV[2] - 0.075]], 0.0065, 6, 0.02), MAT.sysHose, { d: 'Dunne slang van het thermostaathuis naar het expansievat; voert damp en lucht uit het koelcircuit af.', ex: [-0.08, 0.14, -0.04] });
+  const slangOntlucht = P('Ontluchtingsslang', sysTube([sysPlus(Tp, -0.015, -0.005, 0.02), [-0.36, 0.665, 1.35], [-0.385, 0.652, 1.37], [EV[0], EV[1] + 0.025, EV[2] - 0.075]], 0.0065, 6, 0.02), MAT.sysHose, { d: 'Dunne slang van het thermostaathuis naar het expansievat; voert damp en lucht uit het koelcircuit af.', ex: [-0.08, 0.14, -0.04] });
   const slangen = A('Koelslangen', { d: 'De slangen van het koelcircuit: boven- en onderslang naar de radiateur, de kachelslangen en de slangen naar het expansievat. Elke slang zit met klemmen op zijn aansluiting.', ex: [0, 0.16, 0.1] }, [hoseTop, hoseBot, verwarming, slangOverloop, slangOntlucht]);
   // ---------- luchtinlaat: huis boven de ventilator, aanzuigmond achter de bovenbalk van de frontmodule ----------
   const AX = 0.22, AZ = 1.395;                   // hart van het luchtfilterhuis (x 0,165 tot 0,275, z 1,29 tot 1,50)
@@ -284,8 +284,8 @@ function buildFuel() {
 // Accu links voor, tussen luchtfilterhuis en wielkast, dicht bij de startmotor (contract hoofdstuk 4: rechts voor of links boven de bak).
 function buildElectrical() {
   const ST = sysM(DRV_PORTS.starterTerminal);
-  const BX = 0.40, BY = 0.59, BZ = 1.465;        // hart van de accu: x 0,305 tot 0,495, y 0,50 tot 0,68, z 1,40 tot 1,53
-  const BP = [BX - 0.065, 0.695, 1.425], BN = [BX + 0.065, 0.695, 1.425];
+  const BX = 0.40, BY = 0.59, BZ = 1.443;        // hart van de accu: x 0,305 tot 0,495, y 0,50 tot 0,68, z 1,378 tot 1,508 (B-028: 22 mm naar achteren, 10 mm achter de stofkap van de linker koplamp)
+  const BP = [BX - 0.065, 0.695, BZ - 0.04], BN = [BX + 0.065, 0.695, BZ - 0.04];
   // ---------- accu ----------
   const lidGeo = cache('sysBatLid', () => merge([G.box(0.19, 0.008, 0.13), ...[-3, -2, -1, 0, 1, 2].map(i => xf(G.cyl('y', 0.009, 0.009, 0.006, 10), [i * 0.028 + 0.014, 0.007, 0.03]))]));
   const accu = A('Accu', { d: 'Onderhoudsarme accu met houder, klemmen en spanbeugel, links voor in de motorruimte naast het luchtfilterhuis (zijde in de bronnen niet gevonden, aangenomen). Inhoud en type niet gevonden.', ex: [0.25, 0.3, 0.2] }, [
@@ -294,14 +294,14 @@ function buildElectrical() {
     sysPart('Pluspool', merge([G.cyl('y', 0.009, 0.0075, 0.016, 12), xf(G.cyl('y', 0.011, 0.011, 0.008, 12), [0, 0.01, 0])]), MAT.sysCable, [BP[0], 0.692, BP[2]], 'Pluspool met rode poolkap.', [-0.05, 0.25, 0]),
     sysPart('Minpool', G.cyl('y', 0.009, 0.0075, 0.016, 12), MAT.sysWire, [BN[0], 0.692, BN[2]], 'Minpool met zwarte poolkap.', [0.05, 0.25, 0]),
     sysPart('Accuhouder', merge([G.box(0.2, 0.01, 0.14), xf(G.box(0.01, 0.2, 0.02), [-0.06, -0.105, 0.0])]), MAT.darkSteel, [BX, 0.495, BZ], 'Stalen plaat met opstaande rand waarop de accu staat, op een steun van de linker langsligger (links voor).', [0, -0.15, 0]),
-    sysPart('Accusteun', merge([G.box(0.012, 0.115, 0.02), xf(G.box(0.05, 0.004, 0.03), [0, -0.0575, 0])]), MAT.darkSteel, [BX + 0.02, 0.4325, 1.45], 'Steun tussen de linker langsligger en de accuhouder.', [0, -0.2, 0]),
+    sysPart('Accusteun', merge([G.box(0.012, 0.115, 0.02), xf(G.box(0.05, 0.004, 0.03), [0, -0.0575, 0])]), MAT.darkSteel, [BX + 0.02, 0.4325, BZ - 0.015], 'Steun tussen de linker langsligger en de accuhouder.', [0, -0.2, 0]),
     sysPart('Spanbeugel', cache('sysBatBar', () => merge([xf(G.box(0.012, 0.006, 0.15), [0, 0.0, 0]), ...[-1, 1].map(s => xf(G.cyl('y', 0.004, 0.004, 0.19, 6), [0, -0.095, s * 0.073]))])), MAT.steel, [BX, 0.692, BZ], 'Brug over de accu met twee spanstangen aan de houder; houdt de accu vast.', [0, 0.35, 0]),
   ]);
   // ---------- accukabels ----------
   const GBend = sysM([GB_X + 0.05, 0.125, 0.12]);
-  const pluskabel = P('Pluskabel', sysTube([BP, [BP[0] - 0.01, 0.712, 1.425], [0.298, 0.705, 1.425], [0.29, 0.68, 1.425], [0.29, 0.5, 1.425], [0.29, 0.43, 1.41], sysPlus(ST, 0.012, 0.016, 0.012), ST], 0.0075, 8, 0.03), MAT.sysCable, { d: 'Dikke rode pluskabel van de accu naar de aansluiting op de startmotor (DRV_PORTS.starterTerminal); loopt tussen het luchtfilterhuis en de accu omlaag.', ex: [0, 0.1, 0.05] });
-  const massaMotor = P('Massakabel motor', sysTube([BN, [BN[0] + 0.01, 0.71, 1.41], [0.505, 0.69, 1.385], [0.50, 0.60, 1.372], [0.46, 0.53, 1.36], [0.38, 0.50, 1.345], GBend], 0.0065, 8, 0.03), MAT.sysWire, { d: 'Zwarte massakabel van de minpool naar de bak (en daarmee de motor); loopt langs de achterkant van de accu.', ex: [0.1, 0.1, -0.05] });
-  const massaBody = P('Massakabel carrosserie', sysTube([BN, [BN[0] + 0.012, 0.712, 1.425], [0.505, 0.70, 1.425], [0.515, 0.64, 1.425], [0.52, 0.57, 1.43], [0.53, 0.545, 1.44]], 0.0065, 8, 0.03), MAT.sysWire, { d: 'Zwarte massakabel van de minpool naar het massapunt op de binnenwand van het linker voorscherm.', ex: [0.15, 0.1, 0] });
+  const pluskabel = P('Pluskabel', sysTube([BP, [BP[0] - 0.01, 0.712, BP[2]], [0.298, 0.705, BP[2]], [0.29, 0.68, BP[2]], [0.29, 0.5, BP[2]], [0.29, 0.43, 1.395], sysPlus(ST, 0.012, 0.016, 0.012), ST], 0.0075, 8, 0.03), MAT.sysCable, { d: 'Dikke rode pluskabel van de accu naar de aansluiting op de startmotor (DRV_PORTS.starterTerminal); loopt tussen het luchtfilterhuis en de accu omlaag.', ex: [0, 0.1, 0.05] });
+  const massaMotor = P('Massakabel motor', sysTube([BN, [BN[0] + 0.01, 0.71, 1.39], [0.505, 0.69, 1.37], [0.50, 0.60, 1.36], [0.46, 0.53, 1.352], [0.38, 0.50, 1.345], GBend], 0.0065, 8, 0.03), MAT.sysWire, { d: 'Zwarte massakabel van de minpool naar de bak (en daarmee de motor); loopt langs de achterkant van de accu.', ex: [0.1, 0.1, -0.05] });
+  const massaBody = P('Massakabel carrosserie', sysTube([BN, [BN[0] + 0.012, 0.712, BN[2]], [0.505, 0.70, 1.408], [0.515, 0.64, 1.418], [0.52, 0.57, 1.43], [0.53, 0.545, 1.44]], 0.0065, 8, 0.03), MAT.sysWire, { d: 'Zwarte massakabel van de minpool naar het massapunt op de binnenwand van het linker voorscherm.', ex: [0.15, 0.1, 0] });
   const schoenen = sysPart('Kabelschoenen', cache('sysLugs', () => merge([BP, BN, ST, GBend, [0.53, 0.545, 1.44]].map(p => xf(G.cyl('x', 0.011, 0.011, 0.006, 10), p)))), MAT.chrome, [0, 0, 0], 'Vertinde kabelschoenen op de accupolen, de startmotor, de bak en het massapunt.', [0, 0.1, 0.05]);
   const kabels = A('Accukabels', { d: 'De pluskabel naar de startmotor en de massakabels naar de bak en de carrosserie.', ex: [0.2, 0.2, 0.1] }, [pluskabel, massaMotor, massaBody, schoenen]);
   // ---------- zekeringkast en relais (rechts op het schutbord) ----------
