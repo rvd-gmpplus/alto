@@ -241,6 +241,12 @@ function bodStructure() {
     P('Dwarsbalk achterbank', G.box(0.86, 0.05, 0.08), MAT.paintIn, { d: 'Dwarsbalk onder de achterbank, vóór de brandstoftank.', p: [0, 0.245, -0.92], ex: [0, 0.06, -0.04] }),
     ...both(s => P(`Langsligger achter ${sn(s)}`, G.box(0.05, 0.1, 0.62), MAT.paintIn, { d: 'Langsligger onder de bagageruimte die de achterbumperbalk draagt (plaats schematisch).', p: [s * 0.42, 0.34, -1.40], ex: [s * 0.06, -0.06, 0] })),
     ...both(s => bodSill(s)),
+    // flens achter de naad tussen dorpel (tot y 0,262) en achterscherm (vanaf 0,272), van z -0,935 (1 mm voor het vooreinde van de koker achter, die tot z -0,936 loopt)
+    // tot 4 cm achter de portierspleet, 4 mm binnen de huid: door de naad keek je anders vanuit de lage rondgang op de vloerbedekking (open punt AWK). Gelakt, zodat de naad
+    // leest als een schaduwlijn in de doorlopende plaat en niet als zwarte band onder het scherm. Hoort bij de dorpel (klasse buitenkant in meet.py): in Achterbouw telde
+    // hij als onderstel en vlagden de kierpoorten van de voorkant (schuin-ver, eig-hoger) hem door de naad.
+    ...both(s => P(`Dorpelflens achter ${sn(s)}`, lowSide(s, AXR + ARCH + 0.013, -0.60, 20, z => [sAtY(z, 0.255), sAtY(z, 0.280)], 2, [], 0.004), MAT.paint,
+      { d: 'Gelakte flens van de dorpel achter de naad met het achterscherm, voor de achterwielboog; sluit de naad af, zodat je er niet op de vloer van het interieur kijkt.', ex: [s * 0.14, -0.05, 0] })),
   ]);
   const front = A('Voorbouw', { d: 'Dragende voorbouw: langsliggers, veerpoottorens, schutbord, frontmodule en bumperbalk.', ex: [0, 0.05, 0.42] }, [
     ...both(s => P(`Langsligger voor ${sn(s)}`, G.box(0.05, 0.09, 0.80), MAT.paintIn, { d: 'Kokerprofiel in de motorruimte dat botsenergie opvangt (plaats en maten schematisch).', p: [s * 0.42, 0.33, 1.20], ex: [s * 0.08, 0, 0] })),
@@ -256,11 +262,6 @@ function bodStructure() {
   const rear = A('Achterbouw', { d: 'Achterbouw: wielkasten, bumperbalk en de wand achter de achterbank.', ex: [0, 0.05, -0.4] }, [
     P('Bumperbalk achter', tube([-0.5, -0.3, -0.15, 0, 0.15, 0.3, 0.5].map(x => [x, 0.45, -1.665 + 0.12 * x * x]), 0.03, 24, 8), MAT.steel, { d: 'Stalen botsbalk achter de achterbumper.', ex: [0, 0, -0.1] }),
     ...both(s => bodWheelHousePart(s, false)),
-    // achter de naad tussen dorpel (tot y 0,262) en achterscherm (vanaf 0,272), van z -0,935 (1 mm voor het vooreinde van de koker, die tot z -0,936 loopt) tot 4 cm achter de
-    // portierspleet, 4 mm binnen de huid: door de naad
-    // keek je anders vanuit de lage rondgang op de vloerbedekking. Gelakt, zodat de naad leest als een schaduwlijn in de doorlopende plaat (geen zwarte band onder het scherm).
-    ...both(s => P(`Afdekstrook dorpel achter ${sn(s)}`, lowSide(s, AXR + ARCH + 0.013, -0.60, 20, z => [sAtY(z, 0.255), sAtY(z, 0.280)], 2, [], 0.004), MAT.paint,
-      { d: 'Gelakte strook achter de naad tussen dorpel en achterscherm, voor de achterwielboog; sluit de naad af, zodat je er niet op de vloer van het interieur kijkt.', ex: [s * 0.12, 0.02, 0] })),
   ]);
   return [floor, front, rear];
 }
