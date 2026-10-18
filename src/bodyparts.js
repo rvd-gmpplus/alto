@@ -879,14 +879,24 @@ function bodRearPanel() {
 function bodRearBumper() {
   const both = bodBoth;
   return A('Achterbumper', { d: 'Bumperschaal in carrosseriekleur (Twist) met kentekenvlak, reflectoren en richel onder de achterklep; erachter de stalen bumperbalk.', ex: [0, -0.04, -0.7] }, [
-    // de schaal begint op z -1,550 (was -1,556): de kier met het boogeinde van het achterscherm (z -1,548) is 2 mm in plaats van 8, zoals de dorpel voor de boog
-    P('Bumperschaal achter', bodBumperGeo(bodYBR, -1.550, ZR, -1), MAT.paint, { d: 'Kunststof bumperschaal in het rood met afgeronde hoeken die om de achterwielboog lopen.', ex: [0, -0.02, -0.12] }),
+    // de schaal begint op z -1,550 (was -1,556): de kier met het boogeinde van het achterscherm (z -1,548) is 2 mm in plaats van 8, zoals de dorpel voor de boog;
+    // de onderkant tussen de langsliggers begint op z -1,568 (bodRearBumperGeo)
+    P('Bumperschaal achter', bodRearBumperGeo(), MAT.paint, { d: 'Kunststof bumperschaal in het rood met afgeronde hoeken die om de achterwielboog lopen.', ex: [0, -0.02, -0.12] }),
     // zwarte strook 4 mm binnen de huid achter de naad van 3 mm tussen bumperschaal (tot y 0,575) en achterscherm en achterpaneel (vanaf 0,578): door de naad zag je de bagagebekleding
     ...both(s => P(`Naadstrook achterbumper ${bodSn(s)}`, lowSide(s, ZR + 0.001, -1.535, 30, z => [sAtY(z, 0.562), sAtY(z, 0.592)], 2, [], 0.004), MAT.bodLiner,
       { d: 'Zwarte strook achter de naad tussen de bovenrand van de bumperschaal en het achterscherm; de naad leest als een donkere lijn en je kijkt er niet in de bagageruimte.', ex: [s * 0.05, -0.02, -0.12] })),
     ...both(s => P(`Reflector achter ${bodSn(s)}`, bodHalfFace(ZR, -1, s, 0.30, 0.43, 0.48, -0.002, 2, 5), MAT.lensRed, { d: 'Rode reflector laag in de bumperhoek.', ex: [s * 0.05, 0, -0.08] })),
     P('Onderrand achterbumper', bodFace(ZR, -1, -0.30, 0.30, 0.345, 0.38, -0.002, 2, 14), MAT.bodBumper, { d: 'Zwarte kunststof afwerkstrook onder in de bumper.', ex: [0, -0.04, -0.1] }),
   ]);
+}
+// bumperschaal achter (open punt AWK, B5): als bodBumperGeo(bodYBR, -1,550, ZR, -1), maar de onderkant tussen de langsliggers (s < 0,100 in bodLow, |x| tot 0,458) begint 18 mm
+// verder naar achteren, op z -1,568: het Ophangrubber einddemper achter (|x| 0,397 tot 0,433, tot y 0,275, z -1,563 tot -1,537) stak daar 1,3 mm in de schaal (op fa5c619 1,2 mm,
+// toen de schaal op z -1,556 begon). Vanaf s 0,110 (|x| 0,503) naar buiten en omhoog begint de schaal op z -1,550, op de kier met het boogeinde van het achterscherm.
+function bodRearBumperGeo() {
+  const z0 = -1.550, zB = -1.568, zE = ZR + 0.0005, zv = p => lerp(zB, z0, sstep((Math.abs(p) - 0.100) / 0.010));
+  return merge([
+    patch((z, p) => bodLow(lerp(zE, zv(p), (z - zE) / (z0 - zE)), p, 0), zE, z0, 36, z => { const sb = sAtY(z, bodYBR); return [-sb, sb]; }, 34),
+    bodFace(ZR, -1, -9, 9, YB(ZR) + 0.001, bodYBR, 0, 8, 30)]);
 }
 function bodRearPlate() {
   return A('Kentekenvlak achter', { d: 'Kentekenplaathouder en verlichting op het achterpaneel, tussen de achterlichten.', ex: [0, 0, -0.3] }, [
