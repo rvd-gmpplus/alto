@@ -1,5 +1,20 @@
 # Wijzigingen
 
+## Versie 4 (in voorbereiding)
+
+### Golf 5, pakket DRV (aandrijving, motor, onderstel; tak `golf5-drv`)
+
+Bron: review 5 (`bevindingen.json`). Keuzes staan in `docs/onderzoek/beslissingen.md` (Beslissing DRV-1 tot en met DRV-4).
+
+- Uitklappen (B-020): van de 35 paren die uitgeklapt in elkaar landden zijn er 32 vrij (`nabijheid.py`, uitgeklapt_raakt 35 naar 3; de drie die blijven zijn van het interieur). Kleppen per cilinder een volle cilindersteek uit elkaar, de secundaire as als waaier langs de as, aandrijfassen (schacht, klemmen, kogelkooi, binnenring), startmotor, drukgroep, thermostaathuis, distributiekap, filterhuis, carterpan en schroefveer achter. De linker aandrijfas had hoezen die 45 mm in elkaar lagen: ze zijn korter (Beslissing DRV-3).
+- Vorstpluggen krijgen een uitklapvector (B-021); aandrijfas-afdichtingen en remleidingen voor klappen gespiegeld uit, de motorsteunrubbers bewust niet (B-022).
+- Handrem (B-035): een hendel, die van het interieur. Hendel, greep en steun zijn uit het onderstel; de voorste kabel begint op het kabelaansluitpunt van het interieur en loopt door de vloer naar de egalisator.
+- Wieldop (B-006): vier sleuven bij de rand en het embleem in dezelfde grijze kunststof, naar foto's van een Alto GL uit 2001 (Beslissing DRV-2).
+- Aandrijfas links in de langsligger voor (B-030): niet aan de aandrijvingskant op te lossen; patchvoorstel voor `bodyparts.js` aan de eigenaar van de carrosserie (Beslissing DRV-1).
+- Kleine punten: veerpoottop en eind langsarm uit `AXF` en `AY` (B-063); d van de duwstang (B-015); Panhardbout links inner en de ontluchting van de bak naast de motorsteunbeugel (B-043); peilstok sluit aan op de buis; solenoidehuis voor dicht.
+- Simplify: `chsNut` vervalt (`hexNut`), schroefveren van de wielophanging via `spring`, drie ringen via `ringPattern`; geometrie van alle meshes gelijk.
+- Driehoeken: Aandrijflijn 108.132 naar 108.228 (solenoidehuis met bodem), Onderstel 62.460 naar 62.484, totaal 343.468 naar 343.588 (budget 400.000); de andere groepen gelijk.
+
 ## Versie 3 (18 oktober 2026)
 
 Aanleiding: de open punten uit Versie 2. De neus stond nog 30 tot 60 mm te hoog, zodat de klacht over de koplampen en de grille niet volledig was opgelost; de achterwielkast liet doorkijk naar het interieur zien; en de meetscripts van de voorkant draaiden niet in de volledige set. Deze versie werkt het framework bij, neemt de metingen op in de set, verlaagt de neus en sluit de achterwielkast. Uitleg, cijfers en afwijkingen per stap staan in `docs/testen.md` en `docs/onderzoek/beslissingen.md` (punt 17, 26 en 27); kerncijfers in `docs/cijfers.md`. Alleen wat een meting draagt staat hier.
