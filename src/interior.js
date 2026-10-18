@@ -31,6 +31,18 @@ function intRoofY(z, ax) {
   return best.y - 0.02;
 }
 
+// raster zoals patch (body.js), maar met de rijen per kolom uit een lijst vs(u) (oplopend, overal even lang), zodat een rij precies op een knik kan liggen
+function intGrid(fn, u0, u1, nu, vs) {
+  const pos = [], idx = [];
+  let rows = 0;
+  for (let i = 0; i <= nu; i++) { const u = u0 + (u1 - u0) * i / nu, v = vs(u); rows = v.length; v.forEach(w => { const p = fn(u, w); pos.push(p[0], p[1], p[2]); }); }
+  for (let i = 0; i < nu; i++) for (let j = 0; j < rows - 1; j++) { const a = i * rows + j, b = a + rows; idx.push(a, b, a + 1, b, b + 1, a + 1); }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setIndex(idx); g.computeVertexNormals();
+  return g;
+}
+
 /* ---------- maten en aansluitpunten ---------- */
 const INT_YF = 0.275;                       // bovenkant vloerbedekking (over de dwarsbalken)
 const INT_SX = 0.325, INT_SZ = -0.10;       // hartlijn van de voorstoelen (|x|) en langsplaats van het midden van de zitting
@@ -349,7 +361,15 @@ function intTrim() {
   // van de kabelboom achter (tot |x| 0,531, z -1,6) zit ervoor. Vanaf y 0,82 weer 4 cm, zodat de hoedenplank en haar steunlijst vrij blijven.
   const intCF = s => (z, v) => { const tank = s === bodTkS ? sstep((-1.33 - z) / 0.05) * sstep((0.82 - v) / 0.03) : 0, gas = sstep((z + 1.46) / 0.03) * sstep((-1.30 - z) / 0.03) * sstep((v - 0.86) / 0.03) * sstep((1.05 - v) / 0.03);
     const x = surfX(z, v) - 0.04; return [s * (lerp(x, Math.min(x, 0.555), tank) - 0.055 * gas), v, z]; };
-  const cPillar = s => intPart(`C-stijlbekleding ${sideName(s)}`, patch(intCF(s), -1.17, -1.6, 26, z => [0.62, Math.max(bodGh(z).ye - 0.04, 0.7)], 8), MAT.intSide, 'Bekleding van de achterste stijl naast de achterklep, onder de rand van de hemel.', { ex: [s * 0.1, 0.04, -0.06] });
+  // de gasveer loopt van die bevestiging door de bovenrand van de bekleding naar de klep: een uitsparing in de bovenrand (z -1,40 tot -1,325, vanaf y 1,02) houdt
+  // cilinder en zuigerstang in elke stand van de klep vrij (doorgerekend van 0 tot 66 graden: binnen 4 mm speling raakt de veer de bekleding op z -1,392 tot -1,334, y 1,028 en hoger)
+  // rijen op vaste hoogten waar de uitwijkingen beginnen en eindigen (0,79 en 0,82 tank, 0,86 en 0,89 gasveer): met gelijke rijen lag het vlak tussen twee rijen schuin over
+  // de hoedenplank (0,02 mm vrij) en over de plaats van haar steunlijst
+  const intCTop = z => Math.max(bodGh(z).ye - 0.04, 0.7), intGsN = { z0: -1.40, z1: -1.325, y: 1.02 }, intCRows = [0.62, 0.70, 0.79, 0.805, 0.82, 0.86, 0.89];
+  const intCFull = z => intCRows.concat([1, 2, 3, 4].map(k => lerp(0.89, intCTop(z), k / 4))), intCNotch = () => intCRows.concat([0.955, intGsN.y]);
+  const cPillar = s => { const f = intCF(s), n = intGsN;
+    return intPart(`C-stijlbekleding ${sideName(s)}`, merge([intGrid(f, -1.17, n.z1, 10, intCFull), intGrid(f, n.z1, n.z0, 5, intCNotch), intGrid(f, n.z0, -1.6, 12, intCFull)]), MAT.intSide,
+      'Bekleding van de achterste stijl naast de achterklep, onder de rand van de hemel, met een uitsparing in de bovenrand waar de gasveer van de achterklep doorheen gaat.', { ex: [s * 0.1, 0.04, -0.06] }); };
   // wielkast achter: schil over de wielkast (straal 0,322 tot 0,35 om de as, de koker van de carrosserie heeft straal 0,312), onder de zijbekleding en
   // naast de bagagevloer; geen massief blok, want dat liep dwars door de band en de schokdemperbevestiging (golf 2)
   const arch = (() => { const y0 = 0.47, ring = R => { const t0 = Math.asin((y0 - AY) / R), pts = []; for (let i = 0; i <= 10; i++) { const t = t0 + (PI - 2 * t0) * i / 10; pts.push([AXR + R * Math.cos(t), AY + R * Math.sin(t)]); } return pts; };
