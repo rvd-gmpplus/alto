@@ -1131,7 +1131,7 @@ function bodTgSeal() {
 // De achterbumper steekt bodBpD (40 mm) voorbij het klepvlak (z = ZR) uit, met een vlakke bovenkant als richel onder de klep (foto's 1993-2001). De verschuiving naar achteren
 // is nul vanaf de zijkant (z -1,55) en loopt naar het eindvlak toe op; in de breedte is ze volledig tot |x| 0,45 en loopt naar nul tot |x| 0,60, zodat de hoeken en het
 // bovenaanzicht van de staart niet breder worden (silhouet).
-const bodBpD = 0.040;
+const bodBpD = 0.040;   // bewust uitstekend: de knopen Achterbumper en Kentekenvlak achter dragen uitsteek: bodBpD (integrity.py, audit C08), de lengte is daar 3535 mm
 const bodBpA = z => sstep((-1.55 - z) / 0.17);
 const bodBpB = x => 1 - sstep((Math.abs(x) - 0.45) / 0.15);
 const bodBpDz = (x, z) => bodBpD * bodBpA(z) * bodBpB(x);
@@ -1144,7 +1144,7 @@ function bodBpMove(g) {
 }
 function bodRearBumper() {
   const both = bodBoth;
-  return A('Achterbumper', { d: 'Bumperschaal in ongelakt zwart kunststof (keuze eigenaar naar foto 1993-2001) met een vlakke bovenrichel die 40 mm onder de klep uitsteekt, de uitsparing voor de kentekenplaat en de kentekenverlichting, kleine reflectoren in de hoeken en het mistachterlicht eronder; erachter de stalen bumperbalk.', ex: [0, -0.04, -0.7] }, [
+  return A('Achterbumper', { d: 'Bumperschaal in ongelakt zwart kunststof (keuze eigenaar naar foto 1993-2001) met een vlakke bovenrichel die 40 mm onder de klep uitsteekt, de uitsparing voor de kentekenplaat en de kentekenverlichting, kleine reflectoren in de hoeken en het mistachterlicht eronder; erachter de stalen bumperbalk.', ex: [0, -0.04, -0.7], uitsteek: bodBpD }, [
     // de schaal begint op z -1,550 (was -1,556): de kier met het boogeinde van het achterscherm (z -1,548) is 2 mm in plaats van 8, zoals de dorpel voor de boog;
     // de onderkant tussen de langsliggers begint op z -1,568 (bodRearBumperGeo)
     P('Bumperschaal achter', bodRearBumperGeo(), MAT.bodBumperZwart, { d: 'Bumperschaal in ongelakt zwart kunststof (keuze eigenaar naar foto 1993-2001) met afgeronde hoeken die om de achterwielboog lopen, een vlakke bovenkant van 40 mm die onder de klep uitsteekt, een omgezette bovenrand en een verdiept vlak voor de kentekenplaat.', ex: [0, -0.02, -0.12] }),
@@ -1200,7 +1200,7 @@ function bodRearBumperGeo() {
 }
 function bodRearPlate() {
   const yc = (bodPlY0 + bodPlY1) / 2, zh = ZR - bodBpD + bodPlD - 0.003, zp = zh - 0.003 - 0.0015;
-  return A('Kentekenvlak achter', { d: 'Kentekenplaat in de uitsparing van de ongelakte zwarte achterbumper, met houder en kentekenverlichting in de bovenkant van de uitsparing.', ex: [0, -0.04, -0.95] }, [
+  return A('Kentekenvlak achter', { d: 'Kentekenplaat in de uitsparing van de ongelakte zwarte achterbumper, met houder en kentekenverlichting in de bovenkant van de uitsparing.', ex: [0, -0.04, -0.95], uitsteek: bodBpD }, [
     P('Kentekenplaathouder achter', G.rbox(0.54, 0.125, 0.006, 0.004), MAT.bodBumper, { d: 'Zwarte houder voor de achterste kentekenplaat, tegen de achterwand van de uitsparing.', p: [0, yc, zh], ex: [0, 0, -0.1] }),
     P('Kentekenplaat achter', G.rbox(0.52, 0.11, 0.003, 0.002), MAT.bodPlate, { d: 'Gele Nederlandse plaat met zwarte rand en blauwe EU-strook, met streepjes op de plaats van het kenteken (geen kenteken in dit model).', p: [0, yc, zp], ex: [0, 0, -0.16] }),
     P('Kentekenverlichting', merge([-0.16, 0.16].map(x => xf(G.rbox(0.05, 0.01, 0.014, 0.003), [x, 0, 0]))), MAT.lensClear, { d: 'Twee kleine lampen in de bovenkant van de uitsparing die de plaat van boven verlichten (aantal en plaats geschat).', p: [0, bodPlY1 - 0.005, ZR - bodBpD + 0.0075], ex: [0, 0.04, -0.06] }),
