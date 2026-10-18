@@ -290,9 +290,16 @@ function bodTailSkinGeo(out = 0, zLow = BOD_ZG0) {
 function bodStructure() {
   const both = bodBoth, sn = bodSn;
   const floor = A('Vloer en dorpels', { d: 'Vloerplaat met dwarsbalken, de langsliggers achter en de dorpels onder de portieren.', ex: [0, -0.32, 0] }, [
-    P('Bodemplaat', patch((z, p) => bodLow(z, p, 0.002), -1.62, 0.80, 60, z => { const l = z < AXR - ARCH ? S1 : (z < AXR + ARCH ? S1 * 0.102 / 0.14 * 0.14 : S1 * 0.55); return [-l, l]; }, 10, ARCH_BREAKS.concat([AXR - ARCH - 0.002, AXR - ARCH + 0.002])), MAT.underbody, { d: 'Gelaste vloerplaat van de ruwbouw met bevestigingspunten voor de stoelen en het onderstel.', ex: [0, -0.1, 0] }),
+    P('Bodemplaat', bodBodemplaat(), MAT.underbody, { d: 'Gelaste vloerplaat van de ruwbouw met bevestigingspunten voor de stoelen en het onderstel; onder de achterbank een opening voor de tankkuip.', ex: [0, -0.1, 0] }),
+    P('Tankkuip', bodTankkuip(), MAT.underbody, { d: 'Verhoogd deel van de vloer onder de achterbank waarin de brandstoftank van onderen hangt: binnen 530 x 140 x 330 mm (x -0,18 tot 0,35, tot y 0,375, z -0,96 tot -0,63), 10 mm ruimte rond de tank en 25 mm onder de zitting.', ex: [0, -0.1, 0] }),
     P('Dwarsbalk voorstoelen', G.box(0.86, 0.05, 0.08), MAT.paintIn, { d: 'Dwarsbalk onder de voorstoelen die vloer en dorpels verbindt.', p: [0, 0.245, 0.15], ex: [0, 0.06, 0.04] }),
-    P('Dwarsbalk achterbank', G.box(0.86, 0.05, 0.08), MAT.paintIn, { d: 'Dwarsbalk onder de achterbank, vóór de brandstoftank.', p: [0, 0.245, -0.92], ex: [0, 0.06, -0.04] }),
+    // voor de tankkuip (was z -0,96 tot -0,88, waar de tank nu zit); 48 mm hoog (y 0,222 tot 0,270): het hitteschild van de middendemper loopt eronder tot y 0,221
+    P('Dwarsbalk achterbank', G.box(0.86, 0.048, 0.08), MAT.paintIn, { d: 'Dwarsbalk onder de voorkant van de achterbank, vóór de tankkuip.', p: [0, 0.246, -0.585], ex: [0, 0.06, -0.04] }),
+    // naast de kuip op de oude plaats van de dwarsbalk (z -0,946 tot -0,88, 1 mm voor de vloerstrook van de achtervloer): de balk sloot de laag tussen vloer en
+    // vloerbedekking van achteren af; zonder deze stukken zag je van laag achter (meet.py --achter, onderdoorkijk onder de dorpel) de vloerbedekking en de
+    // instaplijsten. Onderkant 0,5 mm boven de vloer (0,229), bovenkant 1 mm onder de vloerbedekking (0,267); buiten |x| 0,4305 sluit Dorpeleinde achter aan.
+    ...both(s => { const xa = s > 0 ? bodKuip.x1 + 0.001 : -bodKuip.x0 + 0.001, xb = 0.43, y0 = 0.2295, y1 = 0.266, z0 = -0.946, z1 = -0.88;
+      return P(`Dwarsbalk naast tankkuip ${sn(s)}`, G.box(xb - xa, y1 - y0, z1 - z0), MAT.paintIn, { d: 'Stuk dwarsbalk tussen de tankkuip en de dorpel onder de achterbank; sluit de ruimte tussen vloer en vloerbedekking af.', p: [s * (xa + xb) / 2, (y0 + y1) / 2, (z0 + z1) / 2], ex: [s * 0.06, 0.06, -0.04] }); }),
     ...both(s => P(`Langsligger achter ${sn(s)}`, G.box(0.05, 0.1, 0.62), MAT.paintIn, { d: 'Langsligger onder de bagageruimte die de achterbumperbalk draagt (plaats schematisch).', p: [s * 0.42, 0.34, -1.40], ex: [s * 0.06, -0.06, 0] })),
     P('Achtervloer', bodAchtervloer(), MAT.underbody, { d: 'Gelaste achtervloer boven de achteras: de bodem onder de bagagevloer tussen de wielkasten, de hielplaat achter de achterbank en de vloerstrook tot de dwarsbalk achterbank, met donkere onderbodembescherming.', ex: [0, -0.1, 0] }),
     ...both(s => bodSill(s)),
@@ -387,13 +394,34 @@ function bodWheelHouseAchter(s) {
 //   veerkoker tot |x| 0,465 (binnenplaat op 0,466) en links om de kabelboom achter tot |x| 0,476 (die kruist y 0,447 bij |x| 0,486 tot 0,504, z -1,543 tot -1,511);
 // - hielplaat op z -1,036 (6 mm achter de zitting, z -1,030) van y 0,262 tot 0,447;
 // - vloerstrook op y 0,262 (5 mm onder de vloerbedekking, 6 mm boven de langsarm) van de hielplaat tot de dwarsbalk achterbank (z -0,961) en naast de dwarsbalk tot z -0,947.
+// Tankkuip (golf 5, op verzoek van de orkestrator): onder de achterbank lag de vloer op y 0,221 tot 0,229, zodat de tank er maar 37,5 mm hoog paste. De kuip is een
+// verhoogd vloerdeel: vier wanden vanaf de vloer (YB + 2 mm) en een dak op y 0,375, binnenmaten x -0,18 tot 0,35 en z -0,96 tot -0,63 (tank x -0,17 tot 0,34,
+// y 0,225 tot 0,365, z -0,95 tot -0,64, 10 mm ruimte rondom). De zitting van de achterbank begint op y 0,400 (Zitbekleding achter), 25 mm boven het dak.
+// De bodemplaat heeft hier een opening; de dwarsbalk achterbank staat voor de kuip.
+const bodKuip = { x0: -0.18, x1: 0.35, z0: -0.96, z1: -0.63, yT: 0.375 };
+const bodFloorP = (z, x) => { const c = bodSec(z); return x / (c.hw - c.bul - c.rb) * S1; };   // p van de vlakke bodem bij x (negatief rechts)
+function bodBodemplaat() {
+  const K = bodKuip, f = (z, p) => bodLow(z, p, 0.002), L = z => (z < AXR - ARCH ? S1 : (z < AXR + ARCH ? S1 * 0.102 / 0.14 * 0.14 : S1 * 0.55));
+  const brk = ARCH_BREAKS.concat([AXR - ARCH - 0.002, AXR - ARCH + 0.002]), zC = AXR + ARCH + 0.0005;
+  // tussen K.z0 en de achterboog (z -0,948) is de bodem maar |x| 0,07 breed en valt hij helemaal binnen de kuip
+  return merge([patch(f, -1.62, K.z0, 26, z => [-L(z), L(z)], 10, brk), patch(f, K.z1, 0.80, 34, z => [-L(z), L(z)], 10, brk),
+    patch(f, zC, K.z1, 8, z => [-L(z), bodFloorP(z, K.x0)], 3), patch(f, zC, K.z1, 8, z => [bodFloorP(z, K.x1), L(z)], 2)]);
+}
+function bodTankkuip() {
+  const K = bodKuip, yb = z => YB(z) + 0.002;
+  const wandX = x => patch((z, t) => [x, lerp(yb(z), K.yT, t), z], K.z0, K.z1, 8, () => [0, 1], 2);
+  const wandZ = z => patch((x, t) => [x, lerp(yb(z), K.yT, t), z], K.x0, K.x1, 8, () => [0, 1], 2);
+  const dak = patch((x, z) => [x, K.yT, z], K.x0, K.x1, 4, () => [K.z0, K.z1], 4);
+  return merge([wandX(K.x0), wandX(K.x1), wandZ(K.z0), wandZ(K.z1), dak]);
+}
 function bodAchtervloer() {
   const V = (a, b) => new THREE.Vector2(a, b), xw = 0.498, xa = 0.56, xv = 0.465, xk = 0.476, yB = 0.447, yV = 0.262, zH = -1.036, zA = -1.595;
   const vlak = (pts, y) => { const g = new THREE.ShapeGeometry(new THREE.Shape(pts.map(([x, z]) => V(x, z))), 1); g.rotateX(HALF); g.translate(0, y, 0); return g; };   // (x, z) -> (x, y, z)
   const bodem = vlak([[-xa, zA], [xa, zA], [xa, -1.556], [xk, -1.556], [xk, -1.480], [xw, -1.480], [xw, -1.175], [xv, -1.175], [xv, -1.055], [xw, -1.055], [xw, zH],
     [-xw, zH], [-xw, -1.055], [-xv, -1.055], [-xv, -1.175], [-xw, -1.175], [-xw, -1.556], [-xa, -1.556]], yB);
   const hiel = (() => { const g = new THREE.ShapeGeometry(new THREE.Shape([V(-xw, yV), V(xw, yV), V(xw, yB), V(-xw, yB)]), 1); g.translate(0, 0, zH); return g; })();
-  const strook = vlak([[-xw, zH], [xw, zH], [xw, -0.947], [0.431, -0.947], [0.431, -0.961], [-0.431, -0.961], [-0.431, -0.947], [-xw, -0.947]], yV);
+  // naast de tankkuip tot z -0,947 (de dwarsbalk achterbank lag hier tot golf 5 en sloot de strook af); binnen de kuip tot 1 mm voor de achterwand
+  const strook = vlak([[-xw, zH], [xw, zH], [xw, -0.947], [bodKuip.x1 + 0.001, -0.947], [bodKuip.x1 + 0.001, bodKuip.z0 - 0.001], [bodKuip.x0 - 0.001, bodKuip.z0 - 0.001], [bodKuip.x0 - 0.001, -0.947], [-xw, -0.947]], yV);
   return merge([bodem, hiel, strook]);
 }
 // sluitplaat in het vlak z -0,930: 4 mm voor wielkastkoker en wand (tot z -0,934) en tussen de Dwarsbalk achterbank (|x| tot 0,430, z -0,96 tot -0,88) en de dorpel.
