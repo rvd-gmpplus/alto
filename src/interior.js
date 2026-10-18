@@ -211,20 +211,24 @@ function intDashboard() {
   // schaalstreepjes over een boog van 220 graden rond (x, y)
   const ticks = (x, y, r, n) => Array.from({ length: n }, (_, i) => { const a = -1.92 + i * 3.84 / (n - 1); return xf(G.box(0.003, 0.008, 0.001), [x + r * Math.sin(a), y + r * Math.cos(a), -0.0335], [0, 0, -a]); });
   const needle = (x, y, len, a) => xf(G.box(0.003, len, 0.002), [x - len / 2 * Math.sin(a), y + len / 2 * Math.cos(a), -0.036], [0, 0, a]);
-  const SP = [0, 0.003, 0.042], KL = [0.095, 0, 0.024];   // snelheidsmeter (x, y, straal) en de kleine meters op x = +-0,095
-  const cluster = A('Instrumentenpaneel', { d: 'Instrumentenpaneel met een grote snelheidsmeter met kilometer- en dagteller in het midden, links de temperatuurmeter, rechts de brandstofmeter en daarboven waarschuwingslampjes; geen toerenteller. De plaats van de kleine meters en de lampjes is schematisch (aangenomen).', p: [cl.x, cl.y, cl.z], r: [0.35, 0, 0], ex: [0, 0.05, -0.15] }, [
+  const SP = [0, 0.003, 0.042], KL = [0.085, 0.003 - 0.025, 0.024];   // snelheidsmeter (x, y, straal) en de kleine meters: x = +-0,085, 25 mm lager dan de snelheidsmeter
+  const cluster = A('Instrumentenpaneel', { d: 'Instrumentenpaneel met een grote snelheidsmeter met kilometer- en dagteller in het midden, links de temperatuurmeter en rechts de brandstofmeter (kleiner en lager), daarboven waarschuwingslampjes in rode blokken, onder een diepe kap; geen toerenteller. De plaats van de kleine meters en de lampjes is schematisch (aangenomen).', p: [cl.x, cl.y, cl.z], r: [0.35, 0, 0], ex: [0, 0.05, -0.15] }, [
     intPart('Instrumentenbehuizing', bx(0.3, 0.11, 0.06, 0.012), MAT.plastic, 'Behuizing met printplaat achter het glas.', { ex: [0, 0, 0.06] }),
     intPart('Snelheidsmeter', dial(SP[0], SP[1], SP[2]), MAT.screen, 'Snelheidsmeter met chromen ring, in het midden voor de bestuurder.', { ex: [0, 0, -0.03] }),
     intPart('Kilometer- en dagteller', merge([intBox(0.032, 0.008, 0.001, [0, -0.017, -0.0335]), intBox(0.022, 0.007, 0.001, [0, -0.028, -0.0335])]), MAT.intDial, 'Telwerken in de snelheidsmeter: kilometerteller en daaronder de dagteller.', { ex: [0, -0.02, -0.05] }),
-    intPart('Temperatuurmeter', dial(KL[0], KL[1], KL[2]), MAT.screen, 'Koelvloeistoftemperatuurmeter links van de snelheidsmeter.', { ex: [0.03, 0, -0.04] }),
-    intPart('Brandstofmeter', dial(-KL[0], KL[1], KL[2]), MAT.screen, 'Brandstofmeter rechts van de snelheidsmeter.', { ex: [-0.03, 0, -0.04] }),
+    intPart('Temperatuurmeter', dial(KL[0], KL[1], KL[2]), MAT.screen, 'Koelvloeistoftemperatuurmeter, kleiner en lager links van de snelheidsmeter.', { ex: [0.03, 0, -0.04] }),
+    intPart('Brandstofmeter', dial(-KL[0], KL[1], KL[2]), MAT.screen, 'Brandstofmeter, kleiner en lager rechts van de snelheidsmeter.', { ex: [-0.03, 0, -0.04] }),
     intPart('Schaalverdeling', merge([...ticks(SP[0], SP[1], SP[2] - 0.008, 11), ...ticks(KL[0], KL[1], KL[2] - 0.006, 5), ...ticks(-KL[0], KL[1], KL[2] - 0.006, 5)]), MAT.intDial, 'Streepjes van de schaalverdeling op de drie wijzerplaten.', { ex: [0, 0, -0.05] }),
     intPart('Wijzers', merge([needle(SP[0], SP[1], 0.036, 0.9), needle(KL[0], KL[1], 0.02, 0.3), needle(-KL[0], KL[1], 0.02, -0.5)]), MAT.red, 'Wijzers van de snelheidsmeter, de temperatuurmeter en de brandstofmeter.', { ex: [0, 0, -0.08] }),
-    intPart('Waarschuwingslampjes', merge([0.063, 0.085, 0.107, 0.129].flatMap(x => [intBox(0.014, 0.006, 0.002, [x, 0.038, -0.0315]), intBox(0.014, 0.006, 0.002, [-x, 0.038, -0.0315])])), MAT.amber, 'Twee rijen waarschuwingslampjes boven de kleine meters, links en rechts van de snelheidsmeter (welke lampjes en hun plaats schematisch).', { ex: [0, 0.03, -0.06] }),
+    intPart('Waarschuwingslampjes', merge([[0.068, 0.041], [0.092, 0.041], [0.116, 0.041], [0.068, 0.027], [0.092, 0.027]].flatMap(([x, y]) => [intBox(0.019, 0.011, 0.002, [x, y, -0.0315]), intBox(0.019, 0.011, 0.002, [-x, y, -0.0315])])), MAT.red, 'Waarschuwingslampjes als rode blokken boven de kleine meters, links en rechts van de snelheidsmeter (welke lampjes en hun plaats schematisch).', { ex: [0, 0.03, -0.06] }),
     intPart('Instrumentenglas', G.box(0.29, 0.1, 0.004), MAT.lensClear, 'Doorzichtig kapglas voor de instrumenten.', { p: [0, 0, -0.037], ex: [0, 0, -0.14] }),
   ]);
-  // de kap volgt het paneel: aan de bestuurderszijde hoger, aan de voorruitzijde op het dashboard
-  const hood = intPart('Instrumentenkap', bx(0.36, 0.05, 0.2, 0.02, [cl.x, 0.955, 0.615], [0.1, 0, 0]), MAT.dash, 'Kap boven de instrumenten tegen reflecties in de voorruit.', { ex: [0, 0.1, 0] });
+  // diepe kap om het paneel: dak en twee zijwangen in het vlak van het paneel (kapframe), 330 mm breed en 80 mm voor het glas uit; het dak ligt 15 mm boven de behuizing,
+  // de wangen reiken tot onder de behuizing (hoogte -0,07). De kolomkap blijft onder de wangen (B-031: 7 mm vrij van het glas).
+  const hoodW = 0.33, hoodT = 0.01, hoodZ0 = -0.037 - 0.003 - 0.08, hoodZ1 = 0.02, hoodTop = 0.07, hoodBot = -0.07;
+  const hood = intPart('Instrumentenkap', merge([bx(hoodW, hoodT, hoodZ1 - hoodZ0, 0.004, [0, hoodTop, (hoodZ0 + hoodZ1) / 2]),
+    ...[1, -1].map(sg => bx(hoodT, hoodTop - hoodBot + hoodT, hoodZ1 - hoodZ0, 0.004, [sg * (hoodW - hoodT) / 2, (hoodTop + hoodBot) / 2, (hoodZ0 + hoodZ1) / 2]))]), MAT.dash,
+    'Diepe kap om het instrumentenpaneel tegen reflecties in de voorruit: een dak met twee zijwangen, ongeveer 330 mm breed en 80 mm voor het glas uit.', { p: [cl.x, cl.y, cl.z], r: [0.35, 0, 0], ex: [0, 0.1, 0] });
   // handschoenenkastje: open bak met bodem en wanden; de klep sluit af
   const gk = A('Handschoenenkastje', { d: 'Handschoenenkastje voor de voorpassagier: bak in het dashboard met klep.', ex: [-0.14, -0.02, -0.18] }, [
     intPart('Handschoenenkastbak', merge([intBox(0.32, 0.008, 0.2, [-0.34, 0.545, 0.64]), intBox(0.32, 0.008, 0.2, [-0.34, 0.685, 0.64]), intBox(0.008, 0.14, 0.2, [-0.5, 0.615, 0.64]), intBox(0.008, 0.14, 0.2, [-0.18, 0.615, 0.64]), intBox(0.32, 0.14, 0.008, [-0.34, 0.615, 0.74])]), MAT.plastic, 'Open bak van het handschoenenkastje, in het dashboard weggewerkt achter de klep.', { inner: true, ex: [0, 0, 0.1] }),
