@@ -242,10 +242,10 @@ function buildFuel() {
     return merge([xf(G.box(K.x1 - K.x0 - 0.006, t, 0.04), [(K.x0 + K.x1) / 2, yb - t / 2, z]),
       ...[[K.x0 - 0.025, K.x0 + 0.004], [K.x1 - 0.004, K.x1 + 0.025]].map(([a, b]) => xf(G.box(b - a, t, 0.04), [(a + b) / 2, yf - t / 2, z]))]); };
   // stompen voor vulslang en ontluchting in de bodem, schuin naar achteren en omlaag (as U); d is de afstand langs U vanaf de bodem
-  const SX = 0.12, VX = 0.165, SZ = TZA + 0.035, U = V3(0, -1, -1).normalize();
+  const sk = bodTkS, SX = sk * 0.12, VX = sk * 0.165, SZ = TZA + 0.035, U = V3(0, -1, -1).normalize();
   const onU = (x, d) => [x, TB + U.y * d, SZ + U.z * d];
   const stompGeo = merge([xf(G.cyl('y', 0.016, 0.016, 0.055, 14), [0, 0, 0]), xf(G.cyl('y', 0.005, 0.005, 0.045, 8), [VX - SX, 0, 0])]);
-  const RX = 0.085, RZ = TZF - 0.035;                                                      // rolklep boven op de tank, voor
+  const RX = sk * 0.085, RZ = TZF - 0.035;                                                      // rolklep boven op de tank, voor
   const tank = A('Brandstoftank', { d: 'Stalen tank onder de achterbank, voor de torsiebalk, van onderen in de tankkuip van de vloer gehangen en met twee spanbanden aan de vloer naast de kuip bevestigd. Getekend 510 x 139 x 305 mm; dat houdt ongeveer 21 l (geschat uit het getekende volume). De inhoud van 35 l is bevestigd; plaats, maten en vorm zijn aangenomen.', spec: [['Inhoud', '35 l']], ex: [0, -0.5, 0] }, [
     sysPart('Tankhuis', G.rbox(TW, TH, TD, 0.012), MAT.sysTank, [TX, TY, TZ], 'Gelaste stalen tank met schotten tegen klotsen; hangt in de kuip onder de achterbank, met een vlakke onderkant net boven de handremkabels.', [0, -0.08, 0]),
     sysPart('Spanband voor', strap(-0.72), MAT.darkSteel, [0, 0, 0], 'Stalen spanband onder de tank; draagt de tank en is aan beide kanten naast de kuip tegen de vloer geschroefd. Voor.', [0, -0.2, 0.05]),
@@ -266,22 +266,24 @@ function buildFuel() {
     sysPart('Pompstekker', G.box(0.02, 0.005, 0.02), MAT.plastic, [PX - 0.025, TT + 0.0055, PZ], 'Stekker van de pomp en de niveaumeter.', [0, 0.1, 0]),
   ]);
   // ---------- vulsysteem: van de tankklep (achter het linker achterscherm) achter het linker achterwiel langs en onder de torsiebalk door naar de tank ----------
-  // de vulhals eindigt in de opening van de tankklep, die de carrosserie naar links spiegelt (x +0,64 tot +0,73, zelfde y en z als bodTkY en bodTkZ)
+  // de zijde komt uit bodTkS (bodyparts.js, +1 links); alle x-waarden hieronder zijn voor links en worden met sk gespiegeld. Bij sk -1 loopt de route door
+  // de uitlaat, die rechts ligt; de zijde volgt de foto's (B-005). De vulhals gaat door het gat (straal 32 mm) in de bodem van de tankkom op x 0,6695.
   const [k0, k1] = bodTkZ, [y0, y1] = bodTkY, ym = (y0 + y1) / 2, xs = surfX(k1, ym), zm = (k0 + k1) / 2;
-  const xk = xs - 0.06;                          // voorvlak van de tankkom
+  const xk = xs - 0.06;                          // bodem van de tankkom (de vulhals steekt er 5,5 mm doorheen)
   const VY = 0.176, VR = 0.016;                  // vulpijp onder de vloer: hartlijn op 0,176, onderkant op de bodemvrijheid
+  const X = p => [sk * p[0], p[1], p[2]], rY = sk < 0 ? [0, PI, 0] : [0, 0, 0];
   const neck = [[xs - 0.09, ym, zm], [xs - 0.12, ym - 0.01, zm - 0.01], [0.60, 0.69, -1.52], [0.62, 0.62, -1.575], [0.62, 0.45, -1.58], [0.60, 0.32, -1.578], [0.55, 0.255, -1.57],
-    [0.48, 0.235, -1.52], [0.43, 0.185, -1.42], [0.39, VY, -1.33], [0.33, VY, -1.24], [0.26, VY, -1.12], [0.215, 0.178, -1.04]];
+    [0.48, 0.235, -1.52], [0.43, 0.185, -1.42], [0.39, VY, -1.33], [0.33, VY, -1.24], [0.26, VY, -1.12], [0.215, 0.178, -1.04]].map(X);
   const hoseStart = neck[neck.length - 1];
-  const vulslang = sysHoseG('Vulslang', 'Korte rubber slang tussen de stalen vulpijp en de stomp in de bodem van de tank; vangt de beweging van de tank op.', [hoseStart, [0.17, 0.180, -0.995], onU(SX, 0.06), onU(SX, 0.022)], 0.018, { n0: 'Klem vulpijp', n1: 'Klem tank', ex: [0, -0.1, -0.05] });
-  const vent = neck.slice(2, -1).map((p, i) => i < 5 ? sysPlus(p, 0.006, 0, 0.028) : sysPlus(p, 0.03, 0, 0.01))
-    .concat([sysPlus(hoseStart, 0.03, 0, 0.01), [0.21, 0.181, -0.99], onU(VX, 0.06), onU(VX, 0.028)]);   // ontluchting aan de buitenkant van de vulpijp
-  const vul = A('Vulsysteem', { d: 'Vulpijp van de opening in het linker achterscherm (achter de tankklep) langs de achterkant van het linker achterwiel en onder de torsiebalk door naar de bodem van de tank, met de tankdop, een rubber vulslang en een ontluchtingsslang.', ex: [0.3, -0.2, -0.3] }, [
-    sysPart('Vulhals', G.lathe('x', [[0.02, 0], [0.027, 0.014], [0.03, 0.03]], 20, 'sysFillNeckL'), MAT.steel, [xs - 0.09, ym, zm], 'Trechtervormige vulhals achter de tankklep, in de tankkom.', [0.1, 0, 0]),
-    sysPart('Tankdop', merge([G.cyl('x', 0.026, 0.026, 0.018, 20), xf(G.box(0.012, 0.06, 0.012), [0.008, 0, 0])]), MAT.plastic, [xk + 0.012, ym, zm], 'Dop van de vulhals; de onderdruk in de tank wordt via een klepje in de dop geregeld.', [0.2, 0.05, 0]),
-    P('Vulpijp', sysTube(neck, VR, 10, 0.03), MAT.sysTank, { d: 'Stalen vulpijp die achter het linker achterwiel langs naar beneden loopt en onder de vloer en de torsiebalk door naar de tank.', ex: [0.08, -0.1, -0.1] }),
+  const vulslang = sysHoseG('Vulslang', 'Korte rubber slang tussen de stalen vulpijp en de stomp in de bodem van de tank; vangt de beweging van de tank op.', [hoseStart, X([0.17, 0.180, -0.995]), onU(SX, 0.06), onU(SX, 0.022)], 0.018, { n0: 'Klem vulpijp', n1: 'Klem tank', ex: [0, -0.1, -0.05] });
+  const vent = neck.slice(2, -1).map((p, i) => i < 5 ? sysPlus(p, sk * 0.006, 0, 0.028) : sysPlus(p, sk * 0.03, 0, 0.01))
+    .concat([sysPlus(hoseStart, sk * 0.03, 0, 0.01), X([0.21, 0.181, -0.99]), onU(VX, 0.06), onU(VX, 0.028)]);   // ontluchting aan de buitenkant van de vulpijp
+  const vul = A('Vulsysteem', { d: 'Vulpijp van de opening in het linker achterscherm (achter de tankklep) langs de achterkant van het linker achterwiel en onder de torsiebalk door naar de bodem van de tank, met de tankdop, een rubber vulslang en een ontluchtingsslang.', ex: [sk * 0.3, -0.2, -0.3] }, [
+    sysPart('Vulhals', G.lathe('x', [[0.02, 0], [0.027, 0.014], [0.03, 0.03], [0.03, 0.0355]], 20, 'sysFillNeckL2'), MAT.steel, X([xs - 0.09, ym, zm]), 'Trechtervormige vulhals achter de tankklep; steekt door het gat in de bodem van de tankkom.', [sk * 0.1, 0, 0], { r: rY }),
+    sysPart('Tankdop', merge([G.cyl('x', 0.026, 0.026, 0.018, 20), xf(G.box(0.012, 0.06, 0.012), [0.008, 0, 0])]), MAT.plastic, X([xk + 0.0155, ym, zm]), 'Dop van de vulhals, in de tankkom; de onderdruk in de tank wordt via een klepje in de dop geregeld.', [sk * 0.2, 0.05, 0], { r: rY }),
+    P('Vulpijp', sysTube(neck, VR, 10, 0.03), MAT.sysTank, { d: 'Stalen vulpijp die achter het linker achterwiel langs naar beneden loopt en onder de vloer en de torsiebalk door naar de tank.', ex: [sk * 0.08, -0.1, -0.1] }),
     vulslang,
-    P('Ontluchtingsslang vulpijp', sysTube(vent, 0.006, 6, 0.04), MAT.sysHose, { d: 'Dunne slang die de lucht uit de tank naar de bovenkant van de vulpijp voert, zodat de tank sneller vol kan.', ex: [-0.05, 0, -0.05] }),
+    P('Ontluchtingsslang vulpijp', sysTube(vent, 0.006, 6, 0.04), MAT.sysHose, { d: 'Dunne slang die de lucht uit de tank naar de bovenkant van de vulpijp voert, zodat de tank sneller vol kan.', ex: [-sk * 0.05, 0, -0.05] }),
   ]);
   // ---------- brandstofleiding: van de pomp over de tank naar voren, door de spleet voor de tank omlaag, door het filter links onder de vloer naar voren,
   // schuin over de uitlaat naar rechts, dan over de bak ----------
