@@ -44,6 +44,22 @@ function engBuildLube() {
   ]);
 }
 
+/* ---------- uitlaatgasrecirculatie (EGR): klep onder de inlaatkast, pijp van de verzamelaar om de bakzijde van de kop ---------- */
+// Bron: specificaties-en-bronnen.md (Emissie, Bevestigd: EGR). Plaats, vorm en route zijn geschat. De klep hangt onder de inlaatkast tussen de
+// inlaatpijpen van cilinder 3 en 4; de pijp loopt van de verzamelaar onder het hitteschild door naar de bakzijde, langs de kop (x 0,23, onder de
+// stroomverdeler) naar voren en onder het gasklephuis door naar de klep. Alles blijft binnen het kader van de aandrijflijn van voor de EGR
+// (z hoogstens 0,217 in het motorframe), zodat de rasters van ui_inner niet verschuiven.
+function engBuildEGR() {
+  const [, , pz] = ENG_PLEN, K = [0.08, 0.21, pz];                        // hart van de klep, tegen de onderkant van de inlaatkast (y 0,23)
+  const pts = [[0.042, 0.158, -0.215], [0.10, 0.155, -0.232], [0.17, 0.162, -0.242], [0.232, 0.20, -0.225], [0.238, 0.212, -0.17], [0.226, 0.214, -0.08], [0.224, 0.214, 0.02],
+    [0.215, 0.208, 0.12], [0.17, 0.204, 0.185], [0.13, 0.205, 0.185], [0.112, 0.205, 0.17], [0.105, 0.205, K[2]]];
+  return A('Uitlaatgasrecirculatie', { d: 'Uitlaatgasrecirculatie (EGR): een klep onder de inlaatkast laat een deel van het uitlaatgas via een pijp van de verzamelaar terug in de inlaat stromen, wat de verbrandingstemperatuur en de NOx verlaagt. EGR is voor de G10BB (Euro 3) bevestigd; plaats, vorm en route zijn geschat.', ex: [0.1, -0.05, 0.12] }, [
+    P('EGR-klep', merge([G.cyl('y', 0.014, 0.014, 0.04, 14), xf(G.cyl('y', 0.017, 0.017, 0.01, 16), [0, -0.02, 0]), xf(G.cyl('x', 0.006, 0.006, 0.02, 8), [0.02, -0.005, 0]), xf(G.box(0.012, 0.01, 0.012), [-0.018, -0.012, 0])]), MAT.engCoil,
+      { d: 'EGR-klep met membraan en stekker, onder de inlaatkast; de regeleenheid stuurt haar open bij deellast. Plaats geschat.', p: K, ex: [0, -0.05, 0.06] }),
+    P('EGR-pijp', tube(pts, 0.006, 60, 8), MAT.steel, { d: 'Stalen pijp van de verzamelaar van het uitlaatspruitstuk, om de bakzijde van de kop, naar de EGR-klep. Route geschat.', ex: [0.06, 0.03, 0.04] }),
+  ]);
+}
+
 /* ---------- inlaatspruitstuk met gasklephuis en brandstofverdeelleiding ---------- */
 function engBuildIntake() {
   const PY = ENG_PORT_Y, [, py, pz] = ENG_PLEN;
@@ -61,7 +77,7 @@ function engBuildIntake() {
     P('O-ring injector boven', G.torus('y', 0.0092, 0.0014, 12, 4), MAT.rubber, { d: 'Afdichting tussen injector en verdeelleiding.', p: [0, -0.011, 0], ex: [0, 0.03, 0] }),
     P('O-ring injector onder', G.torus('y', 0.0073, 0.0014, 12, 4), MAT.rubber, { d: 'Afdichting tussen injector en inlaatpijp.', p: [0, -0.054, 0], ex: [0, -0.03, 0] }),
   ]));
-  return A('Inlaatspruitstuk', { d: 'Inlaatspruitstuk met vier pijpen naar de poorten aan de voorzijde van de kop, inlaatkast, gasklephuis en brandstofverdeelleiding met vier injectoren (meerpuntsinspuiting). Materiaal, vorm en afmetingen zijn geschat.', ex: [0, 0.12, 0.25] }, [
+  return A('Inlaatspruitstuk', { d: 'Inlaatspruitstuk met vier pijpen naar de poorten aan de voorzijde van de kop, inlaatkast, gasklephuis en brandstofverdeelleiding met vier injectoren (meerpuntsinspuiting) en de EGR-klep. Materiaal, vorm en afmetingen zijn geschat.', ex: [0, 0.12, 0.25] }, [
     P('Inlaatpijpen', merge([xf(flange, [0, 0, 0.0917]), runners]), MAT.aluCast, { d: 'Flens met vier gebogen inlaatpijpen die van de poorten naar de inlaatkast lopen.', ex: [0, 0, 0] }),
     P('Pakking inlaatspruitstuk', front(flShape, 0.0008), MAT.rubber, { d: 'Pakking tussen kop en inlaatspruitstuk.', p: [0, 0, ENG_HZ + 0.0064], ex: [0, 0, -0.05] }),
     P('Inlaatkast', plenum, MAT.aluCast, { d: 'Inlaatkast (plenum): verdeelt de lucht van het gasklephuis over de vier pijpen.', p: [0, py, pz], ex: [0, 0.06, 0.04] }),
@@ -87,6 +103,7 @@ function engBuildIntake() {
       P('Ontluchtingsslang', tube([[-0.09, 0.296, 0.0845], [-0.09, 0.302, 0.11], [-0.09, 0.292, 0.135]], 0.005, 20, 6), MAT.rubber, { d: 'Slang van het kleppendeksel naar de inlaatkast (carterontluchting).', ex: [0, 0.04, 0] }),
       P('Vacuumslang drukregelaar', tube([[0.12, 0.29, ENG_RAIL[2]], [0.12, 0.297, 0.14], [0.12, 0.288, 0.152]], 0.003, 16, 6), MAT.rubber, { d: 'Dunne slang van de brandstofdrukregelaar naar de inlaatkast.', ex: [0, 0.08, 0] }),
     ]),
+    engBuildEGR(),
   ]);
 }
 
@@ -148,14 +165,15 @@ function engBuildIgnition() {
 }
 
 /* ---------- sensoren ---------- */
+// stekker van de voorste lambdasonde (motorframe): hier eindigt de kabel van de motorkabelboom; systems.js zet de sondestekker hier neer
+const ENG_O2PLUG = [0.17, 0.115, -0.207];
 function engBuildSensors() {
   const dz = -ENG_CAMZ, [, py, pz] = ENG_PLEN;
-  return A('Sensoren', { d: 'De sensoren en schakelaars op de motor die de regeleenheid voeden. De lijst volgt het handboek (gaskleppositie, inlaatdruk, koelvloeistoftemperatuur, krukaspositie, zuurstof); de plaats en het type zijn geschat.', ex: [0.15, 0.1, 0.05] }, [
+  return A('Sensoren', { d: 'De sensoren en schakelaars op de motor die de regeleenheid voeden. De lijst volgt het handboek (gaskleppositie, inlaatdruk, koelvloeistoftemperatuur, krukaspositie, zuurstof); de plaats en het type zijn geschat. De twee lambdasondes (handboek: twee) zitten in de uitlaat, voor en achter de katalysator, en horen bij het uitlaatsysteem.', ex: [0.15, 0.1, 0.05] }, [
     P('Krukaspositiesensor', merge([G.cyl('x', 0.0075, 0.0075, 0.0105, 10), xf(G.box(0.01, 0.012, 0.014), [0.0, 0.006, 0.0])]), MAT.engCoil, { d: 'Magnetische opnemer die de tanden van de startkrans aftast: geeft de krukaspositie door (handboek: krukaspositiesensor bij de krukas). Plaats geschat.', p: [0.1832, 0.115, 0], ex: [0.1, 0, 0] }),
     P('Koelvloeistoftemperatuursensor', merge([G.cyl('z', 0.005, 0.005, 0.02, 8), xf(G.cyl('z', 0.008, 0.008, 0.006, 6), [0, 0, 0.012])]), MAT.copper, { d: 'Voeler in het thermostaathuis die de temperatuur van de koelvloeistof doorgeeft.', p: [-0.162, 0.245, 0.1245], ex: [0, 0, 0.08] }),
     P('Inlaatdruksensor', merge([G.box(0.026, 0.02, 0.014), xf(G.cyl('z', 0.004, 0.004, 0.012, 8), [0.0, 0.0, -0.012])]), MAT.engCoil, { d: 'MAP-sensor aan de achterzijde van de inlaatkast die de inlaatdruk meet.', p: [-0.06, 0.283, 0.1245], ex: [0, 0.05, -0.04] }),
     P('Gaskleppositiesensor', merge([G.box(0.02, 0.02, 0.014)]), MAT.engCoil, { d: 'Sensor op de gasklepas die de stand van de gasklep aan de regeleenheid doorgeeft.', p: [0.166, py, pz - 0.0415], ex: [0, 0, -0.07] }),
-    P('Lambdasonde voor', merge([G.cyl('x', 0.006, 0.006, 0.035, 10), xf(engNut(0.022, 0.008, 'x'), [-0.012, 0, 0]), xf(G.cyl('x', 0.0085, 0.0085, 0.02, 10), [0.027, 0, 0])]), MAT.steel, { d: 'Zuurstofsensor in de verzamelaar, voor de katalysator (handboek: twee lambdasondes; de tweede zit achter de katalysator en hoort bij het uitlaatsysteem).', p: [ENG_COLL[0] + 0.043, 0.158, ENG_COLL[2]], ex: [0.07, 0, 0] }),
     P('Oliedrukschakelaar', merge([G.cyl('z', 0.006, 0.006, 0.02, 8), xf(engNut(0.016, 0.008, 'z'), [0, 0, 0.002])]), MAT.steel, { d: 'Schakelaar die het waarschuwingslampje van de oliedruk bedient.', p: [0.025, 0.03, 0.099], ex: [0, 0, 0.06] }),
   ]);
 }
@@ -173,7 +191,7 @@ function engBuildHarness() {
     P('Kabel inlaatdruksensor', tube([[-0.05, 0.28, 0.11], [-0.055, 0.284, 0.118], [-0.06, 0.283, 0.1315]], 0.0025, 10, 5), MAT.engHarness, { d: 'Draden naar de inlaatdruksensor.', ex: [0, 0.05, -0.02] }),
     P('Kabel koelvloeistofsensor', tube([[-0.13, 0.278, 0.11], [-0.15, 0.27, 0.125], [-0.162, 0.245, 0.14]], 0.0025, 12, 5), MAT.engHarness, { d: 'Draden naar de koelvloeistoftemperatuursensor.', ex: [-0.04, 0.05, 0.04] }),
     P('Kabel krukaspositiesensor', tube([[0.23, 0.3, 0.012], [0.205, 0.22, 0.0], [0.19, 0.14, 0.0], [0.1865, 0.125, 0.0]], 0.0025, 18, 5), MAT.engHarness, { d: 'Draden naar de krukaspositiesensor, langs het blok naar beneden.', ex: [0.08, 0, 0] }),
-    P('Kabel zuurstofsensor', tube([[0.23, 0.3, 0.012], [0.252, 0.28, -0.02], [0.252, 0.22, -0.1], [0.23, 0.185, -0.19], [0.085, 0.158, -0.215]], 0.0025, 30, 5), MAT.engHarness, { d: 'Draden naar de lambdasonde voor, om het uiteinde van de kop naar de achterzijde.', ex: [0.08, 0, -0.06] }),
+    P('Kabel zuurstofsensor', tube([[0.23, 0.3, 0.012], [0.252, 0.28, -0.02], [0.252, 0.22, -0.1], [0.23, 0.185, -0.19], [0.19, 0.14, -0.205], [ENG_O2PLUG[0], ENG_O2PLUG[1] + 0.012, ENG_O2PLUG[2]]], 0.0025, 30, 5), MAT.engHarness, { d: 'Draden om het uiteinde van de kop naar de achterzijde, naar de stekker van de lambdasonde voor in de voorpijp van de uitlaat.', ex: [0.08, 0, -0.06] }),
     P('Kabel oliedrukschakelaar', tube([[0.025, 0.03, 0.109], [0.012, 0.06, 0.106], [0.012, 0.12, 0.101], [0.012, 0.19, 0.1], [0.012, 0.27, 0.1], [0.012, 0.278, 0.108]], 0.0025, 30, 5), MAT.engHarness, { d: 'Draad naar de oliedrukschakelaar, langs het blok omhoog naar de bundel; verloop schematisch.', ex: [0, -0.06, 0.04] }),
     P('Kabelbinders', merge([[0.0, 0.28, 0.11], [0.1, 0.28, 0.11], [-0.09, 0.28, 0.11], [0.226, 0.298, 0.05]].map(([x, y, z]) => xf(G.box(0.006, 0.012, 0.012), [x, y, z]))), MAT.plastic, { d: 'Kunststof binders die de bundel op zijn plaats houden (aantal en plaats geschat).', ex: [0, 0.08, 0] }),
   ]);
