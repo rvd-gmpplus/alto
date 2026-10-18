@@ -72,7 +72,7 @@ function drvBolt(len, d, ax = 'y') {
 function drvG(N, m, w, hole = 0, ax = 'x') { return gear(N, +(m * (N / 2 + 1)).toFixed(5), +(m * (N / 2 - 1.25)).toFixed(5), w, hole, ax); }
 const drvL = (key, pts, seg = 32, ax = 'x') => G.lathe(ax, pts, seg, 'drv' + key);   // pts = [straal, plaats langs de as]
 const drvAn = (rIn, rOut, t, seg = 22) => annulus(rIn, rOut, t, 'x', seg);
-// n kopieen van fn(hoek) op een cirkel (y, z) om een as langs x
+// n kopieen van fn(hoek) op een cirkel (y, z) om een as langs x; zonder hoek volstaat ringPattern() uit core.js
 function drvRing(key, n, r, fn, phase = 0, c = [0, 0], x = 0) {
   return cache(key, () => merge(Array.from({ length: n }, (_, k) => { const a = phase + k * PI * 2 / n; return xf(fn(a), [x, c[0] + r * Math.cos(a), c[1] + r * Math.sin(a)]); })));
 }
@@ -132,7 +132,7 @@ function drvClutch() {
       drvP('Drukplaat', drvAn(0.056, 0.0885, 0.012), MAT.iron, 'Gietijzeren ring die de koppelingsplaat tegen het vliegwiel drukt.', [0.2205, 0, 0], [-0.02, 0, 0]),
       drvP('Diafragmaveer', diaph, MAT.steel, 'Schotelveer: houdt de koppeling ingeschakeld; het druklager drukt de binnenrand in om te ontkoppelen.', undefined, [0.07, 0, 0]),
       drvP('Bladveren drukplaat', straps, MAT.steel, 'Drie bladveren (tangentiaal, aantal schematisch) die de drukplaat aan het deksel koppelen en bij het ontkoppelen terugtrekken.', undefined, [0.05, 0.04, 0]),
-      drvP('Dekselbouten', drvRing('drvDekB', 6, 0.0965, () => drvBolt(0.016, 0.007, '-x'), 0.2, [0, 0], 0.2098), MAT.darkSteel, 'Zes bouten (aantal schematisch) die het deksel aan het vliegwiel vasthouden.', undefined, [-0.12, 0, 0]),
+      drvP('Dekselbouten', ringPattern('drvDekB', 6, 0.0965, () => drvBolt(0.016, 0.007, '-x'), 0.2, [0, 0], 0.2098), MAT.darkSteel, 'Zes bouten (aantal schematisch) die het deksel aan het vliegwiel vasthouden.', undefined, [-0.12, 0, 0]),
     ]),
     A('Koppelingsplaat', { d: 'Plaat met frictievoeringen op de spiebaan van de primaire as: neemt het koppel van het vliegwiel mee als de koppeling ingeschakeld is. Veertjes in de naaf dempen de schokken.', ex: [-0.09, -0.1, 0], inner: true }, [
       drvP('Naaf koppelingsplaat', drvL('PlHub', [[0.0095, 0.2105], [0.0225, 0.2105], [0.0225, 0.2215], [0.0095, 0.2215]], 28), MAT.steel, 'Naaf met spiebaan voor de primaire as.', undefined, [0.05, 0, 0]),
@@ -161,7 +161,7 @@ function drvBell() {
     drvPlate('BellBack', DRV_OUT_BELL, 0.294, 0.30),
     drvPlate('BellFl', DRV_OUT_BELL, 0.178, 0.186, drvShrink(DRV_OUT_BELL, wall), 0.012),
   ]));
-  const bolts = drvRing('drvBellBolts', 6, 0.1285, () => drvBolt(0.022, 0.009, '-x'), 0.2, [0, 0], 0.19);
+  const bolts = ringPattern('drvBellBolts', 6, 0.1285, () => drvBolt(0.022, 0.009, '-x'), 0.2, [0, 0], 0.19);
   return A('Koppelingshuis', {
     d: 'Aluminium huis om de koppeling, vastgeschroefd aan het blok. Heeft een oor voor de startmotor en lagerplaatsen voor de ontkoppelas; schematisch weergegeven.',
     ex: [-0.07, 0, 0],
@@ -294,7 +294,7 @@ function drvDiff() {
     ex: [0.17, -0.12, -0.1],
   }, [
     drvP('Kroonwiel', drvG(DRV_ZK, DRV_FM, 0.018, 0.045), MAT.steel, 'Kroonwiel van de eindoverbrenging: wordt door het rondsel van de secundaire as aangedreven. Tandental schematisch.', [0.38, dy, dz], [-0.1, 0.0, 0.0]),
-    drvP('Kroonwielbouten', drvRing('drvKroonB', 6, 0.052, () => drvBolt(0.025, 0.008, 'x'), 0.2, [dy, dz], 0.3685), MAT.darkSteel, 'Zes bouten (aantal schematisch) die het kroonwiel aan de differentieelhuls vasthouden.', undefined, [-0.16, 0, 0]),
+    drvP('Kroonwielbouten', ringPattern('drvKroonB', 6, 0.052, () => drvBolt(0.025, 0.008, 'x'), 0.2, [dy, dz], 0.3685), MAT.darkSteel, 'Zes bouten (aantal schematisch) die het kroonwiel aan de differentieelhuls vasthouden.', undefined, [-0.16, 0, 0]),
     drvP('Differentieelhuls', carrier, MAT.iron, 'Gegoten huls die met het kroonwiel meedraait en de satellieten draagt.', [0, dy, dz], [0, 0, 0.0001]),
     drvP('Satellietas', G.cyl('y', 0.005, 0.005, 0.062, 10), MAT.steel, 'As waarop de twee satellieten draaien.', [cx, dy, dz], [0, 0, 0.08], { inner: true }),
     drvP('Satellietwiel boven', bevelSat, MAT.steel, 'Satelliet (kegeltandwiel): laat de planetaire tandwielen in bochten verschillend snel draaien.', [cx, dy + 0.0365, dz], [0, 0.1, 0.08], { inner: true }),
