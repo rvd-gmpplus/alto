@@ -1,15 +1,18 @@
 # Wijzigingen
 
-## Versie 4 (in voorbereiding)
+## Versie 4 (18 oktober 2026)
+
+Aanleiding: de spiegels lazen als staand formaat, het vloergat voor de achterboog (open punt uit Versie 3) en review 5: een volledige controle van alle knopen tegen de echte auto, met bevindingen per domein in `bevindingen.json`. Keuzes van de gebruiker: achterkant nu herbouwen, tankklep en uitlaat spiegelen op twee foto's, interieur volgens de bronnen, budget Carrosserie tot 160.000 driehoeken, EGR houden. Keuzes per pakket staan in `docs/onderzoek/beslissingen.md`; kerncijfers in `docs/cijfers.md`.
+
+### Docs, interieur en labels
 
 - Docs (golf 5, review B-045, B-027, B-047, B-046, B-025, B-034): een eigen `CLAUDE.md` voor de Alto in plaats van de briefing van laguna3; `docs/ontwerp-en-architectuur.md`, `docs/testen.md`, `docs/contract.md` en `docs/telefoontest.md` zonder Laguna-feiten (openers, presets, `ZF`, wortel, sleutels), met tellingen via `docs/cijfers.md`; contract paragraaf 9 met alle leiders, paragraaf 11 met drie bedoelde contacten (kabelboom in de wissermotor, hemelbekleding om de klepscharnieren, C-stijlbekleding om de gasveer).
 - Hulpscripts: `tools/orkestratie/gallery.py` en `gateshots.py` voor deze auto, zodat `pickview.py` weer werkt; `poort.js` en `rays_bagage.py` uit laguna3 zijn Laguna-specifiek en niet overgenomen.
 - `tools/opentest.py`: een benoemde tolerantie `EPS` (1e-6) voor de ondergrens. Generiek bestand: dezelfde wijziging moet naar laguna3, anders draait de volgende export haar terug.
-- Nog open: de beschrijving van de wortel in `src/systems.js` noemt aandrijflijn, onderstel en interieur nog plaatshouders (eigenaar systemen); `auto.json` mist het veld `docshots`, zodat `docshots.py` stopt.
 - Interieur (golf 5, pakket INT, bevindingen uit review 5): het instrumentenpaneel volgt de bron (handboek 1.2, Autoweek): snelheidsmeter met kilometer- en dagteller, temperatuurmeter, brandstofmeter en waarschuwingslampjes, geen toerenteller (B-008). De bovenste kolomkap ging 26,0 mm in het instrumentenglas en staat nu 7,0 mm vrij; het paneel staat daarvoor 20 mm hoger en de kap loopt taps toe (B-031). De voorstoelen hebben geen hoogteverstelling meer (B-009, Beslissing INT-2). De hoedenplank begint achter de rugleuning achter: 12 doordringende paren (tot 54,1 mm in de rugleuning en 24,6 mm in de gordelrolautomaten) naar 0 (B-032). De handremhendel van het interieur heeft een scharnier in de console waar de kabel van het onderstel op aansluit (B-035). De zekeringkastklep ligt op de kniebeschermer (was 24,8 mm erin) en de remlichtschakelaar is ingesloten (B-043). Teksten: geen spec meer bij de achterbank, geen gordelverklikker of -spanner, radio en luidsprekers als aannemelijk of aangenomen, een eigen zonneklep voor de bestuurder zonder spiegel, geen codenamen in de beschrijvingen, dakgreep achter boven de hoekruit (B-010 tot B-013, B-016, B-017).
 - Interieur (golf 5, pakket INT2, ronde 2): de C-stijlbekleding wijkt aan de tankzijde (links) uit voor tankkom en vulpijp (Tankdop -8,8 mm naar meer dan 60 mm vrij) en heeft een uitsparing in de bovenrand voor de gasveer van de achterklep (Cilinder -10,4 mm en Zuigerstang -3,9 mm naar vrij; opentest --strikt-min 0 botsingen); de achterwandbekleding bekleedt alleen de voorkant van de laaddrempel en de hoedenplank rust achter op twee steunlijsten (Beslissing INT-5); vloerbedekking en vloermat achter liggen om de tankkuip (-4,0 en -3,7 mm naar 4,3 en 15,0 mm vrij, Beslissing INT-6).
 - Labelankers (golf 5, herstelronde ANK): uitklapvectoren van multiriem, oliedrukschakelaar, beide aandrijfas-afdichtingen (gespiegeld, meer omlaag) en beide klepbuffers (naar achteren, van de sponning af) zodat hun labels niet meer achter distributiekap, EGR-pijp, bakhuis en buitenpaneel van de klep vallen; `anchorcheck.py` vrij 178 naar 183.
-### Systemen (golf 5, pakket SYS)
+### Systemen
 
 Aanleiding: review 5 (`bevindingen.json`). Metingen met `tools/orkestratie/clash.py` op macOS; de Linux-set draait de orkestrator.
 
@@ -20,8 +23,7 @@ Aanleiding: review 5 (`bevindingen.json`). Metingen met `tools/orkestratie/clash
 - Beschrijvingen: accuhouder op de linker langsligger, vier relais met hun functie, uitlaat zonder roestvrij of verchroomd (B-014, B-018, B-019); wortelbeschrijving zonder plaatshouders.
 - Vereenvoudiging: slangklemmen via `hoseClamp` en de sondemoer via `hexNut` uit `core.js` (540 driehoeken meer: fijnere band).
 - EGR (B-040, eigen commit, terug te draaien): klep onder de inlaatkast en een pijp van de verzamelaar om de bakzijde van de kop; EGR is bevestigd voor de G10BB, plaats, vorm en route zijn geschat (de gebruiker twijfelt of de benzine-Alto een EGR-klep heeft). Geen doordringing (`clash.py`); integrity, opentest, `ui_inner --open --strict`, zijstraal, smoke, `tri.py --gate` (totaal 345.554) en `meet.py` groen. Een eerste plaats op de voorkant van de inlaatkast vergrootte het kader van de aandrijflijn met 14 mm, waardoor `ui_inner --strict` een bestaand gat vond: de peilstok steekt 1 cm boven de peilstokbuis uit (beide `inner`-meldingen, ook de trek- en houdspoel van de solenoïde, staan los van de EGR).
-- Toetsen (macOS, voor de EGR-commit): lint, `framework.py check`, `build.py`, smoke, integrity (0 fouten, 73 waarschuwingen zoals voorheen), silhouette, `tri.py --gate` (totaal 344.430), `opentest --strikt-min` (0 fouten), `ui_inner`, zijstraal, `meet.py` (99 van 99 hard, 12 van 13 zacht) en `meet.py --achter` (27 van 27) groen. `clash.py` op de vier systemen tegen de nulmeting: 17 doordringingen weg of ondieper, nieuw alleen bevestigingen van 0,2 tot 1,5 mm (rubbers, beugels, spanbanden tegen de vloer) en de tankdop 8,8 mm in de C-stijlbekleding links, tot carrosserie en interieur de tankklep naar links spiegelen. `pncheck` faalt al op `658afcf` (geen `data/pn/`).
-### Golf 5, pakket DRV (aandrijving, motor, onderstel; tak `golf5-drv`)
+### Aandrijving, motor en onderstel
 
 Bron: review 5 (`bevindingen.json`). Keuzes staan in `docs/onderzoek/beslissingen.md` (Beslissing DRV-1 tot en met DRV-4).
 
@@ -33,12 +35,22 @@ Bron: review 5 (`bevindingen.json`). Keuzes staan in `docs/onderzoek/beslissinge
 - Kleine punten: veerpoottop en eind langsarm uit `AXF` en `AY` (B-063); d van de duwstang (B-015); Panhardbout links inner en de ontluchting van de bak naast de motorsteunbeugel (B-043); peilstok sluit aan op de buis; solenoidehuis voor dicht.
 - Simplify: `chsNut` vervalt (`hexNut`), schroefveren van de wielophanging via `spring`, drie ringen via `ringPattern`; geometrie van alle meshes gelijk.
 - Driehoeken: Aandrijflijn 108.132 naar 108.228 (solenoidehuis met bodem), Onderstel 62.460 naar 62.484, totaal 343.468 naar 343.588 (budget 400.000); de andere groepen gelijk.
+
+### Carrosserie
+
 - Buitenspiegels liggend (open punt SPIEGEL, beslissing 28): de spiegels lazen als staand formaat (huis 85 mm breed en 125 mm hoog). Nieuw huis: een bolle kunststof schaal met een omgezette rand, 168 mm breed, 92 mm hoog bij de voet en 112 mm aan de buitenkant, 70 mm diep bij de voet en 52 mm buiten (naar voren taps); glas 151 mm breed en 83 tot 101 mm hoog. Alle maten geschat. De spiegel reikt tot x 0,898 (150 mm buiten de huid) en klapt zonder doordringing 80 graden naar achteren (opentest gelijk aan `658afcf`). `BOD_MIRW` in `body.js` gaat daarom van 0,835 naar 0,904 (orkestrator); `integrity.py` 0 fouten.
 - Vloer voor de achterboog dicht (open punt VLOER): een gelakte sluitplaat `Dorpeleinde achter` sluit het achtereinde van de vloerkoker, zodat de vloerbedekking ook vanuit blikken op 0,15 m of lager niet meer van onderen te zien is. Nieuwe poort `onderdoorkijk onder de dorpel achter` in `meet.py --achter` (op versie 3 rood, nu 0 beeldpunten); zie `docs/testen.md`, sectie "Resultaten VLOER".
 - Achterkant herbouwd (golf 5, werkpakket BODY; bevindingen B-002, B-004 en B-039; Beslissing BODY-1 en BODY-2): de achterklep loopt nu van de dakrand tot 4 mm boven de bumper (onderrand y 0,579, was 0,788 met een vast achterpaneel eronder), met het staartvlak tussen de achterlichten (793 mm breed), het slot onderin en de slotcilinder op de hoogte van het midden van de achterlichten. De kentekenplaat zit in een uitsparing in de bumper (plaat y 0,370 tot 0,480, 13 mm verdiept; was y 0,635 tot 0,745 op het achterpaneel) met twee lampjes in de bovenkant van de uitsparing. Bagageopening 720 mm breed tussen de sponningen, laaddrempel op 600 mm (25 mm boven de bumper, 130 mm boven de bagagevloer). Achterlicht: helder boven (een derde, met de oranje lamp van de richtingaanwijzer en het achteruitrijlicht), rood onder (was oranje boven, rood midden, helder onder). Nieuw: mistachterlicht onder de bumper links (bestuurderskant in Nederland), x 0,135 tot 0,245. Alle maten geschat op de foto's van de 2001 GL.
 - Tankklep links (B-005, Beslissing BODY-3): klep, kom en opening in het achterscherm gespiegeld naar x 0,638 tot 0,729, zelfde y en z; `bodTkS` (+1) geeft de zijde aan voor de vulhals in `systems.js`. Min van de opener 115 van 140 graden (B-025).
 - Tankkuip onder de achterbank (Beslissing BODY-4): binnen x -0,18 tot 0,35, z -0,96 tot -0,63, tot y 0,375; de dwarsbalk achterbank staat ervoor. Langsligger voor 65 mm hoog in plaats van 90 (B-030, patch van het aandrijvingspakket): de linker aandrijfas stak er 15,5 mm in, nu 2,9 mm vrij.
 - Kleine reparaties (B-037, B-044, B-055): lampen van de achterlichten en het knipperlicht voor in hun fitting (zweefden 10 tot 20,5 mm los), lamphuis van het knipperlicht voor tegen de bumper, scharnierbladen aan de carrosseriezijde tegen het portierblad, doorschijnende knipperlichtlenzen, gecachte `G.box` in de voorwielkast en het ongebruikte materiaal `bodChrome` weg. De sproeierslang onder de kap is niet meer ingesloten (`ui_inner --open`: bij een open kap van voren te zien).
+
+### Publicatie
+
+- Uitklapvector van het uitlaatsysteem in het hoofdoverzicht naar de camerazijde (regressie na de uitlaat rechts, gevonden door de advisor).
+- Basislijn van `visdiff` en `anchorcheck` op Linux vernieuwd (`dc5b5de`, drie series, 34 van 34 reproduceerbaar); anchorcheck 243 labels, vrij 185 (was 180).
+- Volledige set op `dc5b5de`: Linux alles groen (visdiff 34 van 34), macOS groen behalve visdiff tegen de Linux-basis (informatief).
+- Nog open (versie 5): ronde tankklep, spiegelvoet als zeilplaat, label Uitlaatsysteem in Alles uitgeklapt, `docshots` in `auto.json`, B-007, B-033, B-041, B-042, B-064, de resterende simplify-punten, en de oude doordringingen bumperbalk achter in de bagagevloer en C-stijlbekleding in de gordelgeleiderkap. De EPS-wijziging in `tools/opentest.py` moet nog naar laguna3.
 
 ## Versie 3 (18 oktober 2026)
 
