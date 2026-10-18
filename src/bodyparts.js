@@ -95,7 +95,9 @@ const bodQSlant = z => bodQy(z, YT(z) + 0.013) + clamp((z + 1.17) / 0.10, 0, 1) 
 const bodZW0 = 0.16, bodZW1 = 0.875;               // voorruit: bovenrand en onderrand
 const bodZH0 = -1.20, bodZH1 = -1.64;              // achterruit: bovenrand en onderrand
 const bodZGR = -1.17;
-const bodTkZ = [-1.52, -1.38], bodTkY = [0.66, 0.78];   // opening van de tankklep in het rechter achterscherm                              // voorrand achterklep (achterrand dak)
+// opening van de tankklep in het linker achterscherm (bevinding B-005: op de foto's van de 2001 GL staat de klep links, de rechterflank is leeg); bodTkS is de zijde (+1 links).
+// systems.js leest dezelfde constanten voor de vulhals.
+const bodTkZ = [-1.52, -1.38], bodTkY = [0.66, 0.78], bodTkS = 1;
 
 /* ---------- wielkast: binnenscherm en bekleding ---------- */
 const WH_AE = 0.34;   // hoek (radialen, ongeveer 19 graden) waarover de koker onder de boog doorloopt (0,26 liet bij de bumperhoek nog het sproeierreservoir zien)
@@ -228,13 +230,14 @@ function bodSkinParts() {
   const quarterLo = z => { const dz = Math.abs(z - AXR); return dz <= ARCH + 1e-9 ? sAtY(z, AY + Math.sqrt(Math.max(0, ARCH * ARCH - dz * dz))) : sAtY(z, z > AXR ? bodYSill + 0.004 : bodYBR + 0.003); };
   const QB = ARCH_BREAKS.concat([AXR - ARCH + 0.004, AXR - ARCH + 0.010, AXR - ARCH + 0.020]);
   const quarterGeo = s => {
-    if (s > 0) return lowSide(s, bodZT0, bodZDR - 0.004, 46, z => [quarterLo(z), S4], 18, QB);
-    const [k0, k1] = bodTkZ, [y0, y1] = bodTkY;   // rechts: opening voor de tankklep
-    return merge([lowSide(s, bodZT0, k0, 12, z => [quarterLo(z), S4], 12, QB), lowSide(s, k1, bodZDR - 0.004, 30, z => [quarterLo(z), S4], 14, QB),
-      lowSide(s, k0, k1, 6, z => [quarterLo(z), sAtY(z, y0)], 6), lowSide(s, k0, k1, 6, z => [sAtY(z, y1), S4], 4)]);
+    // beide kanten met dezelfde kolommen (de dichte kolommen achter de tankklep houden de huid boven de achterboog strak: de strook achter de kier van de
+    // wielkast rechts lag met 46 kolommen 2,1 mm buiten de koorde, zijstraal); aan zijde bodTkS (links) is het middenstuk de opening voor de tankklep
+    const [k0, k1] = bodTkZ, [y0, y1] = bodTkY;
+    const midden = s === bodTkS ? [lowSide(s, k0, k1, 6, z => [quarterLo(z), sAtY(z, y0)], 6), lowSide(s, k0, k1, 6, z => [sAtY(z, y1), S4], 4)] : [lowSide(s, k0, k1, 6, z => [quarterLo(z), S4], 12)];
+    return merge([lowSide(s, bodZT0, k0, 12, z => [quarterLo(z), S4], 12, QB), lowSide(s, k1, bodZDR - 0.004, 30, z => [quarterLo(z), S4], 14, QB), ...midden]);
   };
   const quarter = s => P(`Achterscherm ${bodSn(s)}`, quarterGeo(s), MAT.paint,
-    { d: 'Achterscherm: de zijwand achter het portier, met de wielboog, de schouder en de plaats voor het achterlicht. Aan het dak, de vloer en het achterpaneel gelast.' + (s < 0 ? ' Rechts met de opening voor de tankklep.' : ''), ex: [s * 0.46, 0.04, -0.14] });
+    { d: 'Achterscherm: de zijwand achter het portier, met de wielboog, de schouder en de plaats voor het achterlicht. Aan het dak, de vloer en het achterpaneel gelast.' + (s === bodTkS ? ' Links met de opening voor de tankklep.' : ''), ex: [s * 0.46, 0.04, -0.14] });
   const rails = s => P(`Dakrand ${bodSn(s)}`, bodGhSide(s, bodZGR + 0.10, bodZW0, 36, z => [bodQGl(z), bodQR], 8), MAT.paint,
     { d: 'Dakrand (dakligger) boven de portieren en de hoekruit, gelakt in het rood; de ruitrubbers sluiten er onderlangs op aan. De dakrails (Twist) staan er los bovenop.', ex: [s * 0.1, 0.06, 0] });
   const aPillar = s => P(`A-stijl ${bodSn(s)}`, merge([
@@ -1102,16 +1105,18 @@ function bodTailgate() {
 // gasveerbevestigingen op de C-stijl (carrosseriezijde)
 const bodGsMount = s => P(`Gasveerbevestiging ${bodSn(s)}`, merge([G.sphere(0.012, 10), xf(G.cyl('x', 0.004, 0.004, 0.012, 8), [s * 0.009, 0, 0]), xf(G.rbox(0.008, 0.05, 0.04, 0.003), [s * 0.018, 0, 0])]), MAT.darkSteel,
   { d: 'Kogelpen op een plaatje tegen de binnenkant van de C-stijl, waarop de gasveer van de achterklep draait (plaats geschat).', p: bodGsPts(s).a, ex: [s * 0.04, 0, 0] });
-/* ---------- tankklep (rechts achter) ---------- */
+/* ---------- tankklep (links achter) ---------- */
+// Gespiegeld naar links (B-005): klep, kom en opener aan zijde bodTkS; dezelfde y en z. De klep scharniert aan de voorrand en klapt naar voren open;
+// min 115 van 140 graden (0,82; op 112 lag hij precies op de grens van 0,8, B-025).
 function bodFuelFlap() {
-  const [k0, k1] = bodTkZ, [y0, y1] = bodTkY, ym = (y0 + y1) / 2, xs = surfX(k1, ym);
-  return A('Tankvulopening', { d: 'Opening in het rechter achterscherm met de klep en de tankkom; de vulhals en dop zitten in het brandstofsysteem.', ex: [-0.2, 0.05, 0] }, [
-    A('Tankklep', { d: 'Kleine klep in carrosseriekleur voor de brandstofvulling; scharniert aan de voorrand (z -1,38) en klapt naar voren open.', ex: [-0.12, 0, 0.1],
-      open: { type: 'hinge', pivot: [-(xs + 0.004), ym, k1 - 0.003], axis: [0, 1, 0], angle: 140 * PI / 180, min: 112 * PI / 180, label: 'Tankklep', look: { dir: [-1, 0.3, -0.5], nodes: ['Tankklep'] } } }, [
-      P('Klepplaat tankklep', lowSide(-1, k0 + 0.003, k1 - 0.003, 6, z => [sAtY(z, y0 + 0.003), sAtY(z, y1 - 0.003)], 4, [], 0.0), MAT.paint, { d: 'Het paneel van de tankklep in het rood.', ex: [-0.04, 0, 0.04] }),
-      P('Klepveer tankklep', G.rbox(0.012, 0.03, 0.012, 0.003), MAT.darkSteel, { d: 'Veerscharnier waarmee de klep dicht blijft; blijft aan de carrosserie zitten.', p: [-(xs - 0.01), ym, k1 + 0.004], stay: true, ex: [-0.03, 0, 0.03] }),
+  const s = bodTkS, [k0, k1] = bodTkZ, [y0, y1] = bodTkY, ym = (y0 + y1) / 2, xs = surfX(k1, ym);
+  return A('Tankvulopening', { d: 'Opening in het linker achterscherm met de klep en de tankkom; de vulhals en dop zitten in het brandstofsysteem.', ex: [s * 0.2, 0.05, 0] }, [
+    A('Tankklep', { d: 'Kleine klep in carrosseriekleur voor de brandstofvulling, links achter; scharniert aan de voorrand (z -1,38) en klapt naar voren open (openingshoek geschat).', ex: [s * 0.12, 0, 0.1],
+      open: { type: 'hinge', pivot: [s * (xs + 0.004), ym, k1 - 0.003], axis: [0, 1, 0], angle: -s * 140 * PI / 180, min: 115 * PI / 180, label: 'Tankklep', look: { dir: [s * 1, 0.3, -0.5], nodes: ['Tankklep'] } } }, [
+      P('Klepplaat tankklep', lowSide(s, k0 + 0.003, k1 - 0.003, 6, z => [sAtY(z, y0 + 0.003), sAtY(z, y1 - 0.003)], 4, [], 0.0), MAT.paint, { d: 'Het paneel van de tankklep in het rood.', ex: [s * 0.04, 0, 0.04] }),
+      P('Klepveer tankklep', G.rbox(0.012, 0.03, 0.012, 0.003), MAT.darkSteel, { d: 'Veerscharnier waarmee de klep dicht blijft; blijft aan de carrosserie zitten.', p: [s * (xs - 0.01), ym, k1 + 0.004], stay: true, ex: [s * 0.03, 0, 0.03] }),
     ]),
-    P('Tankkom', G.rbox(0.03, y1 - y0 + 0.02, k1 - k0 + 0.02, 0.006), MAT.plastic, { d: 'Zwarte kom achter de klep rond de vulhals.', p: [-(xs - 0.075), ym, (k0 + k1) / 2], ex: [-0.04, 0, 0] }),
+    P('Tankkom', G.rbox(0.03, y1 - y0 + 0.02, k1 - k0 + 0.02, 0.006), MAT.plastic, { d: 'Zwarte kom achter de klep rond de vulhals.', p: [s * (xs - 0.075), ym, (k0 + k1) / 2], ex: [s * 0.04, 0, 0] }),
   ]);
 }
 /* ---------- voorruitwissers en dakrails ---------- */
