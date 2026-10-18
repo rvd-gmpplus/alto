@@ -128,7 +128,7 @@ De eigenaar bevestigt: 3-deurs, motor G10BB, Bright Red 2 (Z9T). De uitvoering i
 | Gegeven | Waarde | Bron | Status |
 |---|---|---|---|
 | Uitvoering | Twist (vervangt de aanname GA uit onderzoek/beslissingen.md, besluit 4) | eigenaar | Bevestigd |
-| Bumpers | In carrosseriekleur (rood), niet zwart | Autowereld Twist, eigenaar | Aannemelijk |
+| Bumpers | Volgens de bron in carrosseriekleur (rood). In het model sinds golf 6 (beslissing 29): voorbumper van ongelakt zwart kunststof, achterbumper rood; keuze van de eigenaar naar de foto van de modelreeks 1993-2001 | Autowereld Twist, eigenaar | Aannemelijk (bron); model: keuze eigenaar |
 | Dakrails | Aanwezig; in het model losse onderdelen, zodat ze weg kunnen als de eigenaar ze afwijst | Autowereld Twist | Aannemelijk |
 | Ruiten | Elektrisch bediend (voor), getint glas | Autowereld Twist | Aannemelijk |
 | Vergrendeling | Centrale vergrendeling | Autowereld Twist | Aannemelijk |
@@ -140,7 +140,7 @@ De eigenaar bevestigt: 3-deurs, motor G10BB, Bright Red 2 (Z9T). De uitvoering i
 | Emissie | De pagina noemt E2; handboek en RDW geven Euro 3 voor de G10BB. Niet overgenomen: het motorplaatje beslist | Autowereld Twist | Open |
 | Transmissie | Handgeschakelde 5-bak, geen automaat. De opgave "automaat" op de Autowereld-pagina geldt niet voor deze auto | eigenaar | Bevestigd |
 
-Gevolgen voor het model: rode bumpers, dakrails als losse onderdelen, elektrische raambediening (raammotoren in plaats van handslingers), slotmotoren voor de centrale vergrendeling, verwarmde spiegels met verstelmotoren, getinte ruiten. De hoofdsteunen achter en de deelbare achterbank horen bij het interieur.
+Gevolgen voor het model: rode achterbumper (de voorbumper is sinds beslissing 29 zwart, keuze eigenaar), dakrails als losse onderdelen, elektrische raambediening (raammotoren in plaats van handslingers), slotmotoren voor de centrale vergrendeling, verwarmde spiegels met verstelmotoren, getinte ruiten. De hoofdsteunen achter en de deelbare achterbank horen bij het interieur.
 
 ## Silhouet
 
@@ -157,10 +157,10 @@ De meetpunten staan in `data/silhouet.json` in het formaat van laguna3 (autofram
 **Kenmerkende vormen** (de auto herkenbaar maken, volgorde van belang voor de visuele poort):
 
 1. Kort, hoog en doosvormig: 3,495 m lang, 1,405 m hoog, bijna even hoog als breed, met een dakhoogte die over de hele lengte van de deuren vlak blijft en een zeer steile, bijna verticale achterklep met grote achterruit en één achterruitwisser.
-2. Voorzijde (uitvoering 2000 tot 2002): kleine donkere gaas- of honingraatgrille met het Suzuki-embleem, brede rechthoekige koplampen met helder glas die naar de zijkant doorlopen in het scherm, oranje knipperlichten laag in de hoeken van de bumper, en een brede bumper die vrijwel de volle breedte van de auto beslaat.
+2. Voorzijde (uitvoering 2000 tot 2002 volgens de bronnen): kleine donkere gaas- of honingraatgrille met het Suzuki-embleem, brede rechthoekige koplampen met helder glas die naar de zijkant doorlopen in het scherm, oranje knipperlichten laag in de hoeken van de bumper, en een brede bumper die vrijwel de volle breedte van de auto beslaat. **Model sinds golf 6 (beslissing 29, keuze eigenaar naar de foto van de modelreeks 1993-2001):** vrijwel verticaal front met een rechte kapvoorrand, een zwart grilleraam met vier horizontale lamellen en een verchroomde S, rechthoekige koplampen met een aparte heldere hoeklens, een voorbumper van ongelakt zwart kunststof en oranje knipperlichten hoog in de bumperhoeken. De bronnen noemen voor de 16V van 2000 tot 2002 een honingraatgrille; dit is dus een bewuste afwijking op verzoek van de eigenaar, zonder `spec`.
 3. Achterzijde: verticale achterlichtunits (rood met helder deel) laag in de achterhoeken van de carrosserie, een vlakke klep met grote ruit, en een bumper met ruimte voor de kentekenplaat en reflectoren laag.
 4. Raamlijn en ramen: lage voorruit met sterk hellende A-stijlen, hoog en groot glas rondom, een raamlijn die van achter naar voren enkele centimeters daalt (zie `belt`), en bij de 3-deurs één lange portierruit met een kleine hoekruit erachter.
-5. Dak en onderkant: vlak dak zonder spoiler, volle kunststof wieldoppen op 13 inch stalen velgen, bumpers ongelakt zwart of (Twist) in carrosseriekleur, en zwarte spiegels en deurgrepen.
+5. Dak en onderkant: vlak dak zonder spoiler, volle kunststof wieldoppen op 13 inch stalen velgen, bumpers ongelakt zwart of (Twist) in carrosseriekleur (model: voor zwart, achter rood; beslissing 29), en zwarte spiegels en deurgrepen.
 
 ## Leverbaarheid in Nederland
 

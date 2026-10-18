@@ -23,9 +23,13 @@ Poorten
   hoekkap boven/onder      hoekkap hoogstens 15 mm boven en 10 mm onder de hoofdlens
   lip afstand / aansluithoek / normaalsprong   <= 3 mm / <= 30 graden / <= 25 graden
   verhouding bumper/lamp   <= 2,8 tot de liponderrand; <= 2,8 tot de onderrand van de afscherming (VERH_AFSCH_MAX, beslissing 17; was 3,1)
+  embleem helderheid       dicht-grille en recht-lamp (licht en donker): verchroomd embleem 3,0 tot 9,0 keer zo helder als de zwarte lamellen (beslissing 30; foto 1993-2001: 6,1;
+                           tot golf 6 hoogstens 2,0 keer het honingraatgaas)
+  neus (beslissing 30)     kapvoorrand op x = 0 op y 0,685 tot 0,715; daling van de kaprand van x 0 naar x +-0,6 hoogstens 15 mm; helling van het grilleraam hoogstens 15 graden;
+                           halve breedte op y 0,62 en z 1,65 minstens 0,62 (stralen op de gemonteerde carrosserie, lampglas telt mee)
   console                  geen fouten of waarschuwingen
-  aantal poorten           alleen in volle modus (zonder --cams, --geen-geo en --geen-rondgang): precies VERWACHT_HARD (99) harde en VERWACHT_ZACHT (13) zachte poorten; anders is deze extra poort rood (exitcode 1).
-                           Staat ook in het groene geval in de lijst (extra: true in de JSON) en telt niet mee in de 99. In de beperkte modus meldt het script 'aantal poorten niet gecontroleerd (beperkte modus)'.
+  aantal poorten           alleen in volle modus (zonder --cams, --geen-geo en --geen-rondgang): precies VERWACHT_HARD (103) harde en VERWACHT_ZACHT (13) zachte poorten; anders is deze extra poort rood (exitcode 1).
+                           Staat ook in het groene geval in de lijst (extra: true in de JSON) en telt niet mee in de 103. In de beperkte modus meldt het script 'aantal poorten niet gecontroleerd (beperkte modus)'.
   invoer ontbreekt         in volle modus worden de geo-poorten (bumperschouderhoek, hoekkap, lip, verhouding bumper/lamp, afscherming, wielkastbekleding) en 'onderplaat tegenover gaas in eig' altijd
                            aangemaakt: ontbreekt hun invoer (hernoemde knoop, geo-meting null), dan staan ze rood met de waarde 'invoer ontbreekt: <sleutel>' in plaats van te verdwijnen
 
@@ -40,7 +44,7 @@ Toegevoegd in ronde 3 (adv.nodig 1, 2 en afwerking a tot e; kolom 'zacht' = telt
   afwerking a (zacht)      Bumperbalk voor hoogstens 200 px in bumpL-r0.6-a50-e70 (60 cm boven de bumperhoek)
   afwerking c (zacht)      Onderplaat voorbumper die binnen 2 beeldpunten Bumperschaal voor en Bumperlip voor raakt (de spleet tussen schaal en lip: de dunne lijn) hoogstens 50 px in eig-dicht, eig-dicht-r, sleuf-schuin
   afwerking d (zacht)      driehoeken van Bumperschaal voor (y > 0,50, z 1,45 tot 1,70) waarvan het vlak meer dan 30 graden afwijkt van de gemiddelde hoekpuntnormaal: hoogstens 12 driehoeken en 319 mm2
-  afwerking e (zacht)      embleem 0,9 tot 2,0 keer de helderheid van het gaas in eig, eig-r, zijhoek en zijhoek-r (licht en donker)
+  afwerking e (zacht)      verchroomd embleem 2,0 tot 9,0 keer de helderheid van de zwarte lamellen in eig, eig-r, zijhoek en zijhoek-r (licht en donker; tot golf 6: 0,9 tot 2,0 keer het gaas)
   afwerking b              niet als getal opgenomen: het treetje en het tandje bij de kaphoek zijn met een randmeting niet betrouwbaar te vangen (proef gaf een knik van 8 px op de verkeerde plaats).
                            Beoordeel op beeld: `--cams lamphoek,lamphoek-r --shots` en uitsnede (1000, 450, 1700, 800) van lamphoek-light.png
   Nieuwe camera's gebruiken near/far zoals uiNearFar in de app (dichtbij); de camera's van ronde 2 zijn ongewijzigd, zodat hun cijfers vergelijkbaar blijven.
@@ -159,7 +163,7 @@ VOOR = {
     'voor-hoog': ([0.0, 1.20, 3.0], [0.0, 0.68, 1.6]),
     'voor-laag': ([0.0, 0.30, 3.0], [0.0, 0.50, 1.6]),
 }
-# detailcamera's voor de helderheid van het embleem tegenover het gaas (licht en donker); ze hebben geen kier- of onderzichtpoort
+# detailcamera's voor de helderheid van het embleem tegenover de lamellen van de grille (licht en donker); ze hebben geen kier- of onderzichtpoort
 # beeldcamera's voor de galerij (zij- en onderaanzichten van de voorkant): geen poorten, wel id-pass en opnamen
 BEELD = {
     'top-hoek':   ([0.90, 2.20, 2.40], [0.40, 0.65, 1.55]),   # van boven: door de voorruit zie je een streep van de bovenrand van het schutbord (ca. 1000 beeldpunten); geen poort, zie beslissing 21
@@ -246,8 +250,8 @@ AFWERKING = {
     'bumpL-r0.6-a50-e70': ([0.6572, 0.8838, 1.7119], [0.5, 0.32, 1.58]),
     'sleuf-schuin':       ([0.75, 0.55, 2.15], [0.34, 0.415, 1.74]),    # afwerking c: dunne lijn tussen eindvlak en schaal (adv/cams-sleuf.json)
 }
-# helderheid per knoop (licht en donker): kolom 'maskers' van de camera. LUM_NAMEN = embleem, gaas, onderplaat, luchtroosters
-LUM_NAMEN = ['Embleem', 'Honingraatgrille', 'Onderplaat voorbumper', 'Luchtrooster voor', 'Bumperschaal voor', 'Bumperlip voor']
+# helderheid per knoop (licht en donker): kolom 'maskers' van de camera. LUM_NAMEN = embleem, lamellen van de grille (tot golf 6 het honingraatgaas), onderplaat, luchtroosters
+LUM_NAMEN = ['Embleem', 'Grillelamellen', 'Onderplaat voorbumper', 'Luchtrooster voor', 'Bumperschaal voor', 'Bumperlip voor']
 LUM_ONDERPLAAT = ('eig', 'eig-r', 'eig-dicht', 'eig-dicht-r', 'recht-lamp', 'voor-laag')   # camera's met de poort onderplaat <= luchtrooster
 NAADSTROOK_CAMS = ('eig-dicht', 'eig-dicht-r', 'sleuf-schuin')           # afwerking c
 LUM_EMBLEEM_LAAG = ('eig', 'eig-r', 'zijhoek', 'zijhoek-r')                               # camera's met de afwerkingspoort embleem leesbaar (e)
@@ -271,7 +275,7 @@ def cam_lijst():
     for k, (p, t) in DETAIL.items():
         c[k] = dict(p=p, t=t, soort='detail', kant='midden', maskers=LUM_NAMEN if k in LUM_ONDERPLAAT else HELDER_NAMEN)
     for k, (p, t) in WIELKAST.items():
-        mk = ['Embleem', 'Honingraatgrille'] if k == 'zijhoek' else None
+        mk = ['Embleem', 'Grillelamellen'] if k == 'zijhoek' else None
         zd = k in WIELKAST_ZONE   # nieuwe camera's (ronde 4): alleen blikken die door de wielkast gaan tellen (zone onder, venster of boven); de tien van ronde 3 tellen alles, zoals in ronde 3
         c[k] = dict(p=p, t=t, soort='wielkast', kant='links', flag=[4, 5], maskers=mk, zoned=zd)
         c[k + '-r'] = dict(p=spiegel(p), t=spiegel(t), soort='wielkast', kant='rechts', flag=[4, 5], maskers=mk, zoned=zd)
@@ -554,14 +558,27 @@ GEO_JS = r"""() => {
   }
   const KP = (by['Buitenpaneel motorkap'] || [])[0];
   if (KP) { const { W } = wereld(KP.m); let hi = -9, zf = -9, yf = 0; for (const w of W) { if (Math.abs(w[0]) < 0.02) hi = Math.max(hi, w[1]); if (Math.abs(w[0]) < 0.02 && w[2] > zf) { zf = w[2]; yf = w[1]; } } out.kapVoorrandMax = hi; out.kapVoorrand = [zf, yf]; }
-  const VP = (by['Voorpaneel'] || [])[0];
+  const VP = (by['Grilleraam'] || [])[0];
   if (VP) { const { W } = wereld(VP.m); let lo = 9, hi = -9; for (const w of W) if (Math.abs(w[0]) < 0.3) { lo = Math.min(lo, w[1]); hi = Math.max(hi, w[1]); } out.paneelY = [lo, hi]; }
+  // neus (beslissing 30): de vorm van de modelreeks 1993-2001 die de eigenaar koos (beslissing 29), met stralen op de gemonteerde carrosserie;
+  // buitenspiegels en wissers tellen niet; het lampglas telt wel mee, want daar is het glas de buitenkant. kaprandDaling: hoogte van de huid op x = 0 min die op x = +-0,6,
+  // 4 mm achter de kapvoorrand; frontHelling: hoek van het grilleraam met de verticaal tussen y 0,69 en 0,565 op x = +-0,3; neusBreedte: halve breedte van de huid op
+  // y 0,62 en z 1,65 (zijstralen, kleinste van links en rechts)
+  const lijf = []; for (const k in by) for (const { m, path } of by[k]) if (path[0] === 'Carrosserie' && !path.some(q => /Buitenspiegel|Ruitenwisser|Ruit$|Voorruit/.test(q))) lijf.push(m);
+  const rc = new THREE.Raycaster(); rc.layers.enableAll();
+  const raak = (o, d) => { rc.set(new THREE.Vector3(...o), new THREE.Vector3(...d)); rc.near = 0; rc.far = 5; const h = rc.intersectObjects(lijf, false)[0]; return h ? h.point.toArray() : null; };
+  out.kaprandDaling = null; out.frontHelling = null; out.neusBreedte = null;
+  if (out.kapVoorrand) { const zk = out.kapVoorrand[0] - 0.004, a = raak([0, 2, zk], [0, -1, 0]), b = raak([0.6, 2, zk], [0, -1, 0]), c = raak([-0.6, 2, zk], [0, -1, 0]);
+    if (a && b && c) out.kaprandDaling = Math.max(a[1] - b[1], a[1] - c[1]); }
+  const hl = [0.3, -0.3].map(x => { const a = raak([x, 0.69, 2.5], [0, 0, -1]), b = raak([x, 0.565, 2.5], [0, 0, -1]); return a && b ? Math.atan2(Math.abs(b[2] - a[2]), 0.125) * 180 / Math.PI : null; });
+  if (hl.every(h => h !== null)) out.frontHelling = Math.max(...hl);
+  const hb = [1, -1].map(sd => raak([sd * 2, 0.62, 1.65], [-sd, 0, 0])); if (hb.every(h => h)) out.neusBreedte = Math.min(...hb.map(h => Math.abs(h[0])));
   return out;
 }"""
 
 HIDE_UI = "(()=>{const st=document.createElement('style');st.textContent='body *:not(canvas){visibility:hidden !important} canvas{visibility:visible !important}';document.head.appendChild(st);})()"
 SETCAM = "([p,t,oy,nf])=>{camera.position.set(...p);controls.target.set(...t);controls.update();camera.lookAt(...t);if(nf){const d=camera.position.distanceTo(controls.target);camera.near=Math.min(0.08,Math.max(0.004,d/250));camera.far=Math.max(80,d*30);}camera.updateMatrixWorld(true);if(oy){camera.setViewOffset(1000,738,0,oy,1000,738);}else{camera.clearViewOffset();}camera.updateProjectionMatrix();}"
-HELDER_NAMEN = ['Embleem', 'Honingraatgrille']
+HELDER_NAMEN = ['Embleem', 'Grillelamellen']
 ASSEMBLED_JS = "()=>({p:camera.position.toArray(),t:controls.target.toArray()})"
 
 # ---------------------------------------------------------------- poorten
@@ -569,20 +586,27 @@ SCHARNIER_MAX_PX = 50     # punt 3: scharnier en portierrand achter de band
 VENSTER_TOT_MAX = 2500   # tussenpoort tegenover V1: totaal px door het venster per wielkastcamera
 KAP_MAX_PX = 50        # eis uit het advies: geen knoop uit de motorruimte (of het onderstel, in de hoekcamera's) boven 50 beeldpunten bij DPR 2
 SCHOUDER_MAX = 25.0    # graden, bepaling ronde 1
-EMBLEEM_MAX = 2.0      # helderheid embleem / gaas (premortem: 5,5 tot 5,7 op HEAD a9035fc, F1: 1,0)
-PLAAT_MAX = 3.0        # Onderplaat voorbumper in eig: hoogstens zoveel keer het aantal beeldpunten van Honingraatgrille (a9035fc: 4,56). De eis van het advies, 0,25, is niet te combineren met zicht onder de bumper hoogstens 0,5 procent: zie beslissing 21
+EMBLEEM_MIN, EMBLEEM_MAX = 3.0, 9.0   # helderheid verchroomd embleem / zwarte lamellen in de detailcamera's (beslissing 30): foto 1993-2001 6,1 (S tegen de donkere opening); venster de helft tot
+                                      # anderhalf keer. Was hoogstens 2,0 (donkere S op honingraatgaas, foto F1 van de 2000-2002-uitvoering: 1,0; premortem 5,5 tot 5,7)
+PLAAT_MAX = 1.5        # Onderplaat voorbumper in eig: hoogstens zoveel keer het aantal beeldpunten van de grilleopening: Grillelamellen plus Grillekuip (beslissing 30). Tot golf 6 3,0 keer
+                       # Honingraatgrille (23.298 px in eig, a9035fc: 4,56); de nieuwe opening is in eig 2,0 keer zo groot (46.935 px), dus 1,5 is dezelfde grens in beeldpunten (geen verruiming). De eis van het advies, 0,25, is niet te combineren met zicht onder de bumper hoogstens 0,5 procent: zie beslissing 21
 VERH_AFSCH_MAX = 2.8   # verhouding bumper/lamp tot de onderrand van de afscherming: 3,1 (bewaking op de stand van voor beslissing 17, gemeten 3,08) is 2,8 sinds de neus is verlaagd (gemeten 2,49)
 SCHERM_DIEP_MAX_MM = 55  # afscherming hoogstens zoveel mm onder de liponderrand
 FACET_MAX = 25.0       # graden tussen de vlaknormalen van aangrenzende driehoeken van Bumperschaal voor in het hoekgebied (premortem: 59,6)
 NAADSTROOK_MAX_PX = 50   # afwerking c (voorstel)
 SPLEET_MAX_PX = 200       # afwerking a: Bumperbalk voor in de hoekspleet (voorstel; HEAD 5.646)
 SIKKEL_MAX_PX = 50        # adv.nodig 2: Schutbord door de wielboog in eig (HEAD 698)
-EMBLEEM_MIN_LAAG = 0.9    # afwerking e: embleem in de lage blik minstens zo helder als het gaas (voorstel; foto F1: 1,0)
+EMBLEEM_MIN_LAAG = 2.0    # afwerking e: verchroomd embleem in de lage blik minstens twee keer zo helder als de zwarte lamellen (beslissing 30; was 0,9 bij de donkere S op het gaas, foto F1: 1,0)
 DEV30_MAX_N, DEV30_MAX_MM2 = 12, 319   # afwerking d: driehoeken met een afwijking > 30 graden tussen vlak- en hoekpuntnormaal (stand voor ronde 2: 12 driehoeken, 319 mm2; HEAD: 22, 990)
-# Verwacht aantal poorten in volle modus (zonder --cams, --geen-geo en --geen-rondgang). Bron: nulmeting van 17 oktober 2026 op d044bae (run-v9eG): 112 poorten, waarvan 99 harde en 13 zachte.
-# Wie bewust een poort toevoegt of schrapt, past deze twee getallen mee aan (en docs/cijfers.md). De controle zelf ('aantal poorten') telt niet mee in de 99.
-VERWACHT_HARD = 99
+# Verwacht aantal poorten in volle modus (zonder --cams, --geen-geo en --geen-rondgang). Bron: nulmeting van 17 oktober 2026 op d044bae (run-v9eG): 112 poorten, waarvan 99 harde en 13 zachte;
+# sinds beslissing 30 (golf 6) vier harde neuspoorten erbij: 103 harde.
+# Wie bewust een poort toevoegt of schrapt, past deze twee getallen mee aan (en docs/cijfers.md). De controle zelf ('aantal poorten') telt niet mee in de 103.
+VERWACHT_HARD = 103
 VERWACHT_ZACHT = 13
+NEUS_KAP = (0.685, 0.715)   # kapvoorrand op x = 0 (beslissing 30: foto's 0,685 tot 0,715, zie beslissing 17; ontwerp 0,704)
+NEUS_DALING_MAX_MM = 15     # daling van de kaprand van x 0 naar x +-0,6 (beslissing 29: vrijwel recht; beslissing 17 had 45 mm)
+NEUS_HELLING_MAX = 15.0     # graden: helling van het grilleraam met de verticaal (beslissing 29: vrijwel verticaal front; beslissing 17 had 34 graden)
+NEUS_BREEDTE_MIN = 0.62     # halve breedte op y 0,62 en z 1,65 (beslissing 29: volle hoeken; beslissing 17 had 0,551)
 ONDERZICHT_MAX_PCT = 0.5   # motorruimte en onderstel van de voorste helft hoogstens 0,5 procent van het beeld in de lage camera's (HEAD eig 1,6; V1: zie nul/README)
 
 
@@ -903,13 +927,13 @@ def main():
             if e['soort'] == 'beeld': continue
             if e.get('helderheid'):
                 for th in ('dark', 'light'):
-                    em, gz = lum(e, th, 'Embleem'), lum(e, th, 'Honingraatgrille')
+                    em, gz = lum(e, th, 'Embleem'), lum(e, th, 'Grillelamellen')
                     if e['soort'] == 'detail':
                         if em and gz:
                             ver = em['lum'] / max(gz['lum'], 1e-6)
-                            poort(f'embleem helderheid {k} {th}', ver <= EMBLEEM_MAX, f"embleem {em['lum']} gaas {gz['lum']} verhouding {ver:.2f}", f'embleem hoogstens {EMBLEEM_MAX} keer zo helder als het gaas (foto F1: 1,0)')
+                            poort(f'embleem helderheid {k} {th}', EMBLEEM_MIN <= ver <= EMBLEEM_MAX, f"embleem {em['lum']} lamellen {gz['lum']} verhouding {ver:.2f}", f'verchroomd embleem {EMBLEEM_MIN} tot {EMBLEEM_MAX} keer zo helder als de zwarte lamellen (foto 1993-2001: 6,1; beslissing 30)')
                         else:
-                            poort(f'embleem helderheid {k} {th}', False, 'embleem of gaas niet in beeld', 'beide in beeld')
+                            poort(f'embleem helderheid {k} {th}', False, 'embleem of lamellen niet in beeld', 'beide in beeld')
                     if k in LUM_ONDERPLAAT:   # adv.nodig 1: de afscherming leest als schaduw, niet als grijze plank
                         op, lr = lum(e, th, 'Onderplaat voorbumper'), lum(e, th, 'Luchtrooster voor')
                         eis = 'luminantie Onderplaat voorbumper hoogstens die van Luchtrooster voor (eigen meting HEAD: 0,31 tot 0,35 tegen 0,19 tot 0,26; proef MAT.bodPillar: 0,06 tot 0,08)'
@@ -917,12 +941,12 @@ def main():
                         elif op is None: poort(f'helderheid onderplaat {k} {th}', True, f"Onderplaat niet in beeld (minder dan 20 px na erosie), luchtrooster {lr['lum']}", eis)
                         else: poort(f'helderheid onderplaat {k} {th}', op['lum'] <= lr['lum'], f"onderplaat {op['lum']} ({op['px']} px) luchtrooster {lr['lum']} ({lr['px']} px) verhouding {op['lum'] / max(lr['lum'], 1e-6):.2f}", eis)
                     if k in LUM_EMBLEEM_LAAG:   # afwerking e: het embleem is vanuit de lage blik bijna onzichtbaar
-                        eis = f'embleem {EMBLEEM_MIN_LAAG} tot {EMBLEEM_MAX} keer de helderheid van het gaas (HEAD: 0,55 tot 0,78; foto F1: 1,0)'
+                        eis = f'verchroomd embleem {EMBLEEM_MIN_LAAG} tot {EMBLEEM_MAX} keer de helderheid van de zwarte lamellen (foto 1993-2001: 6,1 van voren; beslissing 30)'
                         if em and gz:
                             ver = em['lum'] / max(gz['lum'], 1e-6)
-                            poort(f'afwerking e: embleem leesbaar {k} {th}', EMBLEEM_MIN_LAAG <= ver <= EMBLEEM_MAX, f"embleem {em['lum']} ({em['px']} px) gaas {gz['lum']} verhouding {ver:.2f}", eis, zacht=True)
+                            poort(f'afwerking e: embleem leesbaar {k} {th}', EMBLEEM_MIN_LAAG <= ver <= EMBLEEM_MAX, f"embleem {em['lum']} ({em['px']} px) lamellen {gz['lum']} verhouding {ver:.2f}", eis, zacht=True)
                         else:
-                            poort(f'afwerking e: embleem leesbaar {k} {th}', False, 'embleem of gaas niet in beeld (minder dan 20 px na erosie)', eis, zacht=True)
+                            poort(f'afwerking e: embleem leesbaar {k} {th}', False, 'embleem of lamellen niet in beeld (minder dan 20 px na erosie)', eis, zacht=True)
             if k in NAADSTROOK_CAMS and 'naadstrook_px' in e:
                 poort(f'afwerking c: spleet tussen schaal en lip {k}', e['naadstrook_px'] <= NAADSTROOK_MAX_PX, f"{e['naadstrook_px']} px Onderplaat tussen Bumperschaal en Bumperlip", f'<= {NAADSTROOK_MAX_PX} px (de lip sluit aan op de schaal, geen donkere lijn over het vlak)', zacht=True)
             if e['soort'] == 'detail': continue
@@ -1020,6 +1044,11 @@ def main():
         geo_poort('verhouding bumper/lamp op x=0 (tot de afscherming)', ['lipOnder', 'plaatOnder', 'kapVoorrand', 'afdek', 'bumperTop'], lambda: ver_afs() <= VERH_AFSCH_MAX,
                   lambda: f"{ver_afs():.3f} tot {min(gg['lipOnder'], gg['plaatOnder']):.3f} m", f'<= {VERH_AFSCH_MAX} (beslissing 17: neus en bumperbovenrand omlaag; de afscherming mag de neus niet zwaarder maken)')
         geo_poort('afscherming onder de lip', ['lipOnder', 'plaatOnder'], lambda: (gg['lipOnder'] - gg['plaatOnder']) * 1000 <= SCHERM_DIEP_MAX_MM, lambda: f"{(gg['lipOnder'] - gg['plaatOnder']) * 1000:.0f} mm onder de liponderrand", f'<= {SCHERM_DIEP_MAX_MM} mm (een lint, geen plank)')
+        # neus (beslissing 30): de vorm die de eigenaar koos (beslissing 29), zodat een kap die omhoog of een front dat weer schuin gaat de set rood maakt
+        geo_poort('neus: kapvoorrand op x=0', ['kapVoorrand'], lambda: NEUS_KAP[0] <= gg['kapVoorrand'][1] <= NEUS_KAP[1], lambda: f"y {gg['kapVoorrand'][1]:.4f} op z {gg['kapVoorrand'][0]:.4f}", f'y {NEUS_KAP[0]} tot {NEUS_KAP[1]} (foto\'s; beslissing 17 en 30)')
+        geo_poort('neus: daling kaprand naar x=0,6', ['kaprandDaling'], lambda: gg['kaprandDaling'] * 1000 <= NEUS_DALING_MAX_MM, lambda: f"{gg['kaprandDaling'] * 1000:.1f} mm", f'<= {NEUS_DALING_MAX_MM} mm (vrijwel rechte kapvoorrand, foto 1993-2001; beslissing 29)')
+        geo_poort('neus: helling front', ['frontHelling'], lambda: gg['frontHelling'] <= NEUS_HELLING_MAX, lambda: f"{gg['frontHelling']:.1f} graden", f'<= {NEUS_HELLING_MAX} graden met de verticaal (grilleraam tussen y 0,69 en 0,565 op x +-0,3; beslissing 29)')
+        geo_poort('neus: halve breedte op y=0,62 en z=1,65', ['neusBreedte'], lambda: gg['neusBreedte'] >= NEUS_BREEDTE_MIN, lambda: f"{gg['neusBreedte']:.3f} m", f'>= {NEUS_BREEDTE_MIN} m (volle hoeken, foto 1993-2001; beslissing 29)')
         if g:
             print(f"info: vlaknormaalhoek tussen aangrenzende driehoeken in het hoekgebied {g['facet']:.1f} graden bij {g['facetAt']} (meet slanke driehoeken op de neusbovenrand, geen poort: zie beslissing 21)")
         geo_poort('afscherming raakt aandrijving niet', ['plaatNabij'], lambda: gg['plaatNabij']['n'] == 0, lambda: f"{gg['plaatNabij']['n']} hoekpunten binnen 10 mm {gg['plaatNabij']['per_knoop']}", '0 hoekpunten van Klemmen, Hoes, Koppelingsklok en Draagarm binnen 10 mm van Onderplaat voorbumper')
@@ -1028,10 +1057,10 @@ def main():
         if g and g.get('dev30') is not None:   # zacht: ontbreken van de invoer blijft zonder gevolg voor de exitcode; het aantal zachte poorten wordt apart bewaakt
             poort('afwerking d: plooien in de glans (bumperbovenrand bij de hoek)', g['dev30']['n'] <= DEV30_MAX_N and g['dev30']['mm2'] <= DEV30_MAX_MM2, f"{g['dev30']['n']} driehoeken, {g['dev30']['mm2']:.0f} mm2 met afwijking > 30 graden",
                   f'<= {DEV30_MAX_N} driehoeken en <= {DEV30_MAX_MM2} mm2 (stand voor ronde 2; streef 0)', zacht=True)
-        eis_plaat = f'<= {PLAAT_MAX} keer het gaas (a9035fc: 4,6 keer)'
+        eis_plaat = f'<= {PLAAT_MAX} keer de grilleopening (Grillelamellen plus Grillekuip; tot golf 6 3,0 keer het honingraatgaas, dat in eig half zo groot was; beslissing 30)'
         if 'eig' in res['cams']:
-            px = res['cams']['eig']['px_per_knoop']; op = sum(v for kk, v in px.items() if kk.endswith('Onderplaat voorbumper')); gz = sum(v for kk, v in px.items() if kk.endswith('Honingraatgrille'))
-            poort('onderplaat tegenover gaas in eig', gz > 0 and op <= PLAAT_MAX * gz, f'{op} px tegen {gz} px gaas ({op / max(gz, 1):.2f} keer)', eis_plaat)
+            px = res['cams']['eig']['px_per_knoop']; op = sum(v for kk, v in px.items() if kk.endswith('Onderplaat voorbumper')); gz = sum(v for kk, v in px.items() if kk.endswith('Grillelamellen') or kk.endswith('Grillekuip'))
+            poort('onderplaat tegenover gaas in eig', gz > 0 and op <= PLAAT_MAX * gz, f'{op} px tegen {gz} px grilleopening ({op / max(gz, 1):.2f} keer)', eis_plaat)
         elif vol:
             poort('onderplaat tegenover gaas in eig', False, 'invoer ontbreekt: cams.eig', eis_plaat)
     poort('console zonder fouten' + (' achter' if a.achter else ''), res['meta'].get('console_ok', False), res['meta'].get('console_ok'), 'geen fouten of waarschuwingen')
@@ -1056,7 +1085,7 @@ def main():
     w = max(len(p['naam']) for p in P)
     print()
     for p in P: print(('GROEN ' if p['groen'] else ('GEEL  ' if p['zacht'] else 'ROOD  ')) + p['naam'].ljust(w), '|', p['waarde'], '|', p['eis'])
-    if g: print('\ngeo:', json.dumps({k: g[k] for k in ('bumper', 'bumperAt', 'facet', 'facetAt', 'lipNaad', 'lipSprong', 'lipOnder', 'plaatOnder', 'plaatNabij', 'bumperTop', 'afdek', 'hoek', 'kapVoorrand') if k in g}))
+    if g: print('\ngeo:', json.dumps({k: g[k] for k in ('bumper', 'bumperAt', 'facet', 'facetAt', 'lipNaad', 'lipSprong', 'lipOnder', 'plaatOnder', 'plaatNabij', 'bumperTop', 'afdek', 'hoek', 'kapVoorrand', 'kaprandDaling', 'frontHelling', 'neusBreedte') if k in g}))
     if a.basis and os.path.exists(a.basis):
         B = json.load(open(a.basis)); print('\nverschil met', a.basis)
         for k in namen:

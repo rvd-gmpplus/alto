@@ -8,7 +8,7 @@ Dit contract legt vast wat de domeineigenaars van elkaar mogen verwachten. Het v
 |---|---|---|
 | Model en fase | Suzuki Alto, Zen-gebaseerde Europese uitvoering ("Alto 16V", 2000 tot 2002), 3-deurs hatchback, bouwjaar 2001 | onderzoek, eigenaar |
 | Uitvoering | 1.0-16V Twist (geleverd november 2000 tot april 2002) | eigenaar, Autowereld (aannemelijk) |
-| Lak | Bright Red 2, code Z9T (aannemelijk), effen rood zonder metallic; kleurwaarde ongeveer #C8323C (geschat); bumpers in carrosseriekleur | eigenaar, RDW-kleurverdeling, foto's |
+| Lak | Bright Red 2, code Z9T (aannemelijk), effen rood zonder metallic; kleurwaarde ongeveer #C8323C (geschat); achterbumper in carrosseriekleur, voorbumper van ongelakt zwart kunststof (keuze eigenaar naar de foto van de modelreeks 1993-2001, beslissing 29; de bron noemt voor de Twist bumpers in carrosseriekleur) | eigenaar, RDW-kleurverdeling, foto's |
 | Wielen en banden | 145/70 R13 (TR) op stalen velgen van 13 inch met volle kunststof wieldoppen; vier bouten, steek 4 x 100 mm (geschat); bandstraal 0,2666 m | Autoweek, foto's |
 | Motor | G10BB: viercilinder in lijn, 16 kleppen, SOHC, 993 cc, 72,0 x 61,0 mm, 43 kW (58 pk) bij 6000 tpm, 78 Nm bij 4500 tpm, multipoint-inspuiting, Euro 3 | werkplaatshandboek, Autoweek |
 | Bak | Handgeschakelde 5-bak, voorwielaandrijving | eigenaar (bevestigd) |
@@ -33,9 +33,9 @@ Meter. x links (+) en rechts (-), y omhoog vanaf de grond, z naar voren (+). De 
 | `BOD_WMAX` | 0,7535 | halve breedte zonder spiegels 0,7475 plus 6 mm (breedte 1495 mm) |
 | `BOD_MIRW` | 0,904 | halve breedte met spiegels plus 6 mm; de liggende spiegels reiken tot 0,898, 150 mm buiten de huid (geschat; de opvolger van 2002 heeft volgens de ADAC 1475 mm zonder en 1775 mm met spiegels, ook 150 mm per kant) |
 | `BOD_H` | 1,405 | hoogte onbeladen (brochure); de dakrails staan er 3 cm bovenop |
-| `HW(z)` | 0,7475 van z -1,20 tot +0,90; neus 0,50 bij +1,7475; staart 0,50 bij -1,7475 | silhouet (bovenaanzicht) |
+| `HW(z)` | 0,7475 van z -1,20 tot +0,90; neus 0,651 bij +1,65, 0,612 bij +1,69 en 0,53 bij +1,7475 (beslissing 29: vollere hoeken); staart 0,50 bij -1,7475 | silhouet (bovenaanzicht) |
 | `YB(z)` | dorpel 0,215 tot 0,25; voorbumper 0,27 (rand 0,31); achterbumper 0,275 (rand 0,34) | geschat |
-| `YT(z)` | gordellijn: 0,894 (z 0,4), 0,913 (0,0), 0,936 (-0,4), 0,960 (-1,0); schouder voor 0,903 (z 0,85) dalend naar 0,722 (z 1,60) en 0,485 (nok) | silhouet, belt |
+| `YT(z)` | gordellijn: 0,894 (z 0,4), 0,913 (0,0), 0,936 (-0,4), 0,960 (-1,0); schouder voor 0,903 (z 0,85) dalend naar 0,720 (z 1,60) en 0,698 (z 1,66), dan het steile front tot 0,548 (z 1,688) en 0,500 (nok); bolling van de kap op de neus 6 mm (beslissing 29) | silhouet, belt, foto 1993-2001 |
 | `YR(z)` | daklijn op de hartlijn: 0,930 (z 0,90), 1,105 (0,6), 1,285 (0,35), 1,380 (0,1), 1,405 (-0,4 tot -0,65), 1,382 (-1,15), 1,17 (-1,45), 0,90 (-1,70) | silhouet (top) |
 | `surfX(z, y)` | buitenhuid in x op hoogte y; boven de gordel de halve breedte van ruit, stijl of dak; boven dek of dak 0 | carrosserie |
 | `skin(z, y, s, out)` | punt op de huid | carrosserie |
@@ -70,16 +70,17 @@ Het kapprofiel staat in `body.js`. `integrity.py` faalt als een onderdeel minder
 | 1,35 | 0,834 | 0,790 | 0,780 |
 | 1,45 | 0,804 | 0,760 | 0,745 |
 | 1,55 | 0,770 | 0,725 | 0,710 |
-| 1,60 (voorrand kap) | 0,745 | 0,700 | 0,685 |
+| 1,60 | 0,745 (sinds beslissing 29 0,744) | 0,700 | 0,685 |
+| 1,66 (voorrand kap, beslissing 29) | 0,704 | 0,675 | 0,670 |
 
-De kap is 0,62 m halfbreed tot z 1,2 en versmalt naar 0,55 bij de neus; de koplampen en schermstroken liggen daarbuiten. Gereserveerde ruimte in de motorruimte:
+De kap is 0,62 m halfbreed tot z 1,2 en versmalt naar 0,55 bij de neus, met een voorhoek van 25 mm straal (beslissing 29; was 70 mm); de voorrand ligt sinds beslissing 29 op z 1,66 (was 1,60); de koplampen en schermstroken liggen daarbuiten. Gereserveerde ruimte in de motorruimte:
 
 | Zone | Wat | Eigenaar |
 |---|---|---|
 | Schutbord op z 0,866 (voorvlak) en 0,854 (achtervlak), kap-scharnieren op z 0,92 tot 1,0, x = +-0,50 | niets plaatsen binnen 4 cm van het schutbord; de uitlaat (katalysator) mag er vlak voor, tot z 0,95. Het schutbord loopt onder y 0,58 alleen tot |x| 0,50 (de wielkastwanden) en daarboven tot |x| 0,69. Uitzondering: doorvoeren en bevestigingen mogen het schutbord raken en er doorheen steken (golf 2): de rembekrachtiger met zijn vier pennen (tot z 0,854) en de duwstang, de stuurkolomdoorvoer met de tussenas en de onderste kruiskoppeling, de stompen en doorvoerplaat van de kachel, de doorvoer van de kabelboom, de klemmen van het stuurhuis en de steunplaten van zekeringkast en regeleenheid. Het dashboard begint op z 0,85, achter het schutbord; de wissermotor zit in de waterkast ervoor (z 0,867 tot 0,957) | carrosserie, systemen, onderstel, interieur |
 | Veerpoottorens x = +-0,50, z 1,02 tot 1,16, y 0,56 tot 0,76 (straal 0,05 bovenaan, 0,07 onderaan) | alleen de veerpoot en de bovenste lagerplaat | onderstel |
 | Wielkasten: binnenwand op |x| = 0,50, boog met straal 0,312 om (z 1,087, y 0,265); de wand begint pas op y 0,42 (voor) en y 0,485 (achter), daaronder lopen aandrijfas, stuurstangen, draagarmen en achteras vrij; voor heeft de wand en het dak een uitsparing (halve breedte 7,5 cm, tot |x| 0,58) voor de veerpoot | de motor blijft binnen |x| < 0,49 onder y 0,58 | motor, aandrijving, onderstel |
-| Frontmodule (z 1,575 tot 1,625) en koelpakket (z 1,44 tot 1,575) | radiator, koelventilator, slot, bumperbalk (z 1,66, y 0,40) | systemen, carrosserie |
+| Frontmodule (z 1,575 tot 1,625) en koelpakket (z 1,44 tot 1,575) | radiator, koelventilator, slot, bumperbalk (z 1,66, y 0,40). Sinds beslissing 29 staan koplampen en grille op het steile front (z 1,66 tot 1,69) met hun huis tot ongeveer z 1,59, en een schot van 1 mm op z 1,6405 (y 0,640 tot 0,696, over de volle breedte van grille en lampen) sluit de ruimte onder de kapvoorrand af | systemen, carrosserie |
 | Motorkapsteun (x = -0,575, voet op z 1,0 en y 0,84; open tot y 1,29) | stang van 0,51 m met de voet naast de rechter veerpoottoren; in rust ligt hij schuin naar voren langs de rechter binnenwand; houd x -0,60 tot -0,55 tussen z 1,0 en 1,37 vrij | carrosserie |
 | Accu | links voor, tussen luchtfilterhuis en wielkast (x 0,305 tot 0,495, y 0,50 tot 0,69, z 1,378 tot 1,508, sinds golf 5 22 mm naar achteren): vrij onder de tabel hierboven en 38 cm voor de rembekrachtiger | systemen |
 

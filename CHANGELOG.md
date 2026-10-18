@@ -1,5 +1,16 @@
 # Wijzigingen
 
+## Versie 5 (in voorbereiding)
+
+### Voorkant naar de modelreeks 1993-2001 (golf 6, pakket NEUS; beslissing 29 en 30)
+
+- Keuze van de eigenaar naar de foto van een rode 3-deurs uit 1993-2001 (de bronnen noemen voor de 16V 2000-2002 een honingraatgrille en bumpers in carrosseriekleur; daarom geen `spec` op deze delen).
+- Neus en kap: front vrijwel verticaal (ca. 10 graden, was 34), kapvoorrand op z 1,66 en y 0,704 en vrijwel recht (6 mm daling naar x 0,6, was 45 mm), vollere hoeken (halve breedte 0,646 op y 0,62 en z 1,65, was 0,551). Kaphoek met straal 25 mm; motorkapsteun 10 mm naar binnen.
+- Koplampen: rechthoekig met horizontale randen, hoofdlens van x 0,385 tot 0,59, aparte heldere hoeklens met een verticale scheiding op x 0,59, reflector zilverwit.
+- Grille: zwart grilleraam met vier horizontale lamellen en een verchroomde S van 60 mm (nieuwe knopen `Grilleraam`, `Grillelamellen`; `Grillekuip` met achterwand); honingraatgrille en rood voorpaneel vervallen.
+- Voorbumper van ongelakt zwart kunststof (schaal, lip, kaders van de luchtroosters; nieuw materiaal `bodZwart`), knipperlichten hoog in de bumperhoeken. De achterbumper blijft rood.
+- `tools/meet.py`: `Honingraatgrille` vervangen door `Grillelamellen`; venster voor het verchroomde embleem 3,0 tot 9,0 (foto 6,1); onderplaat tegenover de grilleopening (grens 1,5, dezelfde grens in beeldpunten als 3,0 tegenover het kleinere gaas); vier nieuwe harde neuspoorten (103 harde poorten, was 99). Een kap die 30 mm omhoog gaat maakt de meting rood.
+
 ## Versie 4 (18 oktober 2026)
 
 Aanleiding: de spiegels lazen als staand formaat, het vloergat voor de achterboog (open punt uit Versie 3) en review 5: een volledige controle van alle knopen tegen de echte auto, met bevindingen per domein in `bevindingen.json`. Keuzes van de gebruiker: achterkant nu herbouwen, tankklep en uitlaat spiegelen op twee foto's, interieur volgens de bronnen, budget Carrosserie tot 160.000 driehoeken, EGR houden. Keuzes per pakket staan in `docs/onderzoek/beslissingen.md`; kerncijfers in `docs/cijfers.md`.
