@@ -26,7 +26,7 @@ Onderzoek van 16 oktober 2026 (stap 1 van het framework, zie [framework.md](fram
 | Leeggewicht | 705 kg (3-deurs, RDW en Autoweek) of 725 kg; 5-deurs 730 of 750 kg. Maruti noemt 765 kg voor de Zen: Indiase uitvoering. | Bevestigd (RDW) |
 | Stuurbekrachtiging | Geen op de Alto 1.0 16V in Nederland (Autoweek: "stuurbekrachtiging nee" bij de GA; de Twist-test noemt een "vage besturing" en geen assistentie). De Indiase Zen had wel elektrische stuurbekrachtiging. Stuurbekrachtiging kwam in Nederland pas met de Alto 1.1 GL van 2002. | Aannemelijk |
 | Airbags | Geen (Autoweek Twist 2001: "stuur zonder airbag"). Pas de Alto 1.1 van 2002 had er twee standaard. | Bevestigd |
-| Hoofdsteunen achter | Autoweek (Twist 3-deurs): alleen voorin. Autowereld (GA 5-deurs): ook achter. Het model volgt de 3-deurs en toont alleen voorin. | Aannemelijk |
+| Hoofdsteunen achter | Autoweek (Twist 3-deurs): alleen voorin. Autowereld (Twist 3-deurs, uitrustingslijst op 18 oktober 2026 letterlijk nagelezen): "Hoofdsteunen achter" en "In delen neerkl. achterb." standaard. Het model volgt besluit 4 en Beslissing INT-1: hoofdsteunen voor en achter, zonder spec. | Aannemelijk |
 | Velgmaat | 13 inch stalen velg met band 145/70 TR13 (Autoweek). De 145/80 R12 en 12 inch uit de Zen-literatuur zijn de oudere en Indiase maat. | Bevestigd (band), Aannemelijk (velg) |
 | Rode lak | Naam en code niet uit een Nederlandse kleurkaart gehaald. Zie het onderdeel Voertuig voor de aannemelijke code. | Aannemelijk |
 
@@ -109,8 +109,8 @@ Onderzoek van 16 oktober 2026 (stap 1 van het framework, zie [framework.md](fram
 
 | Gegeven | Waarde | Bron | Status |
 |---|---|---|---|
-| Voorstoelen | Twee losse stoelen met hoofdsteunen; in de 3-deurs schuift de stoel naar voren om in te stappen; verstelling beperkt tot lengte en leuning | Autoweek (Twist), Autowereld | Bevestigd |
-| Achterbank | Neerklapbaar (in delen volgens Autowereld); geen hoofdsteunen achter volgens Autoweek | Autoweek, Autowereld | Aannemelijk |
+| Voorstoelen | Twee losse stoelen met hoofdsteunen; in de 3-deurs schuift de stoel naar voren om in te stappen; verstelling beperkt tot lengte en leuning (Autoweek). De uitrustingslijst van Autowereld (Twist) noemt "Stoelen in hoogte verst." zowel standaard als optie; het model volgt Autoweek (Beslissing INT-2) | Autoweek (Twist), Autowereld | Bevestigd (lengte en leuning), Open (hoogte) |
+| Achterbank | Neerklapbaar (in delen volgens Autowereld); geen hoofdsteunen achter volgens Autoweek, wel volgens Autowereld (zie Hoofdsteunen achter en Beslissing INT-1) | Autoweek, Autowereld | Aannemelijk |
 | Dashboard | Hard kunststof, instrumentenpaneel met snelheidsmeter, kilometerteller, dagteller, brandstofmeter, koelvloeistoftemperatuurmeter en waarschuwingslampjes; geen toerenteller; handschoenenvak; ventilatieroosters midden, zijkant en zijruit; bedieningspaneel voor de verwarming; sigarettenaansteker; asbak; ontgrendelknop van de motorkap in het interieur | Nimag-werkplaatshandboek (1.2), Autoweek | Bevestigd |
 | Stuur | Driespaaks stuur zonder airbag | Autoweek | Bevestigd |
 | Uitrusting GA | Geen centrale vergrendeling, geen elektrische ruiten, geen stuurbekrachtiging, geen cruise control; airco was een optie (1.586 euro); achterruitwisser, startblokkering en hoofdsteunen voor standaard | Autoweek (GA), viabovag | Bevestigd |
@@ -133,7 +133,7 @@ De eigenaar bevestigt: 3-deurs, motor G10BB, Bright Red 2 (Z9T). De uitvoering i
 | Ruiten | Elektrisch bediend (voor), getint glas | Autowereld Twist | Aannemelijk |
 | Vergrendeling | Centrale vergrendeling | Autowereld Twist | Aannemelijk |
 | Buitenspiegels | Elektrisch verstelbaar en verwarmd (niet elektrisch inklapbaar) | Autowereld Twist | Aannemelijk |
-| Hoofdsteunen en achterbank | Hoofdsteunen voor en achter; achterbank in delen neerklapbaar | Autowereld Twist | Aannemelijk |
+| Hoofdsteunen en achterbank | Hoofdsteunen voor en achter; achterbank in delen neerklapbaar (op 18 oktober 2026 letterlijk nagelezen in de uitrustingslijst; Autoweek noemt alleen hoofdsteunen voor) | Autowereld Twist | Aannemelijk |
 | Leeggewicht | 725 kg (valt binnen de RDW-waarden van 705 en 725 kg voor de 3-deurs) | Autowereld Twist | Aannemelijk |
 | Topsnelheid | 145 km/u (Autoweek, Autozine en Autowereld GA: 150 km/u); niet overgenomen | Autowereld Twist | Aannemelijk |
 | Tank | 35 l | Autowereld Twist | Bevestigd |
