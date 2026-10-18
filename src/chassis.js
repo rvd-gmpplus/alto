@@ -447,16 +447,18 @@ function chsHydraulics() {
 }
 
 function chsHandbrake() {
-  const piv = [0, 0.29, -0.20], tip = [0, 0.46, -0.03];
+  // De hendel zelf is van het interieur (Middenconsole/Handremhendel met hoes, draaipunt 4 cm voor INT_PORTS.handremhendel);
+  // het onderstel levert de steun eronder op de vloer, de voorste kabel vanaf het aansluitpunt en de egalisator (B-035: hier stond
+  // een tweede hendel op x 0, 60 mm diep in de tunnelconsole). Vloerbedekking boven op y 0,275, bodemplaat op 0,217.
+  const H = INT_PORTS.handremhendel, hx = H[0], hz = H[2] + 0.04;
   const K = sg => [sg * (chsMR - 0.065), AY + 0.03, AXR - 0.085];
   const cab = sg => [[sg * 0.02, 0.215, -0.64], [sg * 0.15, 0.216, -0.85], [sg * 0.35, 0.215, -1.0], [sg * 0.50, 0.217, -1.12], [sg * 0.52, 0.22, -1.29], [sg * 0.60, 0.27, -1.325], K(sg)];
   const rear = sg => P(`Handremkabel ${chsSn(sg)}`, chsLine(cab(sg), 0.0035, 6), MAT.rubber, { d: `Handremkabel naar de ${chsSn(sg)} achtertrommel (buitenkabel met binnenkabel, getekend als geheel).`, ex: [sg * 0.2, -0.1, -0.2] });
   const klem = sg => P(`Kabelklem ${chsSn(sg)}`, xf(G.box(0.025, 0.008, 0.02), [sg * 0.35, 0.2125, -1.0]), MAT.plasticGrey, { d: 'Klem die de handremkabel aan de vloer vasthoudt.', ex: [sg * 0.1, -0.1, 0] });
-  return A('Handrem', { d: 'Parkeerrem: handhefboom op de middentunnel, kabel naar een egalisator onder de vloer en twee kabels die de schoenen van de achtertrommels spreiden. Plaats van de hefboom geschat; het dashboard en de middenconsole zijn van het interieur.', ex: [0, -0.2, -0.3] }, [
-    P('Handremhendel', merge([rodBetween(piv, tip, 0.006, 10), rodBetween(piv, [0, 0.262, -0.235], 0.006, 8), xf(G.cyl('x', 0.012, 0.012, 0.02, 14), piv)]), MAT.steel, { d: 'Hefboom met palsegment; trekt via de korte arm aan de kabel.', ex: [0, 0.2, 0] }),
-    P('Handremgreep', rodBetween([0, 0.425, -0.057], tip, 0.014, 12), MAT.plastic, { d: 'Kunststof greep met drukknop (schematisch).', ex: [0, 0.35, 0] }),
-    P('Handremhendelsteun', merge([xf(G.box(0.05, 0.05, 0.10), [0, 0.265, -0.20]), xf(G.box(0.07, 0.006, 0.14), [0, 0.238, -0.20])]), MAT.chsPaint, { d: 'Steun op de vloer van de tunnel met het palsegment (plaats geschat).', ex: [0, 0.1, 0] }),
-    P('Handremkabel voor', chsLine([[0, 0.262, -0.235], [0, 0.225, -0.25], [0, 0.205, -0.30], [0, 0.205, -0.60]], 0.0035, 6), MAT.rubber, { d: 'Voorste kabel van de hefboom naar de egalisator.', ex: [0, -0.15, 0] }),
+  const steun = merge([xf(G.box(0.05, 0.006, 0.12), [hx, 0.278, hz - 0.02]), ...[-1, 1].map(s => xf(G.box(0.004, 0.118, 0.07), [hx + s * 0.014, 0.34, hz]))]);
+  return A('Handrem', { d: 'Parkeerrem: de hendel op de middenconsole (interieur) trekt via de voorste kabel aan een egalisator onder de vloer, die twee kabels naar de schoenen van de achtertrommels verdeelt. De hendel en de console zijn van het interieur; het onderstel levert de steun, de kabels en de egalisator.', ex: [0, -0.2, -0.3] }, [
+    P('Handremhendelsteun', steun, MAT.chsPaint, { d: 'Steun op de vloer onder de handremhendel van de console: voetplaat met twee wangen waarin de hendel draait en het palsegment zit (vorm geschat). Zit onder de dichte tunnelconsole en is van buiten niet te zien.', ex: [0, 0.1, 0], inner: true }),
+    P('Handremkabel voor', chsLine([H, [hx, 0.33, H[2] - 0.04], [hx - 0.005, 0.285, -0.14], [0.04, 0.24, -0.22], [0.02, 0.205, -0.30], [0, 0.205, -0.60]], 0.0035, 6), MAT.rubber, { d: 'Voorste kabel van de handremhendel (aansluitpunt INT_PORTS.handremhendel) door de vloer naar de egalisator.', ex: [0, -0.15, 0] }),
     P('Egalisator', merge([xf(G.box(0.04, 0.02, 0.03), [0, 0.205, -0.63])]), MAT.steel, { d: 'Verdeelstuk dat de kabelspanning over links en rechts gelijk verdeelt.', ex: [0, -0.15, -0.1] }),
     rear(1), rear(-1), klem(1), klem(-1)]);
 }
