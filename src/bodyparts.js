@@ -180,8 +180,9 @@ function bodSkinParts() {
   // een haarlijn van 1 px of minder; nu, zoals voor beslissing 17, als een donkere lijn van ca. 2 px. De binnenrand blijft 0,5 mm naast de kap: een bredere opening liet
   // stralen van voren langs de kaprand de motorruimte in (veerpoottoren, schutbord).
   const darkW = z => 0.001 * sstep((z - 1.44) / 0.06), topBrk = tipBrk.concat(bodDense(1.40, 1.55, 15));
-  const fenderTop = s => lowSide(s, bodZDF + 0.004, zTip, 70, z => [cornerLo(z, bodSAtX(z, bodHoodX(z) + 0.007)), bodSAtX(z, bodHoodX(z) + 0.0005 + darkW(z))], 2, topBrk, 0.003);
-  const darkTop = s => bodReg(s, 1.44, zTip, 24, 1, z => cornerLo(z, bodSAtX(z, bodHoodX(z) + 0.0005 + darkW(z))), z => bodSAtX(z, bodHoodX(z) + 0.0005), 0.003, topBrk);
+  // strook en zwarte binnenstrook eindigen 1 mm vóór de punt (cyclus 2, bevinding 4): op dezelfde z stak de laatste driehoek van de strook als rood tandje onder de kaprand uit
+  const fenderTop = s => lowSide(s, bodZDF + 0.004, zTip - 0.001, 70, z => [cornerLo(z, bodSAtX(z, bodHoodX(z) + 0.007)), bodSAtX(z, bodHoodX(z) + 0.0005 + darkW(z))], 2, topBrk, 0.003);
+  const darkTop = s => bodReg(s, 1.44, zTip - 0.001, 24, 1, z => cornerLo(z, bodSAtX(z, bodHoodX(z) + 0.0005 + darkW(z))), z => bodSAtX(z, bodHoodX(z) + 0.0005), 0.003, topBrk);
   // Goot onder de kier tussen kap en scherm (z 1,38 tot zTip, inloop 60 mm): een zwarte strook die van onder de strook van het scherm (fenderTop, 3 mm diep) schuin
   // omlaag naar binnen loopt, tot 25 mm diep en 7 mm (vanaf z 1,53 13 mm) binnen de kaprand, zodat een straal van boven of van voren die tussen kaprand en strook door de
   // kier komt niet de motorruimte in kijkt (Sproeierreservoir, Veerpoottoren, Schutbord). De kaprand (18 mm, schuin naar binnen) blijft erbinnen, ook bij het openen; de
@@ -441,13 +442,22 @@ function bodHeadlamp(s) {
   const capLens = merge([bodReg(sd, Z0, bodZH, 8, 8, bodLcLo, z => Math.max(bodLcLo(z) + 0.001, bodLHi1(z)), bodLampIn), bodReg(sd, bodZH, ZC, 8, 8, bodLcLo, bodLcHi, bodLampIn)].map(bodOutward));
   const refl = bodPlanarUV(bodReg(sd, bodZH, ZE, 14, 10, bodLmLo, bodLmHi, bodRefBowl), 0.34, 0.60, bodYBT(1.43), bodHoodFrontY);   // v over het lampbereik: bumperlijn op de flank tot de kapvoorrand
   // hoekreflector: een zilveren vlak onder de hoekkap met een kleine schotel (positielicht)
-  const zD = 1.578, sD = lerp(bodLcLo(zD), bodLHi1(zD) - 0.03, 0.42), pD = bodLow(zD, bodPp(sd, sD), 0.012), nD = bodN(zD, sD);
-  const dish = G.lathe('x', [[0, -0.012], [0.008, -0.0105], [0.016, -0.0072], [0.023, -0.0030], [0.028, 0]], 28, 'bodHLdish').clone().applyQuaternion(quatFromTo(V3(1, 0, 0), V3(sd * nD[0], nD[1], nD[2]))).translate(pD[0], pD[1], pD[2]);
+  // schotel in het vlakke deel van de hoekkap, rand 1,5 mm vóór het vlak met een kraag van 3 mm terug: bij de lagere, bollere neus van beslissing 17 lag het vlak
+  // (12 mm) op z 1,578 aan de onderkant vóór de rand en las de ring als sikkel (cyclus 2, bevinding 2). Straal 22,4 mm (was 28), hart z 1,565 en 0,65 (was 1,578 en 0,42);
+  // zichtbare ring rondom ca. 2 tot 8 mm (was 0 op de halve omtrek)
+  const zD = 1.565, sD = lerp(bodLcLo(zD), bodLHi1(zD) - 0.03, 0.65), pD = bodLow(zD, bodPp(sd, sD), 0.0105), nD = bodN(zD, sD);
+  const dish = G.lathe('x', [[0, -0.0096], [0.0064, -0.0084], [0.0128, -0.0058], [0.0184, -0.0024], [0.0224, 0], [0.0224, -0.003]], 28, 'bodHLdish2').clone().applyQuaternion(quatFromTo(V3(1, 0, 0), V3(sd * nD[0], nD[1], nD[2]))).translate(pD[0], pD[1], pD[2]);
   // dezelfde textuur als de hoofdreflector, maar alleen het deel zonder gloeilamp: u loopt langs de hoek (zijkant z, dan voorkant x), v over de hoogte
-  // fijner dan eerst (5 x 5) en 3 mm over de grens bodZH heen: bij de lagere, sterker gebogen neus (beslissing 17) liet de koorde tussen de twee vlakken een spleet
-  const cornerRefl = bodArcUV(merge([bodReg(sd, Z0, bodZH + 0.003, 10, 10, bodLcLo, z => Math.max(bodLcLo(z) + 0.001, bodLHi1(z)), 0.012), bodReg(sd, bodZH, ZC, 8, 10, bodLcLo, bodLcHi, 0.012), dish, bodWall(sd, z => [z, bodLSpl(z)], bodZH, ZC, 8, 0.004, 0.07, 2)]));
+  // fijner dan eerst (5 x 5) en 3 mm over de grens bodZH heen: bij de lagere, sterker gebogen neus (beslissing 17) liet de koorde tussen de twee vlakken een spleet.
+  // Het overlapstuk duikt als rok van 12 naar 32 mm achter de reflectorschaal (die op bodZH op 11 mm begint): op 12 mm lag het vóór de schaal en las het als lichte
+  // dubbele streep met zaagtand over de bovenkant van de hoofdreflector (cyclus 2, bevinding 1). De rok is een eigen vlak met dezelfde kolommen: als één vlak trokken
+  // de steile driehoeken de normalen op de rij bodZH scheef en stond de grens als lichte lijn over de hoekkap.
+  const cHi = z => Math.max(bodLcLo(z) + 0.001, bodLHi1(z));
+  const cornerRefl = bodArcUV(merge([bodReg(sd, Z0, bodZH, 10, 10, bodLcLo, cHi, 0.012), bodReg(sd, bodZH, bodZH + 0.003, 2, 10, bodLcLo, cHi, z => lerp(0.012, 0.032, (z - bodZH) / 0.003)), bodReg(sd, bodZH, ZC, 8, 10, bodLcLo, bodLcHi, 0.012), dish, bodWall(sd, z => [z, bodLSpl(z)], bodZH - 0.003, ZC, 8, 0.004, 0.07, 2)]));
   // Lamprand: 6 mm brede donkergrijze scheiding tussen hoofdlens en hoekkap, vlak met het glas
-  const rim = bodReg(sd, bodZH, ZC, 8, 2, z => bodLSpl(z) - 0.0030, z => bodLSpl(z) + 0.0030, bodLampIn - 0.0004);
+  // rand en scheidingswand beginnen 3 mm vóór bodZH (cyclus 2, bevinding 3): hun boveneinde viel samen met de grens van de hoekreflector en liet daar een vlaggetje
+  // met tandjes en een spleetje naar het lamphuis zien
+  const rim = bodReg(sd, bodZH - 0.003, ZC, 8, 2, z => bodLSpl(z) - 0.0030, z => bodLSpl(z) + 0.0030, bodLampIn - 0.0004);
   // Lamphuis: gesloten kuip (vloer op 70 mm, vier wanden) zodat het zicht door het glas nooit op frontmodule, koelblok of waterkast valt
   // de onderwand van het huis begint op de diepte van de bumperrand (niet vast 4 mm): tussen wand en bumperrand bleef een spleet waardoor je van boven de bumperbalk zag (afwerking a)
   const lo = z => bodLLo(z, 0.004), hi2 = z => Math.max(lo(z) + 0.0005, bodLHi2(z)), D = 0.07;
