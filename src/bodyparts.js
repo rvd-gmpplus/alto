@@ -18,7 +18,6 @@ std('bodLiner', 0x1a1b1e, 0, 0.9);                                         // zw
 std('bodBlack', 0x0f1012, 0, 0.62);                                        // zwart kunststof: spiegels, grepen, wissers
 std('bodPillar', 0x060607, 0, 0.8, { envMapIntensity: 0.12 });             // zwart rubber en kader
 std('bodPillarGloss', 0x08090b, 0.05, 0.3, { envMapIntensity: 0.35 });     // hoogglans zwarte B-stijl
-std('bodChrome', 0xa9b0b7, 1, 0.06, { envMapIntensity: 2.1 });
 std('bodHoney', 0x131519, 0, 0.9, { envMapIntensity: 0.1 });           // honingraatgrille
 std('bodMirror', 0xb4bec6, 1, 0.04, { envMapIntensity: 1.1 });
 std('bodSeal', 0x151618, 0, 0.9);
@@ -143,7 +142,7 @@ function bodWheelHouse(s, az, yb = 0.21, hw = 0, xn = 0.58, ae = 0, dEnd = 0.20)
     // 2,5 mm achter de remslang (tot z 1,175) en 2,5 mm voor de motorsteunbeugel rechts (vanaf z 1,182).
     const zr = az - hw - 0.004, zf = az + hw + 0.0165, t = 0.002, y0 = yn - 0.01, hh = 0.635 - y0, xm = (xb + xn) / 2;
     schot = plaat([[zr, y0], [zf, y0], [zf, 0.635], [zr, 0.635]], xb);
-    extra.push(xf(new THREE.BoxGeometry(t, 0.08, zf - zr), [s * xn, 0.595, (zr + zf) / 2]), xf(new THREE.BoxGeometry(xn - xb, hh, t), [s * xm, y0 + hh / 2, zr]), xf(new THREE.BoxGeometry(xn - xb, hh, t), [s * xm, y0 + hh / 2, zf]));
+    extra.push(xf(G.box(t, 0.08, zf - zr), [s * xn, 0.595, (zr + zf) / 2]), xf(G.box(xn - xb, hh, t), [s * xm, y0 + hh / 2, zr]), xf(G.box(xn - xb, hh, t), [s * xm, y0 + hh / 2, zf]));
     // Gaten onderin de boog (poort `wielkast gat onder de boog`): sluitplaten voor en achter de band. Buitenplaten vlak binnen de huid (x 0,645 voor, x 0,625 achter) volgen de band op 6 mm (straal 0,2666 + 0,006);
     // de band mag er niet binnen 5 mm van komen (poort `wielkastbekleding raakt onderstel en aandrijving niet`). Voor: z tot 1,435 (de bumperschaal begint op z 1,446, de onderplaat op 1,443). Achter: z vanaf 0,70 en tot y 0,50 (de buitenplaat moet er zijn: de instaplijst staat op z 0,716 en schemert er anders doorheen).
     // De binnenplaat achter de band begint op de wielboog zelf (zA: de rand van het scherm, straal ARCH) en niet in de voetruimte: bij een open portier stonden hij en de wandplaat 9 tot 11 cm in de cabine (Voetsteun ingeklemd, vloermat afgesneden).
