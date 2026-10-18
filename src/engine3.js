@@ -37,8 +37,8 @@ function engBuildLube() {
     ]),
     A('Peilstok', { d: 'Oliepeilstok met buis aan de voorzijde van het blok.', ex: [0.06, 0.08, 0.1] }, [
       P('Peilstokbuis', G.cyl('y', 0.0065, 0.0065, 0.225, 10), MAT.steel, { d: 'Dunwandige buis van het carter omhoog langs het blok.', p: [0.152, 0.0525, 0.0975], ex: [0, 0, 0] }),
-      P('Peilstok', G.cyl('y', 0.0022, 0.0022, 0.235, 8), MAT.steel, { d: 'Stalen meetstok met merken voor minimaal en maximaal peil.', p: [0.152, 0.0575, 0.0975], ex: [0, 0.12, 0], inner: true }),
-      P('Peilstokgreep', G.torus('z', 0.008, 0.0018, 16, 5), MAT.handle, { d: 'Gele greep van de peilstok.', p: [0.152, 0.1755, 0.0975], ex: [0, 0.2, 0] }),
+      P('Peilstok', G.cyl('y', 0.0022, 0.0022, 0.227, 8), MAT.steel, { d: 'Stalen meetstok met merken voor minimaal en maximaal peil.', p: [0.152, 0.0535, 0.0975], ex: [0, 0.12, 0], inner: true }),
+      P('Peilstokgreep', G.torus('z', 0.008, 0.0018, 16, 5), MAT.handle, { d: 'Gele greep van de peilstok.', p: [0.152, 0.1745, 0.0975], ex: [0, 0.2, 0] }),
       P('Peilstokbus', G.cyl('y', 0.009, 0.009, 0.012, 10), MAT.aluCast, { d: 'Bus in het blok waarin de peilstokbuis geperst zit.', p: [0.152, -0.02, 0.0925], ex: [0, -0.04, 0.03] }),
     ]),
   ]);

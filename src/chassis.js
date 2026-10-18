@@ -428,7 +428,9 @@ function chsHydraulics() {
   const FR = [[0.39, 0.587, 1.125], [0.39, 0.575, 1.125], [0.33, 0.58, 1.12], [0.215, 0.58, 1.10], [0.215, 0.58, 0.905], [-0.35, 0.575, 0.905], [-0.46, 0.52, 0.97], [-0.50, 0.50, 1.05], [-0.515, 0.50, 1.16]];
   const RM = [[0.39, 0.587, 1.085], [0.39, 0.50, 1.085], [0.33, 0.50, 0.99], [0.30, 0.51, 0.912], [0.30, 0.40, 0.909], [0.30, 0.26, 0.905], [0.33, 0.215, 0.80], [0.36, 0.205, 0.5], [0.36, 0.205, -0.5], [0.36, 0.213, -0.9], [0.40, 0.213, -0.98]];
   const RL = [[0.40, 0.213, -0.98], [0.42, 0.22, -1.04], [0.43, 0.235, -1.095]];
-  // rechts loopt de leiding tussen de bovenkant van de uitlaatpijp (y 0,221) en de vloer (y 0,23) door, voor het ophangrubber van de pijp langs (z -1,02) en boven de tank (y 0,19)
+  // de leiding naar rechts loopt dwars onder de vloer (y 0,23) en boven de tank (y 0,19) naar de rechter achterlangsligger; de verhoging bij x 0,27 tot 0,34
+  // (y 0,2255) liet haar over de verbindingspijp van de uitlaat lopen toen die links (+x) lag. Met het systemenpakket van golf 5 loopt de uitlaat
+  // rechts (-x); deze route is daarop nog niet nagemeten
   const RR = [[0.40, 0.213, -0.98], [0.34, 0.2255, -0.98], [0.27, 0.2255, -0.98], [0.2, 0.213, -0.98], [0.0, 0.213, -0.98], [-0.36, 0.215, -1.04], [-0.43, 0.235, -1.095]];
   const hoseF = sg => chsXs(sg, [[0.515, 0.495, 1.16], [0.53, 0.46, 1.165], [0.58, 0.40, 1.17], [0.575, 0.34, 1.17], ban]);
   const hoseR = sg => chsXs(sg, [[0.43, 0.235, -1.095], [0.47, 0.33, -1.15], [0.54, 0.37, -1.20], [0.60, 0.375, -1.22], [chsMR - 0.067, AY + 0.0795, AXR - 0.012]]);
