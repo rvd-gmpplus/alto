@@ -362,6 +362,6 @@ function buildElectrical() {
 }
 function buildCar() {
   // de wortel heet zoals auto.json zegt (AUTO.wortel) en heeft precies de acht hoofdgroepen, in deze volgorde
-  return A(AUTO.wortel, { d: 'Suzuki Alto 1.0-16V Twist (2001), 3-deurs hatchback. De carrosserie en de vier systemen (koeling en luchtinlaat, uitlaat, brandstof, elektra) zijn uitgewerkt; aandrijflijn, onderstel en interieur zijn nog plaatshouders. Klik op een onderdeel om het uit te klappen.' },
+  return A(AUTO.wortel, { d: 'Suzuki Alto 1.0-16V Twist (2001), 3-deurs hatchback, in acht hoofdgroepen: carrosserie, interieur, aandrijflijn (motor G10BB, handbak, aandrijfassen en startmotor), onderstel (vooras met stuurinrichting, achteras, wielen en remmen) en de systemen koeling en luchtinlaat, uitlaat, brandstof en elektra. Vormen en plaatsen zijn schematisch. Klik op een onderdeel om het uit te klappen.' },
     [buildBody(), buildInterior(), buildPowertrain(), buildChassis(), buildCooling(), buildExhaust(), buildFuel(), buildElectrical()]);
 }
