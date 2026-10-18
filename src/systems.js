@@ -1,7 +1,7 @@
 /* ===================== systems.js: koeling en luchtinlaat, uitlaat, brandstof, elektra en de samenstelling van de auto ===================== */
 // Alles wat aan de motor of de startmotor hangt begint op ENG_PORTS.* (via ENG2CAR) of DRV_PORTS.starterTerminal.
-// Plaatsen die de bronnen niet geven (accu links voor, tank onder de achterbank, einddemper links achter, ECU op het schutbord)
-// zijn aangenomen en staan zo in de beschrijving (docs/onderzoek/beslissingen.md, besluit 12).
+// Plaatsen die de bronnen niet geven (accu links voor, tank onder de achterbank, ECU op het schutbord) zijn aangenomen en staan zo in de
+// beschrijving (docs/onderzoek/beslissingen.md, besluit 12). Uitlaat rechts en tankklep links volgen foto's van een Alto GL 2001 (golf 5, B-005).
 std('sysHose', 0x1b1d20, 0, 0.8);
 std('sysBattery', 0x2c3947, 0, 0.55);
 std('sysCable', 0xa3201f, 0, 0.7);                              // pluskabel en poolkap: rood
@@ -122,13 +122,14 @@ function buildCooling() {
 }
 
 /* ============================ uitlaatsysteem ============================ */
-// Pijpen onder de vloer op PY (bodemvrijheid circa 16 cm, geschat); de vloer ligt er op 0,215 tot 0,235. Einddemper links achter aangenomen:
-// de tankklep zit rechts, dus de uitlaat links; foto's van de eigenaar kunnen dat omkeren.
+// Pijpen onder de vloer op PY (bodemvrijheid circa 16 cm, geschat); de vloer ligt er op 0,215 tot 0,235. Uitlaat rechts (x -0,30): een foto van een
+// Alto GL 2001 van rechtsachter toont het eindstuk rechts van het midden, en de rechterflank heeft geen tankklep (B-005).
 function sysOvalGeo(key, hw, hh, bodyLen, dome) {
   return cache(key, () => merge([xf(G.cyl('z', 1, 1, bodyLen, 28), [0, 0, 0], [0, 0, 0], [hw, hh, 1]), xf(G.sphere(1, 14), [0, 0, bodyLen / 2], [0, 0, 0], [hw, hh, dome]), xf(G.sphere(1, 14), [0, 0, -bodyLen / 2], [0, 0, 0], [hw, hh, dome])]));
 }
-function sysHanger(name, d, x, yLow, z, ex) {
-  const yTop = YB(z) + 0.0015, len = yTop - yLow;
+// ophangrubber van yLow tot de onderkant van de vloer (YB) of tot yTop als daar een ander carrosseriedeel zit (vloerstrook, langsligger)
+function sysHanger(name, d, x, yLow, z, ex, yTop = YB(z) + 0.0015) {
+  const len = yTop - yLow;
   return P(name, merge([xf(G.cyl('y', 0.009, 0.009, len, 10), [0, len / 2, 0]), xf(G.box(0.036, 0.004, 0.026), [0, -0.002, 0]), xf(G.cyl('y', 0.012, 0.012, 0.003, 10), [0, len - 0.0015, 0])]), MAT.rubber, { d, p: [x, yLow, z], ex });
 }
 function buildExhaust() {
@@ -168,29 +169,29 @@ function buildExhaust() {
     sondeVoor, sondeNa,
   ]);
   // ---------- middenpijp: bocht naar links ----------
-  const X_T = 0.30, zM = -0.62;
+  const X_T = -0.30, zM = -0.62;                 // hartlijn van dempers en verbindingspijp: rechts van het midden
   const mp = []; for (let i = 0; i <= 10; i++) { const z = zC1 - 0.01 - i * ((zC1 - 0.01 - (zM + 0.24)) / 10), t = i / 10, s = t * t * (3 - 2 * t); mp.push([xC + (X_T - xC) * s, PY, z]); }
   const clampGeo = cache('sysPipeClamp', () => merge([G.torus('z', R + 0.005, 0.003, 14, 5), xf(G.box(0.018, 0.008, 0.012), [0, R + 0.01, 0]), xf(hexBolt(0.016, 0.006, 'x'), [-0.009, R + 0.012, 0])]));
-  const midPijp = A('Middenpijp', { d: 'Pijp van de katalysator naar de middendemper; buigt onder de vloer naar de linkerkant van de auto.', ex: [0.1, -0.3, 0] }, [
+  const midPijp = A('Middenpijp', { d: 'Pijp van de katalysator naar de middendemper; buigt onder de vloer naar de rechterkant van de auto.', ex: [-0.1, -0.3, 0] }, [
     P('Pijp', sysTube(mp, R, 12, 0.04), MAT.exhaust, { d: 'Stalen pijp onder de vloer, ongeveer 42 mm (maat geschat).', ex: [0, -0.1, 0] }),
     sysPart('Uitlaatklem', clampGeo, MAT.steel, mp[0], 'Beugelklem die de middenpijp op de katalysator klemt.', [0, -0.08, 0.05]),
   ]);
   // ---------- middendemper en einddemper ----------
   const MH = 0.085, MV = 0.033;
-  const mid = A('Middendemper', { d: 'Eerste demper, onder de vloer links voor de tank, in lengte opgebouwd uit twee kamers. Plaats aangenomen.', ex: [0.2, -0.4, 0] }, [
-    sysPart('Dempermantel', sysOvalGeo('sysMidBody', MH, MV, 0.30, 0.04), MAT.sysDemper, [X_T, PY, zM], 'Ovale plaatstalen mantel met twee afgeronde eindkappen.', [0.1, -0.08, 0]),
+  const mid = A('Middendemper', { d: 'Eerste demper, onder de vloer rechts naast de tank, in lengte opgebouwd uit twee kamers. Plaats aangenomen.', ex: [-0.2, -0.4, 0] }, [
+    sysPart('Dempermantel', sysOvalGeo('sysMidBody', MH, MV, 0.30, 0.04), MAT.sysDemper, [X_T, PY, zM], 'Ovale plaatstalen mantel met twee afgeronde eindkappen.', [-0.1, -0.08, 0]),
     sysPart('Demperpijpen', cache('sysMidPipes', () => merge([xf(G.cyl('z', R, R, 0.13, 12), [0, 0, 0.18]), xf(G.cyl('z', R, R, 0.13, 12), [0, 0, -0.18])])), MAT.exhaust, [X_T, PY, zM], 'Ingaande en uitgaande pijp, aan de eindkappen gelast.', [0, 0, 0.12]),
     sysPart('Demperschotten', cache('sysMidBaffles', () => merge([-0.06, 0.06].map(z => xf(G.cyl('z', 1, 1, 0.004, 24), [0, 0, z], [0, 0, 0], [MH - 0.005, MV - 0.004, 1])))), MAT.steel, [X_T, PY, zM], 'Twee schotten met gaten die het geluid in kamers verdelen.', [0, 0.1, 0], { inner: true }),
   ]);
   const zE0 = zM - 0.24, zEnd = -1.46;
   const verb = [[X_T, PY, zE0 - 0.005], [X_T, PY, -1.0], [X_T, PY + 0.005, -1.12], [X_T, PY + 0.015, -1.20], [X_T, 0.20, zEnd + 0.22]];
-  const verbinding = A('Verbindingspijp', { d: 'Rechte pijp van de middendemper naar de einddemper, onder de tank langs aan de linkerkant; stijgt aan het eind iets.', ex: [0.2, -0.3, -0.3] }, [
+  const verbinding = A('Verbindingspijp', { d: 'Rechte pijp van de middendemper naar de einddemper, rechts naast de tank en onder de torsiebalk door; stijgt aan het eind iets.', ex: [-0.2, -0.3, -0.3] }, [
     P('Pijp', sysTube(verb, R, 12, 0.05), MAT.exhaust, { d: 'Stalen pijp, ongeveer 42 mm (maat geschat).', ex: [0, -0.1, 0] }),
     sysPart('Uitlaatklem', clampGeo, MAT.steel, verb[0], 'Beugelklem op de uitgaande pijp van de middendemper.', [0, -0.08, 0.05]),
   ]);
   const EH = 0.10, EV2 = 0.042;
-  const eind = A('Einddemper', { d: 'Tweede demper achter de achteras, links achter onder de bumper. De zijde is aangenomen (tankklep rechts); foto\'s van de onderkant kunnen dit omkeren.', ex: [0.3, -0.4, -0.5] }, [
-    sysPart('Dempermantel', sysOvalGeo('sysEndBody', EH, EV2, 0.26, 0.04), MAT.sysDemper, [X_T, 0.20, zEnd], 'Grote ovale plaatstalen mantel met afgeronde eindkappen.', [0.1, -0.08, 0]),
+  const eind = A('Einddemper', { d: 'Tweede demper achter de achteras, rechts achter onder de bumper; het eindstuk komt rechts van het midden uit, zoals op een foto van een Alto GL 2001 van rechtsachter. Een foto van de onderkant van deze auto ontbreekt.', ex: [-0.3, -0.4, -0.5] }, [
+    sysPart('Dempermantel', sysOvalGeo('sysEndBody', EH, EV2, 0.26, 0.04), MAT.sysDemper, [X_T, 0.20, zEnd], 'Grote ovale plaatstalen mantel met afgeronde eindkappen.', [-0.1, -0.08, 0]),
     sysPart('Demperpijpen', cache('sysEndPipes', () => merge([xf(G.cyl('z', R, R, 0.1, 12), [0, 0, 0.17]), xf(G.cyl('z', R, R, 0.1, 12), [0, 0, -0.17])])), MAT.exhaust, [X_T, 0.20, zEnd], 'Ingaande pijp en uitgaande pijp, aan de eindkappen gelast.', [0, 0, -0.12]),
     sysPart('Demperschotten', cache('sysEndBaffles', () => merge([-0.07, 0, 0.07].map(z => xf(G.cyl('z', 1, 1, 0.004, 24), [0, 0, z], [0, 0, 0], [EH - 0.005, EV2 - 0.004, 1])))), MAT.steel, [X_T, 0.20, zEnd], 'Drie schotten met gaten die het geluid dempen.', [0, 0.1, 0], { inner: true }),
     sysPart('Uitlaateindstuk', cache('sysTip', () => merge([G.cyl('z', 0.026, 0.026, 0.03, 20), xf(G.cyl('z', 0.0235, 0.0235, 0.031, 20, true), [0, 0, 0])])), MAT.exhaust, [X_T, 0.20, zEnd - 0.24], 'Kaal stalen eindstuk dat net onder de achterbumper uitkomt.', [0, -0.05, -0.2]),
@@ -199,11 +200,13 @@ function buildExhaust() {
   const zH = 0.30, tH = Math.max(0, Math.min(1, (zC1 - 0.01 - zH) / (zC1 - 0.01 - (zM + 0.24)))), xH = xC + (X_T - xC) * tH * tH * (3 - 2 * tH);
   const ophanging = A('Ophanging', { d: 'Rubber ophangingen waarmee het hele uitlaatsysteem onder de vloer hangt, zodat trillingen niet doorkomen in de carrosserie. Plaatsen en aantal geschat.', ex: [0, 0.2, 0] }, [
     sysHanger('Ophangrubber voorpijp', 'Rubber ophanging onder de vloer op de bocht van de middenpijp.', xH, PY + R, zH, [0, 0.12, 0]),
-    sysHanger('Ophangrubber middendemper voor', 'Rubber ophanging aan de zijkant van de middendemper, voor.', X_T + MH + 0.015, PY + 0.01, zM + 0.1, [0.08, 0.12, 0]),
-    sysHanger('Ophangrubber middendemper achter', 'Rubber ophanging aan de zijkant van de middendemper, achter.', X_T + MH + 0.015, PY + 0.01, zM - 0.1, [0.08, 0.12, 0]),
-    sysHanger('Ophangrubber verbindingspijp', 'Rubber ophanging op de verbindingspijp onder de tank.', X_T, PY + R, -1.02, [0, 0.12, 0]),
-    sysHanger('Ophangrubber einddemper voor', 'Rubber ophanging aan de zijkant van de einddemper, voor.', X_T + EH + 0.015, 0.205, zEnd + 0.09, [0.08, 0.12, 0]),
-    sysHanger('Ophangrubber einddemper achter', 'Rubber ophanging aan de zijkant van de einddemper, achter.', X_T + EH + 0.015, 0.205, zEnd - 0.09, [0.08, 0.12, 0]),
+    sysHanger('Ophangrubber middendemper voor', 'Rubber ophanging aan de buitenkant van de middendemper, voor; hangt aan de vloer.', X_T - MH - 0.017, PY + 0.01, zM + 0.1, [-0.08, 0.12, 0]),
+    sysHanger('Ophangrubber middendemper achter', 'Rubber ophanging aan de buitenkant van de middendemper, achter; hangt aan de vloer.', X_T - MH - 0.017, PY + 0.01, zM - 0.1, [-0.08, 0.12, 0]),
+    // verbindingspijp: op z -0,995 onder de vloerstrook van de achtervloer (y 0,262), tussen de handremkabel (z -0,96) en de remleiding achter rechts (z -1,03)
+    sysHanger('Ophangrubber verbindingspijp', 'Rubber ophanging op de verbindingspijp voor de achteras; hangt aan de vloerstrook voor de hielplaat.', X_T, PY + R, -0.995, [0, 0.12, 0], 0.2635),
+    // einddemper: de voorste aan de onderkant van de rechter langsligger achter (y 0,29), achter de panhardstang (z -1,355); de achterste aan de vloer
+    sysHanger('Ophangrubber einddemper voor', 'Rubber ophanging aan de buitenkant van de einddemper, voor; hangt aan de rechter langsligger achter.', X_T - EH - 0.018, 0.205, -1.40, [-0.08, 0.12, 0], 0.2915),
+    sysHanger('Ophangrubber einddemper achter', 'Rubber ophanging aan de buitenkant van de einddemper, achter; hangt aan de vloer achter de achteras.', X_T - EH - 0.018, 0.205, zEnd - 0.09, [-0.08, 0.12, 0]),
   ]);
   // ---------- hitteschilden onder de vloer ----------
   const plate = (w, len) => merge([G.box(w, 0.003, len), xf(G.box(0.003, 0.014, len), [w / 2 - 0.0015, -0.0085, 0]), xf(G.box(0.003, 0.014, len), [-w / 2 + 0.0015, -0.0085, 0]), ...[-0.3, 0, 0.3].map(f => xf(G.box(w - 0.02, 0.004, 0.006), [0, 0.0035, len * f * 0.5]))]);
@@ -211,10 +214,10 @@ function buildExhaust() {
     // schuin achter de voorpijp, onder het stuurhuis (bovenrand y 0,39; het stuurhuis begint op 0,398): van (y 0,25; z 0,924) tot (y 0,39; z 0,9635), 35 mm achter de pijp (B-029)
     sysPart('Hitteschild voorpijp', cache('sysShieldFront', () => merge([G.box(0.12, 0.1455, 0.003), ...[-0.04, 0, 0.04].map(x => xf(G.box(0.006, 0.135, 0.005), [x, 0, 0.003]))])), MAT.heat, [xE + 0.01, 0.32, zE - 0.058], 'Aluminium plaat schuin achter de voorpijp, onder het stuurhuis; houdt de hitte van de pijp weg van het stuurhuis en het schutbord.', [0, 0, -0.1], { r: [Math.atan2(0.0395, 0.14), 0, 0] }),
     sysPart('Hitteschild katalysator', plate(0.13, 0.26), MAT.heat, [xC, 0.2195, zC0 - 0.12], 'Geribd aluminium schild boven de katalysator, direct onder de vloer.', [0, 0.1, 0]),
-    sysPart('Hitteschild middendemper', plate(0.2, 0.40), MAT.heat, [X_T, 0.2155, zM], 'Geribd aluminium schild boven de middendemper, direct onder de vloer.', [0, 0.1, 0]),
-    sysPart('Hitteschild einddemper', plate(0.24, 0.36), MAT.heat, [X_T, 0.2485, zEnd], 'Geribd aluminium schild boven de einddemper.', [0, 0.1, 0]),
+    sysPart('Hitteschild middendemper', plate(0.18, 0.40), MAT.heat, [X_T, 0.2155, zM], 'Geribd aluminium schild boven de middendemper, direct onder de vloer.', [0, 0.1, 0]),
+    sysPart('Hitteschild einddemper', plate(0.21, 0.36), MAT.heat, [X_T, 0.2485, zEnd], 'Geribd aluminium schild boven de einddemper.', [0, 0.1, 0]),
   ]);
-  return A('Uitlaatsysteem', { d: 'Uitlaat vanaf de achterzijde van de motor: voorpijp met flexstuk, driewegkatalysator met twee lambdasondes, middendemper en einddemper links achter, met ophangrubbers en hitteschilden onder de vloer. Plaatsen van de dempers zijn aangenomen.', ex: [0.4, -1.5, -0.6] },
+  return A('Uitlaatsysteem', { d: 'Uitlaat vanaf de achterzijde van de motor: voorpijp met flexstuk, driewegkatalysator met twee lambdasondes, middendemper en einddemper rechts onder de vloer, met ophangrubbers en hitteschilden onder de vloer. Plaatsen van de dempers zijn aangenomen.', ex: [-0.4, -1.5, -0.6] },
     [voorpijp, cat, midPijp, mid, verbinding, eind, ophanging, schilden]);
 }
 
