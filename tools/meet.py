@@ -22,7 +22,7 @@ Poorten
   bumperschouderhoek       <= 25 graden (streef 20)
   hoekkap boven/onder      hoekkap hoogstens 15 mm boven en 10 mm onder de hoofdlens
   lip afstand / aansluithoek / normaalsprong   <= 3 mm / <= 30 graden / <= 25 graden
-  verhouding bumper/lamp   <= 2,8
+  verhouding bumper/lamp   <= 2,8 tot de liponderrand; <= 2,8 tot de onderrand van de afscherming (VERH_AFSCH_MAX, beslissing 17; was 3,1)
   console                  geen fouten of waarschuwingen
   aantal poorten           alleen in volle modus (zonder --cams, --geen-geo en --geen-rondgang): precies VERWACHT_HARD (99) harde en VERWACHT_ZACHT (13) zachte poorten; anders is deze extra poort rood (exitcode 1).
                            Staat ook in het groene geval in de lijst (extra: true in de JSON) en telt niet mee in de 99. In de beperkte modus meldt het script 'aantal poorten niet gecontroleerd (beperkte modus)'.
@@ -462,7 +462,7 @@ KAP_MAX_PX = 50        # eis uit het advies: geen knoop uit de motorruimte (of h
 SCHOUDER_MAX = 25.0    # graden, bepaling ronde 1
 EMBLEEM_MAX = 2.0      # helderheid embleem / gaas (premortem: 5,5 tot 5,7 op HEAD a9035fc, F1: 1,0)
 PLAAT_MAX = 3.0        # Onderplaat voorbumper in eig: hoogstens zoveel keer het aantal beeldpunten van Honingraatgrille (a9035fc: 4,56). De eis van het advies, 0,25, is niet te combineren met zicht onder de bumper hoogstens 0,5 procent: zie beslissing 21
-VERH_AFSCH_MAX = 3.1   # verhouding bumper/lamp tot de onderrand van de afscherming (bewaking)
+VERH_AFSCH_MAX = 2.8   # verhouding bumper/lamp tot de onderrand van de afscherming: 3,1 (bewaking op de stand van voor beslissing 17, gemeten 3,08) is 2,8 sinds de neus is verlaagd (gemeten 2,49)
 SCHERM_DIEP_MAX_MM = 55  # afscherming hoogstens zoveel mm onder de liponderrand
 FACET_MAX = 25.0       # graden tussen de vlaknormalen van aangrenzende driehoeken van Bumperschaal voor in het hoekgebied (premortem: 59,6)
 NAADSTROOK_MAX_PX = 50   # afwerking c (voorstel)
@@ -755,7 +755,7 @@ def main():
     # plaatOnder (Onderplaat voorbumper, bodyparts.js onder Voorbumper) bestaat op de huidige stand altijd: een vaste knoop zonder hideWhen of opener, ook in de luminantiepoorten en in 'onderplaat tegenover gaas in eig' verplicht.
     # Daarom is plaatOnder hier invoer van de poort zoals de rest; de oude terugval 'zonder plaat alleen de lip' (min met 9) is vervallen.
     geo_poort('verhouding bumper/lamp op x=0 (tot de afscherming)', ['lipOnder', 'plaatOnder', 'kapVoorrand', 'afdek', 'bumperTop'], lambda: ver_afs() <= VERH_AFSCH_MAX,
-              lambda: f"{ver_afs():.3f} tot {min(gg['lipOnder'], gg['plaatOnder']):.3f} m", f'<= {VERH_AFSCH_MAX} (bewaking: de afscherming mag de neus niet zwaarder maken; doel 2,8 bij beslissing 17)')
+              lambda: f"{ver_afs():.3f} tot {min(gg['lipOnder'], gg['plaatOnder']):.3f} m", f'<= {VERH_AFSCH_MAX} (beslissing 17: neus en bumperbovenrand omlaag; de afscherming mag de neus niet zwaarder maken)')
     geo_poort('afscherming onder de lip', ['lipOnder', 'plaatOnder'], lambda: (gg['lipOnder'] - gg['plaatOnder']) * 1000 <= SCHERM_DIEP_MAX_MM, lambda: f"{(gg['lipOnder'] - gg['plaatOnder']) * 1000:.0f} mm onder de liponderrand", f'<= {SCHERM_DIEP_MAX_MM} mm (een lint, geen plank)')
     if g:
         print(f"info: vlaknormaalhoek tussen aangrenzende driehoeken in het hoekgebied {g['facet']:.1f} graden bij {g['facetAt']} (meet slanke driehoeken op de neusbovenrand, geen poort: zie beslissing 21)")
