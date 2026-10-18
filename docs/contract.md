@@ -178,3 +178,15 @@ Na de samenvoeging van de vijf domeinen is elk paar meshes uit verschillende hoo
 | Vliegwiel met koppelingsdeksel, startkrans in het koppelingshuis, primaire as in het vliegwiel | vlak tegen elkaar (het deksel ligt in de rand van het vliegwiel), de as steekt in het pilotlager |
 
 Wat wel is opgelost: de wielkastwanden (begin op y 0,42 voor en 0,485 achter, uitsparing voor de veerpoot), het schutbord onder y 0,58 smaller dan de wielkasten, de brandstoftank (3,5 cm lager, 2 cm naar links) met de remleidingen, handremkabels en kabelboom eromheen, de stabilisatorstang (puntvolgorde: ging als rechte lijn door carter en bak), de torsiesteun (nu boven het stuurhuis), het motorkapslot (boven de waterkast van de radiateur), de koppelingsplaat (tegen het vliegwiel), het dashboard (0,52 breed, voorvlak op z 0,85), de stoelen, de C-stijlbekleding, de wielkastbekleding (schil), de vloerbedekking, de achterwandbekleding en de wissermotor.
+
+### Aanvulling golf 5 (review, bevinding B-034)
+
+De review van golf 5 mat alle doordringingen tussen gesloten meshes. Het merendeel valt onder de tabel hierboven of zit binnen een hoofdgroep (schuim in bekleding, assen in huizen). Drie paren tussen domeinen ontbraken hier en zijn bedoeld contact van een bevestiging. Nagemeten met `tools/orkestratie/clash.py` op `658afcf`, gemonteerde stand, alle openers dicht (diepte als grootste afstand van een binnenpunt tot het oppervlak):
+
+| Contact | Diepte | Reden |
+|---|---|---|
+| Kabelboom motorruimte (systemen) in de Wissermotor (carrosserie, Ruitenwissers) | 12,9 mm | de kabelboom eindigt in de stekker van de wissermotor |
+| Hemelbekleding (interieur) om Klepscharnier links en rechts (carrosserie, Achterklep) | 6,8 mm | de scharnieren zijn door het dak aan de dakrand geschroefd; de hemel ligt over die bevestiging |
+| C-stijlbekleding links en rechts (interieur) om de cilinder van Gasveer links en rechts (carrosserie, Achterklep) | 10,4 mm (cilinder), 3,9 mm (zuigerstang) | de gasveer is onderaan aan de C-stijl bevestigd; de bekleding is een gesloten schil om die bevestiging |
+
+De overige paren uit de review buiten deze tabel (Kabelboom achter en Ontluchtingsslang vulpijp in de Bagagevloer, 6 tot 6,7 mm; Claxonbeugel in de Vathouder, 6 mm) zijn niet als bedoeld beoordeeld en staan open voor hun eigenaars. Het oordeel "bedoeld" over de drie paren in de tabel is gebaseerd op de plek en de functie van de delen; de eigenaars van interieur, carrosserie en systemen bevestigen het of verschuiven de delen in hun volgende golf.
