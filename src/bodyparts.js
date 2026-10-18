@@ -260,12 +260,16 @@ function bodStructure() {
   return [floor, front, rear];
 }
 const bodWheelHousePart = (s, fr) => P(`Wielkast ${fr ? 'voor' : 'achter'} ${bodSn(s)}`, fr ? bodWheelHouse(s, AXF, 0.42, 0.075, 0.58, WH_AE) : bodWheelHouseAchter(s), MAT.bodLiner,
-  { d: `Binnenscherm van de ${fr ? 'voor' : 'achter'}wielkast met zwarte kunststof bekleding: een halve koker om het wiel met een wand aan de binnenzijde, gelast aan langsligger, vloer en buitenscherm. De wand begint boven de aandrijfas, de draagarmen en de achteras${fr ? '; voor heeft hij een uitsparing waar de veerpoot naar de veerpoottoren loopt' : ''}.`, ex: [s * 0.12, 0.04, 0] });
+  { d: `Binnenscherm van de ${fr ? 'voor' : 'achter'}wielkast met zwarte kunststof bekleding: een halve koker om het wiel met een wand aan de binnenzijde, gelast aan langsligger, vloer en buitenscherm. ${fr ? 'De wand begint boven de aandrijfas, de draagarmen en de achteras; voor heeft hij een uitsparing waar de veerpoot naar de veerpoottoren loopt' : 'Achter loopt de wand ook onder de boog door, met ruimte voor torsiebalk, panhardstang en remslang, en wijkt hij bij de schroefveer in naar een veerkoker'}.`, ex: [s * 0.12, 0.04, 0] });
 // Binnenscherm van de achterwielkast (open punt AWK): eigen functie, zodat de voorwielkast (bodWheelHouse met AXF) ongewijzigd blijft. Zelfde opbouw als voor
 // (wand op |x| 0,50 boven yb, sluitstukken aan de boogeinden, koker tot de huid), met deze verschillen, elk tegen doorkijk naar het interieur door de achterboog:
 // - de koker loopt aan beide einden verder omlaag: voor tot y 0,250 (was 0,398; de blik liep onder het vooreinde door naar de zijbekleding achter en de vloer), achter tot
 //   y 0,280 links (boven de bodemplaat, 0,278) en 0,380 rechts (vulpijp en ontluchtingsslang lopen lager door het vlak van de koker);
-// - de rand van de wand ligt 2 mm buiten de koker (straal R + 0,002): tussen de koorden van wand (12) en koker (48) bleef anders een spleet tot 0,4 mm.
+// - de rand van de wand ligt 2 mm buiten de koker (straal R + 0,002): tussen de koorden van wand (12) en koker (48) bleef anders een spleet tot 0,4 mm;
+// - het midden onder de boog is dicht (voor is het open voor de aandrijfas; achter loopt die niet), rond de asdelen met minstens 5 mm vrij: achter de as (z -1,448 tot -1,240)
+//   tot y 0,245, rechts onder y 0,340 open voor de panhardbeugel; tussen torsiebalk en veer (z -1,240 tot -1,174) vanaf y 0,300 (torsiebalk tot 0,295); voor de veer een strook;
+// - de schroefveer kruist het vlak x 0,50 (x 0,477 tot 0,575): daar wijkt de wand in naar een veerkoker (binnenplaat op |x| 0,466, zijplaten op z -1,174 en -1,056, dak
+//   op y 0,477, 5 mm boven het veerrubber). De remslang loopt door de veerkoker naar buiten: doorvoeren in de wand, de achterste zijplaat en de binnenplaat.
 function bodWheelHouseAchter(s) {
   const az = AXR, yb = 0.485, R = ARCH + 0.012, RW = R + 0.002, xin = 0.50, dEnd = 0.20, V = (z, y) => new THREE.Vector2(z, y), N = 12;
   const a0 = Math.asin((yb - AY) / R), c0 = R * Math.cos(a0);
@@ -277,12 +281,31 @@ function bodWheelHouseAchter(s) {
   const eW = Math.asin((AY - 0.245) / R);
   const eP = (aA, aB, dz) => { const pts = [V(az + dz, yb)], n = 8; for (let k = 0; k <= n; k++) pts.push(wPt(aA + (aB - aA) * k / n)); pts.push(V(az + dz, AY + R * Math.sin(aB))); return pts; };
   polys.push(eP(a0, -eW, dEnd), eP(PI - a0, PI + eW, -dEnd));
+  // midden achter de as: z -1,448 tot -1,240; rechts begint hij voor z -1,386 pas op y 0,340 (panhardbeugel as tot y 0,335, z -1,366 tot -1,191)
+  polys.push(s > 0 ? [V(-1.240, 0.245), V(-1.240, yb), V(az - dEnd, yb), V(az - dEnd, 0.245)]
+                   : [V(-1.240, 0.340), V(-1.240, yb), V(az - dEnd, yb), V(az - dEnd, 0.245), V(-1.386, 0.245), V(-1.386, 0.340)]);
+  // tussen torsiebalk en veer: z -1,240 tot -1,174 vanaf y 0,300; links een doorvoer voor de remslang (die kruist het vlak bij y 0,349 tot 0,363, z -1,185 tot -1,171);
+  // rechts vanaf y 0,380, ruim boven de panhardbeugel en de remslang
+  polys.push(s > 0 ? [V(-1.240, 0.300), V(-1.174, 0.300), V(-1.174, 0.338), V(-1.192, 0.338), V(-1.192, 0.375), V(-1.174, 0.375), V(-1.174, yb), V(-1.240, yb)]
+                   : [V(-1.240, 0.380), V(-1.174, 0.380), V(-1.174, yb), V(-1.240, yb)]);
+  // boven de veerkoker (y 0,477 tot yb) en voor de veer (z -1,056 tot az + dEnd, y 0,245 tot 0,477; het veerpakket loopt tot z -1,061)
+  polys.push([V(-1.174, 0.477), V(az + dEnd, 0.477), V(az + dEnd, yb), V(-1.174, yb)]);
+  polys.push([V(-1.056, 0.245), V(az + dEnd, 0.245), V(az + dEnd, 0.477), V(-1.056, 0.477)]);
   const plaatX = (pts, x) => { const g = new THREE.ShapeGeometry(new THREE.Shape(pts), 1); g.rotateY(-HALF); g.translate(s * x, 0, 0); return g; };
   const wall = merge(polys.map(pp => plaatX(pp, xin)));
   // koker: van y 0,250 voor tot y 0,280 (links) of 0,380 (rechts) achter
   const aF = Math.asin((0.250 - AY) / R), aR = PI - Math.asin(((s > 0 ? 0.280 : 0.380) - AY) / R);
   const arc = patch((a, t) => [s * lerp(xin, xo(a), t), AY + R * Math.sin(a), az + R * Math.cos(a)], aF, aR, 48, () => [0, 1], 3, []);
-  return merge([wall, arc]);
+  // veerkoker: binnenplaat op |x| 0,466 met onderrand 0,300 achter z -1,100 (torsiebalk) en 0,255 ervoor, met een doorvoer voor de remslang (die kruist |x| 0,466 bij
+  // y 0,316 tot 0,338, z -1,158 tot -1,139)
+  const xi = 0.466, yt = 0.477, z0 = -1.174, z1 = -1.056;
+  const binnen = plaatX([V(z0, 0.300), V(-1.168, 0.300), V(-1.168, 0.352), V(-1.126, 0.352), V(-1.126, 0.300), V(-1.100, 0.300), V(-1.100, 0.255), V(z1, 0.255), V(z1, yt), V(z0, yt)], xi);
+  // zijplaten in de vlakken z0 en z1 tussen |x| xi en xin; de achterste met een doorvoer aan de buitenrand (de remslang kruist z0 bij |x| 0,485 tot 0,50)
+  const plaatZ = (pts, z) => { const g = new THREE.ShapeGeometry(new THREE.Shape(pts.map(([x, y]) => V(x, y))), 1); if (s < 0) g.scale(-1, 1, 1); g.translate(0, 0, z); return g; };
+  const zijA = plaatZ([[xi, 0.300], [xin, 0.300], [xin, 0.336], [0.478, 0.336], [0.478, 0.375], [xin, 0.375], [xin, yt], [xi, yt]], z0);
+  const zijV = plaatZ([[xi, 0.255], [xin, 0.255], [xin, yt], [xi, yt]], z1);
+  const dak = (() => { const g = new THREE.PlaneGeometry(xin - xi, z1 - z0); g.rotateX(-HALF); g.translate(s * (xi + xin) / 2, yt, (z0 + z1) / 2); return g; })();
+  return merge([wall, arc, binnen, zijA, zijV, dak]);
 }
 function bodSill(s) {
   return P(`Dorpel ${bodSn(s)}`, patch((z, p) => bodLow(z, p), AXR + ARCH + 0.002, AXF - ARCH - 0.002, 40, z => sideR(s, S1 * 0.55, sAtY(z, bodYSill - 0.006)), 8), MAT.paint,
