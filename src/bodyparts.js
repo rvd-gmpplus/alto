@@ -172,15 +172,19 @@ function bodSkinParts() {
   // de kaplijn omlaag en gaf met lampbovenrand min 6 mm een rood tandje van 5 mm onder de kaprand en een treetje naar de kaprand. Nu loopt de onderrand gelijk met de kaprand (verschil hoogstens 2 mm).
   const fenderCLo = z => Math.min(sAtY(z, bodHoodFrontY - 0.006), fenderHi(z) - 0.0015);
   const fenderTop = s => lowSide(s, bodZDF + 0.004, bodZCe, 70, z => [bodSAtX(z, bodHoodX(z) + 0.007), bodSAtX(z, bodHoodX(z) + 0.0005)], 2, undefined, 0.003);
-  // goot onder de kier tussen kap en scherm in de voorhoek (z 1,49 tot de lamp): van de schermrand (4 mm naast de kap) schuin omlaag tot 25 mm diep en 12 mm binnen de
+  // goot onder de kier tussen kap en scherm in de voorhoek (z 1,47 tot de lamp, de inloop 60 mm lang): van de schermrand (4 mm naast de kap) schuin omlaag tot 25 mm diep en 7 mm binnen de
   // kaprand, onder de onderrand van de kaprand door (uitgelopen: een strook van 3 mm op de huid, 1 mm naast de kap). Bij de lagere neus van beslissing 17 keek een straal van boven of van voren door die kier de motorruimte in
-  // (Sproeierreservoir, Veerpoottoren). De kaprand (18 mm, schuin naar binnen) blijft erbinnen, ook bij het openen; achter z 1,52 (rechts 1,555) loopt de goot uit (daar draait de
-  // motorkapsteun omhoog) en waar de kaprand minder dan 30 mm boven de koplamp ligt ook (de lamp zit daar onder de kap).
-  const gootD = (z, z0) => 0.025 * sstep((z - z0) / 0.03) * (1 - sstep((bodHoodFrontY + 0.03 - halfPt(z, bodSAtX(z, bodHoodX(z)))[1]) / 0.012));
-  const fenderGoot = s => { const z0 = s > 0 ? 1.49 : 1.525;   // rechts later: daar zwaait de top van de motorkapsteun bij het openen tot z 1,52 door de kier
-    return bodReg(s, z0, bodZCe, 36, 3, z => bodSAtX(z, bodHoodX(z) + 0.004), z => bodSAtX(z, bodHoodX(z) + 0.001 - 0.013 * gootD(z, z0) / 0.025), (z, t) => gootD(z, z0) * t); };
-  const fender = s => P(`Voorscherm ${bodSn(s)}`, merge([lowSide(s, bodZDF + 0.004, bodZFe, 44, z => [fenderLo(z), fenderHi(z)], 18, ARCH_BREAKS), lowSide(s, bodZFe - 0.002, bodZCe, 12, z => [fenderCLo(z), fenderHi(z)], 6), fenderTop(s), fenderGoot(s)]), MAT.paint,
+  // (Sproeierreservoir, Veerpoottoren). De kaprand (18 mm, schuin naar binnen) blijft erbinnen, ook bij het openen. Waar de kaprand minder dan 34 mm boven de koplamp ligt, mag de goot
+  // niet dieper dan de ruimte boven de lamp min 9 mm: de lamp zit daar onder de kap en het lamphuis (3 mm boven de lampbovenrand) houdt de kier daar zelf dicht.
+  // De motorkapsteun (bodStF) zwaait er 6 mm binnen langs.
+  const gootD = (z, z0) => Math.min(0.025 * sstep((z - z0) / 0.06), Math.max(0, halfPt(z, bodSAtX(z, bodHoodX(z)))[1] - bodHoodFrontY - 0.009));
+  const fenderGoot = s => { const z0 = 1.47;
+    return bodReg(s, z0, bodZCe, 36, 3, z => bodSAtX(z, bodHoodX(z) + 0.004), z => bodSAtX(z, bodHoodX(z) + 0.001 - 0.008 * gootD(z, z0) / 0.025), (z, t) => gootD(z, z0) * t); };
+  const fender = s => P(`Voorscherm ${bodSn(s)}`, merge([lowSide(s, bodZDF + 0.004, bodZFe, 44, z => [fenderLo(z), fenderHi(z)], 18, ARCH_BREAKS), lowSide(s, bodZFe - 0.002, bodZCe, 12, z => [fenderCLo(z), fenderHi(z)], 6), fenderTop(s)]), MAT.paint,
     { d: 'Voorscherm van plaatstaal met de uitsparing voor het voorwiel, gelakt in het rood. Zit met bouten aan de A-stijl, de veerpoottoren en de voorkopplaat.', ex: [s * 0.46, 0.06, 0.1] });
+  // de goot is een eigen, donker onderdeel: gelakt las hij van boven als een rode dubbele streep met een donkerrode vouw in plaats van als een donkere naad
+  const goot = s => P(`Goot kier kap en scherm ${bodSn(s)}`, fenderGoot(s), MAT.bodSeal,
+    { d: 'Goot onder de kier tussen motorkap en voorscherm, schematisch: een zwarte strook onder de kaprand die de kier dichthoudt, zodat je er niet in de motorruimte kijkt.', ex: [s * 0.46, 0.06, 0.1] });
   // achterscherm: van de portierspleet tot het achterlicht, boven de wielboog, tot de schouderlijn
   const quarterLo = z => bodArchLo(z, AXR, zz => (zz > AXR ? bodYSill + 0.004 : bodYBR + 0.003));
   const quarterGeo = s => {
@@ -213,7 +217,7 @@ function bodSkinParts() {
   // schuine blikken niet die de spleet binnenkomen en pas bij z > 0,784 de huid van het scherm passeren. Zwart, zoals de spleet er in het echt uitziet.
   const flange = s => P(`Schermflens ${bodSn(s)}`, patch((y, t) => { const z = lerp(0.768, 0.796, t); return [s * (ringX(z, y) - 0.003), y, z]; }, 0.30, Math.min(0.90, bodSec(0.78).yd - 0.02), 12, () => [0, 1], 2), MAT.bodLiner,
     { d: 'Strook langs de achterrand van het voorscherm, achter de portierspleet: sluit de spleet tussen scherm en portier af, zodat je er niet in de motorruimte of de cabine kijkt.', ex: [s * 0.46, 0.06, 0.1] });
-  kids.push(...bodBoth(fender), ...bodBoth(flange), ...bodBoth(quarter), ...bodBoth(rails), ...bodBoth(aPillar), ...bodBoth(bPillar), ...bodBoth(cPillar));
+  kids.push(...bodBoth(fender), ...bodBoth(goot), ...bodBoth(flange), ...bodBoth(quarter), ...bodBoth(rails), ...bodBoth(aPillar), ...bodBoth(bPillar), ...bodBoth(cPillar));
   return { kids, qGlass };
 }
 /* ---------- kas: dak, voorruit, achterruit ---------- */
@@ -282,7 +286,9 @@ function bodHoodPt(p) {
   return [p[0], bodHoodPv[1] + dy * c - dz * s, bodHoodPv[2] + dy * s + dz * c];
 }
 // Motorkapsteun (stang): voet F op de rechter binnenscherm, rustpunt in de richting van de achterkant van de motorruimte, grijppunt G in het binnenframe
-const bodStG = [-0.54, 0.775, 1.40], bodStGw = bodHoodPt(bodStG), bodStF = [-0.575, 0.84, 1.0];
+// Beslissing 17 (kap op de flank lager): de steun staat 15 mm verder naar binnen (x -0,56 en -0,525). Bij de lagere kaprand ging zijn top bij het openen (tot z 1,51) eerder door de schermrand;
+// nu blijft hij 6 mm binnen de rand van de goot onder de kier tussen kap en scherm (vanaf z 1,47, 8 mm binnen de kaprand).
+const bodStG = [-0.525, 0.775, 1.40], bodStGw = bodHoodPt(bodStG), bodStF = [-0.56, 0.84, 1.0];
 const bodStL = Math.hypot(bodStGw[0] - bodStF[0], bodStGw[1] - bodStF[1], bodStGw[2] - bodStF[2]);
 const bodStRot = (() => {
   const c = Math.min(0.99, 0.36 / bodStL), r0 = V3(0, -Math.sqrt(1 - c * c), c), r1 = V3(bodStGw[0] - bodStF[0], bodStGw[1] - bodStF[1], bodStGw[2] - bodStF[2]).normalize();
