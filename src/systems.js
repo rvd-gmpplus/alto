@@ -22,13 +22,10 @@ function sysTube(pts, r, rad = 8, step = 0.03) {
   let len = 0; for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1], pts[i][2] - pts[i - 1][2]);
   return tube(pts, r, clamp(Math.ceil(len / step), 8, 120), rad);
 }
-function sysClampGeo(r) {
-  return cache('sysClamp' + r, () => merge([G.torus('z', r + 0.0035, 0.0022, 10, 4), xf(G.box(0.014, 0.006, 0.01), [0, r + 0.0075, 0]), xf(G.cyl('x', 0.0025, 0.0025, 0.016, 6), [0, r + 0.0105, 0])]));
-}
-// slangklem om een slang of pijp met straal r; as langs t (eenheidsvector), schuift bij uitklappen langs out
+// slangklem (hoseClamp uit core.js, met stelschroef) om een slang of pijp met straal r; as langs t (eenheidsvector), schuift bij uitklappen langs out
 function sysClamp(name, at, t, r, out) {
   const o = out || t;
-  return P(name, sysClampGeo(r), MAT.steel, { d: 'Slangklem van verzinkt staal met een stelschroef; klemt de slang vast op de aansluiting.', p: at, q: quatFromTo(V3(0, 0, 1), t), ex: [o.x * 0.05, o.y * 0.05 + 0.02, o.z * 0.05] });
+  return P(name, hoseClamp('z', r + 0.0035, { screw: true }), MAT.steel, { d: 'Slangklem van verzinkt staal met een stelschroef; klemt de slang vast op de aansluiting.', p: at, q: quatFromTo(V3(0, 0, 1), t), ex: [o.x * 0.05, o.y * 0.05 + 0.02, o.z * 0.05] });
 }
 // slang als groep: slang plus klemmen. pts in het autoframe; de uiteinden liggen op de aansluitingen.
 function sysHoseG(name, d, pts, r, o = {}) {
@@ -152,7 +149,7 @@ function buildExhaust() {
   const sonde = (name, d, base, dir, cEnd, ex) => {
     const t = V3(...dir).normalize(), q = quatFromTo(V3(0, 1, 0), t), tip = sysAt(base, t, 0.058);
     return A(name, { d, ex }, [
-      sysPart('Sondelichaam', cache('sysSonde', () => merge([G.cyl('y', 0.0045, 0.0045, 0.02, 8), xf(G.cyl('y', 0.0105, 0.0105, 0.007, 6), [0, 0.022, 0]), xf(G.cyl('y', 0.0065, 0.0065, 0.03, 10), [0, 0.04, 0])])), MAT.steel, base, 'Verwarmde zuurstofsonde met zeskantmoer, ingeschroefd in de pijp.', [t.x * 0.1, t.y * 0.1, t.z * 0.1], { q }),
+      sysPart('Sondelichaam', cache('sysSonde', () => merge([G.cyl('y', 0.0045, 0.0045, 0.02, 8), xf(hexNut('y', 0.0105, 0.007), [0, 0.022, 0]), xf(G.cyl('y', 0.0065, 0.0065, 0.03, 10), [0, 0.04, 0])])), MAT.steel, base, 'Verwarmde zuurstofsonde met zeskantmoer, ingeschroefd in de pijp.', [t.x * 0.1, t.y * 0.1, t.z * 0.1], { q }),
       P('Sondekabel', sysTube([tip, sysLerp(tip, cEnd, 0.4), cEnd], 0.002, 5, 0.02), MAT.sysWire, { d: 'Dunne signaal- en verwarmingskabel van de sonde naar de stekker.', ex: [t.x * 0.15, t.y * 0.15 + 0.03, t.z * 0.15] }),
       sysPart('Sondestekker', G.box(0.014, 0.02, 0.014), MAT.plastic, cEnd, 'Stekker van de sonde op de kabelboom.', [t.x * 0.2, t.y * 0.2 + 0.05, t.z * 0.2]),
     ]);
