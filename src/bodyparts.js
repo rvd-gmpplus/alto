@@ -952,8 +952,9 @@ function bodDoor(s) {
   const hingeZ = z1 + 0.006;
   const hinge = (nm, y) => A(`Scharnier ${nm}`, { d: `${nm === 'boven' ? 'Bovenste' : 'Onderste'} portierscharnier: een blad aan het portier en een blad op de A-stijl met een scharnierpen. In dit model draait het portier om een as vlak voor de voorrand (schematisch).`, ex: [-s * 0.03, 0, 0.12] }, [
     P('Scharnierblad', G.rbox(0.03, 0.07, 0.05, 0.006), MAT.darkSteel, { d: 'Stalen scharnierblad aan het portier; draait met het portier mee.', p: [s * (surfX(z1, y) - 0.04), y, z1 - 0.02], ex: [0, 0, 0.04] }),
-    // blad aan de carrosseriezijde 50 mm diep tot tegen het portierblad (z1 + 0,005): op 40 mm zweefde het bovenste 10 mm los (B-037); het portierblad draait er bij het openen van weg
-    P('Scharnierblad carrosserie', G.rbox(0.03, 0.07, 0.05, 0.006), MAT.darkSteel, { d: 'Scharnierblad aan de carrosseriezijde, geschroefd op de stijl; blijft staan als het portier opent.', p: [s * (surfX(z1 + 0.03, y) - 0.045), y, z1 + 0.030], stay: true, ex: [0, 0, 0.04] }),
+    // bovenste blad aan de carrosseriezijde 50 mm diep tot tegen het portierblad (z1 + 0,005): op 40 mm zweefde het 10 mm los (B-037); het portierblad draait er bij het openen
+    // van weg. Het onderste blijft 40 mm: het ligt 3 mm van het portierrubber, langer stak het er 5,5 mm in (clash.py)
+    P('Scharnierblad carrosserie', G.rbox(0.03, 0.07, nm === 'boven' ? 0.05 : 0.04, 0.006), MAT.darkSteel, { d: 'Scharnierblad aan de carrosseriezijde, geschroefd op de stijl; blijft staan als het portier opent.', p: [s * (surfX(z1 + 0.03, y) - 0.045), y, z1 + (nm === 'boven' ? 0.030 : 0.035)], stay: true, ex: [0, 0, 0.04] }),
     ...[0.022, -0.022].map((dy, i) => P(`Scharnierbout ${i + 1}`, hexBolt(0.025, 0.008, s > 0 ? '-x' : 'x'), MAT.steel, { d: 'Bout M8 waarmee het scharnierblad aan het portier vastzit.', p: [s * (surfX(z1, y) - 0.055), y + dy, z1 - 0.01], ex: [-s * 0.05, 0, 0] })),
   ]);
   const kids = [
