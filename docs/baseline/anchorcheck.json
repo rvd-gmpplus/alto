@@ -2,9 +2,9 @@
  "commit": "",
  "viewport": "1280x800",
  "totaal": {
-  "labels": 242,
-  "eigen": 211,
-  "vrij": 180
+  "labels": 243,
+  "eigen": 212,
+  "vrij": 185
  },
  "presets": {
   "assembled": {
@@ -19,9 +19,8 @@
    "label": "Hoofdgroepen",
    "labels": 8,
    "eigen": 6,
-   "vrij": 5,
+   "vrij": 6,
    "achter": [
-    "Brandstofsysteem achter Stuurhuis",
     "Interieur achter Buitenpaneel",
     "Koeling en luchtinlaat achter Claxontoeter"
    ],
@@ -38,7 +37,7 @@
    "achter": [
     "Elektrisch systeem achter Band",
     "Interieur achter Buitenpaneel",
-    "Aandrijflijn achter Accublok"
+    "Aandrijflijn achter Spanbeugel"
    ],
    "lucht": [
     "Carrosserie",
@@ -118,21 +117,20 @@
    "label": "Distributie",
    "labels": 8,
    "eigen": 8,
-   "vrij": 3,
+   "vrij": 4,
    "achter": [
     "Pakking distributiekap achter Distributiekap",
     "Distributieriem achter Distributiekap",
-    "Nokkenwiel achter Distributiekap",
     "Spanner distributieriem achter Distributiekap",
-    "Krukastandwiel distributie achter Distributiekap"
+    "Nokkenwielbout achter Distributiekap"
    ],
    "lucht": []
   },
   "intake": {
    "label": "Inlaat en injectie",
-   "labels": 7,
-   "eigen": 6,
-   "vrij": 6,
+   "labels": 8,
+   "eigen": 7,
+   "vrij": 7,
    "achter": [
     "Pakking inlaatspruitstuk achter Inlaatkast"
    ],
@@ -154,10 +152,8 @@
    "label": "Uitlaatsysteem",
    "labels": 8,
    "eigen": 4,
-   "vrij": 7,
-   "achter": [
-    "Hitteschilden achter Ophangrubber middendemper voor"
-   ],
+   "vrij": 8,
+   "achter": [],
    "lucht": [
     "Middenpijp",
     "Katalysator",
@@ -239,12 +235,11 @@
    "label": "Wiel linksvoor",
    "labels": 10,
    "eigen": 9,
-   "vrij": 4,
+   "vrij": 5,
    "achter": [
     "Velgschijf achter Wieldop",
     "Ventiel achter Band",
     "Wielbout 1 achter Wieldop",
-    "Wielbout 2 achter Wieldop",
     "Wielbout 3 achter Wieldop",
     "Wielbout 4 achter Wieldop"
    ],
@@ -269,12 +264,12 @@
    "eigen": 18,
    "vrij": 12,
    "achter": [
-    "Portier rechts achter Frontmodule",
-    "Voorruit achter Buitenpaneel motorkap",
+    "Portier rechts achter Buitenpaneel motorkap",
     "Achterklep achter C-stijl links",
+    "Voorruit achter Buitenpaneel motorkap",
     "Achterbumper achter Zijruit",
-    "Kentekenvlak achter achter Achterscherm links",
-    "Tankvulopening achter Wielkast achter rechts"
+    "Kentekenvlak achter achter Zijruit",
+    "Achterlicht rechts achter Bagageopening"
    ],
    "lucht": []
   },
