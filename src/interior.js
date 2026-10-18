@@ -390,7 +390,10 @@ function intTrim() {
   const bootLo = z => { const dz = Math.abs(z - AXR), R = 0.326; return Math.max(0.47 + 0.09 * sstep((z + 1.56) / 0.04), dz < R ? AY + Math.sqrt(R * R - dz * dz) : 0); };
   const bootSide = s => intPart(`Zijbekleding bagageruimte ${sideName(s)}`, intPanel(s, -1.17, -1.66, bootLo, () => 0.64, 0.03, 20, 3), MAT.intFelt, 'Beklede zijwand van de bagageruimte in donker vilt, onder het achterscherm.', { ex: [s * 0.12, 0, -0.08] });
   // vloer: vloerbedekking in een stuk over de voetruimte en onder de achterbank; naast de achterwielkast tot |x| 0,495, 5 mm binnen de wand (lag er precies in)
-  const carpet = (() => { const hx = 0.62, g = roundPlate([[-0.495, -1.02], [0.495, -1.02], [0.495, -0.9], [hx, -0.9], [hx, 0.775], [0.5, 0.775], [0.5, 0.85], [-0.5, 0.85], [-0.5, 0.775], [-hx, 0.775], [-hx, -0.9], [-0.495, -0.9]], 0.008, 0.003); g.rotateX(HALF); g.translate(0, INT_YF - 0.004, 0); return g; })();
+  // onder de achterbank een uitsparing van de achterrand tot voor de tankkuip van de carrosserie (bodKuip, x -0,18 tot 0,35, z -0,96 tot -0,63, dak y 0,375), 11 mm
+  // rondom: de holle hoeken van roundPlate (straal 28 mm) bollen 8 mm in de uitsparing uit; de bedekking stak 4 mm door de wanden van de kuip
+  const kx0 = bodKuip.x0 - 0.011, kx1 = bodKuip.x1 + 0.011, kz = bodKuip.z1 + 0.011;
+  const carpet = (() => { const hx = 0.62, g = roundPlate([[-0.495, -1.02], [kx0, -1.02], [kx0, kz], [kx1, kz], [kx1, -1.02], [0.495, -1.02], [0.495, -0.9], [hx, -0.9], [hx, 0.775], [0.5, 0.775], [0.5, 0.85], [-0.5, 0.85], [-0.5, 0.775], [-hx, 0.775], [-hx, -0.9], [-0.495, -0.9]], 0.008, 0.003); g.rotateX(HALF); g.translate(0, INT_YF - 0.004, 0); return g; })();
   const mat = (s, n, z) => intPart(`Vloermat ${n}`, bx(0.4, 0.008, 0.52, 0.003, [s * 0.38, INT_YF + 0.004, z]), MAT.rubber, 'Losse rubber vloermat in de voetruimte.', { ex: [0, 0.12, 0.1] });
   const sill = s => intPart(`Instaplijst ${sideName(s)}`, bx(0.09, 0.012, 1.3, 0.004, [s * 0.575, 0.262, 0.07]), MAT.plasticGrey, 'Kunststof dorpellijst bij het instappen.', { ex: [s * 0.1, 0.05, 0] });
   // bagageruimte: vloer tussen de wielkasten (tot |x| 0,495, 5 mm binnen de wand van de wielkast, met een uitsparing tot |x| 0,461 om de veerkoker vanaf z -1,205: de afronding van de binnenhoek (straal 29 mm) bolt in de uitsparing uit en sneed de achterste zijplaat), afdekplaat (hoedenplank) boven de bagage
@@ -443,9 +446,10 @@ function intTrim() {
       aPillar(1), aPillar(-1), bPillar(1), bPillar(-1), sideFront(1), sideFront(-1), sideRear(1), sideRear(-1), cPillar(1), cPillar(-1),
     ]),
     A('Vloerbekleding', { d: 'Vloerbedekking met losse matten en de dorpellijsten.', ex: [0, -0.1, 0] }, [
-      intPart('Vloerbedekking', carpet, MAT.carpet, 'Vloerbedekking in een stuk over de voetruimte en onder de achterbank.', { ex: [0, -0.22, 0] }),
+      intPart('Vloerbedekking', carpet, MAT.carpet, 'Vloerbedekking in een stuk over de voetruimte en onder de achterbank, uitgespaard rond de tankkuip.', { ex: [0, -0.22, 0] }),
       mat(1, 'bestuurder', 0.52), mat(-1, 'passagier', 0.52),
-      intPart('Vloermat achter', bx(0.7, 0.008, 0.3, 0.003, [0, INT_YF + 0.004, -0.74]), MAT.rubber, 'Losse rubber vloermat achter de voorstoelen.', { ex: [0, 0.1, -0.1] }),
+      // voor de tankkuip (voorwand z -0,63) en achter de onderrails van de voorstoelen (tot z -0,33): z -0,615 tot -0,40; lag op z -0,89 tot -0,59, door de kuip
+      intPart('Vloermat achter', bx(0.7, 0.008, 0.215, 0.003, [0, INT_YF + 0.004, -0.5075]), MAT.rubber, 'Losse rubber vloermat in de voetruimte achter, voor de achterbank.', { ex: [0, 0.1, -0.1] }),
       sill(1), sill(-1),
     ]),
     boot,
