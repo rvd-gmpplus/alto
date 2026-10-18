@@ -49,6 +49,20 @@
         "{uit}/zijstraal.json"
       ],
       "uitleg": "Zijstraalpoort (tools/zijstraal.py): stralen evenwijdig aan x van beide kanten op een raster van 5 mm tussen onderkant (YB) en schouderlijn (YT - 1 cm), z van ZR + 5 cm tot ZF - 5 cm, gesloten stand. Rood als een zichtbare knoop die geen buitenhuid is meer dan 2 mm (of zijn toegestane uitsteek) buiten de buitenste huid van dezelfde kant binnen 5 mm ligt; de huid- en uitzonderingslijst staan met reden in het script. Rekent analytisch per driehoek (geen renderer, ca. 2 s), met een steekproef van echte THREE.Raycaster-stralen als controle. Dekkingscontrole: per patroon van de huid- en uitzonderingslijst wordt geteld hoeveel zichtbare meshes het patroon raakt; een patroon zonder mesh (bijvoorbeeld een hernoemde knoop) is een mislukte meting met exitcode 2, zodat de dekking niet stil wegvalt. Geijkt op 17 oktober 2026: f3b77bd en dc4b70e groen, d2ae9f1 rood (Wielkast achter links 17,5 mm, rechts 26,6 mm door het achterscherm; 23,0 mm op een raster van 1 cm, zoals de eerdere meting). Exitcode 0 groen, 1 rood, 2 meting mislukt."
+    },
+    {
+      "naam": "meet-achter",
+      "cmd": [
+        "python3",
+        "tools/meet.py",
+        "--achter",
+        "--uit",
+        "{uit}/meet-achter",
+        "--json",
+        "{uit}/meet-achter.json",
+        "--geen-png"
+      ],
+      "uitleg": "Meting van de achterwielkasten (tools/meet.py --achter, open punt AWK): doorkijk door de achterboog naar achterbank, bagagebekleding, vloer en zijbekleding in de lage rondgang (432 camera's) en 24 wielkastcamera's achter (12 per kant). 25 harde poorten: de 21 van front-ronde4/v2/meet_achter.py (per kant venster, gat onder de boog, opening boven het venster, tussenpoort tegenover V1 en zes rondgangpoorten, plus console), per kant 'wielkast midden onder de boog achter' (achter geen aandrijfas, dus geen vrijstelling) en per kant 'wielkastcamera's achter'; geen zachte. Het script controleert in volle modus het aantal (precies 25 harde en 0 zachte, anders de extra rode poort 'aantal poorten achter') en of het interessegebied rond de achterwielen bestaat (extra poort 'interessegebied achterwielen in beeld'). Exitcode 0 groen, 1 minstens een rode poort, 2 meting mislukt. Renderer de standaard van het script (ANGLE Metal op macOS, SwiftShader op Linux). Nulmeting 18 oktober 2026 op fa5c619: 22 van 25 rood (alleen de twee tussenpoorten tegenover V1 en de console groen), op de macOS-GPU en macOS-SwiftShader dezelfde kleur voor alle 27 regels; de 21 poorten van meet_achter.py hebben dezelfde kleur en waardetekst als ach-h0 op 1ea1319. De set is daarom op deze stand bewust rood tot het herstel van de achterwielkast. Duur gemeten op 18 oktober 2026 (los, macOS): GPU ca. 3 minuten (187 s), SwiftShader ca. 10 minuten (593 s); in de Linux-container niet gemeten (verwacht in de orde van de SwiftShader-tijd, langer naast andere tests). De derde reeks van finaltests.sh draait meet, zijstraal en meet-achter achter elkaar, dus deze test verlengt de set met ongeveer zijn eigen duur."
     }
   ]
 }
