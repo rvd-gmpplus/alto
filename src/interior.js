@@ -50,13 +50,13 @@ const INT_PORTS = {
 };
 
 /* ---------- voorstoelen ---------- */
-// zitting met rails en hoogteverstelling; de rugleuning kantelt naar voren (instap achter bij een 3-deurs) en draagt de hoofdsteun
+// zitting op rails (lengteverstelling, geen hoogteverstelling: verstelling beperkt tot lengte en leuning volgens Autoweek); de rugleuning kantelt naar voren (instap achter bij een 3-deurs) en draagt de hoofdsteun
 function intFrontSeat(s) {
   const drv = s > 0, who = drv ? 'Bestuurdersstoel' : 'Passagiersstoel', ver = drv ? 'bestuurder' : 'passagier', bx = intBx, cy = intCy;
-  const frame = A('Stoelframe', { d: 'Stalen onderstel van de zitting: zitplaat, buizen, rails en de hoogteverstelling.', ex: [0, -0.08, 0] }, [
+  const frame = A('Stoelframe', { d: 'Stalen onderstel van de zitting: zitplaat, buizen, vaste steunen en de rails voor de lengteverstelling.', ex: [0, -0.08, 0] }, [
     intPart('Onderrails', merge([intBox(0.034, 0.02, 0.46, [0.165, 0.012, 0]), intBox(0.034, 0.02, 0.46, [-0.165, 0.012, 0])]), MAT.steel, 'Twee vaste rails op de vloer; de bovenrails schuiven erin voor de lengteverstelling.', { ex: [0, -0.05, 0] }),
     intPart('Bovenrails', merge([intBox(0.03, 0.02, 0.4, [0.165, 0.034, 0]), intBox(0.03, 0.02, 0.4, [-0.165, 0.034, 0])]), MAT.darkSteel, 'Twee bovenrails die in de onderrails schuiven en de zitting dragen.', { ex: [0, 0, 0.04] }),
-    intPart('Hoogtearmen', merge([[0.165, 0.17], [-0.165, 0.17], [0.165, -0.17], [-0.165, -0.17]].map(([x, z]) => rodBetween([x, 0.045, z * 0.92], [x, 0.115, z], 0.007, 8))), MAT.darkSteel, 'Vier draaiarmen tussen de bovenrails en de zitplaat; ze heffen en laten de zitting zakken (hoogteverstelling).', { ex: [0, 0.02, 0] }),
+    intPart('Zittingsteunen', merge([intBox(0.006, 0.074, 0.36, [0.165, 0.0815, 0]), intBox(0.006, 0.074, 0.36, [-0.165, 0.0815, 0])]), MAT.darkSteel, 'Twee vaste stalen steunen tussen de bovenrails en de zitplaat; de zitting is niet in hoogte verstelbaar.', { ex: [0, 0.02, 0] }),
     intPart('Zitplaat', merge([intBx(0.4, 0.012, 0.42, 0.005, [0, 0.125, 0]), cy('z', 0.008, 0.44, [0.19, 0.125, 0]), cy('z', 0.008, 0.44, [-0.19, 0.125, 0]), cy('x', 0.008, 0.38, [0, 0.125, 0.21])]), MAT.darkSteel, 'Geperste stalen plaat waarop het zitschuim rust, met stalen buizen langs de randen.', { ex: [0, 0.04, 0] }),
     intPart('Lengtebeugel', merge([cy('x', 0.007, 0.34, [0, 0.02, 0.27], 8), rodBetween([0.17, 0.02, 0.27], [0.17, 0.05, 0.2], 0.007, 6), rodBetween([-0.17, 0.02, 0.27], [-0.17, 0.05, 0.2], 0.007, 6)]), MAT.steel, 'Beugel onder de voorkant van de zitting waarmee de stoel in de lengte wordt ontgrendeld.', { ex: [0, -0.03, 0.08] }),
   ]);
@@ -64,12 +64,11 @@ function intFrontSeat(s) {
     intPart('Zitschuim', bx(0.42, 0.085, 0.46, 0.03, [0, 0.172, 0]), MAT.intFoam, 'Gevormd polyurethaanschuim van het zitkussen.', { inner: true, ex: [0, 0.03, 0] }),
     intPart('Zitbekleding', merge([bx(0.44, 0.094, 0.48, 0.034, [0, 0.176, 0]), bx(0.055, 0.045, 0.36, 0.02, [0.18, 0.232, 0.06]), bx(0.055, 0.045, 0.36, 0.02, [-0.18, 0.232, 0.06])]), MAT.intCloth, 'Stoffen bekleding van de zitting met verstevigde zijwangen (stof en kleur aangenomen).', { ex: [0, 0.1, 0.02] }),
   ]);
-  // bediening aan de buitenzijde (de portierzijde): hoogtehendel en hellingshendel
-  const ctl = A('Stoelbediening', { d: 'Handbediening van de stoel aan de portierzijde: hoogtehendel en hendel voor de hellingsverstelling van de rugleuning.', ex: [s * 0.14, 0, 0] }, [
-    intPart('Hoogtehendel', merge([rodBetween([s * 0.205, 0.125, -0.06], [s * 0.225, 0.125, 0.0], 0.006, 6), rodBetween([s * 0.225, 0.125, 0.0], [s * 0.225, 0.125, 0.07], 0.01, 8)]), MAT.plasticGrey, 'Pompende hendel aan de buitenzijde van de zitting die de hoogte van de zitting verstelt.', { ex: [s * 0.04, 0, 0.03] }),
+  // bediening aan de buitenzijde (de portierzijde): hellingshendel; de lengte wordt met de beugel voor onder de zitting ontgrendeld
+  const ctl = A('Stoelbediening', { d: 'Handbediening van de stoel aan de portierzijde: hendel voor de hellingsverstelling van de rugleuning.', ex: [s * 0.14, 0, 0] }, [
     intPart('Hellinghendel', merge([cy('x', 0.012, 0.012, [s * 0.215, 0.19, -0.2], 10), rodBetween([s * 0.215, 0.19, -0.2], [s * 0.23, 0.15, -0.13], 0.006, 6), rodBetween([s * 0.23, 0.15, -0.13], [s * 0.23, 0.15, -0.06], 0.009, 8)]), MAT.plasticGrey, 'Hendel voor de hellingsverstelling van de rugleuning, onder de rugleuning aan de portierzijde.', { ex: [s * 0.05, 0.02, 0] }),
   ]);
-  const head = A('Hoofdsteun', { d: 'In hoogte verstelbare hoofdsteun met twee geleidestangen in de bovenkant van de rugleuning.', p: [0, 0.6, -0.005], ex: [0, 0.22, 0] }, [
+  const head = A('Hoofdsteun', { d: 'Hoofdsteun met twee geleidestangen in de bovenkant van de rugleuning; in hoogte verstelbaar (aangenomen).', p: [0, 0.6, -0.005], ex: [0, 0.22, 0] }, [
     intPart('Hoofdsteunkussen', bx(0.27, 0.15, 0.09, 0.04, [0, 0.105, 0]), MAT.intCloth, 'Gevoerd kussen met stoffen bekleding.', { ex: [0, 0.08, 0] }),
     intPart('Hoofdsteunstangen', merge([cy('y', 0.0075, 0.14, [0.07, 0.0, 0], 8), cy('y', 0.0075, 0.14, [-0.07, 0.0, 0], 8)]), MAT.chrome, 'Twee stangen die in de bussen van de rugleuning schuiven en de hoogte bepalen.', { ex: [0, -0.04, 0] }),
   ]);
@@ -88,8 +87,8 @@ function intFrontSeat(s) {
     intPart('Slotbehuizing', intBx(0.03, 0.07, 0.04, 0.008), MAT.plastic, 'Behuizing van het gordelslot met schakelaar voor de gordelverklikker.', { ex: [0, 0.02, 0] }),
     intPart('Ontgrendelknop', intBx(0.016, 0.012, 0.024, 0.004, [0, 0.038, 0.002]), MAT.red, 'Rode knop om de gordel los te maken.', { ex: [0, 0.05, 0] }),
   ]);
-  return A(who, { d: `${who}: in hoogte en lengte verstelbaar, met een rugleuning die naar voren kantelt voor de instap achter en een in hoogte verstelbare hoofdsteun. Stoffen bekleding (aangenomen).`,
-    spec: [['Verstelling', 'lengte, zitting in hoogte, helling rugleuning'], ['Hoofdsteun', 'in hoogte verstelbaar']], p: [s * INT_SX, INT_YF, INT_SZ], ex: [s * 0.42, 0.04, 0.05] }, [frame, cushion, ctl, back, buckle]);
+  return A(who, { d: `${who}: verstelbaar in lengte en in de helling van de rugleuning, met een rugleuning die naar voren kantelt voor de instap achter en een hoofdsteun (in hoogte verstelbaar: aangenomen). Stoffen bekleding (aangenomen).`,
+    spec: [['Verstelling', 'lengte, helling rugleuning']], p: [s * INT_SX, INT_YF, INT_SZ], ex: [s * 0.42, 0.04, 0.05] }, [frame, cushion, ctl, back, buckle]);
 }
 
 /* ---------- achterbank: zitting en twee neerklapbare rugleuningdelen ---------- */
