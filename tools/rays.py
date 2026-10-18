@@ -32,7 +32,7 @@ RAY_JS = r"""([pts, n]) => {
 def main():
     gpu = (not a.sw) and platform.system() == 'Darwin'
     if gpu: harness.ARGS = ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist']
-    cams = meet.cam_lijst(); c = cams[a.cam]
+    cams = meet.cam_lijst(); cams.update({k: v for k, v in meet.cam_lijst_achter().items() if k not in cams}); c = cams[a.cam]   # ook de wielkastcamera's achter van meet.py --achter (de rondgang is in beide modi gelijk)
     pts = [tuple(int(v) for v in p.split(',')) for p in a.px]
     if a.ring:
         base = list(pts); R = a.ring

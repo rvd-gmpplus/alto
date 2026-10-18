@@ -60,9 +60,41 @@ Toegevoegd in ronde 4 (adv.nodig 2 van ronde 3: de regressie van a28dff6 en de g
   wielkast scharnier achter de band <kant>   geen Scharnierblad of Scharnierbout boven 50 px per knoop in de lage camera's van ronde 4 (HEAD wielkast-recht: Scharnierblad carrosserie 15.520). De portierrand staat als scharnier_px in de JSON, niet als poort.
   wielkast rondgang h<hoogte> r<afstand> <kant>   12 poorten: geen knoop boven 50 px in de zones onder, venster of boven, per hoogte, afstand en kant (links: camera op x > 0, rechts: x < 0; de voorste en achterste camera's op x = 0 tellen voor beide).
 
+Achtermodus (--achter; open punt AWK, stage S1, 18 oktober 2026): de doorkijk door de achterwielkasten naar de cabine (achterbank, bagagebekleding, vloer, zijbekleding achter).
+  Herkomst  front-ronde4/v2/meet_achter.py (beslissing 25 punt 2): meet.py ronde 4 met vier verschillen, hier letterlijk overgenomen; de voormodus verandert niet.
+            1. interessegebied ROI_WIEL_L_ACHTER en ROI_WIEL_R_ACHTER: '^(Wiel linksachter/|.*/Wielkast achter links )' en rechts, marge 25 procent. Het tweede deel (met de spatie aan het eind,
+               zoals voor) past op geen knoop; het gebied is dus de omkadering van het achterwiel plus 25 procent, zoals in meet_achter.py
+            2. zone ZONE_Z_ACHTER z -1,628 tot -0,868 (de achterboog AXR -1,248 +- ARCH 0,30 plus 80 mm)
+            3. as van de vrijstelling midden onder de boog: AXR_ACHTER -1,248 in plaats van 1,087 (ZONE_DEND 0,20 en ZONE_Y ongewijzigd)
+            4. WK_HARDWARE_ACHTER: ook Remleiding achter en Remslang achter tellen als remhardware in de wielkast, niet als doorkijk
+  Camera's  de lage rondgang (432 camera's, als voor), de wielkastcamera's achter (WIELKAST_ACHTER) en de onderdoorcamera's achter het achterwiel (ONDERDOOR_ACHTER, cyclus 2);
+            geen hoek-, eigenaar-, voor-, detail-, afwerking- of beeldcamera's en geen geometrie.
+  Poorten   drempels als voor: 50 px (smal en breed) per interieur- of motorruimteknoop, tussenpoort 2.500 px per camera. Namen met 'achter' voor de kant:
+            wielkast venster boven de band achter <kant>, wielkast gat onder de boog achter <kant>, wielkast opening boven het venster achter <kant>   over de rondgang van die kant
+            wielkast venster tegenover V1 achter <kant>   tussenpoort (getal uit de voormeting; achter niet apart geijkt)
+            wielkast rondgang h<hoogte> r<afstand> achter <kant>   12 poorten
+            wielkast midden onder de boog achter <kant>   strenger dan voor: achter loopt geen aandrijfas, dus de vrijstelling midden onder de boog (|z - as| < 0,20, y < 0,50) geldt hier niet;
+                                                          50 px per knoop in zone_px.midden over de rondgang van die kant (de 21 poorten hierboven blijven zoals in meet_achter.py)
+            wielkastcamera's achter <kant>   de 12 wielkastcamera's achter van die kant (WIELKAST_ACHTER, zie daar): 50 px per knoop in de zones onder, venster, boven en midden
+            onderdoorkijk achter het achterwiel <kant>   de 10 onderdoorcamera's van die kant (ONDERDOOR_ACHTER: h 0,15 m, r 1,2 en 2,0 m, azimut 135 tot 155 graden): 50 px per
+                                                          interieurknoop in de zones onder, venster, boven, midden en onderdoor. Onderdoor is de blik die het wielkastvlak |x| 0,50 onder
+                                                          y 0,26 passeert (onder de auto door) op z <= -0,868 (de voorkant van ZONE_Z_ACHTER: vanaf de achterboog naar achteren): dat
+                                                          is de vrijstelling van de andere poorten, en juist die blik liep onder de bumper door en onder de bagagevloer langs tot onder de
+                                                          achterbank (open punt AWK, cyclus 2, B3). Wat het vlak verder naar voren onder y 0,26 passeert (onder de dorpel van het achterportier)
+                                                          staat als zone_px.onderdoor_voor in de JSON maar telt hier niet. Alleen interieurknopen: de kabelboom achter (klasse motorruimte),
+                                                          uitlaat en onderstel horen onder de auto en tellen hier niet
+            console zonder fouten achter
+  Controle  volle achtermodus (zonder --cams en --geen-rondgang): precies VERWACHT_HARD_ACHTER harde en VERWACHT_ZACHT_ACHTER zachte poorten (extra poort 'aantal poorten achter'), en de extra poort
+            'interessegebied achterwielen in beeld' (minstens een rondgangcamera met het linker- en een met het rechterachterwiel, elke wielkastcamera achter met interessegebied). Een poort zonder
+            invoer (geen camera van die kant) staat in volle modus rood met 'invoer ontbreekt: ...'. Beide extra poorten tellen niet mee in het aantal, wel in de exitcode.
+  JSON      per gevlagde knoop ook zone_px.midden: de beeldpunten die de vrijstelling midden onder de boog (|z - as| < 0,20) naar 'overig' zet (een deel van overig); per camera roi_gevonden.
+            Bij de onderdoorcamera's ook zone_px.onderdoor en zone_px.onderdoor_voor (beide een deel van overig) en geen interessegebied (het hele beeld telt).
+  Gebruik   python3 -I tools/meet.py --achter --uit MAP --json MAP/meet-achter.json --geen-png   (--cams rondgang: alleen de rondgang, de 21 poorten van meet_achter.py; beperkte modus)
+
 Gebruik
   . ~/.config/web3d/env.sh
-  python3 -I tools/meet.py [--root WERKBOOM] [--uit MAP] [--json BESTAND] [--cams a,b,c|rondgang|wielkast] [--geen-rondgang] [--sw] [--geen-geo] [--geen-png] [--shots] [--basis EERDERE.json]
+  python3 -I tools/meet.py [--achter] [--root WERKBOOM] [--uit MAP] [--json BESTAND] [--cams a,b,c|rondgang|wielkast|onderdoor] [--geen-rondgang] [--sw] [--geen-geo] [--geen-png] [--shots] [--basis EERDERE.json]
+  --achter  achtermodus (zie hierboven)
   --root    werkboom met tools/harness.py en src/ (standaard: de repowortel waarin tools/meet.py staat, anders $MEET_ROOT; ontbreekt tools/harness.py in de gekozen wortel, dan een duidelijke fout met exitcode 2); in de container: de uitgepakte ref
   --uit     map voor de id-beelden <cam>-ids.png (grijs = buitenkant, magenta = motorruimte, oranje = onderstel); standaard een nieuwe tijdelijke map (het pad staat in de uitvoer); verplicht kiezen als de uitvoer bewaard moet blijven, zoals in finaltests
   --json    standaard UIT/meet.json
@@ -86,6 +118,7 @@ ap.add_argument('--geen-rondgang', action='store_true', help='sla de 432 rondgan
 ap.add_argument('--geen-png', action='store_true')
 ap.add_argument('--shots', action='store_true')
 ap.add_argument('--basis')
+ap.add_argument('--achter', action='store_true', help='achtermodus: de achterwielkasten (rondgang en wielkastcamera\'s achter, zie de docstring); de voormodus blijft ongewijzigd')
 a = ap.parse_args()
 if not a.root or not os.path.isfile(os.path.join(a.root, 'tools', 'harness.py')):
     print(f"FOUT: tools/harness.py ontbreekt in de wortel {a.root!r}; geef --root WERKBOOM of zet $MEET_ROOT (standaard: de repowortel boven tools/meet.py)", file=sys.stderr); sys.exit(2)
@@ -159,6 +192,44 @@ ZONE_Y = [0.26, 0.50, 0.66, 0.90]   # onderrand dorpel (bodYSill 0,268, dorpel 6
 ZONE_DEND = 0.20                    # midden onder de boog (|z - 1,087| < dEnd van bodWheelHouse) loopt de aandrijfas op naafhoogte door de wand: dat gat is bedoeld en telt niet
 ZONE_Z = [0.707, 1.467]             # de wielboog (AXF 1,087 +- ARCH 0,30) plus 80 mm: alleen blikken die het wielkastvlak in dit z-bereik passeren gaan door de wielkast
 WK_HARDWARE = r'^(Remleiding voor|Remslang voor|Slangbeugel|Remleidingklem)'   # remhardware in de wielkast zelf (|x| 0,50 tot 0,53): telt in de wielkastpoort niet als doorkijk
+# achtermodus (--achter, open punt AWK): de vier verschillen met de voormodus uit front-ronde4/v2/meet_achter.py (beslissing 25 punt 2), letterlijk overgenomen. Let op: het deel '.*/Wielkast achter links ' van het
+# interessegebied van de rondgang (met spatie aan het eind, zoals voor) past op geen knoop (de knoop heet 'Wielkast achter links'); het interessegebied is dus de omkadering van het achterwiel plus 25 procent, zoals in meet_achter.py.
+AXR_ACHTER = -1.248                 # achteras (AXR in body.js); as van de vrijstelling midden onder de boog
+ROI_WIEL_L_ACHTER = {'re': r'^(Wiel linksachter/|.*/Wielkast achter links )', 'marge': 0.25}
+ROI_WIEL_R_ACHTER = {'re': r'^(Wiel rechtsachter/|.*/Wielkast achter rechts )', 'marge': 0.25}
+ROI_WIEL_ACHTER = {'re': r'^(Wiel (links|rechts)achter/|.*/Wielkast achter )', 'marge': 0.25}   # wielkastcamera's achter: achterwielen en achterwielkasten samen, zoals ROI_WIEL voor
+ZONE_Z_ACHTER = [-1.628, -0.868]    # de achterboog (AXR -1,248 +- ARCH 0,30) plus 80 mm
+WK_HARDWARE_ACHTER = r'^(Remleiding voor|Remslang voor|Remleiding achter|Remslang achter|Slangbeugel|Remleidingklem)'
+# wielkastcamera's achter (achtermodus): naam -> (positie, doel), linkerkant; elk ook gespiegeld als <naam>-r. Reden: de rondgang ziet de achterboog alleen van 2 m en verder;
+# de lage blikken die voor de gaten onderin de voorboog vonden (WIELKAST_ZONE, ronde 4) bestonden achter niet. Twee overzettingen van die vier camera's naar het achterwiel:
+#   ach-sp-<naam>  gespiegeld rond de as: z' = AXR - (z - AXF) (de blik van achter de voorband wordt een blik van voor de achterband, dus vanaf het portier naar achteren)
+#   ach-vs-<naam>  verschoven: z' = z - AXF + AXR (dezelfde blikrichting als voor)
+# wk-zij-laag staat precies op de as (z = AXF), dus beide overzettingen geven dezelfde camera, en die is gelijk aan ach-zij-laag van de adviseur: hij staat er een keer in (als ach-zij-laag).
+# Plus de lage camera's van de adviseur (front-ronde4/adv/cams/achter.json) waarmee beslissing 25 punt 2 de achterwielkast en de platen van d2ae9f1 beoordeelde.
+AXF_VOOR = 1.087
+
+
+def _naar_achter(v, gespiegeld): return [v[0], v[1], round(AXR_ACHTER - (v[2] - AXF_VOOR), 4) if gespiegeld else round(v[2] - AXF_VOOR + AXR_ACHTER, 4)]
+
+
+WIELKAST_ACHTER = {}
+for _k in ('wielkast-recht', 'wielkast-achter', 'zij-laag'):
+    for _pre, _sp in (('ach-sp-', True), ('ach-vs-', False)):
+        WIELKAST_ACHTER[_pre + _k] = (_naar_achter(WIELKAST[_k][0], _sp), _naar_achter(WIELKAST[_k][1], _sp))
+WIELKAST_ACHTER.update({
+    'ach-zij-laag':  ([1.92, 0.35, -1.248], [0.62, 0.40, -1.248]),   # laag van opzij recht op de achterboog (= wk-zij-laag gespiegeld en verschoven)
+    'ach-zij-hurk':  ([2.20, 0.80, -1.00], [0.60, 0.45, -1.20]),     # gehurkt van opzij, iets van boven in de boog
+    'ach-34-laag':   ([1.60, 0.30, -2.60], [0.50, 0.40, -1.30]),     # laag van schuin achter de auto
+    'ach-voor-laag': ([1.60, 0.30, 0.20], [0.65, 0.40, -1.10]),      # laag van schuin voor, langs de dorpel naar de achterboog
+    'ach-dorpel':    ([1.30, 0.35, -0.75], [0.70, 0.33, -0.95]),     # dicht bij de dorpel, op de voorkant van de achterboog
+    'ach-bumper':    ([1.30, 0.35, -1.75], [0.70, 0.35, -1.55]),     # dicht bij de bumperhoek, op de achterkant van de achterboog
+})
+# onderdoorcamera's achter het achterwiel (achtermodus, open punt AWK cyclus 2, B3): naam -> (positie, doel), linkerkant; elk ook gespiegeld als <naam>-r. Zeer laag (h 0,15 m) schuin
+# achter het achterwiel, gericht op de achterboog zoals in de S4-review (~/alto-wt/awk-meet/s4/s4cams.json, daar met 's4-' in plaats van 'onder-'): van daar keek je onder de
+# achterbumper door tot onder de achterbank. De rondgang begint op h 0,23 en de wielkastcamera's staan hoger of dichter bij het wiel; geen van beide zag dit.
+ONDERDOOR_DOEL = [0.55, 0.40, AXR_ACHTER]
+ONDERDOOR_ACHTER = {f'onder-h0.15-r{_r}-a{_az}': ([round(ONDERDOOR_DOEL[0] + _r * math.sin(math.radians(_az)), 4), 0.15, round(ONDERDOOR_DOEL[2] + _r * math.cos(math.radians(_az)), 4)], ONDERDOOR_DOEL)
+                    for _r in (1.2, 2.0) for _az in (135, 140, 145, 150, 155)}
 # ronde 3, afwerking a: 60 cm boven de bumperhoek (adv/cams-naad.json, Bumperbalk 5.646 px tussen lamphuis en bumpernaad)
 AFWERKING = {
     'bumpL-r0.6-a50-e70': ([0.6572, 0.8838, 1.7119], [0.5, 0.32, 1.58]),
@@ -193,12 +264,7 @@ def cam_lijst():
         zd = k in WIELKAST_ZONE   # nieuwe camera's (ronde 4): alleen blikken die door de wielkast gaan tellen (zone onder, venster of boven); de tien van ronde 3 tellen alles, zoals in ronde 3
         c[k] = dict(p=p, t=t, soort='wielkast', kant='links', flag=[4, 5], maskers=mk, zoned=zd)
         c[k + '-r'] = dict(p=spiegel(p), t=spiegel(t), soort='wielkast', kant='rechts', flag=[4, 5], maskers=mk, zoned=zd)
-    for dn, t in RONDGANG_DOELEN.items():
-        for r in RONDGANG_R:
-            for h in RONDGANG_H:
-                for az in RONDGANG_AZ:
-                    p = [round(t[0] + r * math.sin(math.radians(az)), 4), h, round(t[2] + r * math.cos(math.radians(az)), 4)]
-                    c[f'{dn}-r{r}-h{h}-a{az}'] = dict(p=p, t=t, soort='rondgang', kant='links' if p[0] > 1e-6 else ('rechts' if p[0] < -1e-6 else 'midden'), flag=[4, 5], maskers=None, r=r, h=h, az=az, doel=dn)
+    rondgang_cams(c)
     for k, (p, t) in AFWERKING.items():
         c[k] = dict(p=p, t=t, soort='afwerking', kant='links', afw='a' if k.startswith('bumpL') else 'c', maskers=['Bumperschaal voor', 'Bumperlip voor', 'Onderplaat voorbumper'] if not k.startswith('bumpL') else None)
     for k, (p, t) in BEELD.items():
@@ -207,6 +273,28 @@ def cam_lijst():
     c['assembled'] = dict(p=None, t=None, soort='hoek', kant='links', assembled=True, kaal=True)
     c['assembled-zoom'] = dict(p=None, t=None, soort='hoek', kant='links', assembled=True)
     c['assembled-zoom-r'] = dict(p=None, t=None, soort='hoek', kant='rechts', assembled=True)
+    return c
+
+
+def rondgang_cams(c):
+    for dn, t in RONDGANG_DOELEN.items():
+        for r in RONDGANG_R:
+            for h in RONDGANG_H:
+                for az in RONDGANG_AZ:
+                    p = [round(t[0] + r * math.sin(math.radians(az)), 4), h, round(t[2] + r * math.cos(math.radians(az)), 4)]
+                    c[f'{dn}-r{r}-h{h}-a{az}'] = dict(p=p, t=t, soort='rondgang', kant='links' if p[0] > 1e-6 else ('rechts' if p[0] < -1e-6 else 'midden'), flag=[4, 5], maskers=None, r=r, h=h, az=az, doel=dn)
+
+
+def cam_lijst_achter():
+    """achtermodus: dezelfde lage rondgang als de voormodus (432 camera's, doelen baanm en baanv) plus de wielkastcamera's achter (WIELKAST_ACHTER) en de onderdoorcamera's (ONDERDOOR_ACHTER), elk ook gespiegeld als -r"""
+    c = {}
+    rondgang_cams(c)
+    for k, (p, t) in WIELKAST_ACHTER.items():
+        c[k] = dict(p=p, t=t, soort='wielkast', kant='links', flag=[4, 5], maskers=None, zoned=True)
+        c[k + '-r'] = dict(p=spiegel(p), t=spiegel(t), soort='wielkast', kant='rechts', flag=[4, 5], maskers=None, zoned=True)
+    for k, (p, t) in ONDERDOOR_ACHTER.items():   # cyclus 2: onderdoorcamera's met een eigen poort (zie poorten_achter)
+        c[k] = dict(p=p, t=t, soort='onderdoor', kant='links', flag=[4, 5], maskers=None, zoned=True)
+        c[k + '-r'] = dict(p=spiegel(p), t=spiegel(t), soort='onderdoor', kant='rechts', flag=[4, 5], maskers=None, zoned=True)
     return c
 
 
@@ -256,7 +344,9 @@ IDPASS_JS = r"""(opt) => {
   const bg = scene.background, fog = scene.fog; scene.background = null; scene.fog = null;
   const cc = renderer.getClearColor(new THREE.Color()), ca = renderer.getClearAlpha();
   const sz = renderer.getDrawingBufferSize(new THREE.Vector2()), W = sz.x, H = sz.y;
-  const rt = new THREE.WebGLRenderTarget(W, H, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.UnsignedByteType, depthBuffer: true });
+  // stencilBuffer: true dwingt bij three r147 een 24-bit dieptebuffer af (DEPTH24_STENCIL8); zonder stencil wordt het DEPTH_COMPONENT16,
+  // ongeveer 7 mm precisie op 1,8 m en 17 mm op 4,5 m, en dan lekt wat net achter een wand ligt erdoorheen. De app tekent op een canvas met 24-bit diepte.
+  const rt = new THREE.WebGLRenderTarget(W, H, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.UnsignedByteType, depthBuffer: true, stencilBuffer: true });
   renderer.setClearColor(0x000000, 1); renderer.setRenderTarget(rt); renderer.clear(); renderer.render(scene, camera);
   const buf = new Uint8Array(W * H * 4); renderer.readRenderTargetPixels(rt, 0, 0, W, H, buf); renderer.setRenderTarget(null); rt.dispose();
   const herstel = () => { saved.forEach(([m, mt]) => { m.material = mt; }); hid.forEach(o => { o.visible = true; }); glas.forEach(m => { m.visible = true; });
@@ -290,11 +380,12 @@ IDPASS_JS = r"""(opt) => {
   const sch = new Float64Array(n + 1);   // scharnier: beeldpunten per knoop (portierrand en scharnieren) binnen het interessegebied; apart van de gevlagde doorkijk
   // interessegebied (wielkastcamera's): omkadering van het voorwiel en de voorwielkast (knopen 'Wiel links|rechtsvoor/..' en '../Wielkast voor ..') plus een marge; alleen daarin telt een beeldpunt als gevlagd
   // opt.roi: een omkadering {re, marge} of een lijst daarvan (rondgang: linker- en rechtervoorwiel apart); een beeldpunt telt als het in minstens een ervan ligt
-  let roi = null; const gcnt = new Float64Array(n + 1); const rois = [];
+  let roi = null; const gcnt = new Float64Array(n + 1); const rois = [], roiGevonden = [];   // roiGevonden: per omkadering van opt.roi of hij in beeld is (achtermodus: controle op een weggevallen interessegebied)
   if (opt && opt.roi) {
     for (const rd of [].concat(opt.roi)) {
       const re = new RegExp(rd.re); let bx0 = 1e9, by0 = 1e9, bx1 = -1, by1 = -1;
       labList.forEach((q, j) => { if (re.test(q.naam) && cnt[j + 1] > 0) { bx0 = Math.min(bx0, x0[j + 1]); by0 = Math.min(by0, y0[j + 1]); bx1 = Math.max(bx1, x1[j + 1]); by1 = Math.max(by1, y1[j + 1]); } });
+      roiGevonden.push(bx1 >= 0);
       if (bx1 >= 0) { const m = rd.marge * Math.max(bx1 - bx0, by1 - by0); rois.push([Math.max(0, Math.round(bx0 - m)), Math.max(0, Math.round(by0 - m)), Math.min(W - 1, Math.round(bx1 + m)), Math.min(H - 1, Math.round(by1 + m))]); }
     }
     roi = Array.isArray(opt.roi) ? rois : (rois[0] || null);
@@ -318,25 +409,29 @@ IDPASS_JS = r"""(opt) => {
   }
   // zones (wielkastcamera's en rondgang): van elk gevlagd beeldpunt dat geen naad is (breedte >= 3) de wereldpositie uit een tweede pass; ligt het punt achter het wielkastwandvlak |x| = 0,50 (gezien vanaf de camerakant), dan is de zone
   // bepaald door de hoogte y waarop de blik dat vlak passeert: onder de boog, het venster boven de band of boven. Ligt het punt zelf in de wielkastruimte (|x| >= 0,50), dan telt het als 'onder' als het lager ligt dan y 0,50 (vloermat, dorpelbekleding), anders is de zone 'overig'; kijkt de camera niet van opzij, dan is de zone ook 'overig'.
-  const zone = new Float64Array((n + 1) * 4), cr = new Float64Array((n + 1) * 5).fill(0);   // cr: per knoop aantal, som y, som z van het kruispunt met het wielkastvlak, kleinste en grootste z (alleen info)
+  const zone = new Float64Array((n + 1) * 4), cr = new Float64Array((n + 1) * 5).fill(0);
+  const onderdoor = new Float64Array(n + 1), onderdoorVoor = new Float64Array(n + 1);   // opt.onderdoor (onderdoorcamera's achter): de blik passeert het wielkastvlak onder y zoneY[0], onder de auto door, op z <= zoneZ[1] (onderdoor) of verder naar voren (onderdoorVoor, alleen info); beide een deel van 'overig'
+  const midden = new Float64Array(n + 1);   // opt.midden (achtermodus): beeldpunten die de vrijstelling midden onder de boog (|z - as| < zoneDz) naar 'overig' zet; een deel van 'overig', alleen info   // cr: per knoop aantal, som y, som z van het kruispunt met het wielkastvlak, kleinste en grootste z (alleen info)
   if (opt && opt.zone && any) {
     const pm = new THREE.ShaderMaterial({ vertexShader: 'varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }', fragmentShader: 'varying vec3 vW; void main(){ gl_FragColor = vec4(vW, 1.0); }', side: THREE.DoubleSide });
     L.MESHES.forEach(m => { m.material = pm; });
-    const rtf = new THREE.WebGLRenderTarget(W, H, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.FloatType, depthBuffer: true });
+    const rtf = new THREE.WebGLRenderTarget(W, H, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.FloatType, depthBuffer: true, stencilBuffer: true });   // 24-bit diepte, zie rt hierboven
     renderer.setClearColor(0x000000, 1); renderer.setRenderTarget(rtf); renderer.clear(); renderer.render(scene, camera);
     const fb = new Float32Array(W * H * 4); renderer.readRenderTargetPixels(rtf, 0, 0, W, H, fb); renderer.setRenderTarget(null); rtf.dispose(); pm.dispose();
     const cp = camera.position, sg = Math.sign(cp.x), vlak = sg * 0.5, kant = Math.abs(cp.x) > 0.6;
     for (let y = 0; y < H; y++) { const ro = (H - 1 - y) * W * 4; for (let x = 0; x < W; x++) { const i = y * W + x; if (!gevlagd[i] || !op1[i]) continue;
       const k = ro + x * 4, wx = fb[k], wy = fb[k + 1]; let z = 3;
       if (kant && sg * wx < 0.5) { const t = (vlak - cp.x) / (wx - cp.x), yc = cp.y + t * (wy - cp.y), zc = cp.z + t * (fb[k + 2] - cp.z); const Y = opt.zoneY, Z = opt.zoneZ;
-        if (zc >= Z[0] && zc <= Z[1] && yc >= Y[0] && yc < Y[3]) { z = yc < Y[1] ? 0 : (yc < Y[2] ? 1 : 2); if (z === 0 && Math.abs(zc - opt.zoneAx) < opt.zoneDz) z = 3; }   // onder de boog tellen alleen de uiteinden (|z - as| >= dEnd): midden ligt de aandrijfas op naafhoogte vrij door de wand
+        if (zc >= Z[0] && zc <= Z[1] && yc >= Y[0] && yc < Y[3]) { z = yc < Y[1] ? 0 : (yc < Y[2] ? 1 : 2); if (z === 0 && Math.abs(zc - opt.zoneAx) < opt.zoneDz) { z = 3; if (opt.midden) midden[lab[ids[i]]]++; } }   // onder de boog tellen alleen de uiteinden (|z - as| >= dEnd): midden ligt de aandrijfas op naafhoogte vrij door de wand
+        if (opt.onderdoor && yc < opt.zoneY[0]) { if (zc <= opt.zoneZ[1]) onderdoor[lab[ids[i]]]++; else onderdoorVoor[lab[ids[i]]]++; }
         const q = lab[ids[i]] * 5; cr[q]++; cr[q + 1] += yc; cr[q + 2] += zc; cr[q + 3] = cr[q] === 1 ? zc : Math.min(cr[q + 3], zc); cr[q + 4] = cr[q] === 1 ? zc : Math.max(cr[q + 4], zc); }
-      else if (kant && wy >= opt.zoneY[0] && wy < opt.zoneY[1] && fb[k + 2] >= opt.zoneZ[0] && fb[k + 2] <= opt.zoneZ[1] && Math.abs(fb[k + 2] - opt.zoneAx) >= opt.zoneDz) z = 0;   // het punt zelf ligt in de wielkastruimte (|x| >= 0,50) en laag, zoals de vloermat en de dorpelbekleding achter de band: onder de boog
+      else if (kant && wy >= opt.zoneY[0] && wy < opt.zoneY[1] && fb[k + 2] >= opt.zoneZ[0] && fb[k + 2] <= opt.zoneZ[1] && Math.abs(fb[k + 2] - opt.zoneAx) >= opt.zoneDz) z = 0;
+      else if (opt.midden && kant && wy >= opt.zoneY[0] && wy < opt.zoneY[1] && fb[k + 2] >= opt.zoneZ[0] && fb[k + 2] <= opt.zoneZ[1]) midden[lab[ids[i]]]++;   // idem in de wielkastruimte zelf, midden onder de boog (z blijft 'overig')   // het punt zelf ligt in de wielkastruimte (|x| >= 0,50) en laag, zoals de vloermat en de dorpelbekleding achter de band: onder de boog
       zone[lab[ids[i]] * 4 + z]++; } }
   }
   herstel();
   const knopen = [];
-  for (let l = 1; l <= n; l++) if (cnt[l] > 0) knopen.push({ naam: labList[l - 1].naam, klasse: labList[l - 1].klasse, voor: labList[l - 1].zs.reduce((a, b) => a + b, 0) / labList[l - 1].zs.length > 0.6, px: cnt[l], g: gcnt[l], dun: dun[l], mid: mid[l], vb: [vx[l], vy[l]], box: [x0[l], y0[l], x1[l], y1[l]], sch: sch[l], zone: [zone[l * 4], zone[l * 4 + 1], zone[l * 4 + 2], zone[l * 4 + 3]], kruis: cr[l * 5] ? [cr[l * 5], cr[l * 5 + 1] / cr[l * 5], cr[l * 5 + 2] / cr[l * 5], cr[l * 5 + 3], cr[l * 5 + 4]] : null });
+  for (let l = 1; l <= n; l++) if (cnt[l] > 0) knopen.push({ naam: labList[l - 1].naam, klasse: labList[l - 1].klasse, voor: labList[l - 1].zs.reduce((a, b) => a + b, 0) / labList[l - 1].zs.length > 0.6, px: cnt[l], g: gcnt[l], dun: dun[l], mid: mid[l], vb: [vx[l], vy[l]], box: [x0[l], y0[l], x1[l], y1[l]], sch: sch[l], midden: midden[l], onderdoor: onderdoor[l], onderdoorVoor: onderdoorVoor[l], zone: [zone[l * 4], zone[l * 4 + 1], zone[l * 4 + 2], zone[l * 4 + 3]], kruis: cr[l * 5] ? [cr[l * 5], cr[l * 5 + 1] / cr[l * 5], cr[l * 5 + 2] / cr[l * 5], cr[l * 5 + 3], cr[l * 5 + 4]] : null });
   knopen.sort((p, q) => q.px - p.px);
   // beeld: kleur per klasse; gevlagd = magenta (motorruimte) of oranje (onderstel)
   let url = null;
@@ -346,7 +441,7 @@ IDPASS_JS = r"""(opt) => {
     for (let i = 0; i < W * H; i++) { const k = kl[i], c3 = KC[ids[i] > 0 && ids[i] <= labels.length ? k : 0]; im.data[4 * i] = c3[0]; im.data[4 * i + 1] = c3[1]; im.data[4 * i + 2] = c3[2]; im.data[4 * i + 3] = 255; }
     g.putImageData(im, 0, 0); url = c.toDataURL('image/png');
   }
-  return { W, H, tot: Object.fromEntries(KLN.map((k, i) => [k, tot[i]])), knopen, url, mask: maskB64, roi };
+  return { W, H, tot: Object.fromEntries(KLN.map((k, i) => [k, tot[i]])), knopen, url, mask: maskB64, roi, roiGevonden };
 }"""
 
 # ---------------------------------------------------------------- geometrie (in de pagina)
@@ -529,6 +624,122 @@ def git_info():
         return None, None
 
 
+# Verwacht aantal poorten in volle achtermodus (--achter zonder --cams en --geen-rondgang). Bron: nulmeting van 18 oktober 2026 op fa5c619 (open punt AWK, stage S1): de 21 poorten van
+# front-ronde4/v2/meet_achter.py. Wie bewust een poort toevoegt of schrapt, past deze twee getallen mee aan. De extra controles ('interessegebied achterwielen in beeld', 'aantal poorten achter') tellen niet mee.
+VERWACHT_HARD_ACHTER = 27   # 21 van meet_achter.py, 'wielkast midden onder de boog achter' en 'wielkastcamera's achter', elk links en rechts (nulmeting fa5c619: alle vier rood), en sinds cyclus 2 'onderdoorkijk achter het achterwiel' links en rechts
+VERWACHT_ZACHT_ACHTER = 0
+
+
+def poorten_achter(res, namen, poort):
+    """poorten van de achtermodus (open punt AWK): de doorkijk door de achterwielkasten naar de cabine (achterbank, bagagebekleding, vloer, zijbekleding).
+    Geeft terug of de modus vol is (zonder --cams en --geen-rondgang). In volle modus bestaat elke poort altijd: ontbreekt zijn invoer (geen camera van die kant, of het
+    interessegebied valt weg doordat een knoop hernoemd is), dan staat hij rood met 'invoer ontbreekt: ...' in plaats van te verdwijnen of stil groen te zijn."""
+    vol = not (a.cams or a.geen_rondgang)
+    zz = f'z {ZONE_Z_ACHTER[0]} tot {ZONE_Z_ACHTER[1]}'
+    rg = [k for k in namen if res['cams'][k]['soort'] == 'rondgang']
+    def kant_cams(ks, kant): return [k for k in ks if res['cams'][k]['kant'] in (kant, 'midden')]
+    def leeg(naam, eis, wat):
+        if vol: poort(naam, False, f'invoer ontbreekt: {wat}', eis)
+    # de zones per kant over de rondgang (zoals de voormodus over wielkast- en rondgangcamera's; achter alleen de rondgang, zodat deze poorten gelijk blijven aan meet_achter.py)
+    ZP = (('venster', 'wielkast venster boven de band', f'geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed door het venster boven de achterband; de blik passeert het wielkastvlak |x| 0,50 op y {ZONE_Y[1]} tot {ZONE_Y[2]} en {zz}'),
+          ('onder', 'wielkast gat onder de boog', f'geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed door het gat onderin de achterboog (zijbekleding achter, achterbank, vloer); de blik passeert het wielkastvlak |x| 0,50 op y {ZONE_Y[0]} tot {ZONE_Y[1]} en {zz} (daaronder kijk je onder de auto door; midden onder de boog, |z - ({AXR_ACHTER})| < {ZONE_DEND}, telt hier niet)'),
+          ('boven', 'wielkast opening boven het venster', f'geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed door een opening bovenin de achterboog: wielkastvlak |x| 0,50 gepasseerd op y {ZONE_Y[2]} tot {ZONE_Y[3]} en {zz}'))
+    for kant in ('links', 'rechts'):
+        ks = kant_cams(rg, kant)
+        for zn, naam, eis in ZP:
+            nm = f'{naam} achter {kant}'
+            if not ks: leeg(nm, eis, f"rondgangcamera's {kant}"); continue
+            hits = sorted([(px, kn, kl, k) for k in ks for px, kn, kl in wk_zone_hits(res['cams'][k], zn)], reverse=True)
+            cams_rood = sorted({h[3] for h in hits})
+            poort(nm, not hits, f'ok ({len(ks)} camera\'s)' if not hits else f"{len(cams_rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {kn} ({kl}) {px}' for px, kn, kl, k in hits[:6]) + (f' (+{len(hits) - 6} meer)' if len(hits) > 6 else ''), eis)
+    # tussenpoort: hetzelfde getal als voor (2.500 px door het venster per camera); de ijking (V1 9578e6f) gold de voorwielkast, achter is dit getal niet apart geijkt
+    for kant in ('links', 'rechts'):
+        ks = kant_cams(rg, kant)
+        nm, eis = f'wielkast venster tegenover V1 achter {kant}', f'tussenpoort: hoogstens {VENSTER_TOT_MAX} px motorruimte- of cabinebeeld door het venster boven de achterband per camera (getal uit de voormeting, V1 9578e6f; achter niet apart geijkt). De poort wielkast venster boven de band achter (50 px per knoop) is de eis en is strenger'
+        if not ks: leeg(nm, eis, f"rondgangcamera's {kant}"); continue
+        tot = sorted([(sum(n['zone_px']['venster'] for n in res['cams'][k]['gevlagd']), k) for k in ks], reverse=True)
+        rood = [t for t in tot if t[0] > VENSTER_TOT_MAX]
+        poort(nm, not rood, f"ok (grootste {tot[0][0]} px in {tot[0][1]})" if not rood else f"{len(rood)} van {len(ks)} camera's boven {VENSTER_TOT_MAX} px: " + '; '.join(f'{k} {px}' for px, k in rood[:6]), eis)
+    # rondgang per hoogte, afstand en kant
+    if rg or vol:
+        for h in RONDGANG_H:
+            for r in RONDGANG_R:
+                for kant in ('links', 'rechts'):
+                    ks = [k for k in kant_cams(rg, kant) if res['cams'][k]['h'] == h and res['cams'][k]['r'] == r]
+                    nm = f'wielkast rondgang h{h} r{r} achter {kant}'
+                    eis = (f'lage rondgang op {h} m hoogte en {r} m van het doel (baanm en baanv, om de 10 graden): geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed (smalle en brede beeldpunten) waar de blik door de achterwielkast gaat '
+                           f'(zone onder, venster of boven: camera naast de auto, wielkastvlak |x| 0,50 gepasseerd op y {ZONE_Y[0]} tot {ZONE_Y[3]} en {zz}; onder de auto door telt niet). Remhardware in de wielkast (ook Remleiding achter en Remslang achter) telt niet')
+                    if not ks and vol: leeg(nm, eis, f"rondgangcamera's h{h} r{r} {kant}"); continue
+                    rood = [(k, wk_slecht(res['cams'][k], True)) for k in ks]; rood = [(k, sl) for k, sl in rood if sl]
+                    poort(nm, not rood, f"ok ({len(ks)} camera's)" if not rood else f"{len(rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {sl[0][1]} ({sl[0][2]}, {sl[0][3]}) {sl[0][0]}' for k, sl in sorted(rood, key=lambda t: -t[1][0][0])[:5]), eis)
+    # strengere poort (achter): voor loopt de aandrijfas op naafhoogte vrij door de wand, daarom telt midden onder de boog (|z - as| < ZONE_DEND 0,20, y < 0,50) daar niet (zone 'overig').
+    # Achter loopt geen aandrijfas; de vrijstelling verbergt daar doorkijk. Nulmeting fa5c619 (macOS-GPU, rondgang): links 20 knopen boven 50 px in 13 camera's, rechts 16 in 9, grootste
+    # Kabelboom achter 76.405 px en Bagagevloer 22.414 px (baanm-r2.0-h0.23-a160), Zitbekleding achter 4.387 px (baanm-r2.0-h0.23-a-160). De 21 poorten hierboven blijven ongewijzigd.
+    for kant in ('links', 'rechts'):
+        ks = kant_cams(rg, kant)
+        nm = f'wielkast midden onder de boog achter {kant}'
+        eis = (f'geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed midden onder de achterboog: de blik passeert het wielkastvlak |x| 0,50 op y {ZONE_Y[0]} tot {ZONE_Y[1]} en |z - ({AXR_ACHTER})| < {ZONE_DEND}, '
+               f'of het punt ligt daar zelf in de wielkastruimte (zone_px.midden); voor is dit vrijgesteld voor de aandrijfas, achter loopt geen aandrijfas')
+        if not ks: leeg(nm, eis, f"rondgangcamera's {kant}"); continue
+        hits = sorted([(n['zone_px'].get('midden', 0), n['knoop'], n['klasse'], k) for k in ks for n in res['cams'][k]['gevlagd'] if n['zone_px'].get('midden', 0) > KAP_MAX_PX], reverse=True)
+        cams_rood = sorted({h[3] for h in hits})
+        poort(nm, not hits, f'ok ({len(ks)} camera\'s)' if not hits else f"{len(cams_rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {kn} ({kl}) {px}' for px, kn, kl, k in hits[:6]) + (f' (+{len(hits) - 6} meer)' if len(hits) > 6 else ''), eis)
+    # wielkastcamera's achter (WIELKAST_ACHTER): per kant een poort, 50 px per interieur- of motorruimteknoop binnen het interessegebied (achterwielen en achterwielkasten plus 25 procent)
+    # in de zones onder, venster en boven, zoals de wielkastpoort voor, en ook midden onder de boog (achter geen aandrijfas, zie hierboven)
+    wka = [k for k in namen if res['cams'][k]['soort'] == 'wielkast']
+    if wka or vol:
+        for kant in ('links', 'rechts'):
+            ks = [k for k in wka if res['cams'][k]['kant'] == kant]
+            nm = f"wielkastcamera's achter {kant}"
+            eis = (f"geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed in de {len(WIELKAST_ACHTER)} wielkastcamera's achter van deze kant, "
+                   f"binnen de omkadering van achterwiel en achterwielkast plus 25 procent, waar de blik door de achterwielkast gaat (zone onder, venster, boven en midden onder de boog: wielkastvlak |x| 0,50 op y {ZONE_Y[0]} tot {ZONE_Y[3]} en {zz})")
+            if not ks:
+                if vol: leeg(nm, eis, f"wielkastcamera's achter {kant}")
+                continue
+            hits = []
+            for k in ks:
+                for n in res['cams'][k]['gevlagd']:
+                    zp = n['zone_px']; px = sum(zp.get(q, 0) for q in ('onder', 'venster', 'boven', 'midden'))
+                    if px > KAP_MAX_PX: hits.append((px, n['knoop'], n['klasse'], max(('onder', 'venster', 'boven', 'midden'), key=lambda q: zp.get(q, 0)), k))
+            hits.sort(reverse=True)
+            cams_rood = sorted({h[4] for h in hits})
+            poort(nm, not hits, f"ok ({len(ks)} camera's)" if not hits else f"{len(cams_rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {kn} ({kl}, {z}) {px}' for px, kn, kl, z, k in hits[:6]) + (f' (+{len(hits) - 6} meer)' if len(hits) > 6 else ''), eis)
+    # onderdoorkijk achter het achterwiel (cyclus 2, B3): de onderdoorcamera's van een kant, 50 px per interieurknoop in alle zones van de doorkijk plus 'onderdoor' (de blik passeert
+    # het wielkastvlak onder y 0,26 op z <= -0,868: de vrijstelling 'onder de auto door telt niet' van de poorten hierboven geldt hier niet). 'onderdoor_voor' (verder naar voren, onder
+    # de dorpel van het achterportier) staat in de JSON en telt niet. Alleen de klasse interieur: de kabelboom achter (klasse motorruimte), uitlaat en onderstel horen onder de auto.
+    # Nulmeting cyclus 2 (macOS-GPU): rood op fa5c619 en febd5ad, zie docs/testen.md.
+    ond = [k for k in namen if res['cams'][k]['soort'] == 'onderdoor']
+    if ond or vol:
+        for kant in ('links', 'rechts'):
+            ks = [k for k in ond if res['cams'][k]['kant'] == kant]
+            nm = f'onderdoorkijk achter het achterwiel {kant}'
+            eis = (f"geen interieurknoop boven {KAP_MAX_PX} px breed in de {len(ONDERDOOR_ACHTER)} onderdoorcamera's van deze kant (h 0,15 m schuin achter het achterwiel, het hele beeld), "
+                   f"waar de blik door de achterwielkast gaat (zone onder, venster, boven, midden) of onder de auto door (wielkastvlak |x| 0,50 onder y {ZONE_Y[0]} en op z <= {ZONE_Z_ACHTER[1]}; onderdoor_voor telt niet)")
+            if not ks:
+                if vol: leeg(nm, eis, f"onderdoorcamera's {kant}")
+                continue
+            hits = []
+            for k in ks:
+                for n in res['cams'][k]['gevlagd']:
+                    if n['klasse'] != 'interieur': continue
+                    zp = n['zone_px']; zq = ('onder', 'venster', 'boven', 'midden', 'onderdoor'); px = sum(zp.get(q, 0) for q in zq)
+                    if px > KAP_MAX_PX: hits.append((px, n['knoop'], max(zq, key=lambda q: zp.get(q, 0)), k))
+            hits.sort(reverse=True)
+            cams_rood = sorted({h[3] for h in hits})
+            poort(nm, not hits, f"ok ({len(ks)} camera's)" if not hits else f"{len(cams_rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {kn} ({z}) {px}' for px, kn, z, k in hits[:6]) + (f' (+{len(hits) - 6} meer)' if len(hits) > 6 else ''), eis)
+    # extra controle (volle modus): het interessegebied rond de achterwielen bestaat; zonder omkadering telt geen enkel beeldpunt en zou elke poort hierboven stil groen zijn
+    if vol:
+        gev = [0, 0]
+        for k in rg:
+            rv = res['cams'][k].get('roi_gevonden') or []
+            if len(rv) == 2: gev[0] += bool(rv[0]); gev[1] += bool(rv[1])
+        zonder = [k for k in wka if not any(res['cams'][k].get('roi_gevonden') or [])]
+        poort('interessegebied achterwielen in beeld', gev[0] > 0 and gev[1] > 0 and not zonder,
+              f"rondgang: achterwiel links in {gev[0]}, rechts in {gev[1]} van {len(rg)} camera's" + (f"; wielkastcamera's achter zonder interessegebied: {', '.join(zonder)}" if zonder else (f"; wielkastcamera's achter: alle {len(wka)} met interessegebied" if wka else '')),
+              "minstens een rondgangcamera met het linker- en een met het rechterachterwiel in beeld (ROI_WIEL_L_ACHTER, ROI_WIEL_R_ACHTER), en elke wielkastcamera achter met interessegebied; anders is de knoopnaam weg en telt de meting niets", extra=True)
+    return vol
+
+
 def main():
     gpu = (not a.sw) and platform.system() == 'Darwin'
     if gpu:
@@ -536,10 +747,10 @@ def main():
     if not a.uit:
         a.uit = tempfile.mkdtemp(prefix='meet-uit-'); print('uitvoermap (tijdelijk):', a.uit)
     os.makedirs(a.uit, exist_ok=True)
-    cams = cam_lijst()
-    groepen = {'rondgang': [k for k, c in cams.items() if c['soort'] == 'rondgang'], 'wielkast': [k for k, c in cams.items() if c['soort'] == 'wielkast']}   # --cams rondgang,wielkast,eig
+    cams = cam_lijst_achter() if a.achter else cam_lijst()
+    groepen = {g: [k for k, c in cams.items() if c['soort'] == g] for g in ('rondgang', 'wielkast', 'onderdoor')}   # --cams rondgang,wielkast,onderdoor,eig
     namen = [x for k in a.cams.split(',') for x in (groepen[k] if k in groepen else [k])] if a.cams else list(cams)
-    if not a.cams: namen.remove('assembled')   # de kale beginstand is een uitgebreide camera: alleen op verzoek (--cams assembled)
+    if not a.cams and 'assembled' in cams: namen.remove('assembled')   # de kale beginstand is een uitgebreide camera: alleen op verzoek (--cams assembled)
     if not a.cams and a.geen_rondgang: namen = [k for k in namen if cams[k]['soort'] != 'rondgang']
     unknown = [k for k in namen if k not in cams]
     if unknown: raise SystemExit('onbekende camera: ' + ','.join(unknown))
@@ -547,7 +758,7 @@ def main():
     res = {'meta': {}, 'cams': {}, 'geo': None, 'poorten': []}
     t0 = time.time()
     with harness.session(d) as s:
-        if not a.geen_geo:
+        if not a.geen_geo and not a.achter:   # achtermodus: geen geometrie (alle geometriepoorten gaan over de voorkant)
             pg = s.page(800, 600)
             res['geo'] = pg.evaluate(GEO_JS)
             pg.close()
@@ -560,16 +771,22 @@ def main():
         # assembled-zoom: richting van de beginstand, ingezoomd op de linkervoorhoek (en gespiegeld)
         dv = np.array(asm['p']) - np.array(asm['t']); dv = dv / np.linalg.norm(dv)
         tz = np.array([0.45, 0.62, 1.55]); pz = tz + dv * 2.1
-        cams['assembled'].update(p=asm['p'], t=asm['t'])
-        cams['assembled-zoom'].update(p=[round(float(x), 3) for x in pz], t=[round(float(x), 3) for x in tz])
-        cams['assembled-zoom-r'].update(p=spiegel(cams['assembled-zoom']['p']), t=spiegel(cams['assembled-zoom']['t']))
+        if 'assembled' in cams:   # niet in de achtermodus
+            cams['assembled'].update(p=asm['p'], t=asm['t'])
+            cams['assembled-zoom'].update(p=[round(float(x), 3) for x in pz], t=[round(float(x), 3) for x in tz])
+            cams['assembled-zoom-r'].update(p=spiegel(cams['assembled-zoom']['p']), t=spiegel(cams['assembled-zoom']['t']))
         for k in namen:
             c = cams[k]
             pg.evaluate(SETCAM, [c['p'], c['t'], c.get('oy', 0), c['soort'] in ('wielkast', 'afwerking', 'rondgang')])   # nieuwe camera's: near/far zoals uiNearFar in de app (dichtbij); de camera's van ronde 2 blijven ongewijzigd, zodat de cijfers vergelijkbaar blijven
             pg.wait_for_timeout(250)
-            wk = c['soort'] in ('wielkast', 'rondgang')   # wielkastcamera's en rondgang: glas zichtbaar, interessegebied rond voorwiel en voorwielkast, remhardware in de wielkast geen doorkijk, zones van de doorkijk
-            r = pg.evaluate(IDPASS_JS, {'png': not a.geen_png and c['soort'] != 'rondgang', 'masks': c.get('maskers'), 'flag': c.get('flag'), 'glas': not wk,
-                                        'roi': (ROI_WIEL if c['soort'] == 'wielkast' else [ROI_WIEL_L, ROI_WIEL_R]) if wk else None, 'wkhw': WK_HARDWARE if wk else None, 'zone': wk, 'zoneY': ZONE_Y, 'zoneZ': ZONE_Z, 'zoneAx': 1.087, 'zoneDz': ZONE_DEND})
+            wk = c['soort'] in ('wielkast', 'rondgang', 'onderdoor')   # wielkastcamera's, rondgang en onderdoorcamera's (achter): glas zichtbaar, interessegebied rond voorwiel en voorwielkast, remhardware in de wielkast geen doorkijk, zones van de doorkijk
+            opt = {'png': not a.geen_png and c['soort'] != 'rondgang', 'masks': c.get('maskers'), 'flag': c.get('flag'), 'glas': not wk,
+                   'roi': (ROI_WIEL if c['soort'] == 'wielkast' else [ROI_WIEL_L, ROI_WIEL_R]) if wk else None, 'wkhw': WK_HARDWARE if wk else None, 'zone': wk, 'zoneY': ZONE_Y, 'zoneZ': ZONE_Z, 'zoneAx': 1.087, 'zoneDz': ZONE_DEND}
+            if a.achter:   # de vier verschillen van meet_achter.py: interessegebied achterwielen, zone van de achterboog, as AXR, remhardware achter; plus de telling midden onder de boog (info)
+                opt.update(roi=(ROI_WIEL_ACHTER if c['soort'] == 'wielkast' else [ROI_WIEL_L_ACHTER, ROI_WIEL_R_ACHTER]) if wk else None, wkhw=WK_HARDWARE_ACHTER if wk else None,
+                           zoneZ=ZONE_Z_ACHTER, zoneAx=AXR_ACHTER, midden=True)
+                if c['soort'] == 'onderdoor': opt.update(roi=None, onderdoor=True)   # onderdoorcamera's: het hele beeld, plus de telling onder de auto door (zoneZ[1] is de voorgrens)
+            r = pg.evaluate(IDPASS_JS, opt)
             r2 = r
             W, H = r['W'], r['H']
             tot = W * H
@@ -582,6 +799,11 @@ def main():
                    'gevlagd': [{'knoop': n['naam'], 'klasse': n['klasse'], 'voor': bool(n['voor']), 'px': int(n['g']), 'dun_px': int(n['dun']), 'smal_px': int(n['mid']), 'breed_px': int(n['g'] - n['dun'] - n['mid']), 'voorbeeld_px': n['vb'], 'box': n['box'], 'zone_px': dict(zip(ZONE_NAMEN, (int(z) for z in n['zone']))), 'kruis_yz': ([round(n['kruis'][1], 3), round(n['kruis'][2], 3), round(n['kruis'][3], 3), round(n['kruis'][4], 3)] if n.get('kruis') else None)} for n in flagged],
                    'wielkast_px': int(r['tot']['wielkast']), 'px_per_knoop': {n['naam']: int(n['px']) for n in r['knopen']} if c['soort'] != 'rondgang' else {}, 'top_knopen': [{'knoop': n['naam'], 'klasse': n['klasse'], 'px': int(n['px'])} for n in r['knopen'][:12]] if c['soort'] != 'rondgang' else []}
             if wk: ent['scharnier_px'] = {n['naam']: int(n['sch']) for n in r['knopen'] if n.get('sch', 0) > 0}
+            if a.achter:   # midden: beeldpunten die de vrijstelling midden onder de boog naar 'overig' zet (een deel van overig); roi_gevonden: welke omkadering van het interessegebied in beeld is
+                for gv, n in zip(ent['gevlagd'], flagged):
+                    gv['zone_px']['midden'] = int(n['midden'])
+                    if c['soort'] == 'onderdoor': gv['zone_px'].update(onderdoor=int(n['onderdoor']), onderdoor_voor=int(n['onderdoorVoor']))
+                ent['roi_gevonden'] = r.get('roiGevonden')
             if c['soort'] == 'rondgang': ent.update(kant=c['kant'], r=c['r'], h=c['h'], az=c['az'], doel=c['doel'])
             mr = [n['px'] for n in ent['gevlagd'] if n['klasse'] == 'motorruimte']; os_ = [n['px'] for n in ent['gevlagd'] if n['klasse'] == 'onderstel']
             ent['onderzicht_voor_pct'] = round(100 * sum(n['px'] for n in ent['gevlagd'] if n['voor']) / tot, 3)
@@ -634,151 +856,159 @@ def main():
     def poort(naam, ok, waarde, eis, zacht=False, extra=False):
         P.append({'naam': naam, 'groen': bool(ok), 'waarde': waarde, 'eis': eis, 'zacht': bool(zacht), **({'extra': True} if extra else {})})   # extra: controle op de meting zelf, niet een van de 99 harde poorten
     def lum(e, th, nm): return (e.get('helderheid') or {}).get(th, {}).get(nm)
-    for k in namen:
-        e = res['cams'][k]
-        if e['soort'] == 'beeld': continue
-        if e.get('helderheid'):
-            for th in ('dark', 'light'):
-                em, gz = lum(e, th, 'Embleem'), lum(e, th, 'Honingraatgrille')
-                if e['soort'] == 'detail':
-                    if em and gz:
-                        ver = em['lum'] / max(gz['lum'], 1e-6)
-                        poort(f'embleem helderheid {k} {th}', ver <= EMBLEEM_MAX, f"embleem {em['lum']} gaas {gz['lum']} verhouding {ver:.2f}", f'embleem hoogstens {EMBLEEM_MAX} keer zo helder als het gaas (foto F1: 1,0)')
-                    else:
-                        poort(f'embleem helderheid {k} {th}', False, 'embleem of gaas niet in beeld', 'beide in beeld')
-                if k in LUM_ONDERPLAAT:   # adv.nodig 1: de afscherming leest als schaduw, niet als grijze plank
-                    op, lr = lum(e, th, 'Onderplaat voorbumper'), lum(e, th, 'Luchtrooster voor')
-                    eis = 'luminantie Onderplaat voorbumper hoogstens die van Luchtrooster voor (eigen meting HEAD: 0,31 tot 0,35 tegen 0,19 tot 0,26; proef MAT.bodPillar: 0,06 tot 0,08)'
-                    if lr is None: poort(f'helderheid onderplaat {k} {th}', False, 'Luchtrooster voor niet in beeld', eis)
-                    elif op is None: poort(f'helderheid onderplaat {k} {th}', True, f"Onderplaat niet in beeld (minder dan 20 px na erosie), luchtrooster {lr['lum']}", eis)
-                    else: poort(f'helderheid onderplaat {k} {th}', op['lum'] <= lr['lum'], f"onderplaat {op['lum']} ({op['px']} px) luchtrooster {lr['lum']} ({lr['px']} px) verhouding {op['lum'] / max(lr['lum'], 1e-6):.2f}", eis)
-                if k in LUM_EMBLEEM_LAAG:   # afwerking e: het embleem is vanuit de lage blik bijna onzichtbaar
-                    eis = f'embleem {EMBLEEM_MIN_LAAG} tot {EMBLEEM_MAX} keer de helderheid van het gaas (HEAD: 0,55 tot 0,78; foto F1: 1,0)'
-                    if em and gz:
-                        ver = em['lum'] / max(gz['lum'], 1e-6)
-                        poort(f'afwerking e: embleem leesbaar {k} {th}', EMBLEEM_MIN_LAAG <= ver <= EMBLEEM_MAX, f"embleem {em['lum']} ({em['px']} px) gaas {gz['lum']} verhouding {ver:.2f}", eis, zacht=True)
-                    else:
-                        poort(f'afwerking e: embleem leesbaar {k} {th}', False, 'embleem of gaas niet in beeld (minder dan 20 px na erosie)', eis, zacht=True)
-        if k in NAADSTROOK_CAMS and 'naadstrook_px' in e:
-            poort(f'afwerking c: spleet tussen schaal en lip {k}', e['naadstrook_px'] <= NAADSTROOK_MAX_PX, f"{e['naadstrook_px']} px Onderplaat tussen Bumperschaal en Bumperlip", f'<= {NAADSTROOK_MAX_PX} px (de lip sluit aan op de schaal, geen donkere lijn over het vlak)', zacht=True)
-        if e['soort'] == 'detail': continue
-        if e['soort'] == 'hoek' or k == 'voor-hoog':
-            slecht = [f"{n['knoop']} {n['breed_px'] + n['smal_px']}" for n in e['gevlagd'] if n['breed_px'] + n['smal_px'] > KAP_MAX_PX]
-            poort(f'kier {k}', not slecht, 'ok' if not slecht else '; '.join(slecht[:6]), f'geen knoop uit motorruimte of onderstel boven {KAP_MAX_PX} px breed (stroken van hoogstens 2 px breed tellen niet)')
-        elif e['soort'] == 'wielkast':   # adv.nodig 2: geen doorkijk door de wielkast naar de motorruimte of de cabine
-            slecht = wk_slecht(e, e['zoned'])
-            poort(f'wielkast kier {k}', not slecht, 'ok' if not slecht else '; '.join(f'{kn} ({kl}, {z}) {px}' for px, kn, kl, z in slecht[:6]) + (f' (+{len(slecht) - 6} meer)' if len(slecht) > 6 else ''),
-                  f'geen knoop uit motorruimte of cabine (interieur) boven {KAP_MAX_PX} px breed (onderstel en remhardware in de wielkast tellen niet; stroken van hoogstens 2 px breed tellen niet; Veerpoottoren en Langsligger tellen mee)' + (f'; alleen blikken door de wielkast (zone onder, venster of boven: wielkastvlak |x| 0,50 gepasseerd op y {ZONE_Y[0]} tot {ZONE_Y[3]} en z {ZONE_Z[0]} tot {ZONE_Z[1]}), niet onder de auto door' if e['zoned'] else ''))
-        elif e['soort'] == 'rondgang':
-            pass   # poorten per hoogte, afstand en kant hieronder
-        elif e['soort'] == 'afwerking' and k.startswith('bumpL'):   # afwerking a: witte spleet (Bumperbalk) tussen lamphuis en bumpernaad op de hoek
-            bb = sum(n['px'] for n in e['gevlagd'] if n['knoop'].split('/')[-1].startswith('Bumperbalk'))
-            bb = bb or sum(v for kn, v in e['px_per_knoop'].items() if kn.split('/')[-1].startswith('Bumperbalk') and 'achter' not in kn)
-            poort(f'afwerking a: Bumperbalk in de hoekspleet {k}', bb <= SPLEET_MAX_PX, f'{bb} px (HEAD: 5.646 px vanaf 60 cm boven de hoek)', f'<= {SPLEET_MAX_PX} px van Bumperbalk voor zichtbaar vanaf 60 cm boven de bumperhoek (een naad van 1 tot 2 px mag)', zacht=True)
-        elif e['soort'] == 'afwerking':
-            pass   # afwerking c: poort hierboven (naadstrook)
-        else:
-            poort(f'zicht onder de bumper {k}', e['onderzicht_voor_pct'] <= ONDERZICHT_MAX_PCT, f"{e['onderzicht_voor_pct']} procent van het beeld (achterkant {e['onderzicht_achter_pct']}, telt niet mee)", f'<= {ONDERZICHT_MAX_PCT} procent: motorruimte en onderstel van de voorste helft (z > 0,6)')
-        if k in ('eig', 'eig-r'):   # adv.nodig 2: de donkerrode sikkel boven de band in eig is Schutbord dat door de wielboog zichtbaar is
-            sk = sum(v for kn, v in e['px_per_knoop'].items() if kn.endswith('/Schutbord'))
-            poort(f'sikkel Schutbord {k}', sk <= SIKKEL_MAX_PX, f'{sk} px Schutbord in beeld (HEAD: 698)', f'<= {SIKKEL_MAX_PX} px: de wielkastbekleding is zwart tot aan de boog, geen rode sikkel')
-    # ronde 4, adv.nodig 2 (punt 1 en 3): doorkijk door de voorwielkast per zone van de blik, over alle wielkastcamera's en de rondgang van een camerakant (links: camera op x > 0, rechts: x < 0)
-    wkc = [k for k in namen if res['cams'][k]['soort'] in ('wielkast', 'rondgang')]
-    if wkc:
-        ZP = (('venster', 'wielkast venster boven de band', f'geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed door het venster tussen wand/schot (y 0,555 tot 0,574) en de veerpoottoren (y 0,62); de blik passeert het wielkastvlak |x| 0,50 op y {ZONE_Y[1]} tot {ZONE_Y[2]} en z {ZONE_Z[0]} tot {ZONE_Z[1]}'),
-              ('onder', 'wielkast gat onder de boog', f'geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed door het gat onderin de boog (langsligger voor, vloermat en scharnier achter); de blik passeert het wielkastvlak |x| 0,50 op y {ZONE_Y[0]} tot {ZONE_Y[1]} (daaronder kijk je onder de auto door)'),
-              ('boven', 'wielkast opening boven het venster', f'geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed door een opening op y {ZONE_Y[2]} tot {ZONE_Y[3]} (kapnaad, schermrand)'))
-        for kant in ('links', 'rechts'):
-            ks = [k for k in wkc if res['cams'][k]['kant'] in (kant, 'midden')]
-            if not ks: continue
-            for zn, naam, eis in ZP:
-                hits = [(px, kn, kl, k) for k in ks for px, kn, kl in wk_zone_hits(res['cams'][k], zn)]
-                hits.sort(reverse=True)
-                cams_rood = sorted({h[3] for h in hits})
-                poort(f'{naam} {kant}', not hits, f'ok ({len(ks)} camera\'s)' if not hits else f"{len(cams_rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {kn} ({kl}) {px}' for px, kn, kl, k in hits[:6]) + (f' (+{len(hits) - 6} meer)' if len(hits) > 6 else ''), eis)
-        # tussenpoort tegenover V1 (9578e6f): V1 had nog twee spleten naast de ronde veerpoottoren (z 1,006 tot 1,02 en 1,155 tot 1,165) en laat daardoor in de strenge poort hierboven ook rood zien; de regressie van a28dff6 (volle breedte van het venster open) is
-        # van een andere orde: V1 hoogstens 2.155 px venster per camera (grootste: wielkast-achter), HEAD 2.663 tot 5.981 in de zes wielkastcamera's van het advies
-        for kant in ('links', 'rechts'):
-            ks = [k for k in wkc if res['cams'][k]['kant'] in (kant, 'midden')]
-            if not ks: continue
-            tot = [(sum(n['zone_px']['venster'] for n in res['cams'][k]['gevlagd']), k) for k in ks]; tot.sort(reverse=True)
-            rood = [t for t in tot if t[0] > VENSTER_TOT_MAX]
-            poort(f'wielkast venster tegenover V1 {kant}', not rood, f"ok (grootste {tot[0][0]} px in {tot[0][1]})" if not rood else f"{len(rood)} van {len(ks)} camera's boven {VENSTER_TOT_MAX} px: " + '; '.join(f'{k} {px}' for px, k in rood[:6]),
-                  f'tussenpoort: hoogstens {VENSTER_TOT_MAX} px motorruimte- of cabinebeeld door het venster per camera (V1 9578e6f hoogstens 2.155; HEAD a28dff6 tot 5.981). De poort wielkast venster boven de band hierboven (50 px per knoop) is de eis en is strenger')
-        # punt 3, achter de band: het onderste portierscharnier (blad aan het portier en op de stijl) en de portierrand liggen in de wielboog (de voorrand van het portier staat op z 0,82, de boog begint op z 0,787)
-        for kant in ('links', 'rechts'):
-            ks = [k for k in wkc if res['cams'][k]['kant'] in (kant, 'midden') and res['cams'][k]['soort'] == 'wielkast' and res['cams'][k]['zoned']]   # de lage camera's van ronde 4 (wielkast-recht, wielkast-achter, zij-laag, wk-zij-laag, ook gespiegeld)
-            if not ks: continue
-            hits = sorted([(px, kn, k) for k in ks for kn, px in res['cams'][k]['scharnier_px'].items() if px > SCHARNIER_MAX_PX and kn.split('/')[-1].startswith('Scharnier')], reverse=True)
-            cams_rood = sorted({h[2] for h in hits})
-            poort(f'wielkast scharnier achter de band {kant}', not hits, f"ok ({len(ks)} camera's)" if not hits else f"{len(cams_rood)} van {len(ks)} camera's rood: " + '; '.join(f"{k}: {kn.split('/')[-1]} {px}" for px, kn, k in hits[:6]) + (f' (+{len(hits) - 6} meer)' if len(hits) > 6 else ''),
-                  f'geen scharnierblad of scharnierbout boven {SCHARNIER_MAX_PX} px per knoop in de omkadering van voorwiel en voorwielkast (zicht op het portierscharnier door de boog achter de band; HEAD wielkast-recht: Scharnierblad carrosserie 15.520). De portierrand zelf (de voorrand van het portier staat in de boog, HEAD wielkast-recht 8.333) staat als scharnier_px in de JSON, niet als poort')
-    rg = [k for k in namen if res['cams'][k]['soort'] == 'rondgang']
-    if rg:
-        for h in RONDGANG_H:
-            for r in RONDGANG_R:
-                for kant in ('links', 'rechts'):
-                    ks = [k for k in rg if res['cams'][k]['h'] == h and res['cams'][k]['r'] == r and res['cams'][k]['kant'] in (kant, 'midden')]
-                    rood = [(k, wk_slecht(res['cams'][k], True)) for k in ks]; rood = [(k, sl) for k, sl in rood if sl]
-                    poort(f'wielkast rondgang h{h} r{r} {kant}', not rood, f"ok ({len(ks)} camera's)" if not rood else f"{len(rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {sl[0][1]} ({sl[0][2]}, {sl[0][3]}) {sl[0][0]}' for k, sl in sorted(rood, key=lambda t: -t[1][0][0])[:5]),
-                          f'lage rondgang op {h} m hoogte en {r} m van het doel (baanm en baanv, om de 10 graden): geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed (smalle en brede beeldpunten) waar de blik door de wielkast gaat (zone onder, venster of boven: camera naast de auto, wielkastvlak |x| 0,50 gepasseerd op y {ZONE_Y[0]} tot {ZONE_Y[3]} en z {ZONE_Z[0]} tot {ZONE_Z[1]}; onder de auto door telt niet). Veerpoottoren en Langsligger tellen mee, remhardware in de wielkast niet')
     g = res['geo']
-    # Volle modus: alle camera's, de geo-meting en de rondgang. Daar moet elke harde poort bestaan: ontbreekt de invoer van een poort (hernoemde knoop, geo-meting die null of een beginwaarde geeft),
-    # dan komt de poort alsnog in de lijst, rood, met 'invoer ontbreekt: <sleutel>'. In de beperkte modus blijft het oude gedrag: een poort zonder invoer wordt overgeslagen.
-    vol = not (a.cams or a.geen_geo or a.geen_rondgang)
-    gg = g or {}
-    def heeft(sl):   # is de geo-invoer 'sl' echt gemeten? (de beginwaarden van GEO_JS tellen niet: [1e9, -1e9] voor hoek en afdek, 9 voor de laagste punten, 0 voor bumperTop)
-        v = gg.get(sl)
-        if sl in ('hoek', 'afdek'): return bool(v) and v[0] < 1e8 and v[1] > -1e8
-        if sl in ('lipOnder', 'plaatOnder'): return v is not None and v < 9
-        if sl == 'bumperTop': return bool(v) and v > 0
-        if sl == 'lipNaad': return v is not None and v.get('n', 0) > 0   # n = 0: geen enkel lippunt binnen 15 mm van de schaal, dus de poorten zouden vanzelf groen zijn
-        return v is not None
-    def geo_poort(naam, nodig, ok, waarde, eis):
-        ontbr = [sl for sl in nodig if not heeft(sl)]
-        if ontbr:
-            if vol: poort(naam, False, 'invoer ontbreekt: ' + ', '.join(ontbr), eis)
-            return
-        poort(naam, ok(), waarde(), eis)
-    geo_poort('bumperschouderhoek', ['bumperAt'], lambda: gg['bumper'] <= SCHOUDER_MAX, lambda: f"{gg['bumper']:.1f} graden bij {gg['bumperAt']}", f'<= {SCHOUDER_MAX} graden (streef 20)')
-    hk = lambda: ((gg['hoek'][1] - gg['afdek'][1]) * 1000, (gg['hoek'][0] - gg['afdek'][0]) * 1000)   # (boven, onder) in mm
-    geo_poort('hoekkap boven hoofdlens', ['hoek', 'afdek'], lambda: hk()[0] <= 15, lambda: f'{hk()[0]:.1f} mm', '<= 15 mm')
-    geo_poort('hoekkap onder hoofdlens', ['hoek', 'afdek'], lambda: hk()[1] >= -10, lambda: f'{hk()[1]:.1f} mm', '>= -10 mm')
-    geo_poort('lip afstand tot schaal', ['lipNaad'], lambda: gg['lipNaad']['afstand_mm_max'] <= 3, lambda: f"{gg['lipNaad']['afstand_mm_max']} mm", '<= 3 mm')
-    geo_poort('lip aansluithoek (normaal)', ['lipNaad'], lambda: gg['lipNaad']['hoek_max'] <= 30, lambda: f"max {gg['lipNaad']['hoek_max']} gem {gg['lipNaad']['hoek_gem']} graden bij {gg['lipNaad']['hoek_at']}", '<= 30 graden')
-    geo_poort('lip normaalsprong langs de rand', ['lipSprong'], lambda: gg['lipSprong']['hoek_max'] <= 25, lambda: f"{gg['lipSprong']['hoek_max']} graden bij {gg['lipSprong']['at']}", '<= 25 graden')
-    # de neus: lamphoogte uit de motorkap en de hoekkap, bumperhoogte op x = 0, tot de liponderrand en tot het laagste zichtbare voordeel (lip of afscherming, premortem H5)
-    noem = lambda: gg['kapVoorrand'][1] - gg['afdek'][0]
-    ver_lip = lambda: (gg['bumperTop'] - gg['lipOnder']) / max(1e-6, noem())
-    ver_afs = lambda: (gg['bumperTop'] - min(gg['lipOnder'], gg['plaatOnder'])) / max(1e-6, noem())
-    geo_poort('verhouding bumper/lamp op x=0 (tot de lip)', ['lipOnder', 'kapVoorrand', 'afdek', 'bumperTop'], lambda: ver_lip() <= 2.8, lambda: round(ver_lip(), 3), '<= 2,8 (tot de liponderrand)')
-    # plaatOnder (Onderplaat voorbumper, bodyparts.js onder Voorbumper) bestaat op de huidige stand altijd: een vaste knoop zonder hideWhen of opener, ook in de luminantiepoorten en in 'onderplaat tegenover gaas in eig' verplicht.
-    # Daarom is plaatOnder hier invoer van de poort zoals de rest; de oude terugval 'zonder plaat alleen de lip' (min met 9) is vervallen.
-    geo_poort('verhouding bumper/lamp op x=0 (tot de afscherming)', ['lipOnder', 'plaatOnder', 'kapVoorrand', 'afdek', 'bumperTop'], lambda: ver_afs() <= VERH_AFSCH_MAX,
-              lambda: f"{ver_afs():.3f} tot {min(gg['lipOnder'], gg['plaatOnder']):.3f} m", f'<= {VERH_AFSCH_MAX} (beslissing 17: neus en bumperbovenrand omlaag; de afscherming mag de neus niet zwaarder maken)')
-    geo_poort('afscherming onder de lip', ['lipOnder', 'plaatOnder'], lambda: (gg['lipOnder'] - gg['plaatOnder']) * 1000 <= SCHERM_DIEP_MAX_MM, lambda: f"{(gg['lipOnder'] - gg['plaatOnder']) * 1000:.0f} mm onder de liponderrand", f'<= {SCHERM_DIEP_MAX_MM} mm (een lint, geen plank)')
-    if g:
-        print(f"info: vlaknormaalhoek tussen aangrenzende driehoeken in het hoekgebied {g['facet']:.1f} graden bij {g['facetAt']} (meet slanke driehoeken op de neusbovenrand, geen poort: zie beslissing 21)")
-    geo_poort('afscherming raakt aandrijving niet', ['plaatNabij'], lambda: gg['plaatNabij']['n'] == 0, lambda: f"{gg['plaatNabij']['n']} hoekpunten binnen 10 mm {gg['plaatNabij']['per_knoop']}", '0 hoekpunten van Klemmen, Hoes, Koppelingsklok en Draagarm binnen 10 mm van Onderplaat voorbumper')
-    geo_poort('wielkastbekleding raakt onderstel en aandrijving niet', ['wielkastNabij'], lambda: gg['wielkastNabij']['n'] == 0, lambda: f"{gg['wielkastNabij']['n']} hoekpunten binnen 5 mm {gg['wielkastNabij']['per_knoop']}",
-              '0 hoekpunten van Onderstel, Aandrijflijn of Uitlaatsysteem (zonder remleidingen en slangbeugels, die zitten vast aan de wand: HEAD 17 hoekpunten) binnen 5 mm van Wielkast voor links (bewaking bij het sluiten van de doorkijk)')
-    if g and g.get('dev30') is not None:   # zacht: ontbreken van de invoer blijft zonder gevolg voor de exitcode; het aantal zachte poorten wordt apart bewaakt
-        poort('afwerking d: plooien in de glans (bumperbovenrand bij de hoek)', g['dev30']['n'] <= DEV30_MAX_N and g['dev30']['mm2'] <= DEV30_MAX_MM2, f"{g['dev30']['n']} driehoeken, {g['dev30']['mm2']:.0f} mm2 met afwijking > 30 graden",
-              f'<= {DEV30_MAX_N} driehoeken en <= {DEV30_MAX_MM2} mm2 (stand voor ronde 2; streef 0)', zacht=True)
-    eis_plaat = f'<= {PLAAT_MAX} keer het gaas (a9035fc: 4,6 keer)'
-    if 'eig' in res['cams']:
-        px = res['cams']['eig']['px_per_knoop']; op = sum(v for kk, v in px.items() if kk.endswith('Onderplaat voorbumper')); gz = sum(v for kk, v in px.items() if kk.endswith('Honingraatgrille'))
-        poort('onderplaat tegenover gaas in eig', gz > 0 and op <= PLAAT_MAX * gz, f'{op} px tegen {gz} px gaas ({op / max(gz, 1):.2f} keer)', eis_plaat)
-    elif vol:
-        poort('onderplaat tegenover gaas in eig', False, 'invoer ontbreekt: cams.eig', eis_plaat)
-    poort('console zonder fouten', res['meta'].get('console_ok', False), res['meta'].get('console_ok'), 'geen fouten of waarschuwingen')
+    if a.achter:
+        vol = poorten_achter(res, namen, poort)
+    else:
+        for k in namen:
+            e = res['cams'][k]
+            if e['soort'] == 'beeld': continue
+            if e.get('helderheid'):
+                for th in ('dark', 'light'):
+                    em, gz = lum(e, th, 'Embleem'), lum(e, th, 'Honingraatgrille')
+                    if e['soort'] == 'detail':
+                        if em and gz:
+                            ver = em['lum'] / max(gz['lum'], 1e-6)
+                            poort(f'embleem helderheid {k} {th}', ver <= EMBLEEM_MAX, f"embleem {em['lum']} gaas {gz['lum']} verhouding {ver:.2f}", f'embleem hoogstens {EMBLEEM_MAX} keer zo helder als het gaas (foto F1: 1,0)')
+                        else:
+                            poort(f'embleem helderheid {k} {th}', False, 'embleem of gaas niet in beeld', 'beide in beeld')
+                    if k in LUM_ONDERPLAAT:   # adv.nodig 1: de afscherming leest als schaduw, niet als grijze plank
+                        op, lr = lum(e, th, 'Onderplaat voorbumper'), lum(e, th, 'Luchtrooster voor')
+                        eis = 'luminantie Onderplaat voorbumper hoogstens die van Luchtrooster voor (eigen meting HEAD: 0,31 tot 0,35 tegen 0,19 tot 0,26; proef MAT.bodPillar: 0,06 tot 0,08)'
+                        if lr is None: poort(f'helderheid onderplaat {k} {th}', False, 'Luchtrooster voor niet in beeld', eis)
+                        elif op is None: poort(f'helderheid onderplaat {k} {th}', True, f"Onderplaat niet in beeld (minder dan 20 px na erosie), luchtrooster {lr['lum']}", eis)
+                        else: poort(f'helderheid onderplaat {k} {th}', op['lum'] <= lr['lum'], f"onderplaat {op['lum']} ({op['px']} px) luchtrooster {lr['lum']} ({lr['px']} px) verhouding {op['lum'] / max(lr['lum'], 1e-6):.2f}", eis)
+                    if k in LUM_EMBLEEM_LAAG:   # afwerking e: het embleem is vanuit de lage blik bijna onzichtbaar
+                        eis = f'embleem {EMBLEEM_MIN_LAAG} tot {EMBLEEM_MAX} keer de helderheid van het gaas (HEAD: 0,55 tot 0,78; foto F1: 1,0)'
+                        if em and gz:
+                            ver = em['lum'] / max(gz['lum'], 1e-6)
+                            poort(f'afwerking e: embleem leesbaar {k} {th}', EMBLEEM_MIN_LAAG <= ver <= EMBLEEM_MAX, f"embleem {em['lum']} ({em['px']} px) gaas {gz['lum']} verhouding {ver:.2f}", eis, zacht=True)
+                        else:
+                            poort(f'afwerking e: embleem leesbaar {k} {th}', False, 'embleem of gaas niet in beeld (minder dan 20 px na erosie)', eis, zacht=True)
+            if k in NAADSTROOK_CAMS and 'naadstrook_px' in e:
+                poort(f'afwerking c: spleet tussen schaal en lip {k}', e['naadstrook_px'] <= NAADSTROOK_MAX_PX, f"{e['naadstrook_px']} px Onderplaat tussen Bumperschaal en Bumperlip", f'<= {NAADSTROOK_MAX_PX} px (de lip sluit aan op de schaal, geen donkere lijn over het vlak)', zacht=True)
+            if e['soort'] == 'detail': continue
+            if e['soort'] == 'hoek' or k == 'voor-hoog':
+                slecht = [f"{n['knoop']} {n['breed_px'] + n['smal_px']}" for n in e['gevlagd'] if n['breed_px'] + n['smal_px'] > KAP_MAX_PX]
+                poort(f'kier {k}', not slecht, 'ok' if not slecht else '; '.join(slecht[:6]), f'geen knoop uit motorruimte of onderstel boven {KAP_MAX_PX} px breed (stroken van hoogstens 2 px breed tellen niet)')
+            elif e['soort'] == 'wielkast':   # adv.nodig 2: geen doorkijk door de wielkast naar de motorruimte of de cabine
+                slecht = wk_slecht(e, e['zoned'])
+                poort(f'wielkast kier {k}', not slecht, 'ok' if not slecht else '; '.join(f'{kn} ({kl}, {z}) {px}' for px, kn, kl, z in slecht[:6]) + (f' (+{len(slecht) - 6} meer)' if len(slecht) > 6 else ''),
+                      f'geen knoop uit motorruimte of cabine (interieur) boven {KAP_MAX_PX} px breed (onderstel en remhardware in de wielkast tellen niet; stroken van hoogstens 2 px breed tellen niet; Veerpoottoren en Langsligger tellen mee)' + (f'; alleen blikken door de wielkast (zone onder, venster of boven: wielkastvlak |x| 0,50 gepasseerd op y {ZONE_Y[0]} tot {ZONE_Y[3]} en z {ZONE_Z[0]} tot {ZONE_Z[1]}), niet onder de auto door' if e['zoned'] else ''))
+            elif e['soort'] == 'rondgang':
+                pass   # poorten per hoogte, afstand en kant hieronder
+            elif e['soort'] == 'afwerking' and k.startswith('bumpL'):   # afwerking a: witte spleet (Bumperbalk) tussen lamphuis en bumpernaad op de hoek
+                bb = sum(n['px'] for n in e['gevlagd'] if n['knoop'].split('/')[-1].startswith('Bumperbalk'))
+                bb = bb or sum(v for kn, v in e['px_per_knoop'].items() if kn.split('/')[-1].startswith('Bumperbalk') and 'achter' not in kn)
+                poort(f'afwerking a: Bumperbalk in de hoekspleet {k}', bb <= SPLEET_MAX_PX, f'{bb} px (HEAD: 5.646 px vanaf 60 cm boven de hoek)', f'<= {SPLEET_MAX_PX} px van Bumperbalk voor zichtbaar vanaf 60 cm boven de bumperhoek (een naad van 1 tot 2 px mag)', zacht=True)
+            elif e['soort'] == 'afwerking':
+                pass   # afwerking c: poort hierboven (naadstrook)
+            else:
+                poort(f'zicht onder de bumper {k}', e['onderzicht_voor_pct'] <= ONDERZICHT_MAX_PCT, f"{e['onderzicht_voor_pct']} procent van het beeld (achterkant {e['onderzicht_achter_pct']}, telt niet mee)", f'<= {ONDERZICHT_MAX_PCT} procent: motorruimte en onderstel van de voorste helft (z > 0,6)')
+            if k in ('eig', 'eig-r'):   # adv.nodig 2: de donkerrode sikkel boven de band in eig is Schutbord dat door de wielboog zichtbaar is
+                sk = sum(v for kn, v in e['px_per_knoop'].items() if kn.endswith('/Schutbord'))
+                poort(f'sikkel Schutbord {k}', sk <= SIKKEL_MAX_PX, f'{sk} px Schutbord in beeld (HEAD: 698)', f'<= {SIKKEL_MAX_PX} px: de wielkastbekleding is zwart tot aan de boog, geen rode sikkel')
+        # ronde 4, adv.nodig 2 (punt 1 en 3): doorkijk door de voorwielkast per zone van de blik, over alle wielkastcamera's en de rondgang van een camerakant (links: camera op x > 0, rechts: x < 0)
+        wkc = [k for k in namen if res['cams'][k]['soort'] in ('wielkast', 'rondgang')]
+        if wkc:
+            ZP = (('venster', 'wielkast venster boven de band', f'geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed door het venster tussen wand/schot (y 0,555 tot 0,574) en de veerpoottoren (y 0,62); de blik passeert het wielkastvlak |x| 0,50 op y {ZONE_Y[1]} tot {ZONE_Y[2]} en z {ZONE_Z[0]} tot {ZONE_Z[1]}'),
+                  ('onder', 'wielkast gat onder de boog', f'geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed door het gat onderin de boog (langsligger voor, vloermat en scharnier achter); de blik passeert het wielkastvlak |x| 0,50 op y {ZONE_Y[0]} tot {ZONE_Y[1]} (daaronder kijk je onder de auto door)'),
+                  ('boven', 'wielkast opening boven het venster', f'geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed door een opening op y {ZONE_Y[2]} tot {ZONE_Y[3]} (kapnaad, schermrand)'))
+            for kant in ('links', 'rechts'):
+                ks = [k for k in wkc if res['cams'][k]['kant'] in (kant, 'midden')]
+                if not ks: continue
+                for zn, naam, eis in ZP:
+                    hits = [(px, kn, kl, k) for k in ks for px, kn, kl in wk_zone_hits(res['cams'][k], zn)]
+                    hits.sort(reverse=True)
+                    cams_rood = sorted({h[3] for h in hits})
+                    poort(f'{naam} {kant}', not hits, f'ok ({len(ks)} camera\'s)' if not hits else f"{len(cams_rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {kn} ({kl}) {px}' for px, kn, kl, k in hits[:6]) + (f' (+{len(hits) - 6} meer)' if len(hits) > 6 else ''), eis)
+            # tussenpoort tegenover V1 (9578e6f): V1 had nog twee spleten naast de ronde veerpoottoren (z 1,006 tot 1,02 en 1,155 tot 1,165) en laat daardoor in de strenge poort hierboven ook rood zien; de regressie van a28dff6 (volle breedte van het venster open) is
+            # van een andere orde: V1 hoogstens 2.155 px venster per camera (grootste: wielkast-achter), HEAD 2.663 tot 5.981 in de zes wielkastcamera's van het advies
+            for kant in ('links', 'rechts'):
+                ks = [k for k in wkc if res['cams'][k]['kant'] in (kant, 'midden')]
+                if not ks: continue
+                tot = [(sum(n['zone_px']['venster'] for n in res['cams'][k]['gevlagd']), k) for k in ks]; tot.sort(reverse=True)
+                rood = [t for t in tot if t[0] > VENSTER_TOT_MAX]
+                poort(f'wielkast venster tegenover V1 {kant}', not rood, f"ok (grootste {tot[0][0]} px in {tot[0][1]})" if not rood else f"{len(rood)} van {len(ks)} camera's boven {VENSTER_TOT_MAX} px: " + '; '.join(f'{k} {px}' for px, k in rood[:6]),
+                      f'tussenpoort: hoogstens {VENSTER_TOT_MAX} px motorruimte- of cabinebeeld door het venster per camera (V1 9578e6f hoogstens 2.155; HEAD a28dff6 tot 5.981). De poort wielkast venster boven de band hierboven (50 px per knoop) is de eis en is strenger')
+            # punt 3, achter de band: het onderste portierscharnier (blad aan het portier en op de stijl) en de portierrand liggen in de wielboog (de voorrand van het portier staat op z 0,82, de boog begint op z 0,787)
+            for kant in ('links', 'rechts'):
+                ks = [k for k in wkc if res['cams'][k]['kant'] in (kant, 'midden') and res['cams'][k]['soort'] == 'wielkast' and res['cams'][k]['zoned']]   # de lage camera's van ronde 4 (wielkast-recht, wielkast-achter, zij-laag, wk-zij-laag, ook gespiegeld)
+                if not ks: continue
+                hits = sorted([(px, kn, k) for k in ks for kn, px in res['cams'][k]['scharnier_px'].items() if px > SCHARNIER_MAX_PX and kn.split('/')[-1].startswith('Scharnier')], reverse=True)
+                cams_rood = sorted({h[2] for h in hits})
+                poort(f'wielkast scharnier achter de band {kant}', not hits, f"ok ({len(ks)} camera's)" if not hits else f"{len(cams_rood)} van {len(ks)} camera's rood: " + '; '.join(f"{k}: {kn.split('/')[-1]} {px}" for px, kn, k in hits[:6]) + (f' (+{len(hits) - 6} meer)' if len(hits) > 6 else ''),
+                      f'geen scharnierblad of scharnierbout boven {SCHARNIER_MAX_PX} px per knoop in de omkadering van voorwiel en voorwielkast (zicht op het portierscharnier door de boog achter de band; HEAD wielkast-recht: Scharnierblad carrosserie 15.520). De portierrand zelf (de voorrand van het portier staat in de boog, HEAD wielkast-recht 8.333) staat als scharnier_px in de JSON, niet als poort')
+        rg = [k for k in namen if res['cams'][k]['soort'] == 'rondgang']
+        if rg:
+            for h in RONDGANG_H:
+                for r in RONDGANG_R:
+                    for kant in ('links', 'rechts'):
+                        ks = [k for k in rg if res['cams'][k]['h'] == h and res['cams'][k]['r'] == r and res['cams'][k]['kant'] in (kant, 'midden')]
+                        rood = [(k, wk_slecht(res['cams'][k], True)) for k in ks]; rood = [(k, sl) for k, sl in rood if sl]
+                        poort(f'wielkast rondgang h{h} r{r} {kant}', not rood, f"ok ({len(ks)} camera's)" if not rood else f"{len(rood)} van {len(ks)} camera's rood: " + '; '.join(f'{k}: {sl[0][1]} ({sl[0][2]}, {sl[0][3]}) {sl[0][0]}' for k, sl in sorted(rood, key=lambda t: -t[1][0][0])[:5]),
+                              f'lage rondgang op {h} m hoogte en {r} m van het doel (baanm en baanv, om de 10 graden): geen motorruimte- of cabineknoop boven {KAP_MAX_PX} px breed (smalle en brede beeldpunten) waar de blik door de wielkast gaat (zone onder, venster of boven: camera naast de auto, wielkastvlak |x| 0,50 gepasseerd op y {ZONE_Y[0]} tot {ZONE_Y[3]} en z {ZONE_Z[0]} tot {ZONE_Z[1]}; onder de auto door telt niet). Veerpoottoren en Langsligger tellen mee, remhardware in de wielkast niet')
+        # Volle modus: alle camera's, de geo-meting en de rondgang. Daar moet elke harde poort bestaan: ontbreekt de invoer van een poort (hernoemde knoop, geo-meting die null of een beginwaarde geeft),
+        # dan komt de poort alsnog in de lijst, rood, met 'invoer ontbreekt: <sleutel>'. In de beperkte modus blijft het oude gedrag: een poort zonder invoer wordt overgeslagen.
+        vol = not (a.cams or a.geen_geo or a.geen_rondgang)
+        gg = g or {}
+        def heeft(sl):   # is de geo-invoer 'sl' echt gemeten? (de beginwaarden van GEO_JS tellen niet: [1e9, -1e9] voor hoek en afdek, 9 voor de laagste punten, 0 voor bumperTop)
+            v = gg.get(sl)
+            if sl in ('hoek', 'afdek'): return bool(v) and v[0] < 1e8 and v[1] > -1e8
+            if sl in ('lipOnder', 'plaatOnder'): return v is not None and v < 9
+            if sl == 'bumperTop': return bool(v) and v > 0
+            if sl == 'lipNaad': return v is not None and v.get('n', 0) > 0   # n = 0: geen enkel lippunt binnen 15 mm van de schaal, dus de poorten zouden vanzelf groen zijn
+            return v is not None
+        def geo_poort(naam, nodig, ok, waarde, eis):
+            ontbr = [sl for sl in nodig if not heeft(sl)]
+            if ontbr:
+                if vol: poort(naam, False, 'invoer ontbreekt: ' + ', '.join(ontbr), eis)
+                return
+            poort(naam, ok(), waarde(), eis)
+        geo_poort('bumperschouderhoek', ['bumperAt'], lambda: gg['bumper'] <= SCHOUDER_MAX, lambda: f"{gg['bumper']:.1f} graden bij {gg['bumperAt']}", f'<= {SCHOUDER_MAX} graden (streef 20)')
+        hk = lambda: ((gg['hoek'][1] - gg['afdek'][1]) * 1000, (gg['hoek'][0] - gg['afdek'][0]) * 1000)   # (boven, onder) in mm
+        geo_poort('hoekkap boven hoofdlens', ['hoek', 'afdek'], lambda: hk()[0] <= 15, lambda: f'{hk()[0]:.1f} mm', '<= 15 mm')
+        geo_poort('hoekkap onder hoofdlens', ['hoek', 'afdek'], lambda: hk()[1] >= -10, lambda: f'{hk()[1]:.1f} mm', '>= -10 mm')
+        geo_poort('lip afstand tot schaal', ['lipNaad'], lambda: gg['lipNaad']['afstand_mm_max'] <= 3, lambda: f"{gg['lipNaad']['afstand_mm_max']} mm", '<= 3 mm')
+        geo_poort('lip aansluithoek (normaal)', ['lipNaad'], lambda: gg['lipNaad']['hoek_max'] <= 30, lambda: f"max {gg['lipNaad']['hoek_max']} gem {gg['lipNaad']['hoek_gem']} graden bij {gg['lipNaad']['hoek_at']}", '<= 30 graden')
+        geo_poort('lip normaalsprong langs de rand', ['lipSprong'], lambda: gg['lipSprong']['hoek_max'] <= 25, lambda: f"{gg['lipSprong']['hoek_max']} graden bij {gg['lipSprong']['at']}", '<= 25 graden')
+        # de neus: lamphoogte uit de motorkap en de hoekkap, bumperhoogte op x = 0, tot de liponderrand en tot het laagste zichtbare voordeel (lip of afscherming, premortem H5)
+        noem = lambda: gg['kapVoorrand'][1] - gg['afdek'][0]
+        ver_lip = lambda: (gg['bumperTop'] - gg['lipOnder']) / max(1e-6, noem())
+        ver_afs = lambda: (gg['bumperTop'] - min(gg['lipOnder'], gg['plaatOnder'])) / max(1e-6, noem())
+        geo_poort('verhouding bumper/lamp op x=0 (tot de lip)', ['lipOnder', 'kapVoorrand', 'afdek', 'bumperTop'], lambda: ver_lip() <= 2.8, lambda: round(ver_lip(), 3), '<= 2,8 (tot de liponderrand)')
+        # plaatOnder (Onderplaat voorbumper, bodyparts.js onder Voorbumper) bestaat op de huidige stand altijd: een vaste knoop zonder hideWhen of opener, ook in de luminantiepoorten en in 'onderplaat tegenover gaas in eig' verplicht.
+        # Daarom is plaatOnder hier invoer van de poort zoals de rest; de oude terugval 'zonder plaat alleen de lip' (min met 9) is vervallen.
+        geo_poort('verhouding bumper/lamp op x=0 (tot de afscherming)', ['lipOnder', 'plaatOnder', 'kapVoorrand', 'afdek', 'bumperTop'], lambda: ver_afs() <= VERH_AFSCH_MAX,
+                  lambda: f"{ver_afs():.3f} tot {min(gg['lipOnder'], gg['plaatOnder']):.3f} m", f'<= {VERH_AFSCH_MAX} (beslissing 17: neus en bumperbovenrand omlaag; de afscherming mag de neus niet zwaarder maken)')
+        geo_poort('afscherming onder de lip', ['lipOnder', 'plaatOnder'], lambda: (gg['lipOnder'] - gg['plaatOnder']) * 1000 <= SCHERM_DIEP_MAX_MM, lambda: f"{(gg['lipOnder'] - gg['plaatOnder']) * 1000:.0f} mm onder de liponderrand", f'<= {SCHERM_DIEP_MAX_MM} mm (een lint, geen plank)')
+        if g:
+            print(f"info: vlaknormaalhoek tussen aangrenzende driehoeken in het hoekgebied {g['facet']:.1f} graden bij {g['facetAt']} (meet slanke driehoeken op de neusbovenrand, geen poort: zie beslissing 21)")
+        geo_poort('afscherming raakt aandrijving niet', ['plaatNabij'], lambda: gg['plaatNabij']['n'] == 0, lambda: f"{gg['plaatNabij']['n']} hoekpunten binnen 10 mm {gg['plaatNabij']['per_knoop']}", '0 hoekpunten van Klemmen, Hoes, Koppelingsklok en Draagarm binnen 10 mm van Onderplaat voorbumper')
+        geo_poort('wielkastbekleding raakt onderstel en aandrijving niet', ['wielkastNabij'], lambda: gg['wielkastNabij']['n'] == 0, lambda: f"{gg['wielkastNabij']['n']} hoekpunten binnen 5 mm {gg['wielkastNabij']['per_knoop']}",
+                  '0 hoekpunten van Onderstel, Aandrijflijn of Uitlaatsysteem (zonder remleidingen en slangbeugels, die zitten vast aan de wand: HEAD 17 hoekpunten) binnen 5 mm van Wielkast voor links (bewaking bij het sluiten van de doorkijk)')
+        if g and g.get('dev30') is not None:   # zacht: ontbreken van de invoer blijft zonder gevolg voor de exitcode; het aantal zachte poorten wordt apart bewaakt
+            poort('afwerking d: plooien in de glans (bumperbovenrand bij de hoek)', g['dev30']['n'] <= DEV30_MAX_N and g['dev30']['mm2'] <= DEV30_MAX_MM2, f"{g['dev30']['n']} driehoeken, {g['dev30']['mm2']:.0f} mm2 met afwijking > 30 graden",
+                  f'<= {DEV30_MAX_N} driehoeken en <= {DEV30_MAX_MM2} mm2 (stand voor ronde 2; streef 0)', zacht=True)
+        eis_plaat = f'<= {PLAAT_MAX} keer het gaas (a9035fc: 4,6 keer)'
+        if 'eig' in res['cams']:
+            px = res['cams']['eig']['px_per_knoop']; op = sum(v for kk, v in px.items() if kk.endswith('Onderplaat voorbumper')); gz = sum(v for kk, v in px.items() if kk.endswith('Honingraatgrille'))
+            poort('onderplaat tegenover gaas in eig', gz > 0 and op <= PLAAT_MAX * gz, f'{op} px tegen {gz} px gaas ({op / max(gz, 1):.2f} keer)', eis_plaat)
+        elif vol:
+            poort('onderplaat tegenover gaas in eig', False, 'invoer ontbreekt: cams.eig', eis_plaat)
+    poort('console zonder fouten' + (' achter' if a.achter else ''), res['meta'].get('console_ok', False), res['meta'].get('console_ok'), 'geen fouten of waarschuwingen')
     # aantal poorten: een poort die stilletjes verdwijnt (hernoemde knoop, camera of lijst die korter wordt) mag niet als ALLES GROEN eindigen. Alleen in volle modus; de controle is een extra harde poort buiten de 99
     # en staat ook in het groene geval in de lijst (extra: true in de JSON), zodat in meet.txt en meet.json te zien is dat de controle gedraaid heeft.
-    gev_h, gev_z = sum(not p['zacht'] for p in P), sum(p['zacht'] for p in P)
-    res['meta']['aantal_poorten'] = {'harde': gev_h, 'zachte': gev_z, 'verwacht_harde': VERWACHT_HARD, 'verwacht_zachte': VERWACHT_ZACHT, 'gecontroleerd': vol}
+    vh, vz = (VERWACHT_HARD_ACHTER, VERWACHT_ZACHT_ACHTER) if a.achter else (VERWACHT_HARD, VERWACHT_ZACHT)
+    gev_h, gev_z = sum(not p['zacht'] and not p.get('extra') for p in P), sum(p['zacht'] for p in P)   # extra poorten (achtermodus: interessegebied) tellen niet mee; in de voormodus bestaan ze hier nog niet
+    res['meta']['aantal_poorten'] = {'harde': gev_h, 'zachte': gev_z, 'verwacht_harde': vh, 'verwacht_zachte': vz, 'gecontroleerd': vol, 'modus': 'achter' if a.achter else 'voor'}
     if vol:
-        poort('aantal poorten', gev_h == VERWACHT_HARD and gev_z == VERWACHT_ZACHT, f'{gev_h} harde en {gev_z} zachte poorten gevonden, verwacht {VERWACHT_HARD} en {VERWACHT_ZACHT}',
-              f'precies {VERWACHT_HARD} harde en {VERWACHT_ZACHT} zachte poorten in volle modus (VERWACHT_HARD en VERWACHT_ZACHT; nulmeting 17 oktober 2026); een poort die verdwijnt maakt de meting rood', extra=True)
+        if a.achter:
+            poort('aantal poorten achter', gev_h == vh and gev_z == vz, f'{gev_h} harde en {gev_z} zachte poorten gevonden, verwacht {vh} en {vz}',
+                  f'precies {vh} harde en {vz} zachte poorten in volle achtermodus (VERWACHT_HARD_ACHTER en VERWACHT_ZACHT_ACHTER; nulmeting 18 oktober 2026 op fa5c619); een poort die verdwijnt maakt de meting rood', extra=True)
+        else:
+            poort('aantal poorten', gev_h == vh and gev_z == vz, f'{gev_h} harde en {gev_z} zachte poorten gevonden, verwacht {vh} en {vz}',
+                  f'precies {vh} harde en {vz} zachte poorten in volle modus (VERWACHT_HARD en VERWACHT_ZACHT; nulmeting 17 oktober 2026); een poort die verdwijnt maakt de meting rood', extra=True)
     res['ok'] = all(p['groen'] for p in P if not p['zacht'])
     res['ok_afwerking'] = all(p['groen'] for p in P if p['zacht'])
     jp = a.json or os.path.join(a.uit, 'meet.json')
@@ -796,9 +1026,10 @@ def main():
                 o, nw = B['cams'][k], res['cams'][k]
                 print(f'  {k:18s} motorruimte {o["motorruimte_pct"]} -> {nw["motorruimte_pct"]} %   onderstel {o["onderstel_pct"]} -> {nw["onderstel_pct"]} %   max knoop {o["motorruimte_max_knoop_px"]} -> {nw["motorruimte_max_knoop_px"]} px')
     harde = [p for p in P if not p['zacht'] and not p.get('extra')]; zachte = [p for p in P if p['zacht']]; extra = [p for p in P if p.get('extra')]
-    if not vol: print('\naantal poorten niet gecontroleerd (beperkte modus: --cams, --geen-geo of --geen-rondgang)')
-    elif not all(p['groen'] for p in extra): print(f"\nAANTAL POORTEN WIJKT AF: {gev_h} harde en {gev_z} zachte gevonden, verwacht {VERWACHT_HARD} en {VERWACHT_ZACHT}: een poort ontbreekt of is erbij gekomen (meting rood)")
-    print('\nALLES GROEN' if res['ok'] else f"\n{sum(not p['groen'] for p in harde)} RODE POORTEN van {len(harde)}" + (' en de controle op het aantal poorten is rood' if not all(p['groen'] for p in extra) else ''), f"| afwerking (zacht, telt niet mee): {sum(p['groen'] for p in zachte)} van {len(zachte)} groen", f'| json: {jp}')
+    if not vol: print('\naantal poorten niet gecontroleerd (beperkte modus: ' + ('--cams of --geen-rondgang)' if a.achter else '--cams, --geen-geo of --geen-rondgang)'))
+    elif not all(p['groen'] for p in extra) and not a.achter: print(f"\nAANTAL POORTEN WIJKT AF: {gev_h} harde en {gev_z} zachte gevonden, verwacht {VERWACHT_HARD} en {VERWACHT_ZACHT}: een poort ontbreekt of is erbij gekomen (meting rood)")
+    elif not all(p['groen'] for p in extra): print(f"\nEXTRA CONTROLE ROOD (achtermodus): {gev_h} harde en {gev_z} zachte poorten gevonden, verwacht {vh} en {vz}; zie 'aantal poorten achter' en 'interessegebied achterwielen in beeld' (meting rood)")
+    print(('\nACHTERMODUS: ' if a.achter else '\n') + ('ALLES GROEN' if res['ok'] else f"{sum(not p['groen'] for p in harde)} RODE POORTEN van {len(harde)}" + ((' en een extra controle (aantal poorten of interessegebied) is rood' if a.achter else ' en de controle op het aantal poorten is rood') if not all(p['groen'] for p in extra) else '')), f"| afwerking (zacht, telt niet mee): {sum(p['groen'] for p in zachte)} van {len(zachte)} groen", f'| json: {jp}')
     return 0 if res['ok'] else 1
 
 
