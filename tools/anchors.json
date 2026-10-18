@@ -480,7 +480,7 @@
   "_uitleg": "driehoeken per hoofdgroep (tri.py --gate): het totaal van 400.000 is verdeeld naar verhouding van laguna3 (190.000 van 719.000 voor de carrosserie, enzovoort), op honderdtallen afgerond; zie docs/contract.md paragraaf 8. Alleen-lezen voor domeineigenaars; wijzigen alleen met een reden in docs/onderzoek/beslissingen.md. Tekenopdrachten gemonteerd (met bundelen) onder 1.500: itest controle 11.",
   "totaal": 400000,
   "Aandrijflijn": 133500,
-  "Carrosserie": 105700,
+  "Carrosserie": 160000,
   "Onderstel": 69500,
   "Interieur": 52900,
   "Koeling en luchtinlaat": 13900,

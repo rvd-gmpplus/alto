@@ -31,7 +31,7 @@ Meter. x links (+) en rechts (-), y omhoog vanaf de grond, z naar voren (+). De 
 | `ARCH` | 0,30 | wielboogstraal (band 0,267 m, speling 3 cm) |
 | `TRACK_F`, `TRACK_R` | 0,6675 en 0,6525 | spoor 1335 en 1305 mm |
 | `BOD_WMAX` | 0,7535 | halve breedte zonder spiegels 0,7475 plus 6 mm (breedte 1495 mm) |
-| `BOD_MIRW` | 0,835 | halve breedte met spiegels plus 6 mm; de spiegels reiken tot 0,830 (geschat, geen opgave gevonden) |
+| `BOD_MIRW` | 0,904 | halve breedte met spiegels plus 6 mm; de liggende spiegels reiken tot 0,898, 150 mm buiten de huid (geschat; de opvolger van 2002 heeft volgens de ADAC 1475 mm zonder en 1775 mm met spiegels, ook 150 mm per kant) |
 | `BOD_H` | 1,405 | hoogte onbeladen (brochure); de dakrails staan er 3 cm bovenop |
 | `HW(z)` | 0,7475 van z -1,20 tot +0,90; neus 0,50 bij +1,7475; staart 0,50 bij -1,7475 | silhouet (bovenaanzicht) |
 | `YB(z)` | dorpel 0,215 tot 0,25; voorbumper 0,27 (rand 0,31); achterbumper 0,275 (rand 0,34) | geschat |
