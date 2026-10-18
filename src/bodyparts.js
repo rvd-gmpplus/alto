@@ -49,6 +49,13 @@ function bodMould(s, y0, y1, zA, zB, hgt, nz = 36, nv = 6) {
     const p = bodAt(z, y0 + (y1 - y0) * t, o); return [s * p[0], p[1], p[2]];
   }, zA, zB, nz, () => [0, 1], nv);
 }
+// stootstrip (zwart kunststof) op de huid: vlakke bovenkant met afgeronde schouders van hgt, tussen y0 en y1 en z zB..zA (zA achter, zB voor), uiteinden lopen in de huid weg over ta (achter) en tb (voor)
+function bodStoot(s, y0, y1, zA, zB, hgt, ta, tb, nz = 40, nv = 10) {
+  return patch((z, t) => {
+    const e = sstep((z - zA) / ta) * sstep((zB - z) / tb), sh = sstep(t / 0.2) * sstep((1 - t) / 0.2), o = hgt * e * sh - 0.001;
+    const p = bodAt(z, y0 + (y1 - y0) * t, o); return [s * p[0], p[1], p[2]];
+  }, zA, zB, nz, () => [0, 1], nv);
+}
 // rand (rubber) rond een ruit: gesloten buis langs de ruitrand, qLo(z) onderrand, qHi(z) bovenrand, tussen z0 en z1
 function bodRim(s, z0, z1, qLo, qHi, r = 0.0045, out = 0.003, n = 26, open = false) {
   const at = (z, q) => { const p = bodGhAt(z, q, out); return [s * p[0], p[1], p[2]]; }, pts = [];
@@ -241,6 +248,9 @@ function bodSkinParts() {
   };
   const quarter = s => P(`Achterscherm ${bodSn(s)}`, quarterGeo(s), MAT.paint,
     { d: 'Achterscherm: de zijwand achter het portier, met de wielboog, de schouder en de plaats voor het achterlicht. Aan het dak, de vloer en het achterpaneel gelast.' + (s === bodTkS ? ' Links met de opening voor de tankklep.' : ''), ex: [s * 0.46, 0.04, -0.14] });
+  // stootstrip op het achterscherm: de voortzetting van die op het portier, tot voor de achterboog (de boog begint op deze hoogte op z -1,05; de strip eindigt op z -0,95)
+  const stootQ = s => P(`Beschermlijst achterscherm ${bodSn(s)}`, bodStoot(s, 0.49, 0.52, -0.95, bodZDR - 0.004 - 0.003, 0.006, 0.03, 0.006), MAT.bodBumperZwart,
+    { d: 'Stootstrip van ongelakt zwart kunststof op het achterscherm, ongeveer 30 mm hoog en 6 mm dik (y 0,49 tot 0,52); voortzetting van de strip op het portier tot voor de achterboog. Keuze eigenaar naar foto 1993-2001.', ex: [s * 0.1, 0, -0.1] });
   const rails = s => P(`Dakrand ${bodSn(s)}`, bodGhSide(s, bodZGR + 0.10, bodZW0, 36, z => [bodQGl(z), bodQR], 8), MAT.paint,
     { d: 'Dakrand (dakligger) boven de portieren en de hoekruit, gelakt in het rood; de ruitrubbers sluiten er onderlangs op aan. De dakrails (Twist) staan er los bovenop.', ex: [s * 0.1, 0.06, 0] });
   const aPillar = s => P(`A-stijl ${bodSn(s)}`, merge([
@@ -265,7 +275,7 @@ function bodSkinParts() {
   // schuine blikken niet die de spleet binnenkomen en pas bij z > 0,784 de huid van het scherm passeren. Zwart, zoals de spleet er in het echt uitziet.
   const flange = s => P(`Schermflens ${bodSn(s)}`, patch((y, t) => { const z = lerp(0.768, 0.796, t); return [s * (ringX(z, y) - 0.003), y, z]; }, 0.30, Math.min(0.90, bodSec(0.78).yd - 0.02), 12, () => [0, 1], 2), MAT.bodLiner,
     { d: 'Strook langs de achterrand van het voorscherm, achter de portierspleet: sluit de spleet tussen scherm en portier af, zodat je er niet in de motorruimte of de cabine kijkt.', ex: [s * 0.46, 0.06, 0.1] });
-  kids.push(...bodBoth(fender), ...bodBoth(goot), ...bodBoth(flange), ...bodBoth(quarter), ...bodBoth(rails), ...bodBoth(aPillar), ...bodBoth(bPillar), ...bodBoth(bRubber), ...bodBoth(cPillar));
+  kids.push(...bodBoth(fender), ...bodBoth(goot), ...bodBoth(flange), ...bodBoth(quarter), ...bodBoth(stootQ), ...bodBoth(rails), ...bodBoth(aPillar), ...bodBoth(bPillar), ...bodBoth(bRubber), ...bodBoth(cPillar));
   return { kids, qGlass };
 }
 /* ---------- kas: dak, voorruit, achterruit ---------- */
@@ -1014,8 +1024,8 @@ function bodDoor(s) {
     P('Zijruit', glass, MAT.glass, { d: 'Zakbare zijruit van gehard, licht getint veiligheidsglas. Zakt elektrisch ongeveer 25 cm in het portier, langs zijn eigen vlak.', ex: [0, 0.32, 0],
       open: winSlide({ min: 0.21, label: `Zijruit ${n}`, look: { dir: [s * 1, 0.7, 0.3], nodes: [dName] } }) }),
     P('Rubber zijruit', bodRim(s, zg0 + 0.001, zg1 - 0.001, qLo, qHi, 0.005, -0.045), MAT.bodSeal, { d: 'Zwart afdichtrubber rond de zijruit; zakt mee met de ruit.', ex: [s * 0.05, 0.03, 0], open: winSlide({ follow: `${dPath}/Zijruit` }) }),
-    A('Zijlijsten', { d: 'Beschermlijst op het portier in carrosseriekleur en het gordelrubber onder de ruit.', ex: [s * 0.1, 0, 0] }, [
-      P('Beschermlijst', bodMould(s, 0.40, 0.46, z0 + 0.03, z1 - 0.05, 0.007, 36), MAT.paint, { d: 'Verhoogde beschermlijst langs het portier tegen deuken; in carrosseriekleur (Twist).', ex: [s * 0.03, 0, 0] }),
+    A('Zijlijsten', { d: 'Zwarte stootstrip op het portier en het gordelrubber onder de ruit.', ex: [s * 0.1, 0, 0] }, [
+      P('Beschermlijst', bodStoot(s, 0.49, 0.52, z0 + 0.003, z1 - 0.05, 0.006, 0.006, 0.05), MAT.bodBumperZwart, { d: 'Stootstrip van ongelakt zwart kunststof op het portier, ongeveer 30 mm hoog en 6 mm dik (y 0,49 tot 0,52); loopt door op het achterscherm. Keuze eigenaar naar foto 1993-2001.', ex: [s * 0.03, 0, 0] }),
       P('Gordelrubber', bodGhSide(s, zg0, zg1, 30, z => [0, qLo(z)], 2, [], 0.002), MAT.bodSeal, { d: 'Zwarte afstrijkrubbers op de gordellijn onder de zijruit.', ex: [s * 0.06, 0.03, 0] }),
     ]),
     A('Raambediening', { d: 'Elektrische raambediening (Twist) met kabeltrommel: twee geleiderails, een ruitdrager en een motor.', ex: [-s * 0.3, -0.02, 0] }, [
