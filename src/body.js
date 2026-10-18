@@ -2,6 +2,9 @@
 // assen: x = links(+)/rechts(-), y = omhoog, z = voor(+)/achter(-); maten in meter
 // Alle steunpunten komen uit data/silhouet.json (zijaanzicht en bovenaanzicht van de 3-deurs hatchback, geschat uit foto's;
 // fout ca. 3 cm tussen de assen, 5 cm in de overhang). De onderbak is een loft in (z, s), de kas een loft in (z, q).
+// Uitzondering: de neus van YT vanaf z 1,475 volgt de voorfoto's van beslissing 17 (kapvoorrand op x = 0 0,702 in plaats van 0,745, lamp en bumper
+// lager; de stations van data/silhouet.json blijven binnen hun tolerantie). Achter z 1,225 is YT ongewijzigd, tot z 1,475 hoogstens 0,5 mm. De kap buigt pas
+// voor z 1,55 af (op z 1,57 hoogstens 20 mm lager): de aanzuigmond van het luchtfilter (top 0,715 op z 1,57) houdt 25 mm onder de kap (integrity.py).
 const ZF = 1.7475, ZR = -1.7475;                    // lengte 3495 mm (uiterste punten van de bumpers)
 const BOD_WMAX = 0.7535, BOD_MIRW = 0.835, BOD_H = 1.405; // framework: halve breedte zonder en met spiegels (plus 6 mm), hoogte; integrity.py leest ze
 const AXF = 1.087, AXR = -1.248, AY = 0.265;        // wielbasis 2335 mm; bandstraal 145/70 R13 is 0,2666 m, min indrukking
@@ -33,7 +36,7 @@ const YB = pchip([[-1.7475, 0.34], [-1.73, 0.30], [-1.70, 0.285], [-1.60, 0.275]
 // schouderlijn van de onderbak = gordellijn (onderkant zijruiten) in de kas; voor en achter de rand van motorkap en staartplaat
 const YT = pchip([[-1.7475, 0.85], [-1.70, 0.875], [-1.62, 0.893], [-1.50, 0.915], [-1.35, 0.940], [-1.20, 0.955], [-1.0, 0.960], [-0.8, 0.955], [-0.4, 0.936],
   [-0.2, 0.925], [0.0, 0.913], [0.2, 0.901], [0.4, 0.894], [0.6, 0.897], [0.85, 0.903], [0.975, 0.895], [1.10, 0.875], [1.225, 0.845], [1.35, 0.810],
-  [1.475, 0.772], [1.60, 0.722], [1.65, 0.665], [1.70, 0.560], [1.725, 0.515], [1.7475, 0.485]]);
+  [1.475, 0.7715], [1.55, 0.7395], [1.60, 0.6785], [1.65, 0.6175], [1.70, 0.530], [1.725, 0.494], [1.7475, 0.472]]);   // neus, beslissing 17 (was 1,475 0,772; 1,60 0,722; 1,65 0,665; 1,70 0,560; 1,725 0,515; 1,7475 0,485; het punt op 1,55 is nieuw)
 // bolling van het dek boven de schouderlijn (motorkap, staartplaat); in de kas is het dek onder de ruiten verborgen
 const bodC = pchip([[-1.7475, 0.015], [-1.62, 0.012], [0.3, 0.012], [0.9, 0.026], [1.7475, 0.022]]);
 const bodDP = pchip([[-1.7475, 3], [-1.0, 3.5], [0.9, 3.5], [1.3, 4], [1.7475, 3]]);   // exponent van het dekprofiel (vlak midden, afgeronde randen)
@@ -160,8 +163,8 @@ function lowSide(s, z0, z1, nu, vr, nv, breaks, off) {
   return patch((z, p) => bodLow(z, p, off || 0), z0, z1, nu, z => sideR(s, ...vr(z)), nv, breaks);
 }
 // dekpaneel over beide helften: sLo(z) geeft de s-ondergrens; het paneel loopt over de hartlijn
-function bodDeck(z0, z1, nu, sLo, nv, breaks, off) {
-  return patch((z, p) => bodLow(z, p, off || 0), z0, z1, nu, z => { const a = sLo(z); return [a, 2 - a]; }, nv, breaks);
+function bodDeck(z0, z1, nu, sLo, nv, breaks, off) {   // off: verschuiving naar binnen, een getal of een functie van z
+  return patch((z, p) => bodLow(z, p, (typeof off === 'function' ? off(z) : off) || 0), z0, z1, nu, z => { const a = sLo(z); return [a, 2 - a]; }, nv, breaks);
 }
 function ghSide(s, z0, z1, nu, w0, w1, nv, off) {
   const fn = off ? offsetFn(ghPt, s, off) : ghPt;
