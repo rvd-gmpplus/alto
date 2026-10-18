@@ -1202,10 +1202,22 @@ function bodFuelFlap() {
     A('Tankklep', { d: 'Kleine klep in carrosseriekleur voor de brandstofvulling, links achter; scharniert aan de voorrand (z -1,38) en klapt naar voren open (openingshoek geschat).', ex: [s * 0.12, 0, 0.1],
       open: { type: 'hinge', pivot: [s * (xs + 0.004), ym, k1 - 0.003], axis: [0, 1, 0], angle: -s * 140 * PI / 180, min: 115 * PI / 180, label: 'Tankklep', look: { dir: [s * 1, 0.3, -0.5], nodes: ['Tankklep'] } } }, [
       P('Klepplaat tankklep', lowSide(s, k0 + 0.003, k1 - 0.003, 6, z => [sAtY(z, y0 + 0.003), sAtY(z, y1 - 0.003)], 4, [], 0.0), MAT.paint, { d: 'Het paneel van de tankklep in het rood.', ex: [s * 0.04, 0, 0.04] }),
-      P('Klepveer tankklep', G.rbox(0.012, 0.03, 0.012, 0.003), MAT.darkSteel, { d: 'Veerscharnier waarmee de klep dicht blijft; blijft aan de carrosserie zitten.', p: [s * (xs - 0.01), ym, k1 + 0.004], stay: true, ex: [s * 0.03, 0, 0.03] }),
+      P('Klepveer tankklep', G.rbox(0.012, 0.03, 0.012, 0.003), MAT.darkSteel, { d: 'Veerscharnier waarmee de klep dicht blijft; blijft aan de carrosserie zitten, in de voorhoek van de tankkom.', p: [s * (xs - 0.012), ym, k1 - 0.008], stay: true, ex: [s * 0.03, 0, 0.03] }),
     ]),
-    P('Tankkom', G.rbox(0.03, y1 - y0 + 0.02, k1 - k0 + 0.02, 0.006), MAT.plastic, { d: 'Zwarte kom achter de klep rond de vulhals.', p: [s * (xs - 0.075), ym, (k0 + k1) / 2], ex: [s * 0.04, 0, 0] }),
+    P('Tankkom', bodTankKom(s), MAT.plastic, { d: 'Zwarte kom achter de klep: vier wanden van de opening in het scherm naar binnen en een bodem op x 0,6695 met een gat waar de vulhals doorheen komt; de dop zit in de kom.', ex: [s * 0.04, 0, 0] }),
   ]);
+}
+// Tankkom als kuip (was een blok van 30 mm waar de vulhals 14 mm in stak): de vulhals van systems.js eindigt op x 0,669 (hart y 0,72, z -1,45, straal 30 mm) en de dop
+// zit op x 0,671 tot 0,694. Bodem op xb met een gat van 32 mm straal, wanden langs de rand van de opening (bodTkZ, bodTkY) tot 1 mm binnen de huid.
+function bodTankKom(s) {
+  const [k0, k1] = bodTkZ, [y0, y1] = bodTkY, xb = 0.6695, V = (a, b) => new THREE.Vector2(a, b);
+  const sh = new THREE.Shape([V(k0, y0), V(k1, y0), V(k1, y1), V(k0, y1)]);
+  sh.holes.push(new THREE.Path().absarc((k0 + k1) / 2, (y0 + y1) / 2, 0.032, 0, 2 * PI, true));
+  const bodem = new THREE.ShapeGeometry(sh, 16); bodem.rotateY(-HALF); bodem.translate(s * xb, 0, 0);
+  const xh = (z, y) => surfX(z, y) - 0.001;
+  const wandY = y => patch((z, t) => [s * lerp(xb, xh(z, y), t), y, z], k0, k1, 8, () => [0, 1], 1);
+  const wandZ = z => patch((y, t) => [s * lerp(xb, xh(z, y), t), y, z], y0, y1, 4, () => [0, 1], 1);
+  return merge([bodem, wandY(y0), wandY(y1), wandZ(k0), wandZ(k1)]);
 }
 /* ---------- voorruitwissers en dakrails ---------- */
 function bodWipers() {
