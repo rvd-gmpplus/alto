@@ -333,7 +333,7 @@ function chsBuildRear() {
       P('Panhardstang', merge([rodBetween(L, R, 0.011, 12), eye(L), eye(R)]), MAT.chsPaint, { d: 'Stalen stang met rubberbussen in de ogen.', ex: [0, 0, 0] }),
       P('Panhardbus links', G.cyl('z', 0.0185, 0.0185, 0.04, 14), MAT.rubber, { d: 'Rubberbus bij de carrosserie.', p: L, ex: [0.1, 0, 0] }),
       P('Panhardbus rechts', G.cyl('z', 0.0185, 0.0185, 0.04, 14), MAT.rubber, { d: 'Rubberbus bij de langsarm.', p: R, ex: [-0.1, 0, 0] }),
-      P('Panhardbout links', chsBolt(0.07, 0.010, 'z'), MAT.steel, { d: 'Bout door beugel en bus.', p: [L[0], L[1], L[2] - 0.035], ex: [0.1, 0, -0.1] }),
+      P('Panhardbout links', chsBolt(0.07, 0.010, 'z'), MAT.steel, { d: 'Bout door beugel en bus; ligt geheel in de linker langsligger achter en is van buiten niet te zien.', p: [L[0], L[1], L[2] - 0.035], ex: [0.1, 0, -0.1], inner: true }),
       P('Panhardbout rechts', chsBolt(0.07, 0.010, 'z'), MAT.steel, { d: 'Bout door beugel en bus.', p: [R[0], R[1], R[2] - 0.035], ex: [-0.1, 0, -0.1] }),
       P('Panhardbeugel carrosserie', bodyBr, MAT.chsPaint, { d: 'Beugel onder de linker achterlangsligger (plaats geschat).', ex: [0.1, 0.1, 0] }),
       P('Panhardbeugel as', axleBr, MAT.chsPaint, { d: 'Beugel aan de rechter langsarm.', ex: [-0.1, 0.1, 0] })]),
@@ -414,7 +414,7 @@ function chsMaster() {
     d: 'Onderdrukservo met tandemhoofdcilinder en reservoir, op het schutbord links in de motorruimte (linksgestuurd). De servo trekt onderdruk uit het inlaatspruitstuk (slang niet getekend, de inlaat heeft daar geen poort). Plaats en maten geschat.', ex: [0.2, 0.2, 0.5],
   }, [
     P('Rembekrachtiger', boost, MAT.chsPaint, { d: 'Onderdrukservo (membraan in een stalen dubbele schaal) tegen het schutbord; versterkt de pedaalkracht, geen ABS.', spec: [['Type', 'onderdrukservo']], p: [X, Y, Z0], ex: [0, 0, 0] }),
-    P('Duwstang', merge([rodBetween([0, 0, 0], [-0.02, -0.02, -0.035], 0.0075, 10), xf(G.box(0.016, 0.03, 0.012), [-0.02, -0.02, -0.04])]), MAT.chsZinc, { d: 'Duwstang door het schutbord naar het rempedaal (rempedaal zelf niet in dit model).', p: [X, Y, Z0], ex: [0, 0, -0.3] }),
+    P('Duwstang', merge([rodBetween([0, 0, 0], [-0.02, -0.02, -0.035], 0.0075, 10), xf(G.box(0.016, 0.03, 0.012), [-0.02, -0.02, -0.04])]), MAT.chsZinc, { d: 'Duwstang door het schutbord naar het rempedaal (het rempedaal hoort bij het interieur).', p: [X, Y, Z0], ex: [0, 0, -0.3] }),
     P('Hoofdremcilinder', mc, MAT.aluCast, { d: 'Tandemhoofdcilinder met twee remcircuits (voor en achter, geschat), vastgeschroefd op de servo.', p: [X, Y, 0.974], ex: [0, 0, 0.25] }),
     P('Remvloeistofreservoir', G.rbox(0.05, 0.065, 0.09, 0.008), MAT.tank, { d: 'Doorzichtig reservoir met remvloeistof, op de hoofdcilinder.', p: [X, 0.6455, 1.045], ex: [0, 0.2, 0.1] }),
     P('Reservoirdop', G.cyl('y', 0.017, 0.017, 0.014, 14), MAT.plastic, { d: 'Dop met peilschakelaar (niet getekend).', p: [X, 0.685, 1.045], ex: [0, 0.35, 0.1] }),
@@ -449,18 +449,17 @@ function chsHydraulics() {
 }
 
 function chsHandbrake() {
-  // De hendel zelf is van het interieur (Middenconsole/Handremhendel met hoes, draaipunt 4 cm voor INT_PORTS.handremhendel);
-  // het onderstel levert de steun eronder op de vloer, de voorste kabel vanaf het aansluitpunt en de egalisator (B-035: hier stond
-  // een tweede hendel op x 0, 60 mm diep in de tunnelconsole). Vloerbedekking boven op y 0,275, bodemplaat op 0,217.
-  const H = INT_PORTS.handremhendel, hx = H[0], hz = H[2] + 0.04;
+  // De hendel met scharnier en steun is van het interieur (Middenconsole/Handremhendel met hoes; scharnier op (0,065; 0,34; 0,104),
+  // as langs x). Het onderstel levert alleen de kabels en de egalisator: de voorste kabel begint op het kabelaansluitpunt 40 mm onder
+  // het scharnier (INT_PORTS.handremkabel, uit het interieurpakket van golf 5; tot dat is samengevoegd geldt dezelfde waarde hier).
+  // B-035: hier stond een tweede hendel met greep en steun op x 0, 60 mm diep in de tunnelconsole. Vloerbedekking boven op y 0,275.
+  const H = INT_PORTS.handremkabel || [0.065, 0.30, 0.104], hx = H[0];
   const K = sg => [sg * (chsMR - 0.065), AY + 0.03, AXR - 0.085];
   const cab = sg => [[sg * 0.02, 0.215, -0.64], [sg * 0.15, 0.216, -0.85], [sg * 0.35, 0.215, -1.0], [sg * 0.50, 0.217, -1.12], [sg * 0.52, 0.22, -1.29], [sg * 0.60, 0.27, -1.325], K(sg)];
   const rear = sg => P(`Handremkabel ${chsSn(sg)}`, chsLine(cab(sg), 0.0035, 6), MAT.rubber, { d: `Handremkabel naar de ${chsSn(sg)} achtertrommel (buitenkabel met binnenkabel, getekend als geheel).`, ex: [sg * 0.2, -0.1, -0.2] });
   const klem = sg => P(`Kabelklem ${chsSn(sg)}`, xf(G.box(0.025, 0.008, 0.02), [sg * 0.35, 0.2125, -1.0]), MAT.plasticGrey, { d: 'Klem die de handremkabel aan de vloer vasthoudt.', ex: [sg * 0.1, -0.1, 0] });
-  const steun = merge([xf(G.box(0.05, 0.006, 0.12), [hx, 0.278, hz - 0.02]), ...[-1, 1].map(s => xf(G.box(0.004, 0.118, 0.07), [hx + s * 0.014, 0.34, hz]))]);
-  return A('Handrem', { d: 'Parkeerrem: de hendel op de middenconsole (interieur) trekt via de voorste kabel aan een egalisator onder de vloer, die twee kabels naar de schoenen van de achtertrommels verdeelt. De hendel en de console zijn van het interieur; het onderstel levert de steun, de kabels en de egalisator.', ex: [0, -0.2, -0.3] }, [
-    P('Handremhendelsteun', steun, MAT.chsPaint, { d: 'Steun op de vloer onder de handremhendel van de console: voetplaat met twee wangen waarin de hendel draait en het palsegment zit (vorm geschat). Zit onder de dichte tunnelconsole en is van buiten niet te zien.', ex: [0, 0.1, 0], inner: true }),
-    P('Handremkabel voor', chsLine([H, [hx, 0.33, H[2] - 0.04], [hx - 0.005, 0.285, -0.14], [0.04, 0.24, -0.22], [0.02, 0.205, -0.30], [0, 0.205, -0.60]], 0.0035, 6), MAT.rubber, { d: 'Voorste kabel van de handremhendel (aansluitpunt INT_PORTS.handremhendel) door de vloer naar de egalisator.', ex: [0, -0.15, 0] }),
+  return A('Handrem', { d: 'Parkeerrem: de hendel op de middenconsole (interieur) trekt via de voorste kabel aan een egalisator onder de vloer, die twee kabels naar de schoenen van de achtertrommels verdeelt. Hendel, steun en console zijn van het interieur; het onderstel levert de kabels en de egalisator.', ex: [0, -0.2, -0.3] }, [
+    P('Handremkabel voor', chsLine([H, [hx, 0.288, H[2] - 0.05], [hx - 0.003, 0.285, -0.10], [0.04, 0.24, -0.22], [0.02, 0.205, -0.30], [0, 0.205, -0.60]], 0.0035, 6), MAT.rubber, { d: 'Voorste kabel van de handremhendel (aansluitpunt onder het scharnier in de console) door de vloer naar de egalisator.', ex: [0, -0.15, 0] }),
     P('Egalisator', merge([xf(G.box(0.04, 0.02, 0.03), [0, 0.205, -0.63])]), MAT.steel, { d: 'Verdeelstuk dat de kabelspanning over links en rechts gelijk verdeelt.', ex: [0, -0.15, -0.1] }),
     rear(1), rear(-1), klem(1), klem(-1)]);
 }

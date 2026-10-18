@@ -192,7 +192,7 @@ function drvCaseParts() {
     drvP('Bouten bakhuis', bolts, MAT.darkSteel, 'Tien bouten (aantal schematisch) die de twee helften van het bakhuis verbinden.', undefined, [0.15, 0, 0]),
     drvP('Aftapplug', drvBolt(0.014, 0.016, 'y'), MAT.darkSteel, 'Aftapplug onderin het bakhuis naast de linker aandrijfas (handboek): hier loopt de bakolie af.', [0.485, DIFF[1] - 0.104, DIFF[2]], [0.3, -0.12, 0]),
     drvP('Vulplug', drvBolt(0.014, 0.016, 'z'), MAT.darkSteel, 'Vul- en peilplug aan de voorkant van het bakhuis; de bakolie is 2,4 liter (75W-80 of 90, API GL4 of GL5).', [0.5, 0.0, 0.0735], [0.3, 0.0, 0.12], { r: [PI, 0, 0] }),
-    drvP('Ontluchting', G.cyl('y', 0.006, 0.006, 0.016, 10), MAT.plastic, 'Ontluchtingsdop bovenop het bakhuis; laat overdruk door de opwarming weg.', [0.43, 0.083, 0.0], [0.3, 0.12, 0]),
+    drvP('Ontluchting', G.cyl('y', 0.006, 0.006, 0.016, 10), MAT.plastic, 'Ontluchtingsdop bovenop het bakhuis, naast de beugel van de linker motorsteun; laat overdruk door de opwarming weg.', [0.405, 0.083, 0.0], [0.3, 0.12, 0]),
   ];
 }
 
