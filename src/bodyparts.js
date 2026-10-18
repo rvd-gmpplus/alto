@@ -18,10 +18,10 @@ std('bodLiner', 0x1a1b1e, 0, 0.9);                                         // zw
 std('bodBlack', 0x0f1012, 0, 0.62);                                        // zwart kunststof: spiegels, grepen, wissers
 std('bodPillar', 0x060607, 0, 0.8, { envMapIntensity: 0.12 });             // zwart rubber en kader
 std('bodPillarGloss', 0x08090b, 0.05, 0.3, { envMapIntensity: 0.35 });     // hoogglans zwarte B-stijl
-std('bodHoney', 0x131519, 0, 0.9, { envMapIntensity: 0.1 });           // honingraatgrille
 std('bodMirror', 0xb4bec6, 1, 0.04, { envMapIntensity: 1.1 });
 std('bodSeal', 0x151618, 0, 0.9);
-std('bodEmblem', 0x26292e, 0, 0.85, { envMapIntensity: 0.12 });          // embleem 2001: graphietgrijs, mat (ruw 0,85): minder kijkhoekafhankelijk dan het vorige donkere, glanzende (0,55 tot 1,6 keer het gaas, nu 0,8 tot 1,9); op het gaas hoogstens twee keer zo helder
+std('bodChrome', 0xdfe3e7, 1, 0.16, { envMapIntensity: 1.0 });          // verchroomd embleem op de grille (beslissing 29, foto 1993-2001; was 0x26292e graphietgrijs op het honingraatgaas)
+std('bodZwart', 0x1c1d1f, 0, 0.7, { envMapIntensity: 0.15 });           // ongelakt zwart kunststof van grilleraam en voorbumper (beslissing 29, keuze eigenaar; lage omgevingsweerkaatsing, anders leest het als grijs)
 std('bodAmber', 0xe05a08, 0, 0.42, { emissive: 0x4d1c00, emissiveIntensity: 0.3, envMapIntensity: 0.3, transparent: true, opacity: 0.82 });   // oranje knipperlichtlens: echt oranje, niet bleekgeel; doorschijnend (B-044), het lamphuis schemert erdoorheen
 std('bodPlate', 0xffffff, 0.05, 0.42);                                     // Nederlandse plaat: geel met zwarte rand, blauwe EU-strook en streepjes (map volgt in bodPlateTex)
 std('bodLamp', 0xe6eaed, 0.3, 0.38, { envMapIntensity: 0.8 });                                       // binnenkant van de koplamp: zilverwitte verchroomde reflectorbak (map volgt in bodLampTex; beslissing 29: lichter, was 0xc4c9ce)
@@ -77,10 +77,10 @@ const bodHoodArcZ = (n = 14) => Array.from({ length: n }, (_, k) => bodZLh - bod
    De echte voorkant is één band van ca. 130 mm: koplamp, lichaamskleurig paneel met een smalle gaasstrook, koplamp. Alle onderdelen van die band
    (lamp, paneel, grille, bumper, scherm, kap) lezen hun grenzen uit deze constanten, zodat er geen naden met eigen getallen ontstaan. */
 const bodXP = 0.385;                              // grens grille en lamp: buitenrand van het grilleraam (beslissing 29; was 0,355, de rand van het rode paneel)
-const bodXG = 0.325;                              // halve breedte van de gaasopening
-// gaasopening: 76 mm hoog, breedte 650 mm (verhouding 8,5); verticaal in de band tussen lamponderrand (0,550) en kapvoorrand (0,702) op de neus: 33 mm boven de
-// lamponderrand en 41 mm onder de kap (dezelfde verdeling als voor beslissing 17: 0,637 en 0,713 in de band 0,612 tot 0,745)
-const bodYG0 = 0.583, bodYG1 = 0.659;
+const bodXG = 0.373;                              // halve breedte van de grilleopening: 12 mm binnen de buitenrand van het raam (bodXP)
+// grille (beslissing 29, keuze eigenaar naar de foto van de modelreeks 1993-2001): een zwart raam van y 0,555 tot 0,697 over de volle breedte tussen de lampen;
+// opening van y 0,567 tot 0,677: onderrand 12 mm, bovenbalk 20 mm (tot de bovenrand 0,697; daarboven ligt de kaprand)
+const bodYG0 = 0.567, bodYG1 = 0.677;
 // bovenrand bumper = onderrand lamp, paneel en scherm: vrijwel waterpas (0,538 op de flank, 0,550 op de neus), zoals op foto F1; een schuine lijn gaf de hoekkap een hoektand.
 // Beslissing 17: 62 mm lager dan eerst (0,600 en 0,612), samen met de neus in body.js; de bumper staat nu 325 mm boven de lip (0,225).
 const bodYBT = z => 0.538 + 0.012 * sstep((z - 1.43) / 0.23);
@@ -610,7 +610,10 @@ function bodHeadlamp(s) {
   const housing = merge([
     bodReg(sd, Z0, bodZH + 0.003, 12, 8, lo, bodLHi1, D), bodReg(sd, bodZH, ZE, 14, 8, lo, hi2, D),
     bodWall(sd, z => [z, lo(z)], Z0, ZE, 20, z => bodBumperInw(z) + 0.0005, D, 2), bodWall(sd, z => [z, bodLHi1(z)], Z0, bodZH, 16, 0.004, D + 0.003, 3), bodWall(sd, z => [z, hi2(z)], bodZH, ZE, 14, 0.004, D + 0.003, 3),
-    bodWall(sd, t => [bodZH, lerp(bodLHi1(bodZH), hi2(bodZH), t)], 0, 1, 3, 0.004, D, 2), bodWall(sd, t => [Z0, lerp(lo(Z0), bodLHi1(Z0), t)], 0, 1, 4, 0.004, D, 2)]);
+    bodWall(sd, t => [bodZH, lerp(bodLHi1(bodZH), hi2(bodZH), t)], 0, 1, 3, 0.004, D, 2), bodWall(sd, t => [Z0, lerp(lo(Z0), bodLHi1(Z0), t)], 0, 1, 4, 0.004, D, 2),
+    // achterschot boven in het huis (beslissing 29): door het glas boven de reflector keek je onder de kaprand door naar achteren (Frontmodule); een plaat van 1 mm
+    // tussen het einde van het binnenframe van de kap (z 1,64) en de kaprand, tot y 0,696 (onder het binnenframe)
+    xf(G.box(0.63 - (bodXP - 0.008), 0.056, 0.001), [sd * (0.63 + bodXP - 0.008) / 2, 0.668, 1.6405])]);
   const zB = lerp(bodZH, ZE, 0.4), bulb = bodLow(zB, bodPp(sd, lerp(bodLmLo(zB), bodLmHi(zB), 0.5)), 0.06);   // midden achter de hoofdlens, iets boven het midden
   return A(`Koplamp ${n}`, { d: 'Rechthoekige koplamp met helder glas, om de hoek van de neus gewikkeld naar het scherm: een hoofdlens met ribbels, een gladde hoekkap, een zilveren reflector en een zwart huis. De onderrand volgt de bumper, de kap en het scherm lopen erover.', ex: [s * 0.32, 0.1, 0.55] }, [
     P('Afdekglas', mainLens, MAT.bodLensRib, { d: 'Heldere hoofdlens met fijne verticale ribbels (prismaglas), vlak met het voorpaneel en onder de kap en de bumperrand geschoven.', ex: [s * 0.1, 0.04, 0.2] }),
@@ -687,35 +690,22 @@ function bodArcUV(g, U0 = 0.22, U1 = 0.44, V0 = 0.38, V1 = 0.88) {
   }
   g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); return g;
 }
-// Gaas van de grille: zeshoekig raster dat naadloos herhaalt (4 cellen over de breedte van de tegel, 7 rijparen over de hoogte), dikke donkergrijze wanden op zwart
-function bodHoneyTex() {
-  const W = 256, c = document.createElement('canvas'); c.width = W; c.height = W; const g = c.getContext('2d');
-  g.fillStyle = '#060607'; g.fillRect(0, 0, W, W); g.strokeStyle = '#1b1d20'; g.lineWidth = 6; g.lineJoin = 'round';
-  const r = W / 12, h = W / 7, ky = h / (r * Math.sqrt(3));
-  for (let row = -1; row < 16; row++) for (let col = -1; col < 6; col++) {
-    const cx = col * r * 3 + (row % 2 ? r * 1.5 : 0), cy = row * h / 2;
-    g.beginPath(); for (let k = 0; k < 6; k++) { const a = PI / 3 * k; g.lineTo(cx + r * Math.cos(a), cy + ky * r * Math.sin(a)); } g.closePath(); g.stroke();
-  }
-  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; return t;
-}
-// uv van het gaas: u over x, v over de lengte langs de neushelling; k herhalingen per meter (k 4,8: celbreedte 35 mm, kolomafstand 26 mm, ca. 25 kolommen over 650 mm; foto F1: ca. 25 grove cellen)
-const bodHoneyUV = (g, k) => { const p = g.attributes.position, uv = new Float32Array(p.count * 2); for (let i = 0; i < p.count; i++) { uv[2 * i] = p.getX(i) * k; uv[2 * i + 1] = p.getY(i) / 1.0 * k; } g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); return g; };
-// gaasopening op de neus: boven- en onderrand uit bodYG1 en bodYG0, afgeronde uiteinden (de halve breedte loopt over 12 mm terug naar boven en onder)
-const bodGZ1 = bodZAtYd(bodYG1), bodGZ0 = bodZAtYd(bodYG0);
-const bodGXe = z => { const w = 2 * clamp((z - bodGZ1) / (bodGZ0 - bodGZ1), 0, 1) - 1; return bodXG - 0.012 * (1 - Math.sqrt(Math.max(0, 1 - w * w))); };
+// Grille (beslissing 29): een raam van zwart kunststof tussen de koplampen met een opening waarin vier horizontale lamellen liggen, en een verchroomd S-embleem
+// in het midden. Keuze van de eigenaar naar de foto van de modelreeks 1993-2001; de bronnen noemen voor de 16V van 2000 tot 2002 een honingraatgrille.
 function bodFrontPanel() {
-  const off = 0.0025, sP = z => bodSAtX(z, bodXP), sE = z => bodSAtX(z, bodGXe(z)), sG = z => bodSAtX(z, bodXG + 0.0012);
-  // paneel: bovenstrook (onder de kap geschoven), twee zijposten, onderstrook (onder de bumper geschoven); alles 2,5 mm onder de huid
-  const top = bodDeck(bodZLh - 0.008, bodGZ1 + 0.0005, 8, sP, 10, [], off), low = bodDeck(bodGZ0 - 0.0005, 1.72, 6, sP, 10, [], off);   // onderstrook tot z 1,72 (was 1,705): bij de lagere bumperrand blijft hij ongeveer 30 mm onder de bumper
-  const post = sd => bodReg(sd, bodGZ1, bodGZ0, 10, 1, sP, sE, off);
-  const honey = bodHoneyUV(bodDeck(bodZAtYd(bodYG1 + 0.0012), bodZAtYd(bodYG0 - 0.0012), 10, sG, 12, [], 0.008), 4.8);
-  MAT.bodHoney.map = bodHoneyTex(); MAT.bodHoney.color.setHex(0xffffff); MAT.bodHoney.needsUpdate = true;
-  // kuip: vier zwarte wanden van de paneelrand naar het gaas (8 mm diep)
-  const zt = bodGZ1, zb = bodGZ0, st = sE(zt), sb = sE(zb);
-  const kuip = merge([...[1, -1].map(sd => bodWall(sd, z => [z, sE(z)], zt, zb, 10, off, 0.0085, 1)),
-    bodWall(1, t => [zt, lerp(st, 2 - st, t)], 0, 1, 8, off, 0.0085, 1), bodWall(1, t => [zb, lerp(sb, 2 - sb, t)], 0, 1, 8, off, 0.0085, 1)]);
-  // embleem: gestileerde Suzuki-S, een doorlopende streep (twee squircle-bogen, schuin afgesneden uiteinden, 11 graden naar rechts gekanteld), ca. 70 mm hoog en 41 mm breed, 4 mm dik.
-  // Vijf losse balkjes lazen als het cijfer 5 (zevensegmentvorm); een doorlopende streep met schuine punten leest als S (foto F1 en F2)
+  const off = 0.0025, sP = z => bodSAtX(z, bodXP), sG = z => bodSAtX(z, bodXG), zT = bodZAtYd(bodYG1), zB = bodZAtYd(bodYG0), D = 0.04;
+  // raam: bovenbalk (onder de kap geschoven), twee zijstijlen, onderrand (onder de bumper geschoven); 2,5 mm onder de huid, zoals de lampen ernaast
+  const top = bodDeck(bodZLh - 0.008, zT + 0.0005, 10, sP, 12, [], off), low = bodDeck(zB - 0.0005, 1.72, 6, sP, 12, [], off);
+  const post = sd => bodReg(sd, zT, zB, 10, 1, sP, sG, off);
+  // kuip: wanden van de opening tot 40 mm diep en een achterwand; door de spleten tussen de lamellen zie je zwart en niet de radiateur
+  const kuip = merge([...[1, -1].map(sd => bodWall(sd, z => [z, sG(z)], zT, zB, 10, off, D, 2)),
+    bodWall(1, t => [zT, lerp(sG(zT), 2 - sG(zT), t)], 0, 1, 8, off, D, 2), bodWall(1, t => [zB, lerp(sG(zB), 2 - sG(zB), t)], 0, 1, 8, off, D, 2),
+    bodDeck(zT - 0.001, zB + 0.001, 10, sG, 12, [], D),
+    xf(G.box(2 * bodXP, 0.056, 0.001), [0, 0.668, 1.6405])]);   // schot boven de kuip, zoals in het lamphuis: onder de kaprand door keek je anders naar achteren
+  // lamellen: vier stroken van 14 mm hoog met 12 mm tussenruimte (9 mm vrij boven en onder), 3 mm dik, 10 mm achter het raam en 15 graden omlaag gekanteld
+  const yL = k => bodYG1 - 0.009 - 0.007 - k * 0.026;
+  const lam = merge([0, 1, 2, 3].map(k => { const y = yL(k); return xf(G.box(2 * bodXG - 0.002, 0.014, 0.003), [0, y, bodZAtYd(y) - off - 0.010 - 0.0015], [15 * PI / 180, 0, 0]); }));
+  // embleem: gestileerde Suzuki-S, een doorlopende streep (twee squircle-bogen, schuin afgesneden uiteinden, 11 graden gekanteld), 60 mm hoog en 35 mm breed, 4 mm dik
   const embS = cache('bodEmblemS', () => {
     const a = 0.0155, b = 0.015, t = 0.0105, n = 2.6, sh = 0.2, N = 14, c = 0.0055, pw = (v, e) => Math.sign(v) * Math.pow(Math.abs(v), e), C = [];
     for (let k = 0; k <= N; k++) { const th = lerp(35, 270, k / N) * PI / 180; C.push([a * pw(Math.cos(th), 2 / n), b + b * pw(Math.sin(th), 2 / n)]); }
@@ -728,13 +718,14 @@ function bodFrontPanel() {
     const poly = Lp.concat(Rp.reverse()).map(q => [q[0] + sh * q[1], q[1]]);
     return front(shapeOf(poly), 0.004);
   });
-  const emb = merge([xf(embS, [0, 0, 0.004])]);
-  const yE = (bodYG0 + bodYG1) / 2, zE = bodZAtYd(yE), pE = bodAt(zE, yE, -0.006), nE = bodN(zE, sAtY(zE, yE));
-  return A('Grille en voorpaneel', { d: 'Voorpaneel tussen de koplampen: lichaamskleurig, vlak met de lampen, met één smalle zwarte gaasopening met honingraatgaas en het embleem (uitvoering 2001).', ex: [0, 0.04, 0.4] }, [
-    P('Voorpaneel', merge([top, low, post(1), post(-1)]), MAT.paint, { d: 'Neuspaneel in carrosseriekleur boven en onder de gaasopening en ernaast, tussen de koplampen. Het loopt 8 mm onder de kap en onder de bumperrand.', ex: [0, 0.04, 0.06] }),
-    P('Grillekuip', kuip, MAT.bodBlack, { d: 'Zwarte wanden rond de gaasopening: het gaas ligt 8 mm dieper dan het paneel.', ex: [0, 0, 0.1] }),
-    P('Honingraatgrille', honey, MAT.bodHoney, { d: 'Zwart kunststof gaas met fijne honingraatstructuur (uitvoering 2001, één doorlopende opening) voor de luchtinlaat van de radiateur.', ex: [0, 0, 0.14] }),
-    P('Embleem', emb, MAT.bodEmblem, { d: 'Donker metallic embleem op het gaas: een gestileerde letter S van ongeveer 70 mm hoog, zonder schijf eronder (schematisch, zonder merkletters).', p: [0, pE[1], pE[2]], r: [-Math.atan2(nE[1], nE[2]), 0, 0], ex: [0, 0.03, 0.12] }),
+  const emb = xf(embS, [0, 0, 0.004], null, [0.857, 0.857, 1]);
+  const yE = (bodYG0 + bodYG1) / 2, zE = bodZAtYd(yE), pE = bodAt(zE, yE, -0.008), nE = bodN(zE, sAtY(zE, yE));
+  const dk = 'keuze eigenaar naar foto 1993-2001; de bronnen noemen voor de 16V 2000-2002 een honingraatgrille';
+  return A('Grille en voorpaneel', { d: `Grille tussen de koplampen: een raam van zwart kunststof met vier horizontale lamellen en een verchroomd S-embleem in het midden (${dk}).`, ex: [0, 0.04, 0.4] }, [
+    P('Grilleraam', merge([top, low, post(1), post(-1)]), MAT.bodZwart, { d: `Raam van ongelakt zwart kunststof tussen de koplampen, ongeveer 770 x 142 mm: zijkanten en onderrand 12 mm, bovenbalk 20 mm. Het loopt onder de kap en onder de bumperrand door (${dk}).`, ex: [0, 0.04, 0.06] }),
+    P('Grillekuip', kuip, MAT.bodPillar, { d: 'Zwarte kuip achter de grilleopening, 40 mm diep met een achterwand: door de spleten tussen de lamellen zie je zwart (schematisch; de echte grille laat koellucht door).', ex: [0, 0, 0.1] }),
+    P('Grillelamellen', lam, MAT.bodBlack, { d: `Vier horizontale lamellen van zwart kunststof, ongeveer 14 mm hoog met 12 mm tussenruimte, 10 mm achter het raam en 15 graden omlaag gekanteld (${dk}).`, ex: [0, 0, 0.14] }),
+    P('Embleem', emb, MAT.bodChrome, { d: 'Verchroomd embleem in het midden van de grille: een gestileerde letter S van ongeveer 60 mm hoog, zonder schijf eronder (schematisch, zonder merkletters; foto 1993-2001).', p: [0, pE[1], pE[2]], r: [-Math.atan2(nE[1], nE[2]), 0, 0], ex: [0, 0.03, 0.12] }),
   ]);
 }
 // kolomverdeling over de doorsnede: dicht op de hoeken (onderkant, schouder), ruim op de vlakke delen. bodWarp(a, b, t) geeft s tussen a en b voor t in [0, 1],
