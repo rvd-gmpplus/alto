@@ -208,7 +208,8 @@ function buildExhaust() {
   // ---------- hitteschilden onder de vloer ----------
   const plate = (w, len) => merge([G.box(w, 0.003, len), xf(G.box(0.003, 0.014, len), [w / 2 - 0.0015, -0.0085, 0]), xf(G.box(0.003, 0.014, len), [-w / 2 + 0.0015, -0.0085, 0]), ...[-0.3, 0, 0.3].map(f => xf(G.box(w - 0.02, 0.004, 0.006), [0, 0.0035, len * f * 0.5]))]);
   const schilden = A('Hitteschilden', { d: 'Aluminium hitteschilden tussen de hete delen en de vloer, zodat de bodemplaat en de tank niet te heet worden.', ex: [0, 0.15, 0] }, [
-    sysPart('Hitteschild voorpijp', cache('sysShieldFront', () => merge([G.box(0.12, 0.2, 0.003), ...[-0.04, 0, 0.04].map(x => xf(G.box(0.006, 0.19, 0.005), [x, 0, 0.003]))])), MAT.heat, [xE + 0.01, 0.35, zE - 0.055], 'Aluminium plaat achter de voorpijp die het schutbord beschermt tegen de hitte.', [0, 0, -0.1]),
+    // schuin achter de voorpijp, onder het stuurhuis (bovenrand y 0,39; het stuurhuis begint op 0,398): van (y 0,25; z 0,924) tot (y 0,39; z 0,9635), 35 mm achter de pijp (B-029)
+    sysPart('Hitteschild voorpijp', cache('sysShieldFront', () => merge([G.box(0.12, 0.1455, 0.003), ...[-0.04, 0, 0.04].map(x => xf(G.box(0.006, 0.135, 0.005), [x, 0, 0.003]))])), MAT.heat, [xE + 0.01, 0.32, zE - 0.058], 'Aluminium plaat schuin achter de voorpijp, onder het stuurhuis; houdt de hitte van de pijp weg van het stuurhuis en het schutbord.', [0, 0, -0.1], { r: [Math.atan2(0.0395, 0.14), 0, 0] }),
     sysPart('Hitteschild katalysator', plate(0.13, 0.26), MAT.heat, [xC, 0.2195, zC0 - 0.12], 'Geribd aluminium schild boven de katalysator, direct onder de vloer.', [0, 0.1, 0]),
     sysPart('Hitteschild middendemper', plate(0.2, 0.40), MAT.heat, [X_T, 0.2155, zM], 'Geribd aluminium schild boven de middendemper, direct onder de vloer.', [0, 0.1, 0]),
     sysPart('Hitteschild einddemper', plate(0.24, 0.36), MAT.heat, [X_T, 0.2485, zEnd], 'Geribd aluminium schild boven de einddemper.', [0, 0.1, 0]),
