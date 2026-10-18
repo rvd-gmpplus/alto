@@ -256,6 +256,11 @@ function bodStructure() {
   const rear = A('Achterbouw', { d: 'Achterbouw: wielkasten, bumperbalk en de wand achter de achterbank.', ex: [0, 0.05, -0.4] }, [
     P('Bumperbalk achter', tube([-0.5, -0.3, -0.15, 0, 0.15, 0.3, 0.5].map(x => [x, 0.45, -1.665 + 0.12 * x * x]), 0.03, 24, 8), MAT.steel, { d: 'Stalen botsbalk achter de achterbumper.', ex: [0, 0, -0.1] }),
     ...both(s => bodWheelHousePart(s, false)),
+    // achter de naad tussen dorpel (tot y 0,262) en achterscherm (vanaf 0,272), van z -0,935 (1 mm voor het vooreinde van de koker, die tot z -0,936 loopt) tot 4 cm achter de
+    // portierspleet, 4 mm binnen de huid: door de naad
+    // keek je anders vanuit de lage rondgang op de vloerbedekking. Gelakt, zodat de naad leest als een schaduwlijn in de doorlopende plaat (geen zwarte band onder het scherm).
+    ...both(s => P(`Afdekstrook dorpel achter ${sn(s)}`, lowSide(s, AXR + ARCH + 0.013, -0.60, 20, z => [sAtY(z, 0.255), sAtY(z, 0.280)], 2, [], 0.004), MAT.paint,
+      { d: 'Gelakte strook achter de naad tussen dorpel en achterscherm, voor de achterwielboog; sluit de naad af, zodat je er niet op de vloer van het interieur kijkt.', ex: [s * 0.12, 0.02, 0] })),
   ]);
   return [floor, front, rear];
 }
@@ -269,7 +274,8 @@ const bodWheelHousePart = (s, fr) => P(`Wielkast ${fr ? 'voor' : 'achter'} ${bod
 // - het midden onder de boog is dicht (voor is het open voor de aandrijfas; achter loopt die niet), rond de asdelen met minstens 5 mm vrij: achter de as (z -1,448 tot -1,240)
 //   tot y 0,245, rechts onder y 0,340 open voor de panhardbeugel; tussen torsiebalk en veer (z -1,240 tot -1,174) vanaf y 0,300 (torsiebalk tot 0,295); voor de veer een strook;
 // - de schroefveer kruist het vlak x 0,50 (x 0,477 tot 0,575): daar wijkt de wand in naar een veerkoker (binnenplaat op |x| 0,466, zijplaten op z -1,174 en -1,056, dak
-//   op y 0,477, 5 mm boven het veerrubber). De remslang loopt door de veerkoker naar buiten: doorvoeren in de wand, de achterste zijplaat en de binnenplaat.
+//   op y 0,477, 5 mm boven het veerrubber). De remslang loopt door de veerkoker naar buiten: doorvoeren in de wand, de achterste zijplaat en de binnenplaat;
+// - een strook 4 mm binnen de huid achter de kier tussen het boogeinde van het achterscherm (z -1,548) en de bumperschaal (z -1,550), van y 0,27 tot 0,585.
 function bodWheelHouseAchter(s) {
   const az = AXR, yb = 0.485, R = ARCH + 0.012, RW = R + 0.002, xin = 0.50, dEnd = 0.20, V = (z, y) => new THREE.Vector2(z, y), N = 12;
   const a0 = Math.asin((yb - AY) / R), c0 = R * Math.cos(a0);
@@ -305,7 +311,10 @@ function bodWheelHouseAchter(s) {
   const zijA = plaatZ([[xi, 0.300], [xin, 0.300], [xin, 0.336], [0.478, 0.336], [0.478, 0.375], [xin, 0.375], [xin, yt], [xi, yt]], z0);
   const zijV = plaatZ([[xi, 0.255], [xin, 0.255], [xin, yt], [xi, yt]], z1);
   const dak = (() => { const g = new THREE.PlaneGeometry(xin - xi, z1 - z0); g.rotateX(-HALF); g.translate(s * (xi + xin) / 2, yt, (z0 + z1) / 2); return g; })();
-  return merge([wall, arc, binnen, zijA, zijV, dak]);
+  // strook achter de kier bij het boogeinde: binnen de boog 4 mm boven de boogrand (achter de huid), daarbuiten vanaf y 0,27
+  const lo = z => { const dz = Math.abs(z - az); return dz < ARCH ? AY + Math.sqrt(ARCH * ARCH - dz * dz) + 0.004 : 0.27; };
+  const kier = lowSide(s, -1.572, -1.536, 10, z => [sAtY(z, lo(z)), sAtY(z, 0.585)], 10, [az - ARCH + 1e-6], 0.004);
+  return merge([wall, arc, binnen, zijA, zijV, dak, kier]);
 }
 function bodSill(s) {
   return P(`Dorpel ${bodSn(s)}`, patch((z, p) => bodLow(z, p), AXR + ARCH + 0.002, AXF - ARCH - 0.002, 40, z => sideR(s, S1 * 0.55, sAtY(z, bodYSill - 0.006)), 8), MAT.paint,
@@ -854,6 +863,9 @@ function bodRearBumper() {
   return A('Achterbumper', { d: 'Bumperschaal in carrosseriekleur (Twist) met kentekenvlak, reflectoren en richel onder de achterklep; erachter de stalen bumperbalk.', ex: [0, -0.04, -0.7] }, [
     // de schaal begint op z -1,550 (was -1,556): de kier met het boogeinde van het achterscherm (z -1,548) is 2 mm in plaats van 8, zoals de dorpel voor de boog
     P('Bumperschaal achter', bodBumperGeo(bodYBR, -1.550, ZR, -1), MAT.paint, { d: 'Kunststof bumperschaal in het rood met afgeronde hoeken die om de achterwielboog lopen.', ex: [0, -0.02, -0.12] }),
+    // zwarte strook 4 mm binnen de huid achter de naad van 3 mm tussen bumperschaal (tot y 0,575) en achterscherm en achterpaneel (vanaf 0,578): door de naad zag je de bagagebekleding
+    ...both(s => P(`Naadstrook achterbumper ${bodSn(s)}`, lowSide(s, ZR + 0.001, -1.535, 30, z => [sAtY(z, 0.562), sAtY(z, 0.592)], 2, [], 0.004), MAT.bodLiner,
+      { d: 'Zwarte strook achter de naad tussen de bovenrand van de bumperschaal en het achterscherm; de naad leest als een donkere lijn en je kijkt er niet in de bagageruimte.', ex: [s * 0.05, -0.02, -0.12] })),
     ...both(s => P(`Reflector achter ${bodSn(s)}`, bodHalfFace(ZR, -1, s, 0.30, 0.43, 0.48, -0.002, 2, 5), MAT.lensRed, { d: 'Rode reflector laag in de bumperhoek.', ex: [s * 0.05, 0, -0.08] })),
     P('Onderrand achterbumper', bodFace(ZR, -1, -0.30, 0.30, 0.345, 0.38, -0.002, 2, 14), MAT.bodBumper, { d: 'Zwarte kunststof afwerkstrook onder in de bumper.', ex: [0, -0.04, -0.1] }),
   ]);

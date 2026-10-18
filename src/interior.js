@@ -342,8 +342,8 @@ function intTrim() {
   const carpet = (() => { const hx = 0.62, g = roundPlate([[-0.495, -1.02], [0.495, -1.02], [0.495, -0.9], [hx, -0.9], [hx, 0.775], [0.5, 0.775], [0.5, 0.85], [-0.5, 0.85], [-0.5, 0.775], [-hx, 0.775], [-hx, -0.9], [-0.495, -0.9]], 0.008, 0.003); g.rotateX(HALF); g.translate(0, INT_YF - 0.004, 0); return g; })();
   const mat = (s, n, z) => intPart(`Vloermat ${n}`, bx(0.4, 0.008, 0.52, 0.003, [s * 0.38, INT_YF + 0.004, z]), MAT.rubber, 'Losse rubber vloermat in de voetruimte.', { ex: [0, 0.12, 0.1] });
   const sill = s => intPart(`Instaplijst ${sideName(s)}`, bx(0.09, 0.012, 1.3, 0.004, [s * 0.575, 0.262, 0.07]), MAT.plasticGrey, 'Kunststof dorpellijst bij het instappen.', { ex: [s * 0.1, 0.05, 0] });
-  // bagageruimte: vloer tussen de wielkasten (tot |x| 0,495, 5 mm binnen de wand van de wielkast), afdekplaat (hoedenplank) boven de bagage
-  const bootFloor = (() => { const g = roundPlate([[-0.6, -1.63], [0.6, -1.63], [0.6, -1.52], [0.495, -1.52], [0.495, -1.02], [-0.495, -1.02], [-0.495, -1.52], [-0.6, -1.52]], 0.015, 0.004); g.rotateX(HALF); g.translate(0, 0.4625, 0); return g; })();
+  // bagageruimte: vloer tussen de wielkasten (tot |x| 0,495, 5 mm binnen de wand van de wielkast, met een uitsparing tot |x| 0,461 om de veerkoker vanaf z -1,205: de afronding van de binnenhoek (straal 29 mm) bolt in de uitsparing uit en sneed de achterste zijplaat), afdekplaat (hoedenplank) boven de bagage
+  const bootFloor = (() => { const g = roundPlate([[-0.6, -1.63], [0.6, -1.63], [0.6, -1.52], [0.495, -1.52], [0.495, -1.205], [0.461, -1.205], [0.461, -1.02], [-0.461, -1.02], [-0.461, -1.205], [-0.495, -1.205], [-0.495, -1.52], [-0.6, -1.52]], 0.015, 0.004); g.rotateX(HALF); g.translate(0, 0.4625, 0); return g; })();
   const plankY = 0.85, plankZ0 = -1.075, plankZ1 = -1.625, plankHW = (z) => surfX(z, plankY) - 0.05;
   const plankGeo = (() => { const hw0 = plankHW(plankZ0), hw1 = plankHW(plankZ1), zc = (plankZ0 + plankZ1) / 2, hd = (plankZ0 - plankZ1) / 2;
     const g = roundPlate([[-hw1, -hd], [hw1, -hd], [hw0, hd], [-hw0, hd]], 0.012, 0.004); g.rotateX(HALF); return g; })();
