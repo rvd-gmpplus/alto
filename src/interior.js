@@ -42,6 +42,16 @@ function intGrid(fn, u0, u1, nu, vs) {
   g.setIndex(idx); g.computeVertexNormals();
   return g;
 }
+// gesloten lijst langs z: doorsnede van vier hoeken sec(z) = [[x, y], ...] rondom, n vakken tussen z0 en z1, met eindkappen; vlak gearceerd (hoekpunten niet gedeeld)
+function intSweep(sec, z0, z1, n) {
+  const pos = [], idx = [];
+  for (let i = 0; i <= n; i++) { const z = z0 + (z1 - z0) * i / n; sec(z).forEach(p => pos.push(p[0], p[1], z)); }
+  for (let i = 0; i < n; i++) for (let k = 0; k < 4; k++) { const a = i * 4 + k, b = i * 4 + (k + 1) % 4; idx.push(a, a + 4, b, b, a + 4, b + 4); }
+  const L = n * 4; idx.push(0, 2, 1, 0, 3, 2, L, L + 1, L + 2, L, L + 2, L + 3);
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx);
+  const f = g.toNonIndexed(); f.computeVertexNormals(); return f;
+}
 
 /* ---------- maten en aansluitpunten ---------- */
 const INT_YF = 0.275;                       // bovenkant vloerbedekking (over de dwarsbalken)
@@ -396,6 +406,13 @@ function intTrim() {
   const plankHide = ['Rugleuning groot deel', 'Rugleuning klein deel'];
   const uit = n => { n.hideWhen = plankHide; return n; };
   const hw0 = plankHW(plankZ0), hw1 = plankHW(plankZ1), pc = (plankZ0 + plankZ1) / 2;
+  // steunlijst: de achterrand van de plank rustte op de vilten achterwand, die nu alleen de voorkant van de laaddrempel bekleedt. Een lijst op elke C-stijlbekleding
+  // (z -1,36 tot -1,595) draagt de zijranden van de plank achter: van 1,5 mm voor de bekleding tot 15 mm onder de plank, bovenkant 0,5 mm onder de plank (0,844),
+  // onderkant vanaf y 0,8215, boven de uitwijking voor de tankkom (tot 0,82)
+  const plankEdge = z => lerp(hw0, hw1, (z - plankZ0) / (plankZ1 - plankZ0));
+  const ledge = s => { const f = intCF(s), xo = (z, y) => Math.abs(f(z, y)[0]) - 0.0015, yT = plankY - 0.0065, yI = 0.833, yB = 0.8215;
+    return intPart(`Steunlijst hoedenplank ${sideName(s)}`, intSweep(z => [[s * xo(z, yT), yT], [s * (plankEdge(z) - 0.015), yT], [s * (plankEdge(z) - 0.015), yI], [s * xo(z, yB), yB]], -1.36, -1.595, 12), MAT.intSide,
+      'Kunststof lijst op de C-stijlbekleding waarop de zijrand van de hoedenplank achter rust (vorm en plaats geschat).', { ex: [s * 0.1, 0.02, -0.06] }); };
   const cords = [1, -1].map(s => {
     const a = [s * (hw1 - 0.047), plankY + 0.006, plankZ1 + 0.03], b = [s * 0.5, 0.98, -1.57], dir = V3(b[0] - a[0], b[1] - a[1], b[2] - a[2]), L = dir.length();
     const o = { d: 'Koordje dat de hoedenplank aan de achterklep hangt (plaats geschat): een dun nylon koord van de achterhoek van de plank naar de binnenkant van de klep, dat strak komt als de klep omhoog gaat.', p: a, q: quatFromTo(V3(0, 0, 1), dir), ex: [s * 0.1, 0.1, -0.1] };
@@ -405,11 +422,14 @@ function intTrim() {
       intPart('Koordstuk', merge([xf(G.cyl('z', 0.0022, 0.0022, L * 0.5, 6), [0, 0, L * 0.75]), xf(G.sphere(0.006, 8), [0, 0, L])]), MAT.fabric, 'Beweegbaar deel van het koordje met oog aan de achterklep.', { ex: [0, 0.04, 0.04] }),
     ]));
   });
-  const boot = A('Bagageruimte', { d: 'Bagageruimte met vloer tussen de wielkasten, zijbekleding in vilt, wielkastbekleding, de afdekplaat (hoedenplank) en de achterwandbekleding.', ex: [0, 0.0, -0.3] }, [
+  const boot = A('Bagageruimte', { d: 'Bagageruimte met vloer tussen de wielkasten, zijbekleding in vilt, wielkastbekleding, de afdekplaat (hoedenplank) met haar steunlijsten en de bekleding van de laaddrempel.', ex: [0, 0.0, -0.3] }, [
     intPart('Bagagevloer', bootFloor, MAT.carpet, 'Vloerplaat met tapijt van de bagageruimte, tussen de achterwielkasten.', { ex: [0, -0.1, -0.1] }),
-    intPart('Achterwandbekleding', bx(1.2, 0.34, 0.012, 0.004, [0, 0.68, -1.64]), MAT.intFelt, 'Bekleding van het achterpaneel onder de achterklep.', { ex: [0, 0, -0.2] }),
-    ...[1, -1].map(bootSide), ...[1, -1].map(wheelCover),
-    uit(intPart('Hoedenplank', plankGeo, MAT.intFelt, 'Afdekplaat achter de achterbank boven de bagageruimte; hangt met koordjes aan de achterklep en komt mee omhoog als die opent (geschat 31 graden). Wordt uitgenomen als een rugleuning achter neerklapt.', Object.assign({ p: [0, plankY, pc], ex: [0, 0.3, -0.2] }, plankOpen))),
+    // de bagageopening loopt tot de laaddrempel (bovenkant y 0,60, voorwand op z -1,651 van y 0,455 tot 0,60, |x| tot 0,495): de bekleding stond als vilten wand tot
+    // y 0,85 in de opening en bekleedt nu alleen de voorkant van de drempel, 4 mm ervoor en achter de bagagevloer (tot z -1,63); de onderkant op y 0,4825, 2,5 mm boven
+    // de bumperbalk achter (tot y 0,48, die op |x| 0,5 tot z -1,606 naar voren buigt; vanaf y 0,455 stak de balk er 6 mm in)
+    intPart('Achterwandbekleding', bx(0.99, 0.1175, 0.012, 0.004, [0, 0.54125, -1.640]), MAT.intFelt, 'Vilten bekleding van de voorkant van de laaddrempel, tussen de bagagevloer en de bovenkant van de drempel.', { ex: [0, 0, -0.2] }),
+    ...[1, -1].map(bootSide), ...[1, -1].map(wheelCover), ...[1, -1].map(ledge),
+    uit(intPart('Hoedenplank', plankGeo, MAT.intFelt, 'Afdekplaat achter de achterbank boven de bagageruimte; rust achter op twee steunlijsten op de C-stijlbekleding, hangt met koordjes aan de achterklep en komt mee omhoog als die opent (geschat 31 graden). Wordt uitgenomen als een rugleuning achter neerklapt.', Object.assign({ p: [0, plankY, pc], ex: [0, 0.3, -0.2] }, plankOpen))),
     ...cords,
   ]);
   return A('Bekleding', { d: 'Hemel met zonkleppen, grepen en plafonnier, stijl- en zijbekleding, vloerbedekking met matten, dorpellijsten en de bekleding van de bagageruimte met de afdekplaat.', ex: [0, 0.4, 0] }, [
