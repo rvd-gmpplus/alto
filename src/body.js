@@ -2,10 +2,12 @@
 // assen: x = links(+)/rechts(-), y = omhoog, z = voor(+)/achter(-); maten in meter
 // Alle steunpunten komen uit data/silhouet.json (zijaanzicht en bovenaanzicht van de 3-deurs hatchback, geschat uit foto's;
 // fout ca. 3 cm tussen de assen, 5 cm in de overhang). De onderbak is een loft in (z, s), de kas een loft in (z, q).
-// Uitzondering: de neus van YT en bodC vanaf z 1,38 volgt de voorfoto's van beslissing 17 (kapvoorrand op x = 0 0,702 in plaats van 0,745, lamp en bumper lager; de stations
-// van data/silhouet.json blijven binnen hun tolerantie). Het hart van de kap (x = 0 tot 0,22) blijft gelijk aan het ontwerp van eerst, 1 mm hoger rond de aanzuigmond van het luchtfilter
-// (top 0,715 op z 1,57; integrity.py eist 25 mm onder de buitenhuid): de flank zakt eerder en verder, doordat de bolling bodC tussen z 1,40 en 1,60 groeit (0,024 naar 0,070) en YT
-// evenveel zakt. Zo loopt de kaprand op de flank vloeiend omlaag naar de lamp (hoogstens 25 mm boven de lampbovenrand op z 1,54, 13 mm op z 1,56) in plaats van pas in de laatste 50 mm.
+// Uitzondering: de neus van YT, bodC en HW vanaf z 1,40 volgt de foto van de modelreeks 1993-2001 (beslissing 29, golf 6; keuze van de eigenaar): een vrijwel
+// verticaal front (helling ca. 11 graden: op x = 0 van y 0,697 op z 1,663 naar 0,555 op z 1,691) met de kapvoorrand op z 1,66 en y 0,704, een vrijwel rechte
+// kapvoorrand (bodC 0,012 op de neus: 12 mm daling van x 0 naar x 0,6) en vollere hoeken (halve breedte 0,658 op y 0,62 en z 1,65; HW tot z 1,70 boven 0,645 en een schouderstraal van 28 mm
+// op de neus, zodat het vlakke front tot x 0,60 reikt). De lijn van de flank
+// (YT) loopt vloeiend van 0,81 op z 1,35 naar 0,69 op de neus. De stations van data/silhouet.json blijven binnen hun tolerantie (top z 1,6: 0,744 tegen 0,746).
+// Daarvoor (beslissing 17, golf 4) helde het front 34 graden en zakte de kaprand 45 mm naar buiten.
 const ZF = 1.7475, ZR = -1.7475;                    // lengte 3495 mm (uiterste punten van de bumpers)
 const BOD_WMAX = 0.7535, BOD_MIRW = 0.904, BOD_H = 1.405; // framework: halve breedte zonder en met spiegels (plus 6 mm), hoogte; integrity.py leest ze
 const AXF = 1.087, AXR = -1.248, AY = 0.265;        // wielbasis 2335 mm; bandstraal 145/70 R13 is 0,2666 m, min indrukking
@@ -30,16 +32,17 @@ function pchip(pts) {
 }
 // grootste halve breedte (bovenaanzicht, zonder spiegels): vlak middenstuk, ronde hoeken in de bumpers
 const HW = pchip([[-1.7475, 0.50], [-1.735, 0.555], [-1.70, 0.615], [-1.65, 0.66], [-1.55, 0.70], [-1.45, 0.72], [-1.30, 0.74], [-1.20, 0.7475],
-  [0.90, 0.7475], [1.20, 0.735], [1.45, 0.703], [1.60, 0.662], [1.68, 0.62], [1.73, 0.555], [1.7475, 0.50]]);
+  [0.90, 0.7475], [1.20, 0.735], [1.45, 0.703], [1.60, 0.674], [1.66, 0.662], [1.68, 0.656], [1.70, 0.645], [1.72, 0.615], [1.735, 0.582], [1.7475, 0.54]]);
 // onderkant carrosserie (bumperranden, dorpel; in de wielbogen snijdt de boog)
 const YB = pchip([[-1.7475, 0.34], [-1.73, 0.30], [-1.70, 0.285], [-1.60, 0.275], [-1.45, 0.27], [-1.2, 0.25], [-0.9, 0.225], [0.0, 0.215], [0.7, 0.222], [0.9, 0.232],
   [1.2, 0.25], [1.42, 0.265], [1.55, 0.265], [1.68, 0.27], [1.73, 0.285], [1.7475, 0.31]]);
 // schouderlijn van de onderbak = gordellijn (onderkant zijruiten) in de kas; voor en achter de rand van motorkap en staartplaat
 const YT = pchip([[-1.7475, 0.85], [-1.70, 0.875], [-1.62, 0.893], [-1.50, 0.915], [-1.35, 0.940], [-1.20, 0.955], [-1.0, 0.960], [-0.8, 0.955], [-0.4, 0.936],
-  [-0.2, 0.925], [0.0, 0.913], [0.2, 0.901], [0.4, 0.894], [0.6, 0.897], [0.85, 0.903], [0.975, 0.895], [1.10, 0.875], [1.225, 0.845], [1.35, 0.8101], [1.40, 0.7928], [1.44, 0.7672], [1.45, 0.7602], [1.50, 0.7222], [1.54, 0.7000], [1.55, 0.6950], [1.56, 0.6887], [1.57, 0.6801], [1.58, 0.6700], [1.59, 0.6612], [1.60, 0.6541], [1.62, 0.6438], [1.65, 0.6164], [1.70, 0.5300], [1.725, 0.4940], [1.7475, 0.472]]);   // neus, beslissing 17 (was 1,475 0,772; 1,60 0,722; 1,65 0,665; 1,70 0,560; 1,725 0,515; 1,7475 0,485; de punten op 1,40 tot 1,58 zijn nieuw: YT min de groeiende bodC houdt het hart gelijk)
+  [-0.2, 0.925], [0.0, 0.913], [0.2, 0.901], [0.4, 0.894], [0.6, 0.897], [0.85, 0.903], [0.975, 0.895], [1.10, 0.875], [1.225, 0.845], [1.35, 0.8101], [1.40, 0.7930], [1.45, 0.7680], [1.50, 0.7460], [1.55, 0.7300], [1.60, 0.7180], [1.63, 0.7090], [1.65, 0.7000], [1.66, 0.6920], [1.664, 0.6820], [1.67, 0.6520], [1.68, 0.5950], [1.688, 0.5480], [1.70, 0.5320], [1.71, 0.5240], [1.725, 0.5150], [1.7475, 0.5000]]);   // neus, beslissing 29: vlak tot z 1,66, dan het steile front tot de bumper op z 1,70 (beslissing 17 had 1,50 0,722; 1,60 0,654; 1,65 0,616; 1,70 0,530; 1,7475 0,472). HW: vollere neus (was 1,60 0,662; 1,68 0,62; 1,73 0,555; 1,7475 0,50)
 // bolling van het dek boven de schouderlijn (motorkap, staartplaat); in de kas is het dek onder de ruiten verborgen
-// bolling: tussen z 1,38 en 1,62 groter (tot 0,070) zodat de flank op de neus lager komt dan het hart (beslissing 17); de rest ongewijzigd
-const bodC = pchip([[-1.7475, 0.015], [-1.62, 0.012], [0.3, 0.012], [0.9, 0.026], [1.30, 0.02464], [1.38, 0.0241], [1.44, 0.040], [1.50, 0.064], [1.54, 0.070], [1.58, 0.060], [1.62, 0.034], [1.66, 0.0225], [1.7475, 0.022]]);
+// bolling: tussen z 1,44 en 1,55 iets groter (tot 0,040), naar de neus toe 0,012: de kapvoorrand loopt vrijwel recht (beslissing 29; in beslissing 17 tot 0,070 voor een
+// flank die naar de lamp zakte); de rest ongewijzigd
+const bodC = pchip([[-1.7475, 0.015], [-1.62, 0.012], [0.3, 0.012], [0.9, 0.026], [1.30, 0.02464], [1.38, 0.0241], [1.44, 0.035], [1.50, 0.040], [1.55, 0.036], [1.60, 0.026], [1.63, 0.018], [1.65, 0.013], [1.66, 0.012], [1.7475, 0.012]]);
 const bodDP = pchip([[-1.7475, 3], [-1.0, 3.5], [0.9, 3.5], [1.3, 4], [1.7475, 3]]);   // exponent van het dekprofiel (vlak midden, afgeronde randen)
 // daklijn op de hartlijn: voorruit, dak, achterruit (bij de voorruit en achterruit op de bovengrens van de silhouettolerantie)
 const YR = pchip([[-1.7475, 0.862], [-1.70, 0.900], [-1.60, 1.010], [-1.45, 1.170], [-1.30, 1.290], [-1.15, 1.382], [-1.0, 1.400], [-0.65, 1.405], [-0.4, 1.405],
@@ -49,7 +52,7 @@ const sstep = t => { const u = clamp(t, 0, 1); return u * u * (3 - 2 * u); };
 // doorsnede van de onderbak op z
 function bodSec(z) {
   const hw = HW(z), yb = YB(z), yt = YT(z), d = yt - yb, bul = Math.min(BUL, hw * 0.15);
-  const rb = Math.min(0.045, d * 0.28, (hw - bul) * 0.45), rs = Math.min(0.055, d * 0.3, (hw - bul) * 0.45);
+  const rb = Math.min(0.045, d * 0.28, (hw - bul) * 0.45), rs = Math.min(0.055 - 0.027 * sstep((z - 1.58) / 0.06), d * 0.3, (hw - bul) * 0.45);   // schouder op de neus 28 mm (beslissing 29)
   const yd = Math.max(yt + 0.004, yt + bodC(z)), c = yd - yt, p = bodDP(z);
   const cx = hw - bul - rs;                       // middelpunt van de schouderboog
   let xe = cx + rs * 0.3, th = 1.2;

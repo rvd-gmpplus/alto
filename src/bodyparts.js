@@ -60,7 +60,7 @@ function bodZAtYd(y) { let lo = 1.6, hi = ZF; for (let i = 0; i < 40; i++) { con
 /* ---------- naden en grenzen (links; rechts gespiegeld) ---------- */
 const bodZDF = 0.78, bodZDR = -0.56;              // voorrand en achterrand van het portier
 const bodYSill = 0.268;                            // onderrand portier; de dorpel eindigt 6 mm lager
-const bodZFe = 1.54, bodZLh = 1.60;                // achterrand koplamp (voorscherm tot hier), voorrand motorkap
+const bodZFe = 1.63, bodZLh = 1.66;                // achterrand koplamp (voorscherm tot hier), voorrand motorkap (beslissing 29: was 1,54 en 1,60; de kap loopt door tot het steile front)
 const bodZCe = bodZLh - 0.008;                       // einde van het hoekstuk en de bovenstrook van het scherm: 8 mm voor de voorrand van de motorkap (was 15 mm: in dicht-lamp-zij sprong de rode rand ongeveer 3 mm en lag de kaprand als donkere wig onder het glas)
 const bodYBF = 0.50, bodYBR = 0.575;                // bovenrand van de voor- en achterbumper op de flank
 const bodZT0 = -1.62;                              // voorrand achterlicht en bumperhoek achter
@@ -456,8 +456,9 @@ function bodHoodPt(p) {
 }
 // Motorkapsteun (stang): voet F op de rechter binnenscherm, rustpunt in de richting van de achterkant van de motorruimte, grijppunt G in het binnenframe
 // Beslissing 17 (kap op de flank lager): de steun staat 15 mm verder naar binnen (x -0,56 en -0,525). Bij de lagere kaprand ging zijn top bij het openen (tot z 1,51) eerder door de schermrand;
-// nu blijft hij 6 mm binnen de rand van de goot onder de kier tussen kap en scherm (vanaf z 1,38, 7 mm binnen de kaprand).
-const bodStG = [-0.525, 0.775, 1.40], bodStGw = bodHoodPt(bodStG), bodStF = [-0.56, 0.84, 1.0];
+// nu blijft hij 6 mm binnen de rand van de goot onder de kier tussen kap en scherm (vanaf z 1,38, 7 mm binnen de kaprand). Beslissing 29 (flank tot 24 mm hoger): de bovenkant
+// staat nog 10 mm verder naar binnen (x -0,515); op -0,525 raakte de stang bij het openen de goot rechts (39 mm, opentest).
+const bodStG = [-0.515, 0.775, 1.40], bodStGw = bodHoodPt(bodStG), bodStF = [-0.56, 0.84, 1.0];
 const bodStL = Math.hypot(bodStGw[0] - bodStF[0], bodStGw[1] - bodStF[1], bodStGw[2] - bodStF[2]);
 const bodStRot = (() => {
   const c = Math.min(0.99, 0.36 / bodStL), r0 = V3(0, -Math.sqrt(1 - c * c), c), r1 = V3(bodStGw[0] - bodStF[0], bodStGw[1] - bodStF[1], bodStGw[2] - bodStF[2]).normalize();
