@@ -192,9 +192,9 @@ function intBelts() {
 const intDashPf = [[0.85, 0.905], [0.74, 0.925], [0.62, 0.925], [0.55, 0.905], [0.505, 0.84], [0.49, 0.76], [0.505, 0.68], [0.53, 0.6], [0.56, 0.52], [0.85, 0.52], [0.85, 0.6]];
 const intDashHW = 0.52;      // tot de portierbekleding (binnenkant op 0,549); eerder 0,572 en dus door het portier
 // rooster met lamellen op het dashboard: huis en lamellen in een stuk
-function intVent(name, d, p, r, w, h) {
+function intVent(name, d, p, r, w, h, mat = MAT.plasticGrey) {
   const n = Math.max(2, Math.round(h / 0.012));
-  return intPart(name, merge([intBx(w, h, 0.02, 0.006), ...Array.from({ length: n }, (_, i) => intBox(w - 0.014, 0.003, 0.012, [0, -h / 2 + 0.01 + (h - 0.02) * (i + 0.5) / n, -0.006]))]), MAT.plasticGrey, d, { p, r, ex: [0, 0.02, -0.08] });
+  return intPart(name, merge([intBx(w, h, 0.02, 0.006), ...Array.from({ length: n }, (_, i) => intBox(w - 0.014, 0.003, 0.012, [0, -h / 2 + 0.01 + (h - 0.02) * (i + 0.5) / n, -0.006]))]), mat, d, { p, r, ex: [0, 0.02, -0.08] });
 }
 function intDashboard() {
   const bx = intBx, cy = intCy;
@@ -236,9 +236,7 @@ function intDashboard() {
     intPart('Handschoenenkastslot', bx(0.045, 0.02, 0.012, 0.005, [-0.34, 0.67, 0.5], [-0.3, 0, 0]), MAT.plasticGrey, 'Drukknop van het slot.', { ex: [0, 0.03, -0.1] }),
   ]);
   // de zijroosters zitten onder de hoogte van het instrumentenpaneel; op y 0,84 stond het rooster bij de bestuurder voor de onderhoek van het paneel
-  const vents = A('Luchtroosters dashboard', { d: 'Luchtroosters voor de verwarming en de ventilatie: twee in het midden, twee aan de zijkanten, en de ontwasemroosters onder de voorruit en bij de zijruiten.', ex: [0, 0.1, 0.1] }, [
-    intVent('Rooster midden bestuurder', 'Verstelbaar luchtrooster met horizontale lamellen links in het midden van het dashboard.', [0.095, 0.845, 0.495], [0.19, 0, 0], 0.09, 0.045),
-    intVent('Rooster midden passagier', 'Verstelbaar luchtrooster met horizontale lamellen rechts in het midden van het dashboard.', [-0.095, 0.845, 0.495], [0.19, 0, 0], 0.09, 0.045),
+  const vents = A('Luchtroosters dashboard', { d: 'Luchtroosters voor de verwarming en de ventilatie: twee aan de zijkanten, en de ontwasemroosters onder de voorruit en bij de zijruiten (de twee roosters in het midden zitten in de middenconsole).', ex: [0, 0.1, 0.1] }, [
     intVent('Rooster zijkant bestuurder', 'Luchtrooster aan de uiterste zijde van het dashboard bij de bestuurder.', [0.475, 0.79, 0.493], [0.19, 0, 0], 0.075, 0.045),
     intVent('Rooster zijkant passagier', 'Luchtrooster aan de uiterste zijde van het dashboard bij de passagier.', [-0.475, 0.79, 0.493], [0.19, 0, 0], 0.075, 0.045),
     intPart('Ontwasemrooster voorruit', merge(Array.from({ length: 9 }, (_, i) => intBox(0.04, 0.003, 0.012, [-0.4 + i * 0.1, 0, 0]))), MAT.plastic, 'Gleuf op de bovenkant van het dashboard die lucht tegen de voorruit blaast.', { p: [0, 0.9255, 0.8], ex: [0, 0.1, 0.0] }),
@@ -308,22 +306,38 @@ function intAxisX(x0, y, z, len) { return xf(G.cyl('x', 0.007, 0.007, len, 8), [
 function intConsole() {
   const bx = intBx, cy = intCy;
   const tunnel = intPart('Tunnelconsole', intSideBlock([[0.54, 0.275], [0.54, 0.52], [0.5, 0.46], [0.32, 0.44], [0.12, 0.42], [-0.1, 0.4], [-0.24, 0.385], [-0.27, 0.275]], -0.1, 0.1), MAT.plasticGrey, 'Console over de middentunnel van het dashboard tot achter de handrem; ze bergt de schakelmechaniek, de handremkabels en de uitlaat in de tunnel.', { ex: [0, 0.12, 0.05] });
-  const stack = intPart('Middenstapel', bx(0.26, 0.3, 0.1, 0.012, [0, 0.65, 0.505]), MAT.plasticGrey, 'Middenpaneel in het dashboard waarin de radio (aannemelijk) en de kachelbediening zitten.', { ex: [0, 0.04, -0.16] });
-  const radio = A('Radio', { d: 'Radio in het midden van het dashboard. Autowereld noemt een audiopakket in de uitrusting van de Twist (aannemelijk); uitvoering en bediening schematisch.', ex: [0, 0.1, -0.22] }, [
-    intPart('Radiobehuizing', bx(0.18, 0.05, 0.18, 0.006, [0, 0.725, 0.56]), MAT.darkSteel, 'Metalen behuizing van de radio in het dashboard, achter het voorpaneel.', { inner: true, ex: [0, 0, 0.1] }),
-    intPart('Radiopaneel', bx(0.19, 0.05, 0.012, 0.005, [0, 0.725, 0.458]), MAT.blackGloss, 'Zwart voorpaneel van de radio.', { ex: [0, 0, -0.04] }),
-    intPart('Radioknoppen', merge([cy('z', 0.014, 0.016, [0.07, 0.725, 0.45], 14), cy('z', 0.014, 0.016, [-0.07, 0.725, 0.45], 14)]), MAT.chrome, 'Draaiknoppen voor volume en afstemming.', { ex: [0, 0, -0.08] }),
-    intPart('Radiodisplay', intBox(0.07, 0.02, 0.003, [0, 0.73, 0.451]), MAT.screen, 'Display met de zenderfrequentie.', { ex: [0, 0.02, -0.06] }),
+  // middenstapel van boven naar onder (foto van de eigenaar): twee roosters in een rand (y 0,815), de kachelbediening (y 0,73), een bakje (y 0,667),
+  // de radio (y 0,60) en onder de radio de aansteker en de asbak (y 0,545). Alles op het voorvlak van de stapel (z 0,455); het kachelpaneel staat 6 mm
+  // voor dat vlak, de rand van de roosters 12 mm, zodat de roosters 3 mm achter de rand liggen.
+  const ZF = 0.455;
+  const stack = intPart('Middenstapel', bx(0.27, 0.345, 0.1, 0.012, [0, 0.6875, 0.505]), MAT.plasticGrey, 'Middenpaneel in het dashboard: boven twee ventilatieroosters, daaronder de kachelbediening en een bakje, onderaan de radio (aannemelijk).', { ex: [0, 0.04, -0.16] });
+  const grilles = A('Ventilatieroosters midden', { d: 'Twee verstelbare luchtroosters naast elkaar in een gezamenlijke rand, boven in de middenstapel.', ex: [0, 0.06, -0.12] }, [
+    intPart('Roosterrand', merge([[0.262, 0.01, 0, 0.035], [0.262, 0.01, 0, -0.035], [0.011, 0.08, 0.1255, 0], [0.011, 0.08, -0.1255, 0], [0.02, 0.08, 0, 0]].map(([w, h, x, y]) => intBx(w, h, 0.015, 0.003, [x, 0.815 + y, ZF + 0.002]))), MAT.plasticGrey, 'Gezamenlijke rand om de twee ventilatieroosters in het midden van het dashboard.', { ex: [0, 0.02, -0.06] }),
+    intVent('Rooster midden bestuurder', 'Verstelbaar luchtrooster met horizontale lamellen links in het midden van het dashboard (ongeveer 110 x 60 mm).', [0.065, 0.815, ZF + 0.009], [0, 0, 0], 0.11, 0.06, MAT.plastic),
+    intVent('Rooster midden passagier', 'Verstelbaar luchtrooster met horizontale lamellen rechts in het midden van het dashboard (ongeveer 110 x 60 mm).', [-0.065, 0.815, ZF + 0.009], [0, 0, 0], 0.11, 0.06, MAT.plastic),
   ]);
-  const heater = A('Kachelbediening', { d: 'Bediening van de verwarming en ventilatie: schuiven voor temperatuur en luchtverdeling en een draaiknop voor de ventilator.', ex: [0, -0.05, -0.18] }, [
-    intPart('Kachelpaneel', bx(0.2, 0.09, 0.012, 0.005, [0, 0.62, 0.458]), MAT.plastic, 'Paneel met de bediening van de kachel.', { ex: [0, 0, -0.03] }),
-    intPart('Kachelschuiven', merge([-0.065, 0, 0.065].map(x => bx(0.012, 0.045, 0.016, 0.003, [x - 0.0, 0.63 + (x === 0 ? 0.0 : x * 0.1), 0.45]))), MAT.satin, 'Drie schuiven voor temperatuur, luchtverdeling en luchtbron.', { ex: [0, 0, -0.07] }),
-    intPart('Ventilatorknop', cy('z', 0.016, 0.016, [0, 0.58, 0.45], 16), MAT.satin, 'Draaiknop voor de ventilatorstand.', { ex: [0, -0.02, -0.08] }),
-    intPart('Achterruitverwarmingsknop', bx(0.02, 0.014, 0.01, 0.003, [0.07, 0.58, 0.452]), MAT.plasticGrey, 'Drukknop voor de achterruitverwarming.', { ex: [0.03, -0.02, -0.08] }),
+  const heater = A('Kachelbediening', { d: 'Bediening van de verwarming en ventilatie: een draaiknop (70 mm) voor de luchtverdeling, twee liggende schuiven voor temperatuur en luchtbron, een A/C-knop, een knop voor de achterruitverwarming en de ventilatorknop.', ex: [0, -0.05, -0.18] }, [
+    intPart('Kachelpaneel', bx(0.25, 0.092, 0.012, 0.005, [0, 0.73, ZF]), MAT.plastic, 'Paneel met de bediening van de kachel.', { ex: [0, 0, -0.03] }),
+    intPart('Kachelknop', merge([cy('z', 0.035, 0.008, [0.06, 0.73, ZF - 0.008], 24), cy('z', 0.027, 0.012, [0.06, 0.73, ZF - 0.015], 20), intBx(0.05, 0.012, 0.012, 0.004, [0.045, 0.73, ZF - 0.024])]), MAT.satin, 'Grote draaiknop (70 mm) in een ronde rand voor de luchtverdeling, met een hendel als wijzer.', { ex: [0, 0, -0.08] }),
+    intPart('Kachelschuifsleuven', merge([0.752, 0.726].map(y => intBox(0.095, 0.014, 0.002, [-0.065, y, ZF - 0.0055]))), MAT.blackGloss, 'Twee liggende sleuven waarin de schuiven lopen.', { ex: [0, 0, -0.04] }),
+    intPart('Kachelschuiven', merge([[-0.088, 0.752], [-0.05, 0.726]].map(([x, y]) => bx(0.016, 0.017, 0.012, 0.003, [x, y, ZF - 0.012]))), MAT.satin, 'Twee liggende schuiven: de bovenste voor de luchtbron (buiten of binnen), de onderste voor de temperatuur.', { ex: [0, 0, -0.07] }),
+    intPart('A/C-knop', bx(0.03, 0.018, 0.01, 0.004, [-0.098, 0.700, ZF - 0.0085]), MAT.plasticGrey, 'Drukknop voor de airconditioning (A/C).', { ex: [-0.02, -0.02, -0.08] }),
+    intPart('Ventilatorknop', cy('z', 0.015, 0.016, [-0.04, 0.700, ZF - 0.012], 18), MAT.satin, 'Draaiknop voor de ventilatorstand.', { ex: [0.02, -0.02, -0.08] }),
+    intPart('Achterruitverwarmingsknop', bx(0.018, 0.014, 0.01, 0.003, [-0.07, 0.700, ZF - 0.0085]), MAT.plasticGrey, 'Drukknop voor de achterruitverwarming.', { ex: [0, -0.04, -0.08] }),
   ]);
-  const small = A('Consolevoorkant', { d: 'Sigarettenaansteker en asbak in de voorkant van de console.', ex: [0, 0, -0.14] }, [
-    intPart('Sigarettenaansteker', merge([cy('z', 0.012, 0.02, [0.04, 0.5, 0.485], 12), cy('z', 0.016, 0.004, [0.04, 0.5, 0.475], 12)]), MAT.satin, 'Sigarettenaansteker onder de middenstapel.', { ex: [0, 0, -0.06] }),
-    intPart('Asbak', bx(0.07, 0.03, 0.05, 0.006, [-0.04, 0.5, 0.485]), MAT.plasticGrey, 'Asbak voor in de console, onder de middenstapel.', { ex: [0, 0, -0.06] }),
+  const tray = A('Consolebakje', { d: 'Open bakje voor kleine spullen onder de kachelbediening, in de middenstapel.', ex: [0, -0.04, -0.12] }, [
+    intPart('Bakjerand', merge([bx(0.22, 0.006, 0.022, 0.002, [0, 0.65, ZF - 0.011]), bx(0.006, 0.042, 0.022, 0.002, [0.107, 0.667, ZF - 0.011]), bx(0.006, 0.042, 0.022, 0.002, [-0.107, 0.667, ZF - 0.011])]), MAT.plasticGrey, 'Bodem en zijwanden van het bakje, voor het voorvlak van de middenstapel.', { ex: [0, -0.02, -0.06] }),
+    intPart('Bakjeachterwand', intBox(0.208, 0.03, 0.002, [0, 0.667, ZF - 0.0015]), MAT.blackGloss, 'Donkere achterwand van het bakje.', { ex: [0, 0, -0.03] }),
+  ]);
+  const radio = A('Radio', { d: 'Radio onderaan de middenstapel. Autowereld noemt een audiopakket in de uitrusting van de Twist (aannemelijk); uitvoering en bediening schematisch.', ex: [0, 0.1, -0.22] }, [
+    intPart('Radiobehuizing', bx(0.18, 0.05, 0.18, 0.006, [0, 0.60, 0.56]), MAT.darkSteel, 'Metalen behuizing van de radio in het dashboard, achter het voorpaneel.', { inner: true, ex: [0, 0, 0.1] }),
+    intPart('Radiopaneel', bx(0.225, 0.05, 0.012, 0.005, [0, 0.60, ZF + 0.003]), MAT.blackGloss, 'Zwart voorpaneel van de radio.', { ex: [0, 0, -0.04] }),
+    intPart('Radioknoppen', merge([cy('z', 0.012, 0.016, [0.092, 0.60, ZF - 0.005], 14), cy('z', 0.012, 0.016, [-0.092, 0.60, ZF - 0.005], 14)]), MAT.chrome, 'Draaiknoppen voor volume en afstemming.', { ex: [0, 0, -0.08] }),
+    intPart('Radiodisplay', intBox(0.07, 0.02, 0.003, [0, 0.605, ZF - 0.0035]), MAT.screen, 'Display met de zenderfrequentie.', { ex: [0, 0.02, -0.06] }),
+  ]);
+  const small = A('Consolevoorkant', { d: 'Sigarettenaansteker en asbak onder de radio in de middenstapel.', ex: [0, 0, -0.14] }, [
+    intPart('Sigarettenaansteker', merge([cy('z', 0.012, 0.02, [0.05, 0.545, ZF - 0.004], 12), cy('z', 0.016, 0.004, [0.05, 0.545, ZF - 0.0], 12)]), MAT.satin, 'Sigarettenaansteker onder de radio.', { ex: [0, 0, -0.06] }),
+    intPart('Asbak', bx(0.075, 0.028, 0.012, 0.004, [-0.05, 0.545, ZF - 0.0]), MAT.plasticGrey, 'Asbak onder de radio (klepje).', { ex: [0, 0, -0.06] }),
   ]);
   // pook met hoes: de schakelstang van de bak (DRV_PORTS.shiftIn) sluit onder de tunnel aan op INT_PORTS.pookvoet
   const gx = INT_PORTS.pookvoet;
@@ -342,7 +356,7 @@ function intConsole() {
     intPart('Handremhoes', bx(0.07, 0.01, 0.18, 0.004, [0, 0.068, -0.144]), MAT.rubber, 'Rubber hoes over de gleuf waar de handremhendel door de console steekt.', { ex: [0, 0.03, 0] }),
     intPart('Handremscharnier', merge([cy('x', 0.008, 0.04, [0, 0, 0], 10), intBox(0.004, 0.05, 0.06, [-0.012, -0.005, 0.01]), rodBetween([0, 0, 0], [hk[0] - hx[0], hk[1] - hx[1], hk[2] - hx[2]], 0.005, 6)]), MAT.darkSteel, 'Scharnierpen met palsegment en de korte kabelarm waaraan de handremkabel trekt; zit in de console.', { inner: true, ex: [0, -0.06, 0.04] }),
   ]);
-  return A('Middenconsole', { d: 'Console over de tunnel met de middenstapel (radio, aannemelijk, en kachelbediening), pook met hoes en handrem.', ex: [0, 0.3, 0.1] }, [tunnel, stack, radio, heater, small, shifter, hb]);
+  return A('Middenconsole', { d: 'Console over de tunnel met de middenstapel (van boven naar onder: twee ventilatieroosters, kachelbediening, een bakje en de radio, aannemelijk), pook met hoes en handrem.', ex: [0, 0.3, 0.1] }, [tunnel, stack, grilles, heater, tray, radio, small, shifter, hb]);
 }
 
 /* ---------- bekleding: hemel, stijlen, vloer, zijwanden, bagageruimte ---------- */

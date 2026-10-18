@@ -8,6 +8,7 @@ Aanleiding: de dashboardfoto van de eigenaar naast het model. Keuzes staan in `d
 
 - Stuur (Beslissing INT-7): driespaaks met een groot ovaal kussen (200 x 150 x 50 mm) en platte brede spaken (55 mm) naar 4, 6 en 8 uur; de krans blijft rond. Spec: driespaaks, zonder airbag (Autoweek, eigenaar).
 - Instrumenten (Beslissing INT-8): diepe kap om het paneel (330 mm breed met zijwangen, 80 mm overstek) in plaats van een kleine klep; de temperatuur- en brandstofmeter zijn kleiner en 25 mm lager dan de snelheidsmeter (x +-0,085); de waarschuwingslampjes zijn rode blokken erboven. Nog steeds geen toerenteller.
+- Middenconsole (Beslissing INT-9): van boven naar onder twee ventilatieroosters in een rand (110 x 60 mm, x +-0,065), de kachelbediening (draaiknop 70 mm, twee liggende schuiven, A/C-knop, ventilatorknop), een bakje en onderaan de radio; de schuiven liggen nu horizontaal en de radio staat niet meer bovenaan. De aansteker en de asbak zitten zichtbaar onder de radio.
 
 ## Versie 4 (18 oktober 2026)
 
