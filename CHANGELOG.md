@@ -1,5 +1,9 @@
 # Wijzigingen
 
+## Versie 5 (in voorbereiding)
+
+- Achterkant en zijkant naar de modelreeks 1993-2001 (golf 6, pakket ACHTER, keuzes van de eigenaar naar de foto): achterbumper in ongelakt zwart kunststof (`MAT.bodBumperZwart`) met een vlakke bovenrichel die 40 mm onder de klep uitsteekt (knopen `Achterbumper` en `Kentekenvlak achter` met `uitsteek`, lengte daar 3535 mm) en reflectoren van 60 x 25 mm; liggende achterlichten (hoogte 210 mm, lichter helder deel en reflector); embleem ALTO SUZUKI op de klep; B-stijl in carrosseriekleur met 30 mm zwart rubber; zwarte stootstrip van 30 x 6 mm op portier en achterscherm (tot z -0,95).
+
 ## Versie 4 (18 oktober 2026)
 
 Aanleiding: de spiegels lazen als staand formaat, het vloergat voor de achterboog (open punt uit Versie 3) en review 5: een volledige controle van alle knopen tegen de echte auto, met bevindingen per domein in `bevindingen.json`. Keuzes van de gebruiker: achterkant nu herbouwen, tankklep en uitlaat spiegelen op twee foto's, interieur volgens de bronnen, budget Carrosserie tot 160.000 driehoeken, EGR houden. Keuzes per pakket staan in `docs/onderzoek/beslissingen.md`; kerncijfers in `docs/cijfers.md`.
