@@ -313,7 +313,7 @@ function bodWheelHouseAchter(s) {
   const zijV = plaatZ([[xi, 0.255], [xin, 0.255], [xin, yt], [xi, yt]], z1);
   const dak = (() => { const g = new THREE.PlaneGeometry(xin - xi, z1 - z0); g.rotateX(-HALF); g.translate(s * (xi + xin) / 2, yt, (z0 + z1) / 2); return g; })();
   // strook achter de kier bij het boogeinde: binnen de boog 4 mm boven de boogrand (achter de huid), daarbuiten vanaf y 0,27
-  const lo = z => { const dz = Math.abs(z - az); return dz < ARCH ? AY + Math.sqrt(ARCH * ARCH - dz * dz) + 0.004 : 0.27; };
+  const lo = z => { const dz = Math.abs(z - az); return dz < ARCH + 1e-9 ? AY + Math.sqrt(Math.max(0, ARCH * ARCH - dz * dz)) + 0.004 : 0.27; };   // tolerantie zoals quarterLo: |-1,548 + 1,248| is 0,30000000000000004
   const kier = lowSide(s, -1.572, -1.536, 10, z => [sAtY(z, lo(z)), sAtY(z, 0.585)], 10, [az - ARCH + 1e-6], 0.004);
   return merge([wall, arc, binnen, zijA, zijV, dak, kier]);
 }
