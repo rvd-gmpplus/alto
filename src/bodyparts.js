@@ -167,23 +167,56 @@ function bodSkinParts() {
   // voorscherm: van de portierspleet tot de koplamp, boven de wielboog, met de strook langs de motorkap
   const fenderHi = z => bodSAtX(z, bodHoodX(z) + 0.004);
   const fenderLo = z => bodArchLo(z, AXF, zz => (zz > AXF ? bodYBT(zz) + 0.003 : bodYSill + 0.004));
-  // hoekstuk boven de lamp: tussen bovenrand lamp (3 mm bedekt) en kaprand, van bodZFe tot waar de lamp zelf onder de kap loopt
-  // De onderrand ligt 6 mm onder de waterpas lopende lampbovenrand (bodHoodFrontY, 0,702) en blijft daar tot de strook (schermhoogte min 1,5 mm) hem inhaalt: de lamprand volgt achter z 1,572
-  // de kaplijn omlaag en gaf met lampbovenrand min 6 mm een rood tandje van 5 mm onder de kaprand en een treetje naar de kaprand. Nu loopt de onderrand gelijk met de kaprand (verschil hoogstens 2 mm).
-  const fenderCLo = z => Math.min(sAtY(z, bodHoodFrontY - 0.006), fenderHi(z) - 0.0015);
-  const fenderTop = s => lowSide(s, bodZDF + 0.004, bodZCe, 70, z => [bodSAtX(z, bodHoodX(z) + 0.007), bodSAtX(z, bodHoodX(z) + 0.0005)], 2, undefined, 0.003);
-  // goot onder de kier tussen kap en scherm in de voorhoek (z 1,47 tot de lamp, de inloop 60 mm lang): van de schermrand (4 mm naast de kap) schuin omlaag tot 25 mm diep en 7 mm binnen de
-  // kaprand, onder de onderrand van de kaprand door (uitgelopen: een strook van 3 mm op de huid, 1 mm naast de kap). Bij de lagere neus van beslissing 17 keek een straal van boven of van voren door die kier de motorruimte in
-  // (Sproeierreservoir, Veerpoottoren). De kaprand (18 mm, schuin naar binnen) blijft erbinnen, ook bij het openen. Waar de kaprand minder dan 34 mm boven de koplamp ligt, mag de goot
-  // niet dieper dan de ruimte boven de lamp min 9 mm: de lamp zit daar onder de kap en het lamphuis (3 mm boven de lampbovenrand) houdt de kier daar zelf dicht.
-  // De motorkapsteun (bodStF) zwaait er 6 mm binnen langs.
-  const gootD = (z, z0) => Math.min(0.025 * sstep((z - z0) / 0.06), Math.max(0, halfPt(z, bodSAtX(z, bodHoodX(z)))[1] - bodHoodFrontY - 0.009));
-  const fenderGoot = s => { const z0 = 1.47;
-    return bodReg(s, z0, bodZCe, 36, 3, z => bodSAtX(z, bodHoodX(z) + 0.004), z => bodSAtX(z, bodHoodX(z) + 0.001 - 0.008 * gootD(z, z0) / 0.025), (z, t) => gootD(z, z0) * t); };
-  const fender = s => P(`Voorscherm ${bodSn(s)}`, merge([lowSide(s, bodZDF + 0.004, bodZFe, 44, z => [fenderLo(z), fenderHi(z)], 18, ARCH_BREAKS), lowSide(s, bodZFe - 0.002, bodZCe, 12, z => [fenderCLo(z), fenderHi(z)], 6), fenderTop(s)]), MAT.paint,
+  // hoekstuk boven de lamp: tussen bovenrand lamp en kaprand, van bodZFe tot de punt zTip. De onderrand ligt 6 mm onder de waterpas lopende lampbovenrand (bodHoodFrontY,
+  // 0,702) tot hij de schermrand raakt (zTip, ca. z 1,577); daar eindigt het hoekstuk in een punt. Tot cyclus 2 van beslissing 17 liep er na dat punt nog een strook van
+  // 3 mm langs de kaprand door tot bodZCe (1,592), over het glas van de hoekkap: een rood flapje met de goot erachter, en van voren een haakje aan het eind van de naad.
+  // Voorbij zTip ligt de kaprand direct boven het glas, zoals langs de voorrand van de kap.
+  const fenderCLo = z => Math.min(sAtY(z, bodHoodFrontY - 0.006), fenderHi(z));
+  const zTip = (() => { let lo = 1.55, hi = bodZCe; for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (sAtY(m, bodHoodFrontY - 0.006) < fenderHi(m)) lo = m; else hi = m; } return lo; })();
+  const tipBrk = bodDense(1.55, zTip, 8);
+  // strook onder de kier en goot volgen in de voorhoek de onderrand van het hoekstuk, zodat ze er nergens onderuit steken
+  const cornerLo = (z, sv) => (z > bodZFe ? Math.max(sv, fenderCLo(z) + 0.0002) : sv);
+  // De binnenste mm van de strook (vanaf z 1,44 tot 1,50 ingelopen) hoort bij de goot en is zwart: op de steilere flank van de lagere neus las de kier van boven anders als
+  // een haarlijn van 1 px of minder; nu, zoals voor beslissing 17, als een donkere lijn van ca. 2 px. De binnenrand blijft 0,5 mm naast de kap: een bredere opening liet
+  // stralen van voren langs de kaprand de motorruimte in (veerpoottoren, schutbord).
+  const darkW = z => 0.001 * sstep((z - 1.44) / 0.06), topBrk = tipBrk.concat(bodDense(1.40, 1.55, 15));
+  const fenderTop = s => lowSide(s, bodZDF + 0.004, zTip, 70, z => [cornerLo(z, bodSAtX(z, bodHoodX(z) + 0.007)), bodSAtX(z, bodHoodX(z) + 0.0005 + darkW(z))], 2, topBrk, 0.003);
+  const darkTop = s => bodReg(s, 1.44, zTip, 24, 1, z => cornerLo(z, bodSAtX(z, bodHoodX(z) + 0.0005 + darkW(z))), z => bodSAtX(z, bodHoodX(z) + 0.0005), 0.003, topBrk);
+  // Goot onder de kier tussen kap en scherm (z 1,38 tot zTip, inloop 60 mm): een zwarte strook die van onder de strook van het scherm (fenderTop, 3 mm diep) schuin
+  // omlaag naar binnen loopt, tot 25 mm diep en 7 mm (vanaf z 1,53 13 mm) binnen de kaprand, zodat een straal van boven of van voren die tussen kaprand en strook door de
+  // kier komt niet de motorruimte in kijkt (Sproeierreservoir, Veerpoottoren, Schutbord). De kaprand (18 mm, schuin naar binnen) blijft erbinnen, ook bij het openen; de
+  // motorkapsteun (bodStF) zwaait er binnen langs.
+  // Cyclus 2 van beslissing 17: (1) de bovenrand ligt 0,6 mm onder de strook en niet meer op de schermrand: op de huid las de goot als een tweede, grijze streep naast de
+  // kaprand, met een hard blok waar hij begon, en van boven als een donkere wig tot 4 mm breed. (2) Hij begint op z 1,38 in plaats van 1,47 en loopt vanaf z 1,53 verder
+  // naar binnen: op een raster van 1 mm liepen stralen van voren langs de schuine naad, onder de kaprand door, naar schutbord en veerpoottoren (46 voor, 1 nu, 17 in B0).
+  // (3) De diepte is begrensd door de bovenwand van het lamphuis eronder (3 mm vrij), gemeten waar de goot ligt (14 mm binnen tot 7 mm buiten de kaprand), en niet meer
+  // door de lampbovenrand min 9 mm, die tot 20 mm boven het lamphuis lag (z 1,54: goot 16 mm, lamphuis 50 mm diep). Waar het glas van de hoekkap onder de goot komt
+  // (vanaf z 1,571) blijft de goot vlak op de diepte van de bovenrand.
+  const gootHuis = z => {
+    if (z < bodLampZ0 || z > bodZH) return 1;
+    const hx = bodHoodX(z), rim = halfPt(z, bodSAtX(z, hx))[1], sL = bodLHi1(z), wall = dd => bodLow(z, sL, dd);
+    if (halfPt(z, sL)[0] < hx + 0.0075) return 0;
+    let best = 1;
+    for (const dx of [-0.014, -0.007, 0, 0.007]) {
+      const xt = hx + dx; let a = 0.004, b = 0.073, xa = wall(a)[0];
+      if ((xa - xt) * (wall(b)[0] - xt) > 0) continue;
+      for (let i = 0; i < 30; i++) { const m = (a + b) / 2, xm = wall(m)[0]; if ((xa - xt) * (xm - xt) <= 0) b = m; else { a = m; xa = xm; } }
+      best = Math.min(best, rim - wall(a)[1] - 0.003);
+    }
+    return Math.max(0, best);
+  };
+  const gootD = (z, z0) => Math.min(0.025 * sstep((z - z0) / 0.06), gootHuis(z));
+  const gootT = 0.0036;   // diepte van de bovenrand: 0,6 mm onder de strook
+  // binnenrand op volle diepte 7 mm binnen de kaprand, ruim van de motorkapsteun (die tot z 1,51 door de kier zwaait); vanaf z 1,53 13 mm: de kaprand helt op de bollere
+  // flank zo ver naar binnen (onderrand ca. 11 mm binnen de rand) dat er anders een gang tussen kaprand en goot open bleef
+  const gootIn = z => 0.008 + 0.006 * sstep((z - 1.50) / 0.03);
+  const fenderGoot = s => { const z0 = 1.38;
+    return bodReg(s, z0, zTip, 36, 3, z => cornerLo(z, bodSAtX(z, bodHoodX(z) + 0.0065)), z => bodSAtX(z, bodHoodX(z) + 0.001 - gootIn(z) * gootD(z, z0) / 0.025),
+      (z, t) => gootT + Math.max(0, gootD(z, z0) - gootT) * t, tipBrk); };
+  const fender = s => P(`Voorscherm ${bodSn(s)}`, merge([lowSide(s, bodZDF + 0.004, bodZFe, 44, z => [fenderLo(z), fenderHi(z)], 18, ARCH_BREAKS), lowSide(s, bodZFe - 0.002, zTip, 12, z => [fenderCLo(z), fenderHi(z)], 6, tipBrk), fenderTop(s)]), MAT.paint,
     { d: 'Voorscherm van plaatstaal met de uitsparing voor het voorwiel, gelakt in het rood. Zit met bouten aan de A-stijl, de veerpoottoren en de voorkopplaat.', ex: [s * 0.46, 0.06, 0.1] });
   // de goot is een eigen, donker onderdeel: gelakt las hij van boven als een rode dubbele streep met een donkerrode vouw in plaats van als een donkere naad
-  const goot = s => P(`Goot kier kap en scherm ${bodSn(s)}`, fenderGoot(s), MAT.bodSeal,
+  const goot = s => P(`Goot kier kap en scherm ${bodSn(s)}`, merge([fenderGoot(s), darkTop(s)]), MAT.bodSeal,
     { d: 'Goot onder de kier tussen motorkap en voorscherm, schematisch: een zwarte strook onder de kaprand die de kier dichthoudt, zodat je er niet in de motorruimte kijkt.', ex: [s * 0.46, 0.06, 0.1] });
   // achterscherm: van de portierspleet tot het achterlicht, boven de wielboog, tot de schouderlijn
   const quarterLo = z => bodArchLo(z, AXR, zz => (zz > AXR ? bodYSill + 0.004 : bodYBR + 0.003));
@@ -287,7 +320,7 @@ function bodHoodPt(p) {
 }
 // Motorkapsteun (stang): voet F op de rechter binnenscherm, rustpunt in de richting van de achterkant van de motorruimte, grijppunt G in het binnenframe
 // Beslissing 17 (kap op de flank lager): de steun staat 15 mm verder naar binnen (x -0,56 en -0,525). Bij de lagere kaprand ging zijn top bij het openen (tot z 1,51) eerder door de schermrand;
-// nu blijft hij 6 mm binnen de rand van de goot onder de kier tussen kap en scherm (vanaf z 1,47, 8 mm binnen de kaprand).
+// nu blijft hij 6 mm binnen de rand van de goot onder de kier tussen kap en scherm (vanaf z 1,38, 7 mm binnen de kaprand).
 const bodStG = [-0.525, 0.775, 1.40], bodStGw = bodHoodPt(bodStG), bodStF = [-0.56, 0.84, 1.0];
 const bodStL = Math.hypot(bodStGw[0] - bodStF[0], bodStGw[1] - bodStF[1], bodStGw[2] - bodStF[2]);
 const bodStRot = (() => {
