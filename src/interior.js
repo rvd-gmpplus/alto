@@ -197,7 +197,7 @@ function intDashboard() {
   // instrumenten voor de bestuurder: wijzerplaten kijken schuin naar boven naar de ogen. Volgens de bron (handboek 1.2, Autoweek):
   // snelheidsmeter met kilometer- en dagteller, brandstofmeter, temperatuurmeter en waarschuwingslampjes; geen toerenteller.
   // Het paneel staat 20 mm hoger dan in golf 4, zodat de kolomkap en de kolombuis van het onderstel eronder vrij blijven (B-031).
-  const cl = { x: 0.37, y: 0.875, z: 0.545 };
+  const cl = { x: 0.355, y: 0.875, z: 0.545 };
   const dial = (x, y, r) => merge([xf(G.cyl('z', r, r, 0.004, 24), [x, y, -0.031]), xf(G.torus('z', r + 0.0015, 0.0035, 24, 5), [x, y, -0.033])]);
   // schaalstreepjes over een boog van 220 graden rond (x, y)
   const ticks = (x, y, r, n) => Array.from({ length: n }, (_, i) => { const a = -1.92 + i * 3.84 / (n - 1); return xf(G.box(0.003, 0.008, 0.001), [x + r * Math.sin(a), y + r * Math.cos(a), -0.0335], [0, 0, -a]); });
@@ -214,11 +214,14 @@ function intDashboard() {
     intPart('Waarschuwingslampjes', merge([[0.068, 0.041], [0.092, 0.041], [0.116, 0.041], [0.068, 0.027], [0.092, 0.027]].flatMap(([x, y]) => [intBox(0.019, 0.011, 0.002, [x, y, -0.0315]), intBox(0.019, 0.011, 0.002, [-x, y, -0.0315])])), MAT.red, 'Waarschuwingslampjes als rode blokken boven de kleine meters, links en rechts van de snelheidsmeter (welke lampjes en hun plaats schematisch).', { ex: [0, 0.03, -0.06] }),
     intPart('Instrumentenglas', G.box(0.29, 0.1, 0.004), MAT.lensClear, 'Doorzichtig kapglas voor de instrumenten.', { p: [0, 0, -0.037], ex: [0, 0, -0.14] }),
   ]);
-  // diepe kap om het paneel: dak en twee zijwangen in het vlak van het paneel (kapframe), 330 mm breed en 80 mm voor het glas uit; het dak ligt 15 mm boven de behuizing,
-  // de wangen reiken tot onder de behuizing (hoogte -0,07). De kolomkap blijft onder de wangen (B-031: 7 mm vrij van het glas).
-  const hoodW = 0.33, hoodT = 0.01, hoodZ0 = -0.037 - 0.003 - 0.08, hoodZ1 = 0.02, hoodTop = 0.07, hoodBot = -0.07;
+  // diepe kap om het paneel: dak en twee zijwangen in het vlak van het paneel (kapframe), 328 mm breed en 80 mm voor het glas uit; het dak ligt 15 mm boven de behuizing.
+  // De wangen zijn een zijprofiel dat aan de achterkant het dashboardvlak volgt (op 1 mm ervoor), zodat de kap niet in het dashboardblok zinkt; ze reiken tot 75 mm onder
+  // het midden van het paneel. De kolomkap blijft onder de wangen (B-031: 7 mm vrij van het glas). Het paneel staat 15 mm dichter bij het midden dan het stuur: de
+  // kap eindigt zo op de zijkant van het dashboard (x 0,52) en niet erin.
+  const hoodW = 0.328, hoodT = 0.01, hoodZ0 = -0.037 - 0.003 - 0.08, hoodZ1 = 0.02, hoodTop = 0.07;
+  const hoodPf = [[hoodZ0, hoodTop + 0.005], [hoodZ1, hoodTop + 0.005], [hoodZ1, 0.05], [-0.0085, 0.03], [-0.0285, -0.0466], [-0.0235, -0.075], [hoodZ0, -0.075]];
   const hood = intPart('Instrumentenkap', merge([bx(hoodW, hoodT, hoodZ1 - hoodZ0, 0.004, [0, hoodTop, (hoodZ0 + hoodZ1) / 2]),
-    ...[1, -1].map(sg => bx(hoodT, hoodTop - hoodBot + hoodT, hoodZ1 - hoodZ0, 0.004, [sg * (hoodW - hoodT) / 2, (hoodTop + hoodBot) / 2, (hoodZ0 + hoodZ1) / 2]))]), MAT.dash,
+    ...[1, -1].map(sg => intSideBlock(hoodPf, sg * (hoodW / 2 - hoodT), sg * hoodW / 2))]), MAT.dash,
     'Diepe kap om het instrumentenpaneel tegen reflecties in de voorruit: een dak met twee zijwangen, ongeveer 330 mm breed en 80 mm voor het glas uit.', { p: [cl.x, cl.y, cl.z], r: [0.35, 0, 0], ex: [0, 0.1, 0] });
   // handschoenenkastje: open bak met bodem en wanden; de klep sluit af
   const gk = A('Handschoenenkastje', { d: 'Handschoenenkastje voor de voorpassagier: bak in het dashboard met klep.', ex: [-0.14, -0.02, -0.18] }, [
@@ -262,7 +265,7 @@ function intSteering() {
     spec: [['Stuur', 'driespaaks, zonder airbag']], p: INT_WHEEL, q: intWheelQ(dir), ex: [0, 0.18, -0.35] }, [
     intPart('Stuurwielkrans', G.torus('z', 0.17, 0.0135, 36, 8), MAT.plastic, 'Rubber kunststof stuurkrans met een doorsnede van 36 cm (maat geschat); geen stuurbekrachtiging.', { ex: [0, 0, -0.1] }),
     intPart('Stuurwielspaken', merge(INT_SPOKES.map(a => intSpoke(a))), MAT.plastic, 'Drie platte, brede spaken (ongeveer 55 mm) van de naaf naar de krans, naar 4, 6 en 8 uur (Beslissing INT-7); met leer of kunststof bekleed.', { ex: [0, 0, -0.06] }),
-    intPart('Claxonkussen', G.rbox(0.2, 0.15, 0.05, 0.04), MAT.plastic, 'Groot ovaal kussen van de naaf (ongeveer 200 x 150 x 50 mm, afgeronde hoeken) met het claxonpad; geen airbag.', { p: [0, 0, 0.012], ex: [0, 0, -0.14] }),
+    intPart('Claxonkussen', G.rbox(0.2, 0.15, 0.05, 0.04), MAT.plastic, 'Groot ovaal kussen van de naaf (ongeveer 200 x 150 x 50 mm, afgeronde hoeken) met het claxonpad; geen airbag.', { p: [0, 0, 0.03], ex: [0, 0, -0.14] }),
     intPart('Stuurwielnaaf', cy('z', 0.05, 0.04, [0, 0, 0.0], 20), MAT.plastic, 'Naaf waarop de spaken en het kussen zitten; de naaf zit met een gekartelde as op de stuurkolom.', { ex: [0, 0, -0.1] }),
     // taps: straal 48 mm bij het stuur, 32 mm bij het dashboard, zodat de kap onder het instrumentenglas blijft (B-031) en de kolombuis (straal 27,5 mm) omsluit
     intPart('Kolomkap boven', xf(G.cyl('z', 0.048, 0.032, 0.14, 16), [0, 0, -0.1]), MAT.plastic, 'Bovenste helft van de kap om de stuurkolom, tot het dashboard; loopt taps toe onder het instrumentenpaneel.', { ex: [0, 0.06, 0] }),
