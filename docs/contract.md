@@ -12,7 +12,7 @@ Dit contract legt vast wat de domeineigenaars van elkaar mogen verwachten. Het v
 | Wielen en banden | 145/70 R13 (TR) op stalen velgen van 13 inch met volle kunststof wieldoppen; vier bouten, steek 4 x 100 mm (geschat); bandstraal 0,2666 m | Autoweek, foto's |
 | Motor | G10BB: viercilinder in lijn, 16 kleppen, SOHC, 993 cc, 72,0 x 61,0 mm, 43 kW (58 pk) bij 6000 tpm, 78 Nm bij 4500 tpm, multipoint-inspuiting, Euro 3 | werkplaatshandboek, Autoweek |
 | Bak | Handgeschakelde 5-bak, voorwielaandrijving | eigenaar (bevestigd) |
-| Bijzonderheden | Twist-uitrusting: elektrische ramen voor, centrale vergrendeling, elektrisch verstelbare en verwarmde buitenspiegels (handmatig inklapbaar), getint glas, dakrails (los te verwijderen), hoofdsteunen voor en achter, deelbare achterbank. Geen stuurbekrachtiging, geen airbags, geen ABS, geen glazen dak (`panorama.js` blijft leeg) | eigenaar, Autowereld (aannemelijk), Autoweek |
+| Bijzonderheden | Twist-uitrusting: elektrische ramen voor, centrale vergrendeling, elektrisch verstelbare en verwarmde buitenspiegels (handmatig inklapbaar), getint glas, dakrails (los te verwijderen), hoofdsteunen voor (geen achter, bevestigd door de eigenaar), deelbare achterbank. Geen stuurbekrachtiging, geen airbags, geen ABS, geen glazen dak (`panorama.js` blijft leeg) | eigenaar, Autowereld (aannemelijk), Autoweek |
 | Tank, gewicht | 35 l; leeggewicht 705 of 725 kg | Autoweek, RDW, Autowereld |
 
 Open punten bij de eigenaar: of het motorplaatje G10BB (43 kW, Euro 3) zegt, gezien de vermelding "E2" en "145 km/u" op de Autowereld-pagina van de Twist; de exacte lakcode; een recht zijaanzicht om het silhouet te verscherpen.
@@ -114,7 +114,7 @@ Elke naam komt precies een keer voor in de boom; `tools/anchors.json` is de lijs
 |---|---|
 | Carrosserie | Carrosseriekooi (Vloer en dorpels met Bodemplaat, Voorbouw met Schutbord en Frontmodule, Achterbouw, Zijwanden en dak met Dakpaneel, Waterkast, Hoekruit links en rechts), Motorkap (met Motorkapsteun), Achterklep (met Gasveer links en rechts), Voorbumper, Achterbumper, Portier links en rechts (met Buitenspiegel links en rechts, elk met Zijruit), Voorruit, Koplamp links en rechts, Achterlicht links en rechts, Grille en voorpaneel, Kentekenvlak achter, Ruitenwissers, Tankvulopening (met Tankklep), Dakrail links en rechts |
 | Aandrijflijn | Motor G10BB (Motorblok, Krukmechanisme, Cilinderkop, Distributie, Hulpaandrijving, Smering, Inlaatspruitstuk, Uitlaatspruitstuk), Handbak 5-versnellingen (Koppeling, Differentieel), Aandrijfassen (Aandrijfas links, Aandrijfas rechts), Startmotor |
-| Interieur | Dashboard, Middenconsole, Stoelen (Bestuurdersstoel, Passagiersstoel, Achterbank met deelbare rugleuning en hoofdsteunen), Bekleding |
+| Interieur | Dashboard, Middenconsole, Stoelen (Bestuurdersstoel, Passagiersstoel, Achterbank met deelbare rugleuning), Bekleding |
 | Onderstel | Vooras en stuurinrichting (Stuurinrichting met Stuurwiel, Wielophanging linksvoor en rechtsvoor), Achteras (Wielophanging linksachter en rechtsachter), Wielen (Wiel linksvoor, rechtsvoor, linksachter, rechtsachter), Remsysteem (Handrem) |
 | Koeling en luchtinlaat | Radiateur, Koelventilator, Expansievat, Luchtfilter |
 | Uitlaatsysteem | Katalysator, Middendemper, Einddemper |
@@ -153,7 +153,7 @@ De leiders hieronder zijn de openers van de pagina (de openerlijst in de modus O
 | Achterklep | scharnier dakrand (z -1,165, y 1,385) | 66 | 60 | twee gasveren als telescoop (0,30 m in, 0,50 m uit), onderaan tegen de C-stijl, bovenaan op de zijrand van de klep; de hoedenplank is een volger (31,5, ondergrens 26,4) |
 | Tankklep | scharnier voorrand (z -1,38), rechter achterscherm | 140 | 112 | opening met tankkom in het scherm; de vulhals zit in het brandstofsysteem |
 | Rugleuning bestuurder, Rugleuning passagier (label Rugleuning bestuurdersstoel en passagiersstoel) | scharnier onderaan de rugleuning | 40,1 naar voren | 33,2 | needs het portier aan dezelfde kant; eigenaar interieur |
-| Rugleuning groot deel (rechts), Rugleuning klein deel (links) | scharnier onderaan de achterbank | 104,3 naar voren | 83,7 | needs Achterklep; de hoofdsteun achter gaat mee als volger; eigenaar interieur |
+| Rugleuning groot deel (rechts), Rugleuning klein deel (links) | scharnier onderaan de achterbank | 104,3 naar voren | 83,7 | needs Achterklep; eigenaar interieur |
 
 Uitzonderingen op de botsingstoets staan in `tools/open_allow.json` (nu geen). Wat een opening laat zien, heeft een eigenaar: de tankkom (carrosserie), de vulhals (brandstofsysteem), de achterbank en de bagageruimte (interieur), het motorcompartiment (motor, aandrijving, systemen).
 

@@ -103,6 +103,8 @@ HUID = [
 # die uitzonderingen is HEAD groen, want die delen liggen in de wielboog of in een kom zonder huid erachter. Zo blijft een band die door het
 # scherm steekt (spoorbreedte, velgmaat) een rode poort.
 UITZONDERING = [
+    (r'^Carrosserie/Achterlicht (links|rechts)/', None, 'achterlichtunit: lens en lichthuis vormen de achterhoek van de buitenkant; erachter ligt alleen de zijkant van de achterklep (sinds het staartvlak in golf 6 40 mm naar voren ligt). Gemeten 51 tot 223 mm buiten het klepbuitenpaneel'),
+    (r'^Carrosserie/Carrosseriekooi/Zijwanden en dak/Beschermlijst achterscherm (links|rechts)$', 8.0, 'stootstrip op het achterscherm (zwart, 6 mm dik, keuze eigenaar). Gemeten tot 5,0 mm'),
     (r'^Carrosserie/Koplamp (links|rechts)/', None, 'koplampunit: hoekreflector en lamphuis vormen de voorhoek van de buitenkant (onder de doorzichtige hoekkap); erachter ligt alleen de kaprand. Gemeten 51 tot 134 mm buiten de kaprand (stap 1 tot 10 mm)'),
     (r'^Carrosserie/Portier (links|rechts)/Buitendeurgreep/', 15.0, 'buitendeurgreep: greepschaal en greepdrager liggen op het portierbuitenpaneel. Gemeten tot 10,8 mm (Greepschaal) en 6,8 mm (Greepdrager)'),
     (r'^Carrosserie/Portier (links|rechts)/Zijlijsten/', 8.0, 'beschermlijst en gordelrubber liggen op het portierbuitenpaneel. Gemeten tot 5,8 mm (Beschermlijst)'),
