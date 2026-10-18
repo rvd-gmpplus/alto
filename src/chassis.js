@@ -74,16 +74,18 @@ const chsRimBarrelG = () => chsLathe('x', [[0.1795, -0.0600], [0.1795, -0.0585],
   [0.1476, 0.0300], [0.1560, 0.0380], [0.1651, 0.0500], [0.1700, 0.0540], [0.1795, 0.0585], [0.1795, 0.0600]], 40, 'RimB');
 const chsRimDishG = () => chsLathe('x', [[0.1600, 0.0400], [0.0345, 0.0400], [0.0345, 0.0600], [0.0, 0.0600], [0.0, 0.0630], [0.0375, 0.0630], [0.0375, 0.0435],
   [0.1600, 0.0435], [0.1600, 0.0400]], 40, 'RimD');
+// wieldop: gewelfde schijf met vier boogvormige sleuven bij de rand (B-006, naar foto's van een Alto GL uit 2001); de ring met de
+// sleuven bestaat uit vier draaivlaksectoren met daartussen open hoeken, zodat de donkere velgschijf erdoor te zien is
 function chsCoverG() {
   return cache('chsCoverG', () => {
-    const dome = chsLathe('x', [[0.0, 0.0790], [0.0430, 0.0790], [0.0480, 0.0750], [0.0640, 0.0710], [0.0900, 0.0700], [0.1300, 0.0690], [0.1650, 0.0670],
-      [0.1775, 0.0640], [0.1775, 0.0615], [0.1740, 0.0610]], 40, 'Cover');
-    const ribs = [];
-    for (let k = 0; k < 10; k++) { const r = G.box(0.004, 0.095, 0.007).clone(); r.translate(0.0725, 0.108, 0); r.rotateX(k * PI * 2 / 10); ribs.push(r); }
-    return merge([dome, ...ribs]);
+    const lathe = (pts, seg, a0 = 0, da = PI * 2) => THREE.BufferGeometryUtils.toCreasedNormals(yTo(new THREE.LatheGeometry(pts.map(p => new THREE.Vector2(p[0], p[1])), seg, a0, da), 'x'), 0.6);
+    const inner = lathe([[0.0, 0.0790], [0.0430, 0.0790], [0.0480, 0.0750], [0.0640, 0.0710], [0.0900, 0.0700], [0.1150, 0.069375]], 40);
+    const outer = lathe([[0.1500, 0.067857], [0.1650, 0.0670], [0.1775, 0.0640], [0.1775, 0.0615], [0.1740, 0.0610]], 40);
+    const SLOT = 0.55, band = [[0.1150, 0.069375], [0.1300, 0.0690], [0.1500, 0.067857]];   // sleuf 0,55 rad breed (ongeveer 70 mm op de middenstraal)
+    const ring = [0, 1, 2, 3].map(k => lathe(band, 8, k * HALF + SLOT / 2, HALF - SLOT));
+    return merge([inner, outer, ...ring]);
   });
 }
-
 function chsWheel(sg, front) {
   const z = front ? AXF : AXR, tr = front ? TRACK_F : TRACK_R, fr = front ? 'voor' : 'achter', n = chsSn(sg) + fr, pcd = 0.05;
   const va = 0.9, vr = [0.1476, 0.1076];
@@ -99,8 +101,8 @@ function chsWheel(sg, front) {
     ...[0, 1, 2, 3].map(k => P(`Wielbout ${k + 1}`, chsBolt(0.024, 0.012, '-x'), MAT.steel, {
       d: 'Wielbout met kegelvormige zitting; trekt het wiel op de naafflens. De bronnen noemen bouten, geen moeren.', spec: [['Aanhaalmoment', '70 tot 100 Nm']],
       p: [0.0435, pcd * Math.cos(PI / 4 + k * HALF), pcd * Math.sin(PI / 4 + k * HALF)], ex: [0.2, 0, 0] })),   // geen inner: ui_inner vindt een straal tussen wieldop en velg door naar bout 4 (golf 2)
-    P('Wieldop', chsCoverG(), MAT.chsCover, { d: 'Volle kunststof wieldop (Twist) over de hele velgschijf, met tien radiale ribben; klikt op de velgflens.', ex: [0.3, 0, 0] }),
-    P('Wieldopembleem', chsLathe('x', [[0, 0.0790], [0.0300, 0.0790], [0.0300, 0.0805], [0, 0.0805]], 24, 'Cap'), MAT.chrome, { d: 'Rond embleem midden op de wieldop (schematisch, zonder letter).', ex: [0.36, 0, 0] }),
+    P('Wieldop', chsCoverG(), MAT.chsCover, { d: 'Volle kunststof wieldop over de hele velgschijf, met vier boogvormige sleuven bij de rand; klikt op de velgflens. Vorm naar foto\'s van een Alto GL uit 2001; voor de Twist niet apart bevestigd.', ex: [0.3, 0, 0] }),
+    P('Wieldopembleem', chsLathe('x', [[0, 0.0790], [0.0300, 0.0790], [0.0300, 0.0805], [0, 0.0805]], 24, 'Cap'), MAT.chsCover, { d: 'Ingeperst embleem midden op de wieldop, in dezelfde grijze kunststof (schematisch: rond, zonder letter).', ex: [0.36, 0, 0] }),
     P('Ventiel', valve, MAT.rubber, { d: 'Bandenventiel in het diepbed, wijst naar de wielas.', ex: [-0.04, 0.1, 0.1] }),
   ]);
 }
