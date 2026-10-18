@@ -137,43 +137,31 @@ Functies, materialen en cachesleutels krijgen het voorvoegsel van de eigenaar. A
 
 ## 8. Budgetten
 
-In `tools/anchors.json`: totaal 400.000 driehoeken, verdeeld naar verhouding van laguna3 (190.000 van 719.000 voor de carrosserie, enzovoort; op honderdtallen afgerond), tekenopdrachten gemonteerd met bundelen onder 1.500. `tools/tri.py --gate` bewaakt de driehoeken.
-
-| Hoofdgroep | Budget (driehoeken) | Stand carrosserieronde |
-|---|---|---|
-| Aandrijflijn | 133.500 | plaatshouder |
-| Carrosserie | 105.700 | circa 87.000 (244 onderdelen) |
-| Onderstel | 69.500 | plaatshouder |
-| Interieur | 52.900 | plaatshouder |
-| Koeling en luchtinlaat | 13.900 | plaatshouder |
-| Uitlaatsysteem | 11.100 | plaatshouder |
-| Brandstofsysteem | 6.700 | plaatshouder |
-| Elektrisch systeem | 6.700 | plaatshouder |
-| Totaal | 400.000 | |
-
-Doel voor de hele auto: 1.000 tot 1.400 onderdelen (de carrosserie telt er nu 244).
+In `tools/anchors.json` (`triangle_budgets`): de driehoeken per hoofdgroep en in totaal, bij het begin verdeeld naar verhouding van laguna3 (190.000 van 719.000 voor de carrosserie, enzovoort; op honderdtallen afgerond); tekenopdrachten gemonteerd met bundelen onder 1.500. `tools/tri.py --gate` bewaakt de driehoeken. Budget en stand per hoofdgroep, en het aantal onderdelen, staan in [cijfers.md](cijfers.md).
 
 ## 9. Openers (modus Openen)
 
-Zes openers van de carrosserie (negen in de modus Openen). Hoeken in graden, slag in meter; `open.min` is minstens 0,8 maal de volle hoek of slag. De hoeken en slagen zijn geschat.
+De leiders hieronder zijn de openers van de pagina (de openerlijst in de modus Openen; `tools/anchors.json: openers`); `tools/opentest.py --strikt-min` toetst ze. Hoeken in graden, slag in meter; `open.min` is minstens 0,8 maal de volle hoek of slag. De hoeken en slagen zijn geschat. De waarden komen uit `src/bodyparts.js` en `src/interior.js` en zijn nagemeten met `opentest.py` op `658afcf`.
 
 | Opener | Soort | Eindstand | Ondergrens | Bijzonderheden |
 |---|---|---|---|---|
 | Motorkap | scharnier achterrand (z 0,925, y 0,915) | 65 | 55 | steunstang van 0,51 m als volger (`Motorkapsteun`, rechter veerpoottoren); camera van linksvoor |
-| Portier links, rechts | scharnier vlak voor de voorrand (z 0,79, vertikale as) | 62 | 52 | lang portier (3-deurs); scharnierbladen op de A-stijl blijven staan (`stay`); de spiegel hoort bij het portier |
+| Portier links, rechts | scharnier vlak voor de voorrand (z 0,79, verticale as) | 62 | 52 | lang portier (3-deurs); scharnierbladen op de A-stijl blijven staan (`stay`); de spiegel hoort bij het portier |
 | Zijruit (links, rechts) | schuif in het portier, langs het eigen vlak (helling 0,28) | 0,25 omlaag en 0,07 naar buiten (0,26 totaal) | 0,21 | volgers: Ruitdrager en Rubber zijruit; de elektrische raambediening zit in het portier |
 | Buitenspiegel links, rechts | scharnier aan de achterbinnenkant van het huis | 80 naar achteren | 64 | de voet blijft staan |
-| Achterklep | scharnier dakrand (z -1,165, y 1,385) | 66 | 60 | twee gasveren als telescoop (0,30 m in, 0,50 m uit), onderaan tegen de C-stijl, bovenaan op de zijrand van de klep |
+| Achterklep | scharnier dakrand (z -1,165, y 1,385) | 66 | 60 | twee gasveren als telescoop (0,30 m in, 0,50 m uit), onderaan tegen de C-stijl, bovenaan op de zijrand van de klep; de hoedenplank is een volger (31,5, ondergrens 26,4) |
 | Tankklep | scharnier voorrand (z -1,38), rechter achterscherm | 140 | 112 | opening met tankkom in het scherm; de vulhals zit in het brandstofsysteem |
+| Rugleuning bestuurder, Rugleuning passagier (label Rugleuning bestuurdersstoel en passagiersstoel) | scharnier onderaan de rugleuning | 40,1 naar voren | 33,2 | needs het portier aan dezelfde kant; eigenaar interieur |
+| Rugleuning groot deel (rechts), Rugleuning klein deel (links) | scharnier onderaan de achterbank | 104,3 naar voren | 83,7 | needs Achterklep; de hoofdsteun achter gaat mee als volger; eigenaar interieur |
 
-Uitzonderingen op de botsingstoets staan in `tools/open_allow.json` (nu geen). Wat een opening laat zien, heeft een eigenaar: de tankkom (carrosserie), de vulhals (brandstofsysteem), de achterbank (interieur), het motorcompartiment (motor, aandrijving, systemen).
+Uitzonderingen op de botsingstoets staan in `tools/open_allow.json` (nu geen). Wat een opening laat zien, heeft een eigenaar: de tankkom (carrosserie), de vulhals (brandstofsysteem), de achterbank en de bagageruimte (interieur), het motorcompartiment (motor, aandrijving, systemen).
 
 ## 10. Regels voor alle eigenaars
 
 - `d` verplicht (Nederlandse beschrijving), `spec` alleen voor geverifieerde feiten in Nederlandse notatie, `ex` als uitklapvector, `inner` alleen voor wat van buiten nooit te zien is.
 - Elke wijziging met `python3 build.py --lint`; voor samenvoegen `tools/orkestratie/mergecheck.py`; na samenvoegen de volledige set (`tools/orkestratie/finaltests.sh`).
 - Een melding eerst narekenen met `pick.py`, `probe.py` of stralen; dan pas wijzigen.
-- De plaatshouders in `engine1.js`, `interior.js`, `chassis.js` en `systems.js` zijn voor de maten van deze auto gezet (blokken binnen de huid, vier cilinders als wielen) zodat de poorten kunnen draaien; de eigenaars vervangen ze.
+- De plaatshouders uit de beginauto in `engine1.js`, `interior.js`, `chassis.js` en `systems.js` (blokken binnen de huid, vier cilinders als wielen) zijn in versie 1 door de domeinen vervangen (zie `CHANGELOG.md`). De beschrijving van de wortel in `src/systems.js` noemt aandrijflijn, onderstel en interieur nog plaatshouders; die tekst is van de eigenaar systemen.
 
 ## 11. Doordringing tussen domeinen (golf 2)
 

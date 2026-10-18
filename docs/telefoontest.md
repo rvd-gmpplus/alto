@@ -5,7 +5,7 @@ daar niet uit komt: de pagina op een echte telefoon en een echte GPU. Het kost o
 
 ## Vooraf
 
-- Open de pagina op GitHub Pages met de debug-overlay: `https://rvd-gmpplus.github.io/laguna3/?debug=1`.
+- Open de pagina op GitHub Pages met de debug-overlay: `https://rvd-gmpplus.github.io/alto/?debug=1`.
   De overlay bovenin toont: beelden per seconde (fps) tijdens beweging, tekenopdrachten, driehoeken, pixelverhouding
   (dpr), of de lichte weergave aanstaat, en de versie. Maak van elke stap hieronder een screenshot met de overlay in beeld.
 - Noteer het toestel (merk, type, jaar), de browser en of de telefoon aan de lader hing.
