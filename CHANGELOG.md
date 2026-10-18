@@ -1,6 +1,8 @@
 # Wijzigingen
 
-## Versie 5 (in voorbereiding)
+## Versie 5 (19 oktober 2026)
+
+Aanleiding: "ik vind de Alto nog te veel op de 2002 (nieuwere variant) lijken", met foto's van de modelreeks 1993-2001, en de wens dat de achterzijruiten op kiepstand kunnen. Keuzes van de eigenaar: lamellengrille met zwart raam, zwarte ongelakte bumpers, zwarte stootstrip, neus rechtop, stuur driespaaks, geen hoofdsteunen achter, geen hoogteverstelling. Keuzes per pakket staan in `docs/onderzoek/beslissingen.md`; kerncijfers in `docs/cijfers.md`.
 
 ### Voorkant naar de modelreeks 1993-2001 (golf 6, pakket NEUS; beslissing 29 en 30)
 
@@ -11,16 +13,28 @@
 - Voorbumper van ongelakt zwart kunststof (schaal, lip, kaders van de luchtroosters; zelfde materiaal als de achterbumper, `MAT.bodBumperZwart`), knipperlichten hoog in de bumperhoeken.
 - `tools/meet.py`: `Honingraatgrille` vervangen door `Grillelamellen`; venster voor het verchroomde embleem 3,0 tot 9,0 (foto 6,1); onderplaat tegenover de grilleopening (grens 1,5, dezelfde grens in beeldpunten als 3,0 tegenover het kleinere gaas); vier nieuwe harde neuspoorten (103 harde poorten, was 99). Een kap die 30 mm omhoog gaat maakt de meting rood.
 
+### Carrosserie: kiepruiten, achterkant en zijkant
+
 - Carrosserie (golf 6, pakket KIEP): de achterzijruit (Hoekruit links en rechts) staat op kiepstand: scharnier aan de voorrand bij de B-stijl met een as langs de schuine voorrand, ongeveer 4 graden (geschat; ongeveer 30 mm open bij de onderste achterhoek), twee scharniertjes, kiepslot met kiephendel, slotplaat en uitzetter (volger), rubber aan de ruit en een vast sponningrubber; twee nieuwe openers (Achterzijruit links en rechts, 15 in totaal).
 - Achterkant en zijkant naar de modelreeks 1993-2001 (golf 6, pakket ACHTER, keuzes van de eigenaar naar de foto): achterbumper in ongelakt zwart kunststof (`MAT.bodBumperZwart`) als achterste punt op `ZR` (lengte blijft 3495 mm) met een vlakke bovenrichel die 40 mm onder de klep uitsteekt en reflectoren van 60 x 25 mm; daarvoor eindigt het staartvlak (klep, achterpaneel, achterlichten, achterruit, zijwand erachter) 40 mm eerder, op `BOD_ZE` (`body.js`: profielen `HW`, `YB`, `YT`, `bodC`, `bodDP`, `YR` achter z -1,55 naar voren geschoven, `bodTwz`); liggende achterlichten (hoogte 210 mm, lichter helder deel en reflector); embleem ALTO SUZUKI op de klep; B-stijl in carrosseriekleur met 30 mm zwart rubber; zwarte stootstrip van 30 x 6 mm op portier en achterscherm (tot z -0,95).
-Aanleiding: de dashboardfoto van de eigenaar naast het model. Keuzes staan in `docs/onderzoek/beslissingen.md`.
 
-### Interieur (golf 6, pakket INT6)
+### Interieur
+
+Aanleiding: de dashboardfoto van de eigenaar naast het model. Keuzes staan in `docs/onderzoek/beslissingen.md`.
 
 - Stuur (Beslissing INT-7): driespaaks met een groot ovaal kussen (200 x 150 x 50 mm) en platte brede spaken (55 mm) naar 4, 6 en 8 uur; de krans blijft rond. Spec: driespaaks, zonder airbag (Autoweek, eigenaar).
 - Instrumenten (Beslissing INT-8): diepe kap om het paneel (328 mm breed met zijwangen die het dashboardvlak volgen, 80 mm overstek; het paneel staat 15 mm dichter bij het midden) in plaats van een kleine klep; de temperatuur- en brandstofmeter zijn kleiner en 25 mm lager dan de snelheidsmeter (x +-0,085); de waarschuwingslampjes zijn rode blokken erboven. Nog steeds geen toerenteller.
 - Middenconsole (Beslissing INT-9): van boven naar onder twee ventilatieroosters in een rand (110 x 60 mm, x +-0,065), de kachelbediening (draaiknop 70 mm, twee liggende schuiven, A/C-knop, ventilatorknop), een bakje en onderaan de radio; de schuiven liggen nu horizontaal en de radio staat niet meer bovenaan. De aansteker en de asbak zitten zichtbaar onder de radio.
 - Hoofdsteunen achter weg (Beslissing INT-1, bevestigd door de eigenaar): de twee `Hoofdsteun achter links` en `Hoofdsteun achter rechts` zijn verwijderd; ze gingen als volgers mee met de rugleuning. De deelbare achterbank blijft. Beslissing INT-2 (geen hoogteverstelling van de bestuurdersstoel) is door de eigenaar bevestigd; `docs/specificaties-en-bronnen.md` noteert dat de uitrustingslijst van Autowereld op deze twee punten niet klopt voor deze auto.
+
+### Publicatie
+
+- Spleet in de zwarte bumperschaal achter dicht (eindvlak volgt de schilrand; gevonden door de advisor).
+- `tools/zijstraal.py`: uitzonderingen voor achterlicht (230 mm) en stootstrip achterscherm (8 mm); de koplampuitzondering is begrensd op 140 mm in plaats van onbeperkt.
+- Laguna3: de toleranties in `tools/opentest.py` als PR aangeboden (rvd-gmpplus/laguna3#8).
+- Basislijn van `visdiff` en `anchorcheck` op Linux vernieuwd (`a2a1d5a`, drie series, 34 van 34 reproduceerbaar); anchorcheck 244 labels, vrij 186.
+- Volledige set op `a2a1d5a`: Linux alles groen (visdiff 34 van 34), macOS groen behalve visdiff tegen de Linux-basis (informatief). Een eerdere macOS-run liep vast op time-outs door belasting van de machine (loadavg tot 73 op 15 kernen, met een gelijktijdige run van een andere repo); zonder die belasting groen.
+- Nog open (versie 6): open onderrand van de achterbumper, ronding van flanken en schouders en de heup bij het achterscherm, helling van de achterruit, hoeklens als helder glas, stuurkussen ovaler en lager ten opzichte van de kleine meters, kleur van het middenpaneel (keuze eigenaar), ronde tankklep, spiegelvoet als zeilplaat, label Uitlaatsysteem in Alles uitgeklapt, `docshots` in `auto.json`, de rest van review 5.
 
 ## Versie 4 (18 oktober 2026)
 
