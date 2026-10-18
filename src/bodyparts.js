@@ -810,7 +810,7 @@ function bodSkinPlate(cx, cy, w, h, off, nu = 24, nv = 8) {
 }
 // pose van een klein onderdeel op de bumperhuid: positie plus een draaiing die de z-as langs de huidnormaal legt
 function bodSkinPose(x, y, off) { const [p, n] = bodSkinXY(x, y, off); return { p, q: quatFromTo(V3(0, 0, 1), V3(...n)) }; }
-// Bumperlip: gesloten rand in carrosseriekleur langs de onderkant van de schaal, van achter links (z 1,43) om de voorkant naar achter rechts; de wand loopt door vanaf het
+// Bumperlip: gesloten rand (zwart kunststof, zoals de schaal) langs de onderkant van de schaal, van achter links (z 1,43) om de voorkant naar achter rechts; de wand loopt door vanaf het
 // einde van de onderhoek (s = S2) en rondt onderaan af naar binnen, onderrand op y 0,225 (225 mm boven de grond, uitlopend over 140 mm vanaf z 1,425)
 // pad van de lip in het bovenaanzicht: van links (z 1,425, begin van de uitloop) over de neus naar rechts, op de buitenwand van de schaal (s = S2); yBot is de onderrand van de lip.
 // De lip en de afscherming eronder (Onderplaat voorbumper) delen dit pad, zodat ze samen met de bumper meebewegen en dezelfde omtrek volgen.
@@ -863,9 +863,9 @@ function bodFrontBumper() {
   const both = bodBoth, sn = bodSn;
   if (!MAT.bodPlate.map) { MAT.bodPlate.map = bodPlateTex(); MAT.bodPlate.needsUpdate = true; }
   // knipperlicht: één afgeronde lens van 190 x 50 mm op de bumperhuid, wikkelt om de hoek; donkere rand met twee schroefjes; huis en lamp erachter
-  const KX = 0.50, KY = 0.345, KW = 0.19, KH = 0.05;
-  const sig = s => A(`Knipperlicht voor ${sn(s)}`, { d: 'Oranje richtingaanwijzer laag in de hoek van de bumper: een afgeronde lens van ongeveer 190 x 50 mm in een donkere rand met twee schroefjes, om de hoek gewikkeld.', ex: [s * 0.22, -0.02, 0.2] }, [
-    P('Lens knipperlicht voor', bodSkinPlate(s * KX, KY, KW, KH, 0.0030), MAT.bodAmber, { d: 'Oranje lens van de richtingaanwijzer, afgerond rechthoekig (ongeveer 190 x 50 mm); de plaats is geschat op foto\'s van de uitvoering.', ex: [s * 0.05, 0, 0.08] }),
+  const KX = 0.52, KY = 0.43, KW = 0.15, KH = 0.05;   // beslissing 29: hoog in de bumperhoek, naast de luchtsleuven (foto 1993-2001; was 0,50, 0,345 en 190 mm breed, laag zoals de uitvoering 2000-2002)
+  const sig = s => A(`Knipperlicht voor ${sn(s)}`, { d: 'Oranje richtingaanwijzer hoog in de hoek van de bumper, op de hoogte van de kentekenplaat: een afgeronde lens van ongeveer 150 x 50 mm in een donkere rand met twee schroefjes, om de hoek gewikkeld (keuze eigenaar naar foto 1993-2001).', ex: [s * 0.22, -0.02, 0.2] }, [
+    P('Lens knipperlicht voor', bodSkinPlate(s * KX, KY, KW, KH, 0.0030), MAT.bodAmber, { d: 'Oranje lens van de richtingaanwijzer, afgerond rechthoekig (ongeveer 150 x 50 mm); maat en plaats geschat op de foto van de modelreeks 1993-2001.', ex: [s * 0.05, 0, 0.08] }),
     P('Rand knipperlicht voor', merge([bodSkinPlate(s * KX, KY, KW + 0.012, KH + 0.012, 0.0014), ...[-1, 1].map(e => { const o = bodSkinPose(s * (KX + e * (KW / 2 + 0.003)), KY, 0.0030); return xf(G.cyl('z', 0.0022, 0.0022, 0.0016, 10).clone().applyQuaternion(o.q), o.p); })]), MAT.bodBlack, { d: 'Zwarte rand van ongeveer 6 mm om de lens, met twee schroefjes (de bumper zelf heeft hier geen echte uitsparing; de diepte komt van de rand).', ex: [s * 0.04, 0, 0.06] }),
     // huis 2,5 mm achter de huid (3,5 mm achter de bumperschaal) en de lamp in de fitting op de achterkant van het huis, langs de huidnormaal (B-037: huis en lamp
     // zweefden 10,9 en 20,5 mm los)
@@ -879,21 +879,33 @@ function bodFrontBumper() {
   // extra rijen op de plaatsen waar de schaal sterk draait; een extra rij die binnen 2,6 mm van een bestaande rij valt maakt een smalle sliert (de vlaknormaal wijkt daar meer dan 30 graden af van de hoekpuntnormalen: plooien in de glans) en wordt weggelaten
   const rijen = Array.from({ length: 29 }, (_, k) => zS + (zE - zS) * k / 28), breaks = [];
   [1.50, 1.56, 1.62, 1.70, 1.72, 1.735, ...Array.from({ length: 14 }, (_, k) => 1.658 + k * 0.0026)].forEach(b => { if (!rijen.concat(breaks).some(r => Math.abs(r - b) < 0.0026)) breaks.push(b); });
-  const shell = s => bodPatchN((z, t) => bodLow(z, pW(s, z, t), bodBumperInw(z)), zS, zE, 28, () => [0, 1], NR, breaks, nfix, (z, t) => pW(s, z, t), true, 1.70);
-  // eindvlak: rijen op dezelfde hoogtes als de laatste rij van de schaal (zelfde z, zelfde s-verdeling), zodat er geen sliert tussen vlak en schaal overblijft
-  const face = patch((j, t) => { const [x, y] = halfPt(ZF, bodWarp(S1, 1, j / NR)); return [lerp(x, -x, t), y, ZF]; }, 0, NR, NR, () => [0, 1], 14);
-  // luchtsleuven: de sleuf ligt vrijwel vlak met het vlak (0,5 mm erboven), een kader van 5 mm breed en 2 mm hoog in carrosseriekleur eromheen laat hem 1,5 mm verdiept ogen
+  // Beslissing 29: met het steile front loopt de bovenrand (y 0,558) tussen z 1,681 en 1,689 in 8 mm van de flank over schouder en front naar het midden. Met de kolommen
+  // als deel van [S1, bovenrand] sprong een kolom per rij van de flank naar het front (een vouw over de hele bumperhoek, schouderhoek 135 graden). Nu twee stukken: de
+  // flank (S1 tot S3, de oude kolomverdeling zolang de bovenrand op de flank ligt) en daarboven schouder en front (S3 tot de bovenrand, 20 kolommen), met rijen om de
+  // 0,6 mm waar de bovenrand oversteekt. Onder de flank blijft alles zoals het was.
+  const NU = 20, sLo = z => Math.min(sbF(z), S3), zU = (() => { let lo = 1.60, hi = zE; for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (sbF(m) < S3 + 0.001) lo = m; else hi = m; } return hi; })();   // de bovenrand verlaat de flank
+  const pL = (s, z, t) => (s > 0 ? bodWarp(S1, sLo(z), t) : 2 - bodWarp(S1, sLo(z), t)), pU = (s, z, t) => (s > 0 ? bodWarp(sLo(z), sbF(z), t) : 2 - bodWarp(sLo(z), sbF(z), t));
+  // beide stukken hebben vanaf zU precies dezelfde rijen: met eigen rijen weken de koorden op de naad (s = S3) van elkaar af en zat er een spleetje in de bumperhoek
+  const rowsL = rijen.concat(breaks), dense = Array.from({ length: 21 }, (_, k) => 1.6795 + k * 0.0006).concat([1.695, 1.71, 1.725, 1.74]).filter(b => b > zU + 1e-4 && !rowsL.some(r => Math.abs(r - b) < 0.0003));
+  const brL = breaks.concat(dense, Math.abs(rowsL.reduce((m, r) => (Math.abs(r - zU) < Math.abs(m - zU) ? r : m), 9) - zU) > 1e-4 ? [zU] : []);
+  const brU = rowsL.filter(r => r > zU + 1e-4 && r < zE - 1e-4).concat(dense);
+  const shell = s => merge([bodPatchN((z, t) => bodLow(z, pL(s, z, t), bodBumperInw(z)), zS, zE, 28, () => [0, 1], NR, brL, nfix, (z, t) => pL(s, z, t), true, 1.70),
+    bodPatchN((z, t) => bodLow(z, pU(s, z, t), bodBumperInw(z)), zU, zE, 1, () => [0, 1], NU, brU, nfix, (z, t) => pU(s, z, t), true, 0)]);   // analytische normalen: de smalle driehoeken bij zU gaven scheve normalen uit de driehoeken
+  // eindvlak: rijen op dezelfde hoogtes als de laatste rij van de schaal (zelfde z, zelfde s-verdeling: NR kolommen op de flank, NU op schouder en front), zodat er geen sliert tussen vlak en schaal overblijft
+  const colF = j => (j <= NR ? bodWarp(S1, S3, j / NR) : bodWarp(S3, 1, (j - NR) / NU));
+  const face = patch((j, t) => { const [x, y] = halfPt(ZF, colF(j)); return [lerp(x, -x, t), y, ZF]; }, 0, NR + NU, NR + NU, () => [0, 1], 14);
+  // luchtsleuven: de sleuf ligt vrijwel vlak met het vlak (0,5 mm erboven), een kader van 5 mm breed en 2 mm hoog (zwart kunststof, zoals de schaal) eromheen laat hem 1,5 mm verdiept ogen
   const slot = (x, y, w, h) => xf(G.rbox(w, h, 0.003, 0.004), [x, y, ZF - 0.001]);
   const rib = (x, y, w, h, k) => Array.from({ length: k }, (_, i) => xf(G.box(w, 0.0035, 0.002), [x, y - h / 2 + h * (i + 1) / (k + 1), ZF + 0.0013]));
   const kader = (x, y, w, h, t = 0.005) => [xf(G.box(w + 2 * t, t, 0.002), [x, y + h / 2 + t / 2, ZF + 0.001]), xf(G.box(w + 2 * t, t, 0.002), [x, y - h / 2 - t / 2, ZF + 0.001]),
     xf(G.box(t, h, 0.002), [x - w / 2 - t / 2, y, ZF + 0.001]), xf(G.box(t, h, 0.002), [x + w / 2 + t / 2, y, ZF + 0.001])];
-  return A('Voorbumper', { d: 'Bumperschaal in carrosseriekleur (Twist) met de hoeken om de wielbogen, een lip langs de onderkant, luchtsleuven rond het kentekenvlak en richtingaanwijzers laag in de hoeken; erachter de stalen bumperbalk.', ex: [0, -0.04, 0.72] }, [
-    P('Bumperschaal voor', merge([shell(1), shell(-1), face]), MAT.paint, { d: 'Kunststof bumperschaal in het rood met afgeronde hoeken die om de voorwielboog lopen; de bovenrand sluit op de lamp, het paneel en het scherm aan.', ex: [0, -0.02, 0.12] }),
+  return A('Voorbumper', { d: 'Voorbumper van ongelakt zwart kunststof met de hoeken om de wielbogen, een lip langs de onderkant, luchtsleuven naast het kentekenvlak en richtingaanwijzers hoog in de hoeken; erachter de stalen bumperbalk (keuze eigenaar naar foto 1993-2001).', ex: [0, -0.04, 0.72] }, [
+    P('Bumperschaal voor', merge([shell(1), shell(-1), face]), MAT.bodZwart, { d: 'Bumperschaal van ongelakt zwart kunststof met afgeronde hoeken die om de voorwielboog lopen; de bovenrand sluit op de lampen, de grille en het scherm aan (keuze eigenaar naar foto 1993-2001).', ex: [0, -0.02, 0.12] }),
     P('Bumpernaad voor', cache('bodBumperSeam', bodBumperSeam), MAT.bodSeal, { d: 'Donkere voeg van ongeveer 5 mm langs de bovenrand van de bumper, waar het voorpaneel, de koplampen en de schermen eronder verdwijnen: de bumper is een apart deel (de echte voeg is nauwelijks breder).', ex: [0, -0.02, 0.12] }),
-    P('Bumperlip voor', bodBumperLip(), MAT.paint, { d: 'Rand in carrosseriekleur langs de onderkant van de bumper: de buitenwand van de schaal loopt door tot ongeveer 225 mm boven de grond en rondt daar af naar binnen (achter uitlopend naar niets), zodat de wang op de lip uitloopt. Hij houdt het zicht op onderstel en stabilisatorstang van normale hoogte af.', ex: [0, -0.05, 0.04] }),
+    P('Bumperlip voor', bodBumperLip(), MAT.bodZwart, { d: 'Rand van ongelakt zwart kunststof langs de onderkant van de bumper: de buitenwand van de schaal loopt door tot ongeveer 225 mm boven de grond en rondt daar af naar binnen (achter uitlopend naar niets), zodat de wang op de lip uitloopt. Hij houdt het zicht op onderstel en stabilisatorstang van normale hoogte af.', ex: [0, -0.05, 0.04] }),
     P('Onderplaat voorbumper', merge([bodPatchN((z, p) => bodLow(z, p, 0.0), 1.425, zE - 0.003, 18, () => [-S1, S1], 6, [], (n) => n), bodBumperShield()]), MAT.bodShield, { d: 'Zwarte onderzijde van de bumper met een donker lint van 50 mm onder de lip, 40 mm achter de lipwand en met dezelfde omtrek als de lip, schematisch (de echte afscherming onder de bumper is niet vast te stellen): het houdt carter, dwarsbalk en draagarmen uit het zicht van een lage camera, zonder platen langs de aandrijfas.', ex: [0, -0.06, 0.02] }),
     P('Luchtrooster voor', merge([slot(0.34, 0.415, 0.12, 0.06), slot(-0.34, 0.415, 0.12, 0.06), slot(0, 0.328, 0.54, 0.022)]), MAT.bodBlack, { d: 'Zwarte luchtsleuven: links en rechts van het kentekenvlak en een smalle sleuf eronder, voor extra koellucht.', ex: [0, -0.04, 0.1] }),
-    P('Luchtroosterkader voor', merge([...kader(0.34, 0.415, 0.12, 0.06), ...kader(-0.34, 0.415, 0.12, 0.06), ...kader(0, 0.328, 0.54, 0.022)]), MAT.paint, { d: 'Kader van ongeveer 5 mm breed in carrosseriekleur om de luchtsleuven, 2 mm boven het bumpervlak: de sleuven liggen daardoor verdiept.', ex: [0, -0.04, 0.11] }),
+    P('Luchtroosterkader voor', merge([...kader(0.34, 0.415, 0.12, 0.06), ...kader(-0.34, 0.415, 0.12, 0.06), ...kader(0, 0.328, 0.54, 0.022)]), MAT.bodZwart, { d: 'Kader van ongeveer 5 mm breed van ongelakt zwart kunststof om de luchtsleuven, 2 mm boven het bumpervlak: de sleuven liggen daardoor verdiept.', ex: [0, -0.04, 0.11] }),
     P('Luchtroosterribben voor', merge([...rib(0.34, 0.415, 0.12, 0.06, 2), ...rib(-0.34, 0.415, 0.12, 0.06, 2)]), MAT.bodBumper, { d: 'Horizontale ribben in de luchtsleuven naast het kentekenvlak.', ex: [0, -0.04, 0.12] }),
     P('Kentekenplaathouder voor', G.rbox(0.532, 0.118, 0.006, 0.004), MAT.bodBumper, { d: 'Zwarte houder voor de voorste kentekenplaat in het midden van de bumper.', p: [0, 0.405, ZF + 0.0], ex: [0, 0, 0.1] }),
     P('Kentekenplaat voor', G.rbox(0.52, 0.11, 0.003, 0.002), MAT.bodPlate, { d: 'Gele Nederlandse plaat met zwarte rand en blauwe EU-strook, met streepjes op de plaats van het kenteken (geen kenteken in dit model).', p: [0, 0.405, ZF + 0.0035], ex: [0, 0, 0.16] }),
@@ -1294,7 +1306,7 @@ function buildBody() {
     ...both(bodGsMount),
   ]);
   const cage = A('Carrosseriekooi', { d: 'Zelfdragende ruwbouw van de 3-deurs hatchback: vloer, voorbouw, wielkasten, stijlen, dak en schermen.', ex: [0, 0.3, 0] }, [...bodStructure(), frame]);
-  return A('Carrosserie', { d: 'Zelfdragende carrosserie van de 3-deurs hatchback in effen rood (Bright Red 2, aannemelijk) met bumpers in carrosseriekleur (Twist), dakrails, alle aanbouwdelen, ruiten en verlichting.', ex: [0, 2.0, 0],
+  return A('Carrosserie', { d: 'Zelfdragende carrosserie van de 3-deurs hatchback in effen rood (Bright Red 2, aannemelijk) met een voorbumper van ongelakt zwart kunststof (keuze eigenaar naar foto 1993-2001), een achterbumper in carrosseriekleur, dakrails, alle aanbouwdelen, ruiten en verlichting.', ex: [0, 2.0, 0],
     spec: [['Lengte', '3.495 mm'], ['Breedte zonder spiegels', '1.495 mm'], ['Hoogte', '1.405 mm'], ['Wielbasis', '2.335 mm'], ['Spoorbreedte voor / achter', '1.335 / 1.305 mm']] }, [
     cage, bodHoodParts(), bodTailgate(), bodFrontBumper(), bodRearBumper(), bodDoor(1), bodDoor(-1), bodWindscreen(), bodHeadlamp(1), bodHeadlamp(-1), bodTaillamp(1), bodTaillamp(-1),
     bodFrontPanel(), bodRearPlate(), bodWipers(), bodFuelFlap(), bodRoofRails(1), bodRoofRails(-1),
