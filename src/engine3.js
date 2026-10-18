@@ -44,6 +44,22 @@ function engBuildLube() {
   ]);
 }
 
+/* ---------- uitlaatgasrecirculatie (EGR): klep onder de inlaatkast, pijp van de verzamelaar om de bakzijde van de kop ---------- */
+// Bron: specificaties-en-bronnen.md (Emissie, Bevestigd: EGR). Plaats, vorm en route zijn geschat. De klep hangt onder de inlaatkast tussen de
+// inlaatpijpen van cilinder 3 en 4; de pijp loopt van de verzamelaar onder het hitteschild door naar de bakzijde, langs de kop (x 0,23, onder de
+// stroomverdeler) naar voren en onder het gasklephuis door naar de klep. Alles blijft binnen het kader van de aandrijflijn van voor de EGR
+// (z hoogstens 0,217 in het motorframe), zodat de rasters van ui_inner niet verschuiven.
+function engBuildEGR() {
+  const [, , pz] = ENG_PLEN, K = [0.08, 0.21, pz];                        // hart van de klep, tegen de onderkant van de inlaatkast (y 0,23)
+  const pts = [[0.042, 0.158, -0.215], [0.10, 0.155, -0.232], [0.17, 0.162, -0.242], [0.232, 0.20, -0.225], [0.238, 0.212, -0.17], [0.226, 0.214, -0.08], [0.224, 0.214, 0.02],
+    [0.215, 0.208, 0.12], [0.17, 0.204, 0.185], [0.13, 0.205, 0.185], [0.112, 0.205, 0.17], [0.105, 0.205, K[2]]];
+  return A('Uitlaatgasrecirculatie', { d: 'Uitlaatgasrecirculatie (EGR): een klep onder de inlaatkast laat een deel van het uitlaatgas via een pijp van de verzamelaar terug in de inlaat stromen, wat de verbrandingstemperatuur en de NOx verlaagt. EGR is voor de G10BB (Euro 3) bevestigd; plaats, vorm en route zijn geschat.', ex: [0.1, -0.05, 0.12] }, [
+    P('EGR-klep', merge([G.cyl('y', 0.014, 0.014, 0.04, 14), xf(G.cyl('y', 0.017, 0.017, 0.01, 16), [0, -0.02, 0]), xf(G.cyl('x', 0.006, 0.006, 0.02, 8), [0.02, -0.005, 0]), xf(G.box(0.012, 0.01, 0.012), [-0.018, -0.012, 0])]), MAT.engCoil,
+      { d: 'EGR-klep met membraan en stekker, onder de inlaatkast; de regeleenheid stuurt haar open bij deellast. Plaats geschat.', p: K, ex: [0, -0.05, 0.06] }),
+    P('EGR-pijp', tube(pts, 0.006, 60, 8), MAT.steel, { d: 'Stalen pijp van de verzamelaar van het uitlaatspruitstuk, om de bakzijde van de kop, naar de EGR-klep. Route geschat.', ex: [0.06, 0.03, 0.04] }),
+  ]);
+}
+
 /* ---------- inlaatspruitstuk met gasklephuis en brandstofverdeelleiding ---------- */
 function engBuildIntake() {
   const PY = ENG_PORT_Y, [, py, pz] = ENG_PLEN;
@@ -61,7 +77,7 @@ function engBuildIntake() {
     P('O-ring injector boven', G.torus('y', 0.0092, 0.0014, 12, 4), MAT.rubber, { d: 'Afdichting tussen injector en verdeelleiding.', p: [0, -0.011, 0], ex: [0, 0.03, 0] }),
     P('O-ring injector onder', G.torus('y', 0.0073, 0.0014, 12, 4), MAT.rubber, { d: 'Afdichting tussen injector en inlaatpijp.', p: [0, -0.054, 0], ex: [0, -0.03, 0] }),
   ]));
-  return A('Inlaatspruitstuk', { d: 'Inlaatspruitstuk met vier pijpen naar de poorten aan de voorzijde van de kop, inlaatkast, gasklephuis en brandstofverdeelleiding met vier injectoren (meerpuntsinspuiting). Materiaal, vorm en afmetingen zijn geschat.', ex: [0, 0.12, 0.25] }, [
+  return A('Inlaatspruitstuk', { d: 'Inlaatspruitstuk met vier pijpen naar de poorten aan de voorzijde van de kop, inlaatkast, gasklephuis en brandstofverdeelleiding met vier injectoren (meerpuntsinspuiting) en de EGR-klep. Materiaal, vorm en afmetingen zijn geschat.', ex: [0, 0.12, 0.25] }, [
     P('Inlaatpijpen', merge([xf(flange, [0, 0, 0.0917]), runners]), MAT.aluCast, { d: 'Flens met vier gebogen inlaatpijpen die van de poorten naar de inlaatkast lopen.', ex: [0, 0, 0] }),
     P('Pakking inlaatspruitstuk', front(flShape, 0.0008), MAT.rubber, { d: 'Pakking tussen kop en inlaatspruitstuk.', p: [0, 0, ENG_HZ + 0.0064], ex: [0, 0, -0.05] }),
     P('Inlaatkast', plenum, MAT.aluCast, { d: 'Inlaatkast (plenum): verdeelt de lucht van het gasklephuis over de vier pijpen.', p: [0, py, pz], ex: [0, 0.06, 0.04] }),
@@ -87,6 +103,7 @@ function engBuildIntake() {
       P('Ontluchtingsslang', tube([[-0.09, 0.296, 0.0845], [-0.09, 0.302, 0.11], [-0.09, 0.292, 0.135]], 0.005, 20, 6), MAT.rubber, { d: 'Slang van het kleppendeksel naar de inlaatkast (carterontluchting).', ex: [0, 0.04, 0] }),
       P('Vacuumslang drukregelaar', tube([[0.12, 0.29, ENG_RAIL[2]], [0.12, 0.297, 0.14], [0.12, 0.288, 0.152]], 0.003, 16, 6), MAT.rubber, { d: 'Dunne slang van de brandstofdrukregelaar naar de inlaatkast.', ex: [0, 0.08, 0] }),
     ]),
+    engBuildEGR(),
   ]);
 }
 
