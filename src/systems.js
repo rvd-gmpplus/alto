@@ -222,68 +222,81 @@ function buildExhaust() {
 }
 
 /* ============================ brandstofsysteem ============================ */
-// Tank onder de achterbank, voor de torsiebalk (aangenomen, besluit 12; golf 5, B-001). De tank ligt tussen de bodemvrijheid en de leidingen onder de
-// vloer: onderkant y 0,172 (12 mm boven de bodemvrijheid van 0,160), bovenkant y 0,2095, 2 mm onder de handremkabels (onderkant 0,2115) en
-// 10 tot 17 mm onder de vloer (YB + 0,002); de spanbanden lopen door tot tegen de vloer. In de breedte rechts 50 mm van de middendemper (x -0,215),
-// links 27 mm van de remleiding achter (x 0,357); vooraan achter de egalisator van de handrem (z -0,645), achteraan 50 mm voor de dwarsbalk-
-// onderkant en 205 mm voor de torsiebalk (z -1,145). De toevoer en de spoelleiding lopen links onder de vloer naar voren en kruisen de uitlaat
-// schuin tussen pijp en vloer naar de oude route rechts; de vulpijp komt van de tankklep links (B-005). Alle leidingen eindigen op een poort via ENG2CAR.
+// Tank onder de achterbank, voor de torsiebalk (aangenomen, besluit 12; golf 5, B-001 en Beslissing SYS-1). De tank hangt van onderen in de tankkuip van
+// de carrosserie (bodKuip in bodyparts.js: binnen x -0,18 tot 0,35, z -0,96 tot -0,63, dak op y 0,375) met 10 mm ruimte opzij en achter, 11 mm onder
+// het dak en 15 mm voor (daar lopen de toevoer- en de dampleiding omlaag). Onderkant y 0,225: 2 tot 3 mm boven de handremkabels en de spanbanden,
+// boven de egalisator en de remleiding achter. De spanbanden dragen de tank van onderen en zijn naast de kuip tegen de vloer geschroefd. Pomp en rolklep
+// zitten boven op de tank; de vulslang en de ontluchting komen schuin van achteren op twee stompen in de bodem, omdat de achterwand van de kuip maar
+// 10 mm achter de tank staat. Alle leidingen eindigen op een poort via ENG2CAR.
 function buildFuel() {
-  const fr = ENG_PORTS.fuelRailIn, evp = ENG_PORTS.evapPurge;
-  const TB = 0.172, TT = 0.2095, TXL = -0.165, TXR = 0.33, TZF = -0.66, TZA = -0.94;          // tank: onder, boven, rechts, links, voor, achter
+  const fr = ENG_PORTS.fuelRailIn, evp = ENG_PORTS.evapPurge, K = bodKuip;
+  const TB = 0.225, TT = K.yT - 0.011, TXL = K.x0 + 0.01, TXR = K.x1 - 0.01, TZF = K.z1 - 0.015, TZA = K.z0 + 0.01;   // tank: onder, boven, rechts, links, voor, achter
   const TW = TXR - TXL, TH = TT - TB, TD = TZF - TZA, TX = (TXL + TXR) / 2, TY = (TB + TT) / 2, TZ = (TZF + TZA) / 2;
+  const ZG = (TZF + K.z1) / 2;                                                                  // hartlijn van de spleet voor de tank, waar de leidingen omlaag gaan
+  const YL = TT + 0.005;                                                                        // hartlijn van de leidingen boven op de tank (5 mm onder het dak van de kuip)
   const yFloor = z => YB(z) + 0.002;                                                            // onderkant van de bodemplaat
   // ---------- tank ----------
-  // spanband op z: band onder de tank, opstaande zijden en een lip die tegen de vloer valt (y tot de onderkant van de bodemplaat)
-  const strap = z => { const yt = yFloor(z), h = yt - TB + 0.004;
-    return merge([xf(G.box(TW + 0.008, 0.004, 0.04), [TX, TB - 0.002, z]), ...[-1, 1].map(s => xf(G.box(0.004, h, 0.04), [TX + s * (TW / 2 + 0.002), TB - 0.004 + h / 2, z])),
-      ...[-1, 1].map(s => xf(G.box(0.03, 0.004, 0.04), [TX + s * (TW / 2 + 0.017), yt - 0.002, z]))]); };
-  const SX = 0.20;                                                                               // stomp van de vulslang op de achterkant
-  const tank = A('Brandstoftank', { d: 'Platte stalen tank van 35 l onder de achterbank, voor de torsiebalk, met twee spanbanden aan de vloer. De inhoud is bevestigd; plaats en vorm zijn aangenomen. Getekend tussen de bodemvrijheid en de handremkabels onder de vloer, daardoor platter dan een echte tank van 35 l.', spec: [['Inhoud', '35 l']], ex: [0, -0.5, 0] }, [
-    sysPart('Tankhuis', G.rbox(TW, TH, TD, 0.012), MAT.sysTank, [TX, TY, TZ], 'Gelaste stalen tank met schotten tegen klotsen; plat gebouwd om onder de vloer te passen.', [0, -0.08, 0]),
-    sysPart('Spanband voor', strap(-0.72), MAT.darkSteel, [0, 0, 0], 'Stalen spanband onder de tank, met de uiteinden tegen de vloer geschroefd; voor.', [0, -0.2, 0.05]),
-    sysPart('Spanband achter', strap(-0.82), MAT.darkSteel, [0, 0, 0], 'Stalen spanband onder de tank, met de uiteinden tegen de vloer geschroefd; achter.', [0, -0.2, -0.05]),
-    sysPart('Tankstomp vulhals', merge([G.cyl('z', 0.016, 0.016, 0.03, 14), xf(G.cyl('z', 0.005, 0.005, 0.02, 8), [0.045, 0, 0.005])]), MAT.sysTank, [SX, TY, TZA - 0.015], 'Stomp op de achterkant van de tank voor de vulslang, met ernaast een kleine stomp voor de ontluchting.', [0, 0, -0.1]),
+  // spanband op z: band onder de tank (0,3 mm vrij), aan beide kanten een verkropt stuk dat onder de wand van de kuip door naar buiten loopt en 25 mm
+  // naast de kuip tegen de vloer ligt (0,6 mm vrij; de vloer is daar licht gebogen en vanaf |x| 0,38 begint de dorpel)
+  const strap = z => { const yf = yFloor(z) - 0.0006, yb = TB - 0.0003, t = 0.003;
+    return merge([xf(G.box(K.x1 - K.x0 - 0.006, t, 0.04), [(K.x0 + K.x1) / 2, yb - t / 2, z]),
+      ...[[K.x0 - 0.025, K.x0 + 0.004], [K.x1 - 0.004, K.x1 + 0.025]].map(([a, b]) => xf(G.box(b - a, t, 0.04), [(a + b) / 2, yf - t / 2, z]))]); };
+  // stompen voor vulslang en ontluchting in de bodem, schuin naar achteren en omlaag (as U); d is de afstand langs U vanaf de bodem
+  const sk = bodTkS, SX = sk * 0.12, VX = sk * 0.165, SZ = TZA + 0.035, U = V3(0, -1, -1).normalize();
+  const onU = (x, d) => [x, TB + U.y * d, SZ + U.z * d];
+  const stompGeo = merge([xf(G.cyl('y', 0.016, 0.016, 0.055, 14), [0, 0, 0]), xf(G.cyl('y', 0.005, 0.005, 0.045, 8), [VX - SX, 0, 0])]);
+  const RX = sk * 0.085, RZ = TZF - 0.035;                                                      // rolklep boven op de tank, voor
+  const tank = A('Brandstoftank', { d: 'Stalen tank onder de achterbank, voor de torsiebalk, van onderen in de tankkuip van de vloer gehangen en met twee spanbanden aan de vloer naast de kuip bevestigd. Getekend 510 x 139 x 305 mm; dat houdt ongeveer 21 l (geschat uit het getekende volume). De inhoud van 35 l is bevestigd; plaats, maten en vorm zijn aangenomen.', spec: [['Inhoud', '35 l']], ex: [0, -0.5, 0] }, [
+    sysPart('Tankhuis', G.rbox(TW, TH, TD, 0.012), MAT.sysTank, [TX, TY, TZ], 'Gelaste stalen tank met schotten tegen klotsen; hangt in de kuip onder de achterbank, met een vlakke onderkant net boven de handremkabels.', [0, -0.08, 0]),
+    sysPart('Spanband voor', strap(-0.72), MAT.darkSteel, [0, 0, 0], 'Stalen spanband onder de tank; draagt de tank en is aan beide kanten naast de kuip tegen de vloer geschroefd. Voor.', [0, -0.2, 0.05]),
+    sysPart('Spanband achter', strap(-0.87), MAT.darkSteel, [0, 0, 0], 'Stalen spanband onder de tank; draagt de tank en is aan beide kanten naast de kuip tegen de vloer geschroefd. Achter.', [0, -0.2, -0.05]),
+    sysPart('Tankstomp vulhals', stompGeo, MAT.sysTank, onU(SX, 0.0125), 'Stomp in de bodem van de tank, achter, schuin naar achteren en omlaag voor de vulslang, met ernaast een kleine stomp voor de ontluchting.', [0, -0.1, -0.05], { q: quatFromTo(V3(0, 1, 0), U.clone().negate()) }),
+    sysPart('Rolklep', merge([G.cyl('y', 0.012, 0.012, 0.005, 14), xf(G.cyl('z', 0.0035, 0.0035, 0.02, 8), [0, 0.0025, 0.015])]), MAT.plastic, [RX, TT + 0.0025, RZ], 'Ontluchtingsklep boven op de tank: laat benzinedamp door naar het koolstoffilter en sluit als de auto over de kop slaat.', [0, 0.15, 0]),
   ]);
-  // ---------- brandstofpomp met niveaumeter, in de tank; de flens ligt in de spleet tussen tank en vloer ----------
+  // ---------- brandstofpomp met niveaumeter, staand in de tank; de flens ligt boven op de tank, onder het dak van de kuip ----------
   const PX = 0.24, PZ = -0.72;
-  const pomp = A('Brandstofpomp', { d: 'Elektrische brandstofpomp in de tank met de niveaumeter, voorfilter en stekker. De pomp ligt in de tank onder de achterbank en hangt aan de flens boven op de tank; motor, zeef en niveaumeter zitten er helemaal in.', ex: [0, 0.3, 0] }, [
-    sysPart('Pompflens', merge([G.cyl('y', 0.045, 0.045, 0.004, 24), xf(G.cyl('z', 0.0045, 0.0045, 0.03, 10), [0, 0.005, 0.05])]), MAT.darkSteel, [PX, TT + 0.002, PZ], 'Ronde flens boven op de tank met de leidingaansluiting naar voren en de stekker.', [0, 0.2, 0]),
-    sysPart('Pompmotor', G.cyl('z', 0.012, 0.012, 0.07, 14), MAT.steel, [PX, TY, PZ], 'Gelijkstroommotor met rollenpomp, liggend in de platte tank.', [0, 0.05, 0], { inner: true }),
-    sysPart('Zeef', G.box(0.05, 0.004, 0.04), MAT.filter, [PX, TB + 0.004, PZ - 0.045], 'Zeef op de zuigmond die vuil uit de tank houdt.', [0, -0.1, 0], { inner: true }),
+  const pomp = A('Brandstofpomp', { d: 'Elektrische brandstofpomp in de tank met de niveaumeter, voorfilter en stekker. De pomp staat in de tank onder de achterbank en hangt aan de flens boven op de tank; motor, zeef en niveaumeter zitten er helemaal in.', ex: [0, 0.3, 0] }, [
+    sysPart('Pompflens', merge([G.cyl('y', 0.045, 0.045, 0.003, 24), xf(G.cyl('z', 0.004, 0.004, 0.03, 10), [0, YL - TT - 0.0015, 0.05])]), MAT.darkSteel, [PX, TT + 0.0015, PZ], 'Ronde flens boven op de tank met de leidingaansluiting naar voren en de stekker.', [0, 0.2, 0]),
+    sysPart('Pompmotor', G.cyl('y', 0.019, 0.019, 0.10, 14), MAT.steel, [PX, TB + 0.062, PZ], 'Gelijkstroommotor met rollenpomp, staand in de tank onder de flens.', [0, 0.05, 0], { inner: true }),
+    sysPart('Zeef', G.box(0.05, 0.004, 0.04), MAT.filter, [PX, TB + 0.004, PZ], 'Zeef op de zuigmond onder de pomp die vuil uit de tank houdt.', [0, -0.1, 0], { inner: true }),
     A('Niveaumeter', { d: 'Vlotter op een arm met een glijweerstand; geeft het brandstofniveau door aan de brandstofmeter in het dashboard.', ex: [0.1, 0, 0], inner: true }, [
-      P('Vlotterarm', sysTube([[PX - 0.015, TT - 0.008, PZ], [PX - 0.06, TY + 0.002, PZ - 0.02], [PX - 0.11, TY - 0.004, PZ - 0.06]], 0.0018, 5, 0.02), MAT.steel, { d: 'Dunne metalen arm die op en neer draait met het niveau.', ex: [0.05, 0.05, 0] }),
-      sysPart('Vlotter', G.sphere(0.008, 10), MAT.red, [PX - 0.11, TY - 0.004, PZ - 0.06], 'Kunststof vlotter die op de brandstof drijft.', [-0.08, 0, 0.05]),
+      P('Vlotterarm', sysTube([[PX - 0.022, TT - 0.01, PZ], [PX - 0.07, TY + 0.02, PZ - 0.03], [PX - 0.13, TY - 0.03, PZ - 0.07]], 0.0018, 5, 0.02), MAT.steel, { d: 'Dunne metalen arm die op en neer draait met het niveau.', ex: [0.05, 0.05, 0] }),
+      sysPart('Vlotter', G.sphere(0.008, 10), MAT.red, [PX - 0.13, TY - 0.03, PZ - 0.07], 'Kunststof vlotter die op de brandstof drijft.', [-0.08, 0, 0.05]),
     ]),
-    sysPart('Pompstekker', G.box(0.02, 0.006, 0.02), MAT.plastic, [PX - 0.025, TT + 0.007, PZ], 'Stekker van de pomp en de niveaumeter.', [0, 0.1, 0]),
+    sysPart('Pompstekker', G.box(0.02, 0.005, 0.02), MAT.plastic, [PX - 0.025, TT + 0.0055, PZ], 'Stekker van de pomp en de niveaumeter.', [0, 0.1, 0]),
   ]);
   // ---------- vulsysteem: van de tankklep (achter het linker achterscherm) achter het linker achterwiel langs en onder de torsiebalk door naar de tank ----------
-  // de vulhals eindigt in de opening van de tankklep, die de carrosserie naar links spiegelt (x +0,64 tot +0,73, zelfde y en z als bodTkY en bodTkZ)
+  // de zijde komt uit bodTkS (bodyparts.js, +1 links); alle x-waarden hieronder zijn voor links en worden met sk gespiegeld. Bij sk -1 loopt de route door
+  // de uitlaat, die rechts ligt; de zijde volgt de foto's (B-005). De vulhals gaat door het gat (straal 32 mm) in de bodem van de tankkom op x 0,6695.
   const [k0, k1] = bodTkZ, [y0, y1] = bodTkY, ym = (y0 + y1) / 2, xs = surfX(k1, ym), zm = (k0 + k1) / 2;
-  const xk = xs - 0.06;                          // voorvlak van de tankkom
+  const xk = xs - 0.06;                          // bodem van de tankkom (de vulhals steekt er 5,5 mm doorheen)
   const VY = 0.176, VR = 0.016;                  // vulpijp onder de vloer: hartlijn op 0,176, onderkant op de bodemvrijheid
+  const X = p => [sk * p[0], p[1], p[2]], rY = sk < 0 ? [0, PI, 0] : [0, 0, 0];
   const neck = [[xs - 0.09, ym, zm], [xs - 0.12, ym - 0.01, zm - 0.01], [0.60, 0.69, -1.52], [0.62, 0.62, -1.575], [0.62, 0.45, -1.58], [0.60, 0.32, -1.578], [0.55, 0.255, -1.57],
-    [0.48, 0.235, -1.52], [0.43, 0.185, -1.42], [0.39, VY, -1.33], [0.33, VY, -1.24], [0.26, VY, -1.12], [0.215, 0.178, -1.04]];
-  const hoseEnd = [SX, TY, TZA - 0.03], hoseStart = neck[neck.length - 1];
-  const vulslang = sysHoseG('Vulslang', 'Korte rubber slang tussen de stalen vulpijp en de stomp op de tank; vangt de beweging van de tank op.', [hoseStart, sysLerp(hoseStart, hoseEnd, 0.5), hoseEnd], 0.018, { n0: 'Klem vulpijp', n1: 'Klem tank', ex: [0, -0.1, -0.05] });
-  const vent = neck.slice(2).map((p, i) => i < 5 ? sysPlus(p, 0.006, 0, 0.028) : sysPlus(p, 0.03, 0, 0.01)).concat([[0.26, 0.182, -1.0], [SX + 0.045, TY, TZA - 0.03]]);   // ontluchting aan de buitenkant (+x) van de vulpijp
-  const vul = A('Vulsysteem', { d: 'Vulpijp van de opening in het linker achterscherm (achter de tankklep) langs de achterkant van het linker achterwiel en onder de torsiebalk door naar de achterkant van de tank, met de tankdop, een rubber vulslang en een ontluchtingsslang.', ex: [0.3, -0.2, -0.3] }, [
-    sysPart('Vulhals', G.lathe('x', [[0.02, 0], [0.027, 0.014], [0.03, 0.03]], 20, 'sysFillNeckL'), MAT.steel, [xs - 0.09, ym, zm], 'Trechtervormige vulhals achter de tankklep, in de tankkom.', [0.1, 0, 0]),
-    sysPart('Tankdop', merge([G.cyl('x', 0.026, 0.026, 0.018, 20), xf(G.box(0.012, 0.06, 0.012), [0.008, 0, 0])]), MAT.plastic, [xk + 0.012, ym, zm], 'Dop van de vulhals; de onderdruk in de tank wordt via een klepje in de dop geregeld.', [0.2, 0.05, 0]),
-    P('Vulpijp', sysTube(neck, VR, 10, 0.03), MAT.sysTank, { d: 'Stalen vulpijp die achter het linker achterwiel langs naar beneden loopt en onder de vloer en de torsiebalk door naar de tank.', ex: [0.08, -0.1, -0.1] }),
+    [0.48, 0.235, -1.52], [0.43, 0.185, -1.42], [0.39, VY, -1.33], [0.33, VY, -1.24], [0.26, VY, -1.12], [0.215, 0.178, -1.04]].map(X);
+  const hoseStart = neck[neck.length - 1];
+  const vulslang = sysHoseG('Vulslang', 'Korte rubber slang tussen de stalen vulpijp en de stomp in de bodem van de tank; vangt de beweging van de tank op.', [hoseStart, X([0.17, 0.180, -0.995]), onU(SX, 0.06), onU(SX, 0.022)], 0.018, { n0: 'Klem vulpijp', n1: 'Klem tank', ex: [0, -0.1, -0.05] });
+  const vent = neck.slice(2, -1).map((p, i) => i < 5 ? sysPlus(p, sk * 0.006, 0, 0.028) : sysPlus(p, sk * 0.03, 0, 0.01))
+    .concat([sysPlus(hoseStart, sk * 0.03, 0, 0.01), X([0.21, 0.181, -0.99]), onU(VX, 0.06), onU(VX, 0.028)]);   // ontluchting aan de buitenkant van de vulpijp
+  const vul = A('Vulsysteem', { d: 'Vulpijp van de opening in het linker achterscherm (achter de tankklep) langs de achterkant van het linker achterwiel en onder de torsiebalk door naar de bodem van de tank, met de tankdop, een rubber vulslang en een ontluchtingsslang.', ex: [sk * 0.3, -0.2, -0.3] }, [
+    sysPart('Vulhals', G.lathe('x', [[0.02, 0], [0.027, 0.014], [0.03, 0.03], [0.03, 0.0355]], 20, 'sysFillNeckL2'), MAT.steel, X([xs - 0.09, ym, zm]), 'Trechtervormige vulhals achter de tankklep; steekt door het gat in de bodem van de tankkom.', [sk * 0.1, 0, 0], { r: rY }),
+    sysPart('Tankdop', merge([G.cyl('x', 0.026, 0.026, 0.018, 20), xf(G.box(0.012, 0.06, 0.012), [0.008, 0, 0])]), MAT.plastic, X([xk + 0.0155, ym, zm]), 'Dop van de vulhals, in de tankkom; de onderdruk in de tank wordt via een klepje in de dop geregeld.', [sk * 0.2, 0.05, 0], { r: rY }),
+    P('Vulpijp', sysTube(neck, VR, 10, 0.03), MAT.sysTank, { d: 'Stalen vulpijp die achter het linker achterwiel langs naar beneden loopt en onder de vloer en de torsiebalk door naar de tank.', ex: [sk * 0.08, -0.1, -0.1] }),
     vulslang,
-    P('Ontluchtingsslang vulpijp', sysTube(vent, 0.006, 6, 0.04), MAT.sysHose, { d: 'Dunne slang die de lucht uit de tank naar de bovenkant van de vulpijp voert, zodat de tank sneller vol kan.', ex: [-0.05, 0, -0.05] }),
+    P('Ontluchtingsslang vulpijp', sysTube(vent, 0.006, 6, 0.04), MAT.sysHose, { d: 'Dunne slang die de lucht uit de tank naar de bovenkant van de vulpijp voert, zodat de tank sneller vol kan.', ex: [-sk * 0.05, 0, -0.05] }),
   ]);
-  // ---------- brandstofleiding: van de pomp door het filter links onder de vloer naar voren, schuin over de uitlaat naar rechts, dan over de bak ----------
+  // ---------- brandstofleiding: van de pomp over de tank naar voren, door de spleet voor de tank omlaag, door het filter links onder de vloer naar voren,
+  // schuin over de uitlaat naar rechts, dan over de bak ----------
   const FX = -0.20, FY = 0.207, FF = [PX, 0.195, -0.535];                                      // FF: hart van het brandstoffilter, in de leiding
-  const toevoer = [[PX, TT + 0.007, PZ + 0.065], [PX, TT + 0.006, -0.645], [PX, 0.204, -0.625], [PX, FF[1], -0.605], [PX, FF[1], FF[2]], [PX, FF[1], -0.465], [PX, FY, -0.43],
+  const omlaag = x => [[x, YL - 0.0015, ZG - 0.004], [x, TT - 0.012, ZG], [x, 0.30, ZG], [x, 0.235, ZG], [x, 0.214, ZG + 0.006], [x, 0.205, -0.62]];   // spleet voor de tank
+  const toevoer = [[PX, YL, PZ + 0.065], ...omlaag(PX), [PX, FF[1], -0.605], [PX, FF[1], FF[2]], [PX, FF[1], -0.465], [PX, FY, -0.43],
     [PX, FY, -0.2], [PX, FY, 0.05], [FX, 0.211, 0.50], [FX, FY, 0.6], [FX, FY, 0.78], [FX, 0.215, 0.86], [FX, 0.30, 0.90], [FX, 0.45, 0.915], [FX, 0.575, 0.92], [-0.10, 0.575, 0.92],
     [0.0, 0.575, 0.92], [0.22, 0.575, 0.93], [0.22, 0.572, 1.2], [0.2, 0.58, 1.36], [0.15, 0.60, 1.375], sysE(fr, 0.05), sysE(fr, 0.015), sysE(fr, 0)];
   const clipsAt = [[PX, FY, -0.3], [PX, FY, -0.05], [FX, FY, 0.7], [FX, 0.45, 0.915]];
-  const leidingen = A('Brandstofleidingen', { d: 'Toevoerleiding van de pomp in de tank via het brandstoffilter onder de vloer naar de verdeelleiding op de motor. Een retourleiding is niet gemodelleerd: de uitvoering is niet gevonden.', ex: [0.2, -0.1, 0.2] }, [
+  const leidingen = A('Brandstofleidingen', { d: 'Toevoerleiding van de pomp boven op de tank, langs de voorkant van de tank omlaag en via het brandstoffilter onder de vloer naar de verdeelleiding op de motor. Een retourleiding is niet gemodelleerd: de uitvoering is niet gevonden.', ex: [0.2, -0.1, 0.2] }, [
     sysPart('Brandstoffilter', merge([G.cyl('z', 0.019, 0.019, 0.1, 18), xf(G.cyl('z', 0.011, 0.011, 0.14, 10), [0, 0, 0])]), MAT.steel, FF, 'Cilindervormig filter in de toevoerleiding onder de vloer, voor de tank, dat vuil uit de brandstof houdt; de leiding zit op beide stompen.', [0, -0.1, 0]),
     sysPart('Filterbeugel', merge([G.torus('z', 0.0205, 0.0022, 16, 5), xf(G.box(0.01, 0.006, 0.02), [0, 0.0222, 0]), xf(G.box(0.04, 0.0025, 0.02), [0, 0.0245, 0])]), MAT.darkSteel, FF, 'Beugel om het filter, aan de vloer geschroefd.', [0, 0.1, 0]),
-    P('Toevoerleiding', sysTube(toevoer, 0.0035, 5, 0.04), MAT.sysLine, { d: 'Dunne kunststof leiding van de pomp door het filter links onder de vloer naar voren, schuin tussen uitlaatpijp en vloer naar rechts, langs het schutbord en over de bak naar de verdeelleiding.', ex: [0, 0.1, 0.1] }),
+    P('Toevoerleiding', sysTube(toevoer, 0.0035, 5, 0.04), MAT.sysLine, { d: 'Dunne kunststof leiding van de pomp over de tank naar voren en door de spleet voor de tank omlaag, door het filter links onder de vloer naar voren, schuin tussen uitlaatpijp en vloer naar rechts, langs het schutbord en over de bak naar de verdeelleiding.', ex: [0, 0.1, 0.1] }),
     sysPart('Leidingclips', cache('sysClips', () => merge(clipsAt.map(p => xf(G.box(0.016, 0.01, 0.016), [p[0], p[1] + 0.006, p[2]])))), MAT.plastic, [0, 0, 0], 'Kunststof clips die de leiding aan de vloer en het schutbord vasthouden.', [0, 0.08, 0]),
     sysPart('Koppeling verdeelleiding', merge([G.cyl('x', 0.007, 0.007, 0.03, 8), xf(G.cyl('x', 0.01, 0.01, 0.008, 8), [0.015, 0, 0])]), MAT.plastic, sysE(fr, 0.015), 'Snelkoppeling op de aansluiting van de verdeelleiding.', [0.1, 0.04, 0]),
   ]);
@@ -296,11 +309,11 @@ function buildFuel() {
     sysPart('Koolgranulaat', G.box(0.09, 0.04, 0.18), MAT.sysWire, [CX, CY, CZ], 'Actieve kool die de dampen bindt.', [0, 0.1, 0], { inner: true }),
     sysPart('Canisterpoorten', merge([xf(G.cyl('z', 0.006, 0.006, 0.03, 8), [-0.025, 0.005, -0.11]), xf(G.cyl('z', 0.006, 0.006, 0.03, 8), [0.025, 0.005, 0.11]), xf(G.cyl('z', 0.006, 0.006, 0.03, 8), [-0.025, 0.005, 0.11])]), MAT.plastic, [CX, CY, CZ], 'Aansluitingen voor de dampleiding van de tank (achter), de spoelleiding naar de inlaat en de ontluchting (voor).', [0, 0, 0.1]),
     sysPart('Canisterbeugel', merge([-0.06, 0.06].map(z => merge([xf(G.box(0.12, 0.004, 0.03), [0, 0.027, z]), ...[-1, 1].map(s => xf(G.box(0.004, 0.032, 0.03), [s * 0.052, 0.012, z]))]))), MAT.darkSteel, [CX, CY, CZ], 'Twee stalen beugels om het canisterhuis, aan de vloer geschroefd.', [0, -0.12, 0]),
-    P('Dampleiding tank', sysTube([[CX - 0.025, CY + 0.005, CZ - 0.125], [CX - 0.025, 0.198, -0.625], [CX - 0.022, 0.200, TZF + 0.002]], 0.005, 6, 0.02), MAT.sysLine, { d: 'Korte slang van de voorkant van de tank naar het koolstoffilter.', ex: [-0.04, 0, -0.05] }),
+    P('Dampleiding tank', sysTube([[RX, YL, RZ + 0.025], ...omlaag(RX), [CX - 0.025, 0.200, -0.607], [CX - 0.025, CY + 0.005, CZ - 0.125]], 0.004, 6, 0.02), MAT.sysLine, { d: 'Dunne slang van de rolklep boven op de tank, door de spleet voor de tank omlaag naar het koolstoffilter.', ex: [-0.04, 0, -0.05] }),
     P('Spoelleiding', sysTube(dampPad, 0.005, 6, 0.04), MAT.sysLine, { d: 'Dunne dampleiding van het koolstoffilter links onder de vloer naar voren, schuin tussen uitlaatpijp en vloer naar rechts, langs het schutbord en over de rechterkant van de motor naar de spoelklep op de inlaat.', ex: [-0.1, 0.1, 0.1] }),
     sysPart('Spoelklep', merge([G.cyl('y', 0.013, 0.013, 0.05, 12), xf(G.cyl('x', 0.006, 0.006, 0.02, 8), [0.013, 0.012, 0])]), MAT.plastic, sysPlus(sysE(evp, 0), 0, 0.025, 0), 'Magneetklep die de dampen gestuurd door de regeleenheid naar de inlaat laat stromen; zit op de aansluiting evapPurge van de motor.', [0, 0.12, 0]),
   ]);
-  return A('Brandstofsysteem', { d: 'Tank van 35 l onder de achterbank met pomp en niveaumeter, vulpijp naar de opening in het linker achterscherm, brandstoffilter en toevoerleiding naar de motor, en het koolstoffilter (EVAP) met de spoelleiding. Plaatsen aangenomen; de tankklep links volgt foto\'s van een Alto GL 2001.', ex: [0.6, -0.95, -0.3] },
+  return A('Brandstofsysteem', { d: 'Tank onder de achterbank in de tankkuip van de vloer, met pomp en niveaumeter, vulpijp naar de opening in het linker achterscherm, brandstoffilter en toevoerleiding naar de motor, en het koolstoffilter (EVAP) met de spoelleiding. Plaatsen aangenomen; de tankklep links volgt foto\'s van een Alto GL 2001.', ex: [0.6, -0.95, -0.3] },
     [tank, pomp, vul, leidingen, evap]);
 }
 
