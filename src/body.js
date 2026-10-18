@@ -7,7 +7,7 @@
 // (top 0,715 op z 1,57; integrity.py eist 25 mm onder de buitenhuid): de flank zakt eerder en verder, doordat de bolling bodC tussen z 1,40 en 1,60 groeit (0,024 naar 0,070) en YT
 // evenveel zakt. Zo loopt de kaprand op de flank vloeiend omlaag naar de lamp (hoogstens 25 mm boven de lampbovenrand op z 1,54, 13 mm op z 1,56) in plaats van pas in de laatste 50 mm.
 const ZF = 1.7475, ZR = -1.7475;                    // lengte 3495 mm (uiterste punten van de bumpers)
-const BOD_WMAX = 0.7535, BOD_MIRW = 0.835, BOD_H = 1.405; // framework: halve breedte zonder en met spiegels (plus 6 mm), hoogte; integrity.py leest ze
+const BOD_WMAX = 0.7535, BOD_MIRW = 0.904, BOD_H = 1.405; // framework: halve breedte zonder en met spiegels (plus 6 mm), hoogte; integrity.py leest ze
 const AXF = 1.087, AXR = -1.248, AY = 0.265;        // wielbasis 2335 mm; bandstraal 145/70 R13 is 0,2666 m, min indrukking
 const ARCH = 0.30;                                   // wielbooguitsparing (straal om de wielas)
 const TRACK_F = 0.6675, TRACK_R = 0.6525;           // halve spoorbreedte voor en achter (1335 en 1305 mm)
