@@ -1,5 +1,9 @@
 # Wijzigingen
 
+## Versie 4 (in voorbereiding)
+
+- Vloer voor de achterboog dicht (open punt VLOER): een gelakte sluitplaat `Dorpeleinde achter` sluit het achtereinde van de vloerkoker, zodat de vloerbedekking ook vanuit blikken op 0,15 m of lager niet meer van onderen te zien is. Nieuwe poort `onderdoorkijk onder de dorpel achter` in `meet.py --achter` (op versie 3 rood, nu 0 beeldpunten); zie `docs/testen.md`, sectie "Resultaten VLOER".
+
 ## Versie 3 (18 oktober 2026)
 
 Aanleiding: de open punten uit Versie 2. De neus stond nog 30 tot 60 mm te hoog, zodat de klacht over de koplampen en de grille niet volledig was opgelost; de achterwielkast liet doorkijk naar het interieur zien; en de meetscripts van de voorkant draaiden niet in de volledige set. Deze versie werkt het framework bij, neemt de metingen op in de set, verlaagt de neus en sluit de achterwielkast. Uitleg, cijfers en afwijkingen per stap staan in `docs/testen.md` en `docs/onderzoek/beslissingen.md` (punt 17, 26 en 27); kerncijfers in `docs/cijfers.md`. Alleen wat een meting draagt staat hier.
