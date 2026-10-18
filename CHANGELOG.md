@@ -1,5 +1,9 @@
 # Wijzigingen
 
+## Versie 4 (in voorbereiding)
+
+- Interieur (golf 5, pakket INT, bevindingen uit review 5): het instrumentenpaneel volgt de bron (handboek 1.2, Autoweek): snelheidsmeter met kilometer- en dagteller, temperatuurmeter, brandstofmeter en waarschuwingslampjes, geen toerenteller (B-008). De bovenste kolomkap ging 26,0 mm in het instrumentenglas en staat nu 7,0 mm vrij; het paneel staat daarvoor 20 mm hoger en de kap loopt taps toe (B-031). De voorstoelen hebben geen hoogteverstelling meer (B-009, Beslissing INT-2). De hoedenplank begint achter de rugleuning achter: 12 doordringende paren (tot 54,1 mm in de rugleuning en 24,6 mm in de gordelrolautomaten) naar 0 (B-032). De handremhendel van het interieur heeft een scharnier in de console waar de kabel van het onderstel op aansluit (B-035). De zekeringkastklep ligt op de kniebeschermer (was 24,8 mm erin) en de remlichtschakelaar is ingesloten (B-043). Teksten: geen spec meer bij de achterbank, geen gordelverklikker of -spanner, radio en luidsprekers als aannemelijk of aangenomen, een eigen zonneklep voor de bestuurder zonder spiegel, geen codenamen in de beschrijvingen, dakgreep achter boven de hoekruit (B-010 tot B-013, B-016, B-017).
+
 ## Versie 3 (18 oktober 2026)
 
 Aanleiding: de open punten uit Versie 2. De neus stond nog 30 tot 60 mm te hoog, zodat de klacht over de koplampen en de grille niet volledig was opgelost; de achterwielkast liet doorkijk naar het interieur zien; en de meetscripts van de voorkant draaiden niet in de volledige set. Deze versie werkt het framework bij, neemt de metingen op in de set, verlaagt de neus en sluit de achterwielkast. Uitleg, cijfers en afwijkingen per stap staan in `docs/testen.md` en `docs/onderzoek/beslissingen.md` (punt 17, 26 en 27); kerncijfers in `docs/cijfers.md`. Alleen wat een meting draagt staat hier.
