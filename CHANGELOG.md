@@ -1,5 +1,9 @@
 # Wijzigingen
 
+## Versie 4 (in voorbereiding)
+
+- Buitenspiegels liggend (open punt SPIEGEL, beslissing 28): de spiegels lazen als staand formaat (huis 85 mm breed en 125 mm hoog). Nieuw huis: een bolle kunststof schaal met een omgezette rand, 168 mm breed, 92 mm hoog bij de voet en 112 mm aan de buitenkant, 70 mm diep bij de voet en 52 mm buiten (naar voren taps); glas 151 mm breed en 83 tot 101 mm hoog. Alle maten geschat. De spiegel reikt tot x 0,898 (150 mm buiten de huid) en klapt zonder doordringing 80 graden naar achteren (opentest gelijk aan `658afcf`). `integrity.py` is rood zolang `BOD_MIRW` in `body.js` op 0,835 staat; de orkestrator beslist over 0,904.
+
 ## Versie 3 (18 oktober 2026)
 
 Aanleiding: de open punten uit Versie 2. De neus stond nog 30 tot 60 mm te hoog, zodat de klacht over de koplampen en de grille niet volledig was opgelost; de achterwielkast liet doorkijk naar het interieur zien; en de meetscripts van de voorkant draaiden niet in de volledige set. Deze versie werkt het framework bij, neemt de metingen op in de set, verlaagt de neus en sluit de achterwielkast. Uitleg, cijfers en afwijkingen per stap staan in `docs/testen.md` en `docs/onderzoek/beslissingen.md` (punt 17, 26 en 27); kerncijfers in `docs/cijfers.md`. Alleen wat een meting draagt staat hier.

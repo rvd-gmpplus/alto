@@ -850,17 +850,57 @@ function bodPose(s, p, nLeft, extra = {}) {
   if (s > 0) return Object.assign({ p, q }, extra);
   return Object.assign({ p: [-p[0], p[1], p[2]], q: new THREE.Quaternion(q.x, -q.y, -q.z, q.w), s: [-1, 1, 1] }, extra);
 }
+// buitenspiegel liggend (golf 5): breder dan hoog, zoals de Alto van 2001. Maten geschat uit foto's en de gangbare maat in deze klasse
+// (zie docs/onderzoek/beslissingen.md): huis 168 mm breed, 92 mm hoog bij de voet en 112 mm aan de buitenkant, 70 mm diep bij de voet
+// en 52 mm aan de buitenkant; glas 151 mm breed en 83 tot 101 mm hoog. De buitenkant reikt tot x 0,898 (150 mm buiten de huid).
+// Lokaal frame van het huis: x van de voet af, y omhoog, z naar voren; de achterrand (glaszijde) ligt op z 0, het middelpunt op x 0.
+const bodMirW = 0.168, bodMirHi = 0.092, bodMirHo = 0.112, bodMirR = 0.026, bodMirD = [0.07, 0.052], bodMirLip = 0.007;
+const bodMirT = x => clamp(x / bodMirW + 0.5, 0, 1);                   // 0 bij de voet, 1 aan de buitenkant
+// omtrek van het huis tegen de klok in: afgeronde rechthoek waarvan de hoogte lineair toeneemt van de voet naar buiten
+const bodMirRing = (() => {
+  const hw = bodMirW / 2, r = bodMirR, h = x => lerp(bodMirHi, bodMirHo, bodMirT(x)) / 2, pts = [];
+  const cs = [[hw - r, 1, 0], [-hw + r, 1, HALF], [-hw + r, -1, PI], [hw - r, -1, PI * 1.5]];
+  cs.forEach(([cx, sy, a0], c) => {
+    for (let i = 0; i <= 5; i++) { const a = a0 + i / 5 * HALF; pts.push([cx + r * Math.cos(a), sy * (h(cx) - r) + r * Math.sin(a)]); }
+    if (c % 2 === 0) for (const t of [1 / 3, 2 / 3]) { const x = lerp(cx, -cx, t); pts.push([x, sy * h(x)]); }   // tussenpunten op de lange boven- en onderrand
+  });
+  return pts;
+})();
+// meridiaan [k, z]: k schaalt de omtrek, z is diepte; een bolle schaal (superellips) naar voren en achter een omgezette rand van 7 mm
+// die naar binnen terugloopt tot achter de glasdrager, zodat de schaal van achteren dikte heeft
+const bodMirProf = (() => {
+  const out = [];
+  for (let j = 0; j <= 5; j++) { const a = j / 5 * HALF; out.push([Math.pow(Math.sin(a), 0.8), Math.pow(Math.cos(a), 0.8), true]); }
+  out.push([1, -bodMirLip, false], [0.94, -bodMirLip, false], [0.94, 0.006, false]);
+  return out;
+})();
+const bodMirShell = () => cache('bodMirShell', () => {
+  const N = bodMirRing.length;
+  const g = patch((u, v) => {
+    const [x0, y0] = bodMirRing[Math.round(u) % N], [k, f, dome] = bodMirProf[Math.round(v)];
+    if (!dome) return [x0 * k, y0 * k, f];
+    // naar de top toe gaat de afgeronde rechthoek over in een ellips: zo krijgt de bolling geen graten langs de diagonalen
+    const hh = lerp(bodMirHi, bodMirHo, bodMirT(x0)) / 2, th = Math.atan2(y0 / hh, x0 / (bodMirW / 2)), w = k * k * k;
+    const x = k * lerp(bodMirW / 2 * Math.cos(th), x0, w), y = k * lerp(hh * Math.sin(th), y0, w);
+    return [x, y, f * lerp(bodMirD[0], bodMirD[1], bodMirT(x))];
+  }, 0, N, N, () => [0, bodMirProf.length - 1], bodMirProf.length - 1);
+  return creasedWeld(g, 0.6);
+});
+// vlakke plaat met de omtrek van het huis, geschaald met k, dikte t (gecentreerd op z 0)
+const bodMirPlate = (key, k, t) => cache(key, () => extrude(shapeOf(bodMirRing.map(([x, y]) => [x * k, y * k])), t, 4));
 function bodMirror(s) {
-  const n = bodSn(s), cx = 0.7875, cy = 0.995, cz = 0.745, M = (x, y, z) => [s * x, y, z];
-  // de scharnierlijn ligt aan de binnenachterkant van het huis; het huis klapt naar achteren langs het portier
-  return A(`Buitenspiegel ${n}`, { d: 'Elektrisch verstelbare en verwarmde buitenspiegel in zwart kunststof (Twist). Klapt met de hand ongeveer 80 graden naar achteren (hoek geschat).', ex: [s * 0.3, 0.1, 0.08],
-    open: { type: 'hinge', pivot: [s * 0.745, 0.99, 0.69], axis: [0, 1, 0], angle: s * 80 * PI / 180, min: 64 * PI / 180, label: `Buitenspiegel ${n}`, look: { dir: [s * 0.8, 0.3, 0.75], nodes: [`Buitenspiegel ${n}`] } } }, [
-    P('Spiegelvoet', merge([G.rbox(0.07, 0.035, 0.08, 0.01), xf(G.rbox(0.04, 0.05, 0.05, 0.01), [0, 0.03, 0.0])]), MAT.bodBlack, { d: 'Voet met bevestigingsplaat op het portier; blijft staan als de spiegel inklapt.', p: M(0.715, 0.93, 0.725), stay: true, ex: [-s * 0.05, -0.05, 0] }),
-    P('Spiegelhuis', G.rbox(0.085, 0.125, 0.11, 0.03), MAT.bodBlack, { d: 'Zwart kunststof huis dat glas, motoren en verwarming draagt.', p: M(cx, cy, cz), ex: [0, 0.02, 0.1] }),
-    P('Spiegelglas', G.rbox(0.07, 0.108, 0.004, 0.02), MAT.bodMirror, { d: 'Bol spiegelglas, verwarmd.', p: M(cx, cy, cz - 0.0575), ex: [0, 0, -0.12] }),
-    P('Glasdrager', G.rbox(0.072, 0.11, 0.006, 0.02), MAT.plastic, { d: 'Kunststof drager waarop het glas is geklikt.', p: M(cx, cy, cz - 0.05), ex: [0, 0, -0.07] }),
-    P('Verwarmingsfolie', G.box(0.05, 0.08, 0.002), MAT.heater, { d: 'Verwarmingsfolie achter het glas tegen condens en ijs.', inner: true, p: M(cx, cy, cz - 0.04), ex: [0, 0, -0.1] }),
-    P('Verstelmotor', G.rbox(0.05, 0.05, 0.03, 0.008), MAT.darkSteel, { d: 'Motor met twee assen voor het elektrisch verstellen van het glas.', inner: true, p: M(cx, cy, cz - 0.02), ex: [0, 0.06, -0.04] }),
+  const n = bodSn(s), M = (x, y, z) => [s * x, y, z];
+  const hx = 0.73 + bodMirW / 2, hy = 0.975, hz = 0.697;             // middelpunt van de achterrand; binnenrand op x 0,730, omgezette rand achter op z 0,690 (scharnierlijn)
+  const H = (dz, extra) => Object.assign({ p: M(hx, hy, hz + dz), s: [s, 1, 1] }, extra);
+  // de scharnierlijn ligt aan de binnenachterkant van het huis (x 0,733); het huis klapt naar achteren langs het portier en blijft daarbij buiten x 0,729, de voet binnen 0,728
+  return A(`Buitenspiegel ${n}`, { d: 'Elektrisch verstelbare en verwarmde buitenspiegel in zwart kunststof (Twist), liggend: breder dan hoog. Klapt met de hand ongeveer 80 graden naar achteren (hoek geschat).', ex: [s * 0.3, 0.1, 0.08],
+    open: { type: 'hinge', pivot: [s * 0.733, 0.99, 0.69], axis: [0, 1, 0], angle: s * 80 * PI / 180, min: 64 * PI / 180, label: `Buitenspiegel ${n}`, look: { dir: [s * 0.8, 0.3, 0.75], nodes: [`Buitenspiegel ${n}`] } } }, [
+    P('Spiegelvoet', merge([G.rbox(0.048, 0.035, 0.08, 0.01), xf(G.rbox(0.04, 0.05, 0.05, 0.01), [s * 0.004, 0.03, -0.005])]), MAT.bodBlack, { d: 'Voet met bevestigingsplaat in de voorhoek van het portier en een korte arm die tot tegen de binnenkant van het spiegelhuis loopt; blijft staan als de spiegel inklapt.', p: M(0.704, 0.93, 0.725), stay: true, ex: [-s * 0.05, -0.05, 0] }),
+    P('Spiegelhuis', bodMirShell(), MAT.bodBlack, H(0, { d: 'Zwart kunststof huis, liggend: ongeveer 168 mm breed, 92 mm hoog bij de voet en 112 mm aan de buitenkant (geschat). Naar voren bol en smaller in de diepte (70 mm bij de voet, 52 mm buiten); draagt glas, verstelmotor en verwarming.', ex: [0, 0.02, 0.1] })),
+    P('Spiegelglas', bodMirPlate('bodMirGlass', 0.9, 0.003), MAT.bodMirror, H(-0.004, { d: 'Spiegelglas van ongeveer 151 mm breed en 83 tot 101 mm hoog (geschat), verwarmd; in het model vlak.', ex: [0, 0, -0.12] })),
+    P('Glasdrager', bodMirPlate('bodMirCarrier', 0.93, 0.006), MAT.plastic, H(0.0005, { d: 'Kunststof drager waarop het glas is geklikt.', ex: [0, 0, -0.07] })),
+    P('Verwarmingsfolie', G.box(0.12, 0.065, 0.002), MAT.heater, H(0.0055, { d: 'Verwarmingsfolie achter het glas tegen condens en ijs.', inner: true, ex: [0, 0, -0.1] })),
+    P('Verstelmotor', G.rbox(0.05, 0.045, 0.03, 0.008), MAT.darkSteel, H(0.024, { d: 'Motor met twee assen voor het elektrisch verstellen van het glas.', inner: true, ex: [0, 0.06, -0.04] })),
   ]);
 }
 function bodDoor(s) {
