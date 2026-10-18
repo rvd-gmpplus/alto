@@ -2,7 +2,8 @@
 
 ## Versie 4 (in voorbereiding)
 
-- Buitenspiegels liggend (open punt SPIEGEL, beslissing 28): de spiegels lazen als staand formaat (huis 85 mm breed en 125 mm hoog). Nieuw huis: een bolle kunststof schaal met een omgezette rand, 168 mm breed, 92 mm hoog bij de voet en 112 mm aan de buitenkant, 70 mm diep bij de voet en 52 mm buiten (naar voren taps); glas 151 mm breed en 83 tot 101 mm hoog. Alle maten geschat. De spiegel reikt tot x 0,898 (150 mm buiten de huid) en klapt zonder doordringing 80 graden naar achteren (opentest gelijk aan `658afcf`). `integrity.py` is rood zolang `BOD_MIRW` in `body.js` op 0,835 staat; de orkestrator beslist over 0,904.
+- Buitenspiegels liggend (open punt SPIEGEL, beslissing 28): de spiegels lazen als staand formaat (huis 85 mm breed en 125 mm hoog). Nieuw huis: een bolle kunststof schaal met een omgezette rand, 168 mm breed, 92 mm hoog bij de voet en 112 mm aan de buitenkant, 70 mm diep bij de voet en 52 mm buiten (naar voren taps); glas 151 mm breed en 83 tot 101 mm hoog. Alle maten geschat. De spiegel reikt tot x 0,898 (150 mm buiten de huid) en klapt zonder doordringing 80 graden naar achteren (opentest gelijk aan `658afcf`). `BOD_MIRW` in `body.js` gaat daarom van 0,835 naar 0,904 (orkestrator); `integrity.py` 0 fouten.
+- Vloer voor de achterboog dicht (open punt VLOER): een gelakte sluitplaat `Dorpeleinde achter` sluit het achtereinde van de vloerkoker, zodat de vloerbedekking ook vanuit blikken op 0,15 m of lager niet meer van onderen te zien is. Nieuwe poort `onderdoorkijk onder de dorpel achter` in `meet.py --achter` (op versie 3 rood, nu 0 beeldpunten); zie `docs/testen.md`, sectie "Resultaten VLOER".
 
 ## Versie 3 (18 oktober 2026)
 

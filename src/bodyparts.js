@@ -11,6 +11,9 @@ MAT.lensClear.opacity = 0.26; MAT.lensClear.color.setHex(0xb9c6d0);
 MAT.glass.color.setHex(0x0d161c); MAT.glass.opacity = 0.8; MAT.glass.envMapIntensity = 0.35; MAT.glass.roughness = 0.06;
 std('bodBumper', 0x2b2d31, 0, 0.72);                                       // ongelakt kunststof van de GA-bumpers
 std('bodShield', 0x232529, 0, 0.8, { envMapIntensity: 0.12 });              // afscherming onder de bumper: donker antraciet, nauwelijks omgevingsweerkaatsing (de onderzijde las anders als grijs); 0x232529 geeft 0,55 tot 0,74 keer het luchtrooster (0x060607 gaf 0,28 tot 0,34 en las als zwarte plank)
+// lak voor een plaat die van opzij precies op de kant staat achter een dunne huid (Dorpeleinde achter): zonder polygonOffset tekende de GPU hem in een zijblik als lijn van
+// 1 beeldpunt door de dorpel heen, terwijl een straal de dorpel eerst raakt. Verder gelijk aan MAT.paint (kloon na de instellingen hierboven).
+MAT.bodPaintKant = Object.assign(MAT.paint.clone(), { name: 'bodPaintKant', polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 2 });
 std('bodLiner', 0x1a1b1e, 0, 0.9);                                         // zwarte kunststof bekleding van de wielkasten
 std('bodBlack', 0x0f1012, 0, 0.62);                                        // zwart kunststof: spiegels, grepen, wissers
 std('bodPillar', 0x060607, 0, 0.8, { envMapIntensity: 0.12 });             // zwart rubber en kader
@@ -297,6 +300,10 @@ function bodStructure() {
     // hij als onderstel en vlagden de kierpoorten van de voorkant (schuin-ver, eig-hoger) hem door de naad.
     ...both(s => P(`Dorpelflens achter ${sn(s)}`, lowSide(s, AXR + ARCH + 0.013, -0.60, 20, z => [sAtY(z, 0.255), sAtY(z, 0.280)], 2, [], 0.004), MAT.paint,
       { d: 'Gelakte flens van de dorpel achter de naad met het achterscherm, voor de achterwielboog; sluit de naad af, zodat je er niet op de vloer van het interieur kijkt.', ex: [s * 0.14, -0.05, 0] })),
+    // achtereinde van de vloerkoker (open punt VLOER): tussen dorpel en bodemplaat (y 0,221) en de vloerbedekking (0,267) liep de koker voor de achterboog open naar achteren. Onder het
+    // vooreinde van de wielkastkoker (y 0,250) en de wand (0,245) door keek je vanuit een zeer lage blik (h 0,15 m of lager) op de onderkant van de vloerbedekking. Zie bodDorpelEinde.
+    ...both(s => P(`Dorpeleinde achter ${sn(s)}`, bodDorpelEinde(s), MAT.bodPaintKant,
+      { d: 'Gelakte sluitplaat aan het achtereinde van de dorpel, voor de achterwielboog: sluit de koker tussen dorpel, bodemplaat en vloer af, zodat je van onderen niet op de vloerbedekking kijkt.', ex: [s * 0.14, -0.05, 0] })),
   ]);
   const front = A('Voorbouw', { d: 'Dragende voorbouw: langsliggers, veerpoottorens, schutbord, frontmodule en bumperbalk.', ex: [0, 0.05, 0.42] }, [
     ...both(s => P(`Langsligger voor ${sn(s)}`, G.box(0.05, 0.09, 0.80), MAT.paintIn, { d: 'Kokerprofiel in de motorruimte dat botsenergie opvangt (plaats en maten schematisch).', p: [s * 0.42, 0.33, 1.20], ex: [s * 0.08, 0, 0] })),
@@ -384,6 +391,25 @@ function bodAchtervloer() {
   const hiel = (() => { const g = new THREE.ShapeGeometry(new THREE.Shape([V(-xw, yV), V(xw, yV), V(xw, yB), V(-xw, yB)]), 1); g.translate(0, 0, zH); return g; })();
   const strook = vlak([[-xw, zH], [xw, zH], [xw, -0.947], [0.431, -0.947], [0.431, -0.961], [-0.431, -0.961], [-0.431, -0.947], [-xw, -0.947]], yV);
   return merge([bodem, hiel, strook]);
+}
+// sluitplaat in het vlak z -0,930: 4 mm voor wielkastkoker en wand (tot z -0,934) en tussen de Dwarsbalk achterbank (|x| tot 0,430, z -0,96 tot -0,88) en de dorpel.
+// De onderrand volgt de dorpel (0,8 mm erbinnen, zie hieronder), de bovenrand ligt op y 0,265 (2 mm onder de vloerbedekking) en buiten |x| 0,7275 op 0,254,
+// onder de Dorpelflens achter (|x| 0,729 tot 0,732, vanaf y 0,255 en z -0,935). Blijft binnen de huid. Gelakt zoals de dorpel: schuin van achteren zie je de plaat in de
+// onderste hoek van de boog, waar eerst de binnenkant van de dorpel te zien was; donker las hij daar als zwarte plaat. Langsarm en Kabelboom achter lopen erdoorheen, zoals
+// de langsarm al door de dorpel loopt (clash.py: onzeker, niet gesloten; geen doordringing).
+function bodDorpelEinde(s) {
+  const z = -0.930, sX = x => { let a = 0, b = 2 * S1; for (let i = 0; i < 40; i++) { const m = (a + b) / 2; if (halfPt(z, m)[0] < x) a = m; else b = m; } return (a + b) / 2; };
+  const s0 = sX(0.4305), sA = sX(0.7275), sB = sAtY(z, 0.254);
+  // onderrand op het vlak van de dorpel zoals bodSill het tekent (rijen in z, 8 vakken van S1 * 0,55 tot de dorpelrand), lineair tussen de twee rijen rond z en tussen de
+  // knopen, 0,8 mm naar binnen: op de exacte doorsnede stak de rand in de bocht door de koorden van de dorpel en las als lijn op de dorpel
+  const zd0 = AXR + ARCH + 0.002, dzd = (AXF - ARCH - 0.002 - zd0) / 40, j = Math.floor((z - zd0) / dzd), zr = [zd0 + j * dzd, zd0 + (j + 1) * dzd], fz = (z - zr[0]) / dzd;
+  const sa = S1 * 0.55, ns = 8, knoop = (zz, k) => sa + (sAtY(zz, bodYSill - 0.006) - sa) * k / ns, sb = lerp(knoop(zr[0], ns), knoop(zr[1], ns), fz);
+  const kp = k => { const p = halfPt(zr[0], knoop(zr[0], k)), q = halfPt(zr[1], knoop(zr[1], k)); return [lerp(p[0], q[0], fz), lerp(p[1], q[1], fz)]; };
+  const rand = u => { const f = (u - sa) / (sb - sa) * ns, k = Math.min(ns - 1, Math.max(0, Math.floor(f))), p = kp(k), q = kp(k + 1), n = bodN(z, u);
+    return [lerp(p[0], q[0], f - k) - n[0] * 0.0008, lerp(p[1], q[1], f - k) - n[1] * 0.0008]; };
+  const breaks = Array.from({ length: ns + 1 }, (_, k) => sa + (sb - sa) * k / ns);
+  const deel = (u0, u1, n, yT) => patch((u, t) => { const [x, y] = rand(u); return [s * x, lerp(y, yT, t), z]; }, u0, u1, n, () => [0, 1], 1, breaks);
+  return merge([deel(s0, sA, 14, 0.265), deel(sA, sB, 2, 0.254)]);
 }
 function bodSill(s) {
   return P(`Dorpel ${bodSn(s)}`, patch((z, p) => bodLow(z, p), AXR + ARCH + 0.002, AXF - ARCH - 0.002, 40, z => sideR(s, S1 * 0.55, sAtY(z, bodYSill - 0.006)), 8), MAT.paint,
