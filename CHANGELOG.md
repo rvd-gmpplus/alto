@@ -1,5 +1,19 @@
 # Wijzigingen
 
+## Versie 4 (in voorbereiding)
+
+### Systemen (golf 5, pakket SYS)
+
+Aanleiding: review 5 (`bevindingen.json`). Metingen met `tools/orkestratie/clash.py` op macOS; de Linux-set draait de orkestrator.
+
+- Uitlaat rechts en tankklep links (B-005, besluit van de gebruiker op twee foto's van een Alto GL 2001): middenpijp, dempers, verbindingspijp en eindstuk op x -0,30 (eindstuk x -0,326 tot -0,274); de ophangrubbers hangen aan de vloer, de vloerstrook voor de hielplaat en de rechter langsligger achter. Vulhals, vulpijp, ontluchting, koolstoffilter en leidingen links; de vulhals eindigt op x +0,638 tot +0,668, y 0,69 tot 0,75, z -1,48 tot -1,42, in de gespiegelde opening van de tankklep (die spiegelt het carrosseriepakket).
+- Brandstoftank (B-001): onder de achterbank tussen bodemvrijheid en handremkabels, y 0,172 tot 0,2095, z -0,94 tot -0,66 (was 0,095 tot 0,18 en tot -1,22 onder de torsiebalk); spanbanden tegen de vloer, geen zweven. De tank is daardoor 37,5 mm hoog; een tank van 35 l vraagt een kuip in de vloer (Beslissing SYS-1, beslissing van de gebruiker nodig).
+- Brandstoffilter in de toevoerleiding, beugel om het filter (B-036). Hitteschild voorpijp schuin onder het stuurhuis (B-029: stuurhuis -17,5 mm, tandheugel -11,4 mm weg). Expansievat en accu 22 mm naar achteren (B-028: stofkap rechts -17,2 naar +4,8 mm, links -12,2 naar +9,8 mm).
+- Eén voorste lambdasonde, in de voorpijp; de sonde in de verzamelaar is weg en de motorkabel loopt naar de stekker van de uitlaatsonde (B-038).
+- Beschrijvingen: accuhouder op de linker langsligger, vier relais met hun functie, uitlaat zonder roestvrij of verchroomd (B-014, B-018, B-019); wortelbeschrijving zonder plaatshouders.
+- Vereenvoudiging: slangklemmen via `hoseClamp` en de sondemoer via `hexNut` uit `core.js` (540 driehoeken meer: fijnere band).
+- Toetsen (macOS, voor de EGR-commit): lint, `framework.py check`, `build.py`, smoke, integrity (0 fouten, 73 waarschuwingen zoals voorheen), silhouette, `tri.py --gate` (totaal 344.430), `opentest --strikt-min` (0 fouten), `ui_inner`, zijstraal, `meet.py` (99 van 99 hard, 12 van 13 zacht) en `meet.py --achter` (27 van 27) groen. `clash.py` op de vier systemen tegen de nulmeting: 17 doordringingen weg of ondieper, nieuw alleen bevestigingen van 0,2 tot 1,5 mm (rubbers, beugels, spanbanden tegen de vloer) en de tankdop 8,8 mm in de C-stijlbekleding links, tot carrosserie en interieur de tankklep naar links spiegelen. `pncheck` faalt al op `658afcf` (geen `data/pn/`).
+
 ## Versie 3 (18 oktober 2026)
 
 Aanleiding: de open punten uit Versie 2. De neus stond nog 30 tot 60 mm te hoog, zodat de klacht over de koplampen en de grille niet volledig was opgelost; de achterwielkast liet doorkijk naar het interieur zien; en de meetscripts van de voorkant draaiden niet in de volledige set. Deze versie werkt het framework bij, neemt de metingen op in de set, verlaagt de neus en sluit de achterwielkast. Uitleg, cijfers en afwijkingen per stap staan in `docs/testen.md` en `docs/onderzoek/beslissingen.md` (punt 17, 26 en 27); kerncijfers in `docs/cijfers.md`. Alleen wat een meting draagt staat hier.
