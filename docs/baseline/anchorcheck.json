@@ -2,9 +2,9 @@
  "commit": "",
  "viewport": "1280x800",
  "totaal": {
-  "labels": 243,
-  "eigen": 212,
-  "vrij": 185
+  "labels": 244,
+  "eigen": 214,
+  "vrij": 186
  },
  "presets": {
   "assembled": {
@@ -298,7 +298,7 @@
    "vrij": 5,
    "achter": [
     "Reflector achter Afdekglas",
-    "Lampfitting achter Lamprand"
+    "Lampfitting achter Hoekreflector"
    ],
    "lucht": [
     "Stofkap lamp",
@@ -307,9 +307,9 @@
   },
   "tailgate": {
    "label": "Achterklep",
-   "labels": 18,
-   "eigen": 18,
-   "vrij": 11,
+   "labels": 19,
+   "eigen": 19,
+   "vrij": 12,
    "achter": [
     "Achterruitverwarming achter Achterruit",
     "Achterklepslot achter Buitenpaneel achterklep",
@@ -349,13 +349,12 @@
   "dash": {
    "label": "Dashboard",
    "labels": 7,
-   "eigen": 4,
+   "eigen": 5,
    "vrij": 7,
    "achter": [],
    "lucht": [
     "Dashboardkap",
-    "Handschoenenkastje",
-    "Instrumentenkap"
+    "Handschoenenkastje"
    ]
   },
   "openHood": {
