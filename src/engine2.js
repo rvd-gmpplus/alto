@@ -112,7 +112,9 @@ function engBuildHead() {
   ENG_XM.forEach((x, i) => [-1, 1].forEach((sg, j) => hb.push([x, sg * 0.0215, i * 2 + j + 1])));
   const cap = engCapGeo();
   const caps = ENG_XM.map((x, i) => P(`Lagerdop nokkenas ${i + 1}`, cap, MAT.aluCast, { d: `Lagerdop ${i + 1} van de nokkenas.`, p: [x, ENG_CAMY, 0], ex: [0, 0.05, 0] }));
-  const valves = ENG_XC.map((_, i) => A(`Kleppen cilinder ${i + 1}`, { d: `De vier kleppen van cilinder ${i + 1} met veren, schotels en keggen.`, ex: [ENG_XC[i] * 0.4, 0.02, 0] }, [engValve('in', i, 0), engValve('in', i, 1), engValve('ex', i, 0), engValve('ex', i, 1)]));
+  // per cilinder een uitklapstap van een volle cilindersteek langs x: de kleppen spreiden binnen hun cilinder 30 mm naar weerszijden
+  // en kwamen met 0,4 maal de steek uitgeklapt in de kleppen van de buurcilinder terecht (B-020)
+  const valves = ENG_XC.map((_, i) => A(`Kleppen cilinder ${i + 1}`, { d: `De vier kleppen van cilinder ${i + 1} met veren, schotels en keggen.`, ex: [ENG_XC[i], 0.02, 0] }, [engValve('in', i, 0), engValve('in', i, 1), engValve('ex', i, 0), engValve('ex', i, 1)]));
   const adj = cache('engAdj', () => merge([xf(G.cyl('y', 0.003, 0.003, 0.0105, 8), [0, 0.00525, 0]), xf(engNut(0.0105, 0.0035, 'y'), [0, 0.0072, 0])]));
   const rockers = ENG_XC.map((xc, i) => A(`Tuimelaars cilinder ${i + 1}`, { d: `De acht tuimelaars van cilinder ${i + 1} (vier inlaat, vier uitlaat; een per klep) met stelschroef en borgmoer.`, ex: [xc * 0.3, 0.03, 0] },
     [[1, ENG_VXI, 'inlaat'], [-1, ENG_VXE, 'uitlaat']].flatMap(([sg, dx, nm]) => [-1, 1].flatMap((dk, k) => {
@@ -167,7 +169,7 @@ function engBuildTiming() {
       P('Spanveer', engSpring(0.005, 0.0008, 0.03, 7, 6, 'x'), MAT.steel, { d: 'Veer die de arm tegen de riem drukt.', p: [-0.1905, 0.09, -0.04], ex: [0, 0, -0.06] }),
       P('Spanbout', hexBolt(0.03, 0.01, 'x'), MAT.darkSteel, { d: 'Draaipuntbout van de spanarm in het blok.', p: [-0.1935, 0.07, -0.058], ex: [-0.1, 0, 0] }),
     ]),
-    P('Distributiekap', merge([rim, face]), MAT.engCover, { d: 'Beschermkap over riem, wielen en spanrol, met een opening voor de krukasneus. Vorm geschat; in werkelijkheid vaak in een boven- en onderdeel.', ex: [-0.16, 0, 0] }),
+    P('Distributiekap', merge([rim, face]), MAT.engCover, { d: 'Beschermkap over riem, wielen en spanrol, met een opening voor de krukasneus. Vorm geschat; in werkelijkheid vaak in een boven- en onderdeel.', ex: [-0.24, 0, 0] }),
     P('Pakking distributiekap', gasket, MAT.rubber, { d: 'Rubber pakking tussen het blok en de distributiekap.', ex: [-0.03, 0, 0] }),
     A('Kapbouten', { d: 'Zes bouten van de distributiekap (aantal en plaats geschat).', ex: [-0.26, 0, 0] }, coverBolts.map(([z, y], k) => P(`Kapbout ${k + 1}`, hexBolt(0.02, 0.008, 'x'), MAT.darkSteel, { d: 'Bout van de distributiekap.', p: [-0.2265, y, z], ex: [-0.04, 0, 0] }))),
   ]);
@@ -237,7 +239,7 @@ function engBuildCooling() {
       ...[[0.075, 0.11], [0.075, 0.07]].map(([z, y], k) => P(`Pompbout ${k + 1}`, hexBolt(0.024, 0.008, 'x'), MAT.darkSteel, { d: 'Bout die het pomphuis op het blok vastzet.', p: [-0.196, y, z], ex: [-0.07, 0, 0] })),
     ]),
     A('Thermostaathuis', { d: 'Huis met thermostaat aan de poeliezijde van de kop: laat koelvloeistof pas naar de radiateur als de motor warm is. Plaats aangenomen.', ex: [-0.04, 0.12, 0.02] }, [
-      P('Thermostaatbehuizing', merge([xf(hullTherm, [-0.162, 0.225, 0.1]), xf(arm2, [-0.162, 0.235, 0.0905])]), MAT.aluCast, { d: 'Aluminium behuizing met hals naar boven voor de bovenste radiateurslang; vastgeschroefd aan de voorzijde van de kop.', ex: [0, 0, 0] }),
+      P('Thermostaatbehuizing', merge([xf(hullTherm, [-0.162, 0.225, 0.1]), xf(arm2, [-0.162, 0.235, 0.0905])]), MAT.aluCast, { d: 'Aluminium behuizing met hals naar boven voor de bovenste radiateurslang; vastgeschroefd aan de voorzijde van de kop.', ex: [0, 0, 0.08] }),
       P('Thermostaat', merge([G.cyl('y', 0.012, 0.012, 0.03, 14), xf(annulus(0.012, 0.0185, 0.003, 'y', 16), [0, 0.015, 0])]), MAT.copper, { d: 'Wasthermostaat met klepschijf (schematisch).', p: [-0.162, 0.255, 0.1], ex: [0, 0.05, 0], inner: true }),
       P('Thermostaatveer', engSpring(0.0075, 0.0007, 0.025, 6, 6), MAT.steel, { d: 'Veer die de thermostaat sluit.', p: [-0.162, 0.26, 0.1], ex: [0, 0.08, 0], inner: true }),
       P('Pakking thermostaat', annulus(0.0125, 0.0195, 0.0015, 'y', 18), MAT.rubber, { d: 'Rubber afdichting onder de thermostaat.', p: [-0.162, 0.2745, 0.1], ex: [0, 0.03, 0] }),

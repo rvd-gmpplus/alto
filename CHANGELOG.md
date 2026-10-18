@@ -19,6 +19,18 @@ Aanleiding: review 5 (`bevindingen.json`). Metingen met `tools/orkestratie/clash
 - Vereenvoudiging: slangklemmen via `hoseClamp` en de sondemoer via `hexNut` uit `core.js` (540 driehoeken meer: fijnere band).
 - EGR (B-040, eigen commit, terug te draaien): klep onder de inlaatkast en een pijp van de verzamelaar om de bakzijde van de kop; EGR is bevestigd voor de G10BB, plaats, vorm en route zijn geschat (de gebruiker twijfelt of de benzine-Alto een EGR-klep heeft). Geen doordringing (`clash.py`); integrity, opentest, `ui_inner --open --strict`, zijstraal, smoke, `tri.py --gate` (totaal 345.554) en `meet.py` groen. Een eerste plaats op de voorkant van de inlaatkast vergrootte het kader van de aandrijflijn met 14 mm, waardoor `ui_inner --strict` een bestaand gat vond: de peilstok steekt 1 cm boven de peilstokbuis uit (beide `inner`-meldingen, ook de trek- en houdspoel van de solenoïde, staan los van de EGR).
 - Toetsen (macOS, voor de EGR-commit): lint, `framework.py check`, `build.py`, smoke, integrity (0 fouten, 73 waarschuwingen zoals voorheen), silhouette, `tri.py --gate` (totaal 344.430), `opentest --strikt-min` (0 fouten), `ui_inner`, zijstraal, `meet.py` (99 van 99 hard, 12 van 13 zacht) en `meet.py --achter` (27 van 27) groen. `clash.py` op de vier systemen tegen de nulmeting: 17 doordringingen weg of ondieper, nieuw alleen bevestigingen van 0,2 tot 1,5 mm (rubbers, beugels, spanbanden tegen de vloer) en de tankdop 8,8 mm in de C-stijlbekleding links, tot carrosserie en interieur de tankklep naar links spiegelen. `pncheck` faalt al op `658afcf` (geen `data/pn/`).
+### Golf 5, pakket DRV (aandrijving, motor, onderstel; tak `golf5-drv`)
+
+Bron: review 5 (`bevindingen.json`). Keuzes staan in `docs/onderzoek/beslissingen.md` (Beslissing DRV-1 tot en met DRV-4).
+
+- Uitklappen (B-020): van de 35 paren die uitgeklapt in elkaar landden zijn er 32 vrij (`nabijheid.py`, uitgeklapt_raakt 35 naar 3; de drie die blijven zijn van het interieur). Kleppen per cilinder een volle cilindersteek uit elkaar, de secundaire as als waaier langs de as, aandrijfassen (schacht, klemmen, kogelkooi, binnenring), startmotor, drukgroep, thermostaathuis, distributiekap, filterhuis, carterpan en schroefveer achter. De linker aandrijfas had hoezen die 45 mm in elkaar lagen: ze zijn korter (Beslissing DRV-3).
+- Vorstpluggen krijgen een uitklapvector (B-021); aandrijfas-afdichtingen en remleidingen voor klappen gespiegeld uit, de motorsteunrubbers bewust niet (B-022).
+- Handrem (B-035): een hendel, die van het interieur. Hendel, greep en steun zijn uit het onderstel; de voorste kabel begint op het kabelaansluitpunt van het interieur en loopt door de vloer naar de egalisator.
+- Wieldop (B-006): vier sleuven bij de rand en het embleem in dezelfde grijze kunststof, naar foto's van een Alto GL uit 2001 (Beslissing DRV-2).
+- Aandrijfas links in de langsligger voor (B-030): niet aan de aandrijvingskant op te lossen; patchvoorstel voor `bodyparts.js` aan de eigenaar van de carrosserie (Beslissing DRV-1).
+- Kleine punten: veerpoottop en eind langsarm uit `AXF` en `AY` (B-063); d van de duwstang (B-015); Panhardbout links inner en de ontluchting van de bak naast de motorsteunbeugel (B-043); peilstok sluit aan op de buis; solenoidehuis voor dicht.
+- Simplify: `chsNut` vervalt (`hexNut`), schroefveren van de wielophanging via `spring`, drie ringen via `ringPattern`; geometrie van alle meshes gelijk.
+- Driehoeken: Aandrijflijn 108.132 naar 108.228 (solenoidehuis met bodem), Onderstel 62.460 naar 62.484, totaal 343.468 naar 343.588 (budget 400.000); de andere groepen gelijk.
 
 ## Versie 3 (18 oktober 2026)
 

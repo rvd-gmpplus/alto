@@ -30,15 +30,15 @@ function engBuildLube() {
       P('Zuigkorf', strainer, MAT.steel, { d: 'Zuigkorf met fijn gaas dat vuil tegenhoudt.', p: [-0.115, -0.17, 0], ex: [0, -0.03, 0] }),
     ]),
     A('Oliefilter', { d: 'Wegwerp-schroeffilter op de voorzijde van het blok; de filtermaat is niet voor deze auto bevestigd.', ex: [0, -0.04, 0.15] }, [
-      P('Filterhuis', filt, MAT.oilFilter, { d: 'Blauw gelakt plaatstalen filterhuis met rubber afdichtring.', p: [fx, fy, zf], ex: [0, 0, 0.05] }),
+      P('Filterhuis', filt, MAT.oilFilter, { d: 'Blauw gelakt plaatstalen filterhuis met rubber afdichtring.', p: [fx, fy, zf], ex: [0, 0, 0.12] }),
       P('Filterelement', elem, MAT.filter, { d: 'Papieren filterelement in het huis (schematisch).', p: [fx, fy, zf], ex: [0, 0, 0.0], inner: true }),
       P('Filterpakking', annulus(0.027, 0.036, 0.003, 'z', 24), MAT.rubber, { d: 'Rubber ring tussen filter en blok.', p: [fx, fy, zf - 0.001], ex: [0, 0, 0.02] }),
       P('Filternippel', merge([G.cyl('z', 0.0085, 0.0085, 0.05, 12)]), MAT.steel, { d: 'Draadnippel in het blok waarop het filter geschroefd wordt.', p: [fx, fy, zf + 0.0], ex: [0, 0, 0.03] }),
     ]),
     A('Peilstok', { d: 'Oliepeilstok met buis aan de voorzijde van het blok.', ex: [0.06, 0.08, 0.1] }, [
       P('Peilstokbuis', G.cyl('y', 0.0065, 0.0065, 0.225, 10), MAT.steel, { d: 'Dunwandige buis van het carter omhoog langs het blok.', p: [0.152, 0.0525, 0.0975], ex: [0, 0, 0] }),
-      P('Peilstok', G.cyl('y', 0.0022, 0.0022, 0.235, 8), MAT.steel, { d: 'Stalen meetstok met merken voor minimaal en maximaal peil.', p: [0.152, 0.0575, 0.0975], ex: [0, 0.12, 0], inner: true }),
-      P('Peilstokgreep', G.torus('z', 0.008, 0.0018, 16, 5), MAT.handle, { d: 'Gele greep van de peilstok.', p: [0.152, 0.1755, 0.0975], ex: [0, 0.2, 0] }),
+      P('Peilstok', G.cyl('y', 0.0022, 0.0022, 0.227, 8), MAT.steel, { d: 'Stalen meetstok met merken voor minimaal en maximaal peil.', p: [0.152, 0.0535, 0.0975], ex: [0, 0.12, 0], inner: true }),
+      P('Peilstokgreep', G.torus('z', 0.008, 0.0018, 16, 5), MAT.handle, { d: 'Gele greep van de peilstok.', p: [0.152, 0.1745, 0.0975], ex: [0, 0.2, 0] }),
       P('Peilstokbus', G.cyl('y', 0.009, 0.009, 0.012, 10), MAT.aluCast, { d: 'Bus in het blok waarin de peilstokbuis geperst zit.', p: [0.152, -0.02, 0.0925], ex: [0, -0.04, 0.03] }),
     ]),
   ]);
