@@ -31,6 +31,8 @@ phys('bodLensRib', { color: 0xe4edf5, metalness: 0, roughness: 0.03, transparent
 std('bodLampC', 0x9a9fa5, 0.3, 0.45, { envMapIntensity: 0.25 });          // hoekreflector: dezelfde map als de hoofdreflector, maar donkerder en minder weerkaatsend (de hoekkap zit schuin op de omgeving en las als witte vlek)
 std('bodLampRim', 0x2a2c30, 0, 0.5, { envMapIntensity: 0.2 });           // lamprand tussen hoofdlens en hoekkap: donkergrijs kunststof met een lichte glans, geen zwart gat
 std('bodRefl', 0x5f656c, 0.7, 0.5);                                    // reflectorschaal achter helder glas (donkerder dan spiegelend chroom)
+std('bodReflWit', 0xe9ecef, 0.3, 0.3, { envMapIntensity: 0.8 });          // reflector van het achterlicht: licht wit/chroom (de grijze bodRefl las als grijs vlak achter het heldere glas, foto 1993-2001)
+phys('bodTLHelder', { color: 0xf6f8fa, metalness: 0, roughness: 0.08, transparent: true, opacity: 0.4, depthWrite: false, envMapIntensity: 0.5 });   // helder deel van het achterlicht: lichter dan lensClear (0xb9c6d0)
 const bodBoth = f => [1, -1].map(f);
 const bodSn = s => sideName(s);
 const bodPp = (s, sv) => (s > 0 ? sv : 2 - sv);                         // s van de linkerhelft naar p voor zijde s
@@ -1035,10 +1037,11 @@ function bodDoor(s) {
     open: { type: 'hinge', pivot: piv, axis: [0, 1, 0], angle: -s * 62 * PI / 180, min: 52 * PI / 180, label: dName, look: { dir: [s * 1, 0.4, 0.12], nodes: [dName] } } }, kids);
 }
 /* ---------- achterzijde: bumper, achterlichten, achterpaneel ---------- */
+// Achterlichten liggend (ca. 1,3 : 1, hoogte 210 mm; keuze eigenaar naar foto 1993-2001): bodTLy1 0,80 (was 0,845).
 // Achterkant volgens de foto's van de 2001 GL (Brits, Wikimedia; Duits, Mannheim), bevinding B-002: de klep loopt van de dakrand tot vlak boven de bumper (slot onderin de klep),
 // de achterlichten staan in de hoeken naast de klep, de kentekenplaat zit in een uitsparing in de bumper met de verlichting erboven, en de bagageopening loopt tot de
 // laaddrempel achter de bovenrand van de bumper. Alle maten zijn geschat op de foto's; zie docs/onderzoek/beslissingen.md, Beslissing BODY-1.
-const bodTLy0 = 0.59, bodTLy1 = 0.845, bodTLx = 0.40, bodZTL = -1.665;
+const bodTLy0 = 0.59, bodTLy1 = 0.80, bodTLx = 0.40, bodZTL = -1.665;
 const bodTLy = f => lerp(bodTLy0, bodTLy1, f);
 const bodTLf = 0.64;                               // grens in het achterlicht: rood eronder, helder erboven (foto's: het heldere deel is ongeveer een derde)
 const bodTLreg = (s, off, f0 = 0, f1 = 1) => merge([
@@ -1064,11 +1067,11 @@ function bodTaillamp(s) {
     patch((z, t) => bodLow(z, bodPp(s, sAtY(z, y)), lerp(zL, zH, t)), ZR + 0.0005, bodZTL, 10, () => [0, 1], 1)]);
   const huis = merge([bodTLreg(s, zH), kap(bodTLy0), kap(bodTLy1), patch((y, t) => [s * bodTLx, y, ZR + lerp(zL, zH, t)], bodTLy0, bodTLy1, 3, () => [0, 1], 1),
     patch((y, t) => bodLow(bodZTL, bodPp(s, sAtY(bodZTL, y)), lerp(zL, zH, t)), bodTLy0, bodTLy1, 4, () => [0, 1], 1)]);
-  return A(`Achterlicht ${n}`, { d: 'Verticaal achterlicht in de achterhoek naast de klep, om de hoek van het achterscherm gewikkeld: boven een heldere lens met de richtingaanwijzer (oranje lamp) en het achteruitrijlicht, onder een rode lens voor achterlicht en remlicht. Volgorde zoals op de foto\'s van de 2001 GL.', ex: [s * 0.3, 0.1, -0.5] }, [
+  return A(`Achterlicht ${n}`, { d: 'Liggend achterlicht (verhouding ongeveer 1,3 op 1, hoogte 210 mm; keuze eigenaar naar foto 1993-2001) in de achterhoek naast de klep, om de hoek van het achterscherm gewikkeld: boven een heldere lens met de richtingaanwijzer (oranje lamp) en het achteruitrijlicht, onder een rode lens voor achterlicht en remlicht. Volgorde zoals op de foto\'s van de 2001 GL.', ex: [s * 0.3, 0.1, -0.5] }, [
     P('Lens achterlicht', bodTLreg(s, zL, 0, bodTLf), MAT.lensRed, { d: 'Rode afdeklens van achterlicht en remlicht: het onderste en grootste deel van het achterlicht.', ex: [s * 0.05, -0.02, -0.1] }),
-    P('Lens richtingaanwijzer en achteruitrijlicht', bodTLreg(s, zL, bodTLf, 1), MAT.lensClear, { d: 'Heldere lens bovenin het achterlicht, ongeveer een derde van de hoogte; erachter de oranje lamp van de richtingaanwijzer en de lamp van het achteruitrijlicht.', ex: [s * 0.05, 0.04, -0.1] }),
+    P('Lens richtingaanwijzer en achteruitrijlicht', bodTLreg(s, zL, bodTLf, 1), MAT.bodTLHelder, { d: 'Heldere (lichte) lens bovenin het achterlicht, ongeveer een derde van de hoogte; erachter de oranje lamp van de richtingaanwijzer en de lamp van het achteruitrijlicht.', ex: [s * 0.05, 0.04, -0.1] }),
     P('Lichthuis achterlicht', huis, MAT.plastic, { d: 'Kunststof behuizing met fittingen, in het achterscherm geschroefd; een gesloten bak met een wand langs de klep.', ex: [-s * 0.04, 0, 0.06] }),
-    P('Reflector achterlicht', bodTLreg(s, 0.015), MAT.bodRefl, { d: 'Verchroomde reflector achter de lenzen.', ex: [0, 0, 0.04] }),
+    P('Reflector achterlicht', bodTLreg(s, 0.015), MAT.bodReflWit, { d: 'Lichte, verchroomde reflector (wit) achter de lenzen.', ex: [0, 0, 0.04] }),
     lamp('achterlicht en remlicht', 0.44, bodTLy(0.32), MAT.ceramic, 'Steeklamp met twee gloeidraden voor achterlicht en remlicht, achter de rode lens.'),
     lamp('richtingaanwijzer', 0.452, bodTLy(0.82), MAT.amber, 'Oranje steeklamp van de richtingaanwijzer achter de heldere lens (op de foto\'s schemert het oranje door het heldere glas).'),
     lamp('achteruitrijlicht', 0.42, bodTLy(0.82), MAT.ceramic, 'Steeklamp van het achteruitrijlicht achter de heldere lens, naast de richtingaanwijzer.'),
