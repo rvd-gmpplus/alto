@@ -148,14 +148,15 @@ function engBuildIgnition() {
 }
 
 /* ---------- sensoren ---------- */
+// stekker van de voorste lambdasonde (motorframe): hier eindigt de kabel van de motorkabelboom; systems.js zet de sondestekker hier neer
+const ENG_O2PLUG = [0.17, 0.115, -0.207];
 function engBuildSensors() {
   const dz = -ENG_CAMZ, [, py, pz] = ENG_PLEN;
-  return A('Sensoren', { d: 'De sensoren en schakelaars op de motor die de regeleenheid voeden. De lijst volgt het handboek (gaskleppositie, inlaatdruk, koelvloeistoftemperatuur, krukaspositie, zuurstof); de plaats en het type zijn geschat.', ex: [0.15, 0.1, 0.05] }, [
+  return A('Sensoren', { d: 'De sensoren en schakelaars op de motor die de regeleenheid voeden. De lijst volgt het handboek (gaskleppositie, inlaatdruk, koelvloeistoftemperatuur, krukaspositie, zuurstof); de plaats en het type zijn geschat. De twee lambdasondes (handboek: twee) zitten in de uitlaat, voor en achter de katalysator, en horen bij het uitlaatsysteem.', ex: [0.15, 0.1, 0.05] }, [
     P('Krukaspositiesensor', merge([G.cyl('x', 0.0075, 0.0075, 0.0105, 10), xf(G.box(0.01, 0.012, 0.014), [0.0, 0.006, 0.0])]), MAT.engCoil, { d: 'Magnetische opnemer die de tanden van de startkrans aftast: geeft de krukaspositie door (handboek: krukaspositiesensor bij de krukas). Plaats geschat.', p: [0.1832, 0.115, 0], ex: [0.1, 0, 0] }),
     P('Koelvloeistoftemperatuursensor', merge([G.cyl('z', 0.005, 0.005, 0.02, 8), xf(G.cyl('z', 0.008, 0.008, 0.006, 6), [0, 0, 0.012])]), MAT.copper, { d: 'Voeler in het thermostaathuis die de temperatuur van de koelvloeistof doorgeeft.', p: [-0.162, 0.245, 0.1245], ex: [0, 0, 0.08] }),
     P('Inlaatdruksensor', merge([G.box(0.026, 0.02, 0.014), xf(G.cyl('z', 0.004, 0.004, 0.012, 8), [0.0, 0.0, -0.012])]), MAT.engCoil, { d: 'MAP-sensor aan de achterzijde van de inlaatkast die de inlaatdruk meet.', p: [-0.06, 0.283, 0.1245], ex: [0, 0.05, -0.04] }),
     P('Gaskleppositiesensor', merge([G.box(0.02, 0.02, 0.014)]), MAT.engCoil, { d: 'Sensor op de gasklepas die de stand van de gasklep aan de regeleenheid doorgeeft.', p: [0.166, py, pz - 0.0415], ex: [0, 0, -0.07] }),
-    P('Lambdasonde voor', merge([G.cyl('x', 0.006, 0.006, 0.035, 10), xf(engNut(0.022, 0.008, 'x'), [-0.012, 0, 0]), xf(G.cyl('x', 0.0085, 0.0085, 0.02, 10), [0.027, 0, 0])]), MAT.steel, { d: 'Zuurstofsensor in de verzamelaar, voor de katalysator (handboek: twee lambdasondes; de tweede zit achter de katalysator en hoort bij het uitlaatsysteem).', p: [ENG_COLL[0] + 0.043, 0.158, ENG_COLL[2]], ex: [0.07, 0, 0] }),
     P('Oliedrukschakelaar', merge([G.cyl('z', 0.006, 0.006, 0.02, 8), xf(engNut(0.016, 0.008, 'z'), [0, 0, 0.002])]), MAT.steel, { d: 'Schakelaar die het waarschuwingslampje van de oliedruk bedient.', p: [0.025, 0.03, 0.099], ex: [0, 0, 0.06] }),
   ]);
 }
@@ -173,7 +174,7 @@ function engBuildHarness() {
     P('Kabel inlaatdruksensor', tube([[-0.05, 0.28, 0.11], [-0.055, 0.284, 0.118], [-0.06, 0.283, 0.1315]], 0.0025, 10, 5), MAT.engHarness, { d: 'Draden naar de inlaatdruksensor.', ex: [0, 0.05, -0.02] }),
     P('Kabel koelvloeistofsensor', tube([[-0.13, 0.278, 0.11], [-0.15, 0.27, 0.125], [-0.162, 0.245, 0.14]], 0.0025, 12, 5), MAT.engHarness, { d: 'Draden naar de koelvloeistoftemperatuursensor.', ex: [-0.04, 0.05, 0.04] }),
     P('Kabel krukaspositiesensor', tube([[0.23, 0.3, 0.012], [0.205, 0.22, 0.0], [0.19, 0.14, 0.0], [0.1865, 0.125, 0.0]], 0.0025, 18, 5), MAT.engHarness, { d: 'Draden naar de krukaspositiesensor, langs het blok naar beneden.', ex: [0.08, 0, 0] }),
-    P('Kabel zuurstofsensor', tube([[0.23, 0.3, 0.012], [0.252, 0.28, -0.02], [0.252, 0.22, -0.1], [0.23, 0.185, -0.19], [0.085, 0.158, -0.215]], 0.0025, 30, 5), MAT.engHarness, { d: 'Draden naar de lambdasonde voor, om het uiteinde van de kop naar de achterzijde.', ex: [0.08, 0, -0.06] }),
+    P('Kabel zuurstofsensor', tube([[0.23, 0.3, 0.012], [0.252, 0.28, -0.02], [0.252, 0.22, -0.1], [0.23, 0.185, -0.19], [0.19, 0.14, -0.205], [ENG_O2PLUG[0], ENG_O2PLUG[1] + 0.012, ENG_O2PLUG[2]]], 0.0025, 30, 5), MAT.engHarness, { d: 'Draden om het uiteinde van de kop naar de achterzijde, naar de stekker van de lambdasonde voor in de voorpijp van de uitlaat.', ex: [0.08, 0, -0.06] }),
     P('Kabel oliedrukschakelaar', tube([[0.025, 0.03, 0.109], [0.012, 0.06, 0.106], [0.012, 0.12, 0.101], [0.012, 0.19, 0.1], [0.012, 0.27, 0.1], [0.012, 0.278, 0.108]], 0.0025, 30, 5), MAT.engHarness, { d: 'Draad naar de oliedrukschakelaar, langs het blok omhoog naar de bundel; verloop schematisch.', ex: [0, -0.06, 0.04] }),
     P('Kabelbinders', merge([[0.0, 0.28, 0.11], [0.1, 0.28, 0.11], [-0.09, 0.28, 0.11], [0.226, 0.298, 0.05]].map(([x, y, z]) => xf(G.box(0.006, 0.012, 0.012), [x, y, z]))), MAT.plastic, { d: 'Kunststof binders die de bundel op zijn plaats houden (aantal en plaats geschat).', ex: [0, 0.08, 0] }),
   ]);

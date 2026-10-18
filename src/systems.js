@@ -146,15 +146,18 @@ function buildExhaust() {
     P('Voorpijp', sysTube(voor, R, 12, 0.03), MAT.exhaust, { d: 'Stalen pijp die van de flexibele balg omlaag en daarna naar achteren loopt, naar de ingang van de katalysator.', ex: [0, -0.1, 0] }),
   ]);
   // ---------- katalysator met twee lambdasondes ----------
-  const sonde = (name, d, base, dir, cEnd, ex) => {
+  const sonde = (name, d, base, dir, cEnd, ex, via) => {
     const t = V3(...dir).normalize(), q = quatFromTo(V3(0, 1, 0), t), tip = sysAt(base, t, 0.058);
     return A(name, { d, ex }, [
       sysPart('Sondelichaam', cache('sysSonde', () => merge([G.cyl('y', 0.0045, 0.0045, 0.02, 8), xf(hexNut('y', 0.0105, 0.007), [0, 0.022, 0]), xf(G.cyl('y', 0.0065, 0.0065, 0.03, 10), [0, 0.04, 0])])), MAT.steel, base, 'Verwarmde zuurstofsonde met zeskantmoer, ingeschroefd in de pijp.', [t.x * 0.1, t.y * 0.1, t.z * 0.1], { q }),
-      P('Sondekabel', sysTube([tip, sysLerp(tip, cEnd, 0.4), cEnd], 0.002, 5, 0.02), MAT.sysWire, { d: 'Dunne signaal- en verwarmingskabel van de sonde naar de stekker.', ex: [t.x * 0.15, t.y * 0.15 + 0.03, t.z * 0.15] }),
+      P('Sondekabel', sysTube([tip, ...(via || [sysLerp(tip, cEnd, 0.4), cEnd])], 0.002, 5, 0.02), MAT.sysWire, { d: 'Dunne signaal- en verwarmingskabel van de sonde naar de stekker.', ex: [t.x * 0.15, t.y * 0.15 + 0.03, t.z * 0.15] }),
       sysPart('Sondestekker', G.box(0.014, 0.02, 0.014), MAT.plastic, cEnd, 'Stekker van de sonde op de kabelboom.', [t.x * 0.2, t.y * 0.2 + 0.05, t.z * 0.2]),
     ]);
   };
-  const sondeVoor = sonde('Lambdasonde voor', 'Zuurstofsonde in de voorpijp, voor de katalysator: meet het zuurstofgehalte voor de mengselregeling (OBD). Plaats op de pijp geschat.', [xE + 0.0125, 0.245, zE - 0.045], [0.7, 0.7, 0], [xE + 0.11, 0.42, zE - 0.03], [0.1, 0.1, 0]);
+  // de kabel van de voorste sonde loopt voor het stuurhuis langs omhoog naar de stekker op het eind van de motorkabelboom (ENG_O2PLUG)
+  const plugV = sysM(ENG_O2PLUG);
+  const sondeVoor = sonde('Lambdasonde voor', 'Zuurstofsonde in de voorpijp, voor de katalysator: meet het zuurstofgehalte voor de mengselregeling (OBD). Een van de twee sondes uit het handboek; de stekker zit op de motorkabelboom. Plaats op de pijp geschat.', [xE + 0.0125, 0.245, zE - 0.045], [0.7, 0.7, 0], plugV, [0.1, 0.1, 0],
+    [[xE + 0.08, 0.33, zE - 0.017], [xE + 0.10, 0.37, zE - 0.002], [plugV[0] - 0.02, plugV[1] - 0.045, plugV[2] - 0.002], [plugV[0], plugV[1] - 0.01, plugV[2]]]);
   const sondeNa = sonde('Lambdasonde na', 'Zuurstofsonde achter de katalysator: controleert of de katalysator werkt (OBD). Plaats op de pijp geschat.', [xC + 0.015, PY + 0.012, zC1 - 0.06], [0.8, 0.5, 0], [xC + 0.1, 0.205, zC1 - 0.12], [0.1, 0.05, 0]);
   const cat = A('Katalysator', { d: 'Driewegkatalysator onder het schutbord, met een lambdasonde ervoor en een erachter. Zet CO, koolwaterstoffen en NOx om. Euro 3 volgens het handboek; de Autowereld-vermelding E2 is niet bevestigd, daarom geen kengetal.', ex: [0, -0.3, -0.5] }, [
     sysPart('Inlaatconus', G.lathe('z', [[0.021, 0], [0.0225, -0.004], [0.036, -0.05]], 20, 'sysCatIn'), MAT.steel, [xC, PY, zC0], 'Conus die de voorpijp verwijdt naar de katalysatorbehuizing.', [0, 0, 0.1]),
