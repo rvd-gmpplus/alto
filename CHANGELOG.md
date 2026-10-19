@@ -1,5 +1,11 @@
 # Wijzigingen
 
+## Versie 6 (in voorbereiding)
+
+### Systemen (golf 7, pakket SYS7)
+
+- Koeling (B-033, beslissing 6 bijgewerkt): radiateur met ventilator, kap, steunen en slangaansluitingen 30 mm naar achteren (hartlijn z 1,515); geen doordringing meer met de frontmodule (waterkasten en steunblokken waren 20 en 15 mm, koelblok 12 mm). Aanzuigmond en kanaal van het luchtfilter 25 mm mee naar achteren (mond stak 12,5 mm in de frontmodule); kabeltak naar de ventilatorstekker 30 mm mee.
+
 ## Versie 5 (19 oktober 2026)
 
 Aanleiding: "ik vind de Alto nog te veel op de 2002 (nieuwere variant) lijken", met foto's van de modelreeks 1993-2001, en de wens dat de achterzijruiten op kiepstand kunnen. Keuzes van de eigenaar: lamellengrille met zwart raam, zwarte ongelakte bumpers, zwarte stootstrip, neus rechtop, stuur driespaaks, geen hoofdsteunen achter, geen hoogteverstelling. Keuzes per pakket staan in `docs/onderzoek/beslissingen.md`; kerncijfers in `docs/cijfers.md`.
