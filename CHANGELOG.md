@@ -1,5 +1,9 @@
 # Wijzigingen
 
+## Versie 6 (in voorbereiding)
+
+- Carrosserie (golf 7, pakket RUIT): de achterzijruit sluit nu rondom op de dagopening aan: het rubber volgt de bolling van de wand langs de voor- en achterrand (was een rechte lijn die in de B-stijl verdween), de onderrand van ruit en rubber ligt 3 mm in plaats van 13 mm boven het achterscherm, de C-stijl sluit op de dakrand aan (geen inkeping bij de bovenhoek achter) en B-stijl, B-stijlrubber en C-stijl sluiten zonder spleet op de dakrand en het achterscherm aan.
+
 ## Versie 5 (19 oktober 2026)
 
 Aanleiding: "ik vind de Alto nog te veel op de 2002 (nieuwere variant) lijken", met foto's van de modelreeks 1993-2001, en de wens dat de achterzijruiten op kiepstand kunnen. Keuzes van de eigenaar: lamellengrille met zwart raam, zwarte ongelakte bumpers, zwarte stootstrip, neus rechtop, stuur driespaaks, geen hoofdsteunen achter, geen hoogteverstelling. Keuzes per pakket staan in `docs/onderzoek/beslissingen.md`; kerncijfers in `docs/cijfers.md`.
