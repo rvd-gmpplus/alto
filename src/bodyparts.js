@@ -1474,6 +1474,19 @@ function bodRoofRails(s) {
     foot(z0, 'voor'), foot(z1, 'achter'),
   ]);
 }
+// Staafantenne (B-042): op twee foto's van de modelreeks (witte en blauwe auto, linkerkant) zit een zwarte ovale voet van ongeveer 70 x 25 mm op de dakrand links, net achter de A-stijl,
+// met een kort stompje; de lengte van de staaf is geschat. De voet volgt de helling van het dak (normaal uit de dakhoogte in x en z).
+function bodAntenna() {
+  const z = 0.06, g = bodGh(z), x = g.xr - 0.02, roofY = (zz, xx) => { const q = bodGh(zz), t = clamp(1 - Math.abs(xx) / q.xr, 0, 1); return q.yre + q.cr * t * (2 - t); };
+  const e = 0.004, dx = (roofY(z, x + e) - roofY(z, x - e)) / (2 * e), dz = (roofY(z + e, x) - roofY(z - e, x)) / (2 * e), n = V3(-dx, 1, -dz).normalize();
+  const voet = xf(G.cyl('y', 0.0125, 0.0125, 0.008, 20), [0, 0.004, 0], [0, 0, 0], [1, 1, 2.8]);
+  const staaf = merge([rodBetween([0, 0.006, 0.006], [0, 0.114, -0.045], 0.0015, 8), xf(G.sphere(0.0034, 8), [0, 0.114, -0.045])]);
+  const pose = { p: [x, roofY(z, x), z], q: quatFromTo(V3(0, 1, 0), n) };
+  return A('Antenne', { d: 'Staafantenne op het dak links voorin, net achter de A-stijl (zoals op twee foto\'s van de modelreeks): een zwarte ovale voet met een dunne staaf die schuin naar achteren staat. Plaats en lengte zijn geschat.', ex: [0.2, 0.3, 0.1] }, [
+    P('Antennevoet', voet, MAT.bodBlack, Object.assign({ d: 'Zwarte kunststof voet van ongeveer 70 x 25 mm en 8 mm hoog op de dakrand links (z 0,06 en 20 mm van de rand van het dakpaneel; geschat naar de foto\'s), volgt de helling van het dak.', ex: [0, 0.03, 0] }, pose)),
+    P('Antennestaaf', staaf, MAT.bodBlack, Object.assign({ d: 'Dunne zwarte staaf van 3 mm doorsnede en ongeveer 120 mm lang, 25 graden naar achteren gekanteld en met een knopje aan het uiteinde (lengte en stand geschat: de foto\'s tonen alleen een stompje boven de voet).', ex: [0, 0.07, 0] }, pose)),
+  ]);
+}
 /* ---------- opbouw ---------- */
 // Zijrepeater: klein oranje herhalingsknipperlicht (ca. 40 x 20 mm) op het voorscherm, net voor de portiervoorrand en boven de wielkast; de plaats is aannemelijk (foto 2001), niet bevestigd
 // Hij hangt in dezelfde groep als het voorscherm en schuift met dezelfde uitklapvector mee, zodat hij bij een uitgeklapte carrosserie op het scherm blijft zitten.
@@ -1487,6 +1500,7 @@ function buildBody() {
     P('Dakpaneel', bodRoofGeo(), MAT.paint, { d: 'Dakplaat van staal in het rood, gelast op de dakranden en de dakbogen; zonder glazen dak.', ex: [0, 0.16, 0] }),
     A('Dakbogen', { d: 'Drie dwarsliggers onder het dakpaneel.', ex: [0, 0.1, 0] }, [[0.30, 'voor'], [-0.45, 'midden'], [-1.05, 'achter']].map(([z, nm]) => P(`Dakboog ${nm}`, (() => { const pts = []; for (let i = 0; i <= 12; i++) { const w = bodQR / 2 + (1 - bodQR) * i / 12, p = ghPt(z, w); pts.push([p[0] * 0.97, p[1] - 0.012, z]); } return tube(pts, 0.0045, 24, 6); })(), MAT.paintIn, { d: 'Dwarsligger onder het dakpaneel.', ex: [0, -0.04, z * 0.05] }))),
     P('Waterkast', bodCowlGeo(), MAT.bodBlack, { d: 'Zwarte kunststof afdekplaat met luchtinlaat voor het interieur, tussen motorkap en voorruit; hierin staan de wisserassen.', ex: [0, 0.1, 0.02] }),
+    bodAntenna(),
     ...sk.kids, ...both(sk.qGlass), ...both(bodRepeater),
     P('Achterpaneel', rp.huid, MAT.paint, { d: 'Staartvlak naast de achterklep: de randen boven en onder de achterlichten en het dek buiten de klep; aan de schermen en de bagageopening gelast.', ex: [0, 0, -0.2] }),
     P('Bagageopening', rp.opening, MAT.paint, { d: 'Rand van de bagageopening: de sponning waarop de achterklep sluit, de wanden naast de opening achter de achterlichten en de laaddrempel (bovenkant op ongeveer 600 mm, 25 mm boven de bumper; geschat).', ex: [0, 0.04, -0.12] }),
