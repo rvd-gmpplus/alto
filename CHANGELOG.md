@@ -1,6 +1,6 @@
 # Wijzigingen
 
-## Versie 8 (in voorbereiding)
+## Versie 8 (19 oktober 2026)
 
 Aanleiding: de open punten na versie 7: de bovenkant van de kas (KAS-6), de grotere hoekruit en smallere C-stijl op de foto's van de modelreeks, het portierrubber met een vaste maat en het gaatje in het kleppendeksel. Keuze van de eigenaar: de knik op het voorscherm onder de voet van de A-stijl blijft (DAK-0).
 
