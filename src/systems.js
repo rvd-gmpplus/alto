@@ -93,9 +93,10 @@ function buildCooling() {
     [S0, sysPlus(S0, 0.005, 0.07, -0.01), [-0.27, 0.793, 1.20], [-0.24, 0.795, 1.10], [-0.205, 0.78, 1.01], [-0.18, 0.71, 0.955], [HX[0], HY + 0.003, HZ]], 0.0095, { n0: 'Klem motor', c1: false, ex: [0, 0.12, -0.1] });
   const hoseHeatR = sysHoseG('Kachelslang retour', 'Brengt de afgekoelde vloeistof van de kachelradiateur terug naar het koelcircuit.',
     [R0, sysPlus(R0, 0.008, 0.07, 0.012), [-0.235, 0.785, 1.23], [-0.205, 0.785, 1.10], [-0.17, 0.78, 1.01], [-0.14, 0.71, 0.955], [HX[1], HY + 0.003, HZ]], 0.0095, { n0: 'Klem motor', c1: false, ex: [0, 0.16, -0.1] });
+  // doorvoer kachel (beslissing INT-12): schutbord z 0,854 (achtervlak) tot 0,866 (voorvlak). De rubber plaat ligt tegen het voorvlak (z 0,866 tot 0,874); de stompen lopen van z 0,860 (in het schutbord) tot 0,938, met de slangen (eind z 0,935) erop.
   const verwarming = A('Kachelslangen', { d: 'De twee slangen tussen het koelcircuit en de kachelradiateur achter het schutbord, met de doorvoer door het schutbord.', ex: [0, 0.1, -0.1] }, [
     hoseHeatA, hoseHeatR,
-    sysPart('Doorvoer kachel', merge([...HX.map(x => xf(G.cyl('z', 0.0085, 0.0085, 0.06, 10), [x, HY, 0])), xf(G.rbox(0.09, 0.05, 0.008, 0.003), [(HX[0] + HX[1]) / 2, HY, -0.026])]), MAT.alu, [0, 0, 0.908], 'Twee aluminium stompen van de kachelradiateur die door het schutbord steken, met een rubber doorvoerplaat.', [0, 0, 0.1]),
+    sysPart('Doorvoer kachel', merge([...HX.map(x => xf(G.cyl('z', 0.0085, 0.0085, 0.078, 10), [x, HY, -0.009])), xf(G.rbox(0.09, 0.05, 0.008, 0.003), [(HX[0] + HX[1]) / 2, HY, -0.038])]), MAT.alu, [0, 0, 0.908], 'Twee aluminium stompen van de kachelradiateur die door het schutbord steken, met een rubber doorvoerplaat.', [0, 0, 0.1]),
   ]);
   const OV = sysPlus(EV, 0.0, 0.02, 0.04);
   const slangOverloop = P('Overloopslang', sysTube([[-0.31, 0.63, RZ], [-0.335, 0.632, RZ - 0.01], [OV[0] + 0.05, OV[1], OV[2] + 0.005]], 0.0065, 6, 0.02), MAT.sysHose, { d: 'Dunne slang tussen de overloopstomp van de radiateur en het expansievat; het vat vangt de vloeistof op die bij het opwarmen uitzet.', ex: [-0.04, 0.1, 0.06] });

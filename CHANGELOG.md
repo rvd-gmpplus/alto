@@ -2,6 +2,8 @@
 
 ## Versie 7 (in voorbereiding)
 
+Aanleiding: keuze van de eigenaar na versie 6 voor een eigen pakket "kas breder" (optie a), plus de open punten van versie 6. Keuzes van de eigenaar: de bovenkant van de kas (dak en dakrand) blijft in deze versie gelijk; `docs/screenshots` blijft zoals het is.
+
 ### Carrosserie: kas breder (golf 8, pakket KAS; beslissing KAS-1 tot KAS-5)
 
 - Meting (KAS-1): naadprofielen op vier foto's van de modelreeks, driehoeksmeting van de B-stijl uit twee cameraparen en silhouetten. De kas is op de gordel op de foto's 27 tot 44 mm (halve breedte) breder dan in versie 6.
@@ -9,6 +11,16 @@
 - Gordel aan de voorrand van het portier (KAS-3): 15 mm lager (onderrand zijruit op z 0,78 0,899, was 0,914; foto's 0,89 tot 0,90); waterkast, voorruit en motorkap blijven, de gordel stijgt onder de voet van de A-stijl naar de waterkast. Spiegelzeil volgt de gordel, bovenste portierscharnier 10 mm lager, portierrubber op de plaats van versie 6.
 - Preset Portier links (KAS-4): de buitenspiegel klapt verder omhoog en naar voren uit (uitklapvector 0,30; 0,45; 0,40) en ligt niet meer achter de labels Raambediening, Waterscherm en Buitenspiegel links.
 - Koplamp (KAS-5): `Hoekkap`, `Knipperlichtje` en `Koplamp links/rechts` noemen het oranje lampje achter de hoekkap op dezelfde manier: positie- en knipperlicht (aannemelijk; niet bevestigd).
+- Interieur (orkestrator): de kap `Gordelgeleider achter` helt mee met de C-stijl; in de bredere kas stak hij 7 mm door de stijl.
+
+### Systemen: doorvoer van de kachel (golf 8, pakket KLEIN; beslissing INT-12)
+
+- `Doorvoer kachel` stond 12 mm voor het schutbord in plaats van erin. De rubber doorvoerplaat ligt nu tegen het voorvlak van het schutbord (z 0,866 tot 0,874, was 0,878 tot 0,886) en de twee aluminium stompen steken door het schutbord: z 0,860 tot 0,938 (was 0,878 tot 0,938), straal en einde bij de slangen ongewijzigd. Open punt uit INT-12 gesloten; commentaar in `interior.js` en `docs/contract.md` bijgewerkt.
+- Interieur (orkestrator): de `Kachelradiatoraansluitingen` eindigen op z 0,860 in de stompen van de doorvoer in plaats van op z 0,878, zodat pijp en stomp elkaar raken zonder doordringing.
+
+### Test: itest en de draai van de telefoon (golf 8, pakket KLEIN)
+
+- `tools/itest.py`: test 18 R3 en U2 maten na `set_viewport_size` met een vaste wachttijd van 500 ms, terwijl het resize-event in software-rendering 1 tot 2,5 s later komt (in een Linux-run: vrij beeld `[0, 117, 844, 181.84]` na het terugdraaien naar 390 x 844, alle labels pasten en "+n meer" ontbrak). Nieuwe hulpfunctie `wissel_viewport` wacht op het resize-event, daarna tot het vrije beeld in het venster past en venstermaat, vrij beeld en paneel stabiel zijn, plus twee animatieframes. Alleen de wacht is veranderd; de controles en hun aantal (222) zijn gelijk. Uitleg in `docs/testen.md`.
 
 ## Versie 6 (19 oktober 2026)
 

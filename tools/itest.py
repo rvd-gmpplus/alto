@@ -761,6 +761,42 @@ def run_view(s, tag, w, h, touch):
 
 # ---------- 18. golf 5c-1 (app-agent): robuustheid, bediening, toegankelijkheid ----------
 # Elke controle noemt in zijn commentaar de fout uit golf 1 tot 4 die hij gevangen zou hebben, of het risico dat hij dekt.
+def wissel_viewport(pg, w, h, timeout=15000):
+    """Zet de venstermaat en wacht tot de pagina hem heeft toegepast, voordat er gemeten wordt.
+
+    In software-rendering komt het resize-event pas 1 tot 2,5 s na set_viewport_size (innerWidth klopt direct, de pagina
+    leest zijn breedte en het vrije beeld pas in dat event). Een vaste wachttijd gaf in een Linux-run een vrij beeld van
+    844 breed na het terugdraaien naar 390 x 844. Daarom: (1) wachten op het resize-event (eigen teller, de luisteraar
+    van de test staat na die van de pagina, dus de pagina is dan al bijgewerkt), (2) wachten tot het vrije beeld binnen het
+    venster past, (3) wachten tot venstermaat, vrij beeld en paneel twee metingen achter elkaar gelijk zijn (de overgang
+    van het paneel duurt 0,28 s en de camera past zich 160 ms later opnieuw in), (4) een extra animatieframe.
+    Geeft True als alles binnen de tijd klopte; anders een melding en False (de controle erna beoordeelt het resultaat)."""
+    pg.evaluate("if (window.__rs === undefined) { window.__rs = 0; window.addEventListener('resize', () => { window.__rs++; }); }")
+    n_rs = pg.evaluate('window.__rs')
+    zelfde = pg.evaluate('[innerWidth, innerHeight]') == [w, h]
+    pg.set_viewport_size({'width': w, 'height': h})
+    ok = True
+    try:
+        if not zelfde:
+            pg.wait_for_function(f'window.__rs > {n_rs}', timeout=timeout)
+        pg.wait_for_function(f"(() => {{ const v = __model.freeView(); return innerWidth === {w} && innerHeight === {h} && v.w > 0 && v.h > 0 && v.x + v.w <= innerWidth + 1 && v.y + v.h <= innerHeight + 1; }})()", timeout=timeout)
+    except Exception as e:
+        ok = False
+        print(f'info wissel_viewport {w}x{h}: {type(e).__name__} {str(e).splitlines()[0][:120]}')
+    prev = None
+    for _ in range(12):
+        pg.wait_for_timeout(300); settle(pg, 60)
+        cur = pg.evaluate("(() => { const r = document.getElementById('sheet').getBoundingClientRect(), v = __model.freeView(); return [innerWidth, innerHeight, Math.round(r.top), Math.round(r.left), Math.round(r.height), Math.round(v.x), Math.round(v.y), Math.round(v.w), Math.round(v.h)]; })()")
+        if cur == prev:
+            break
+        prev = cur
+    else:
+        ok = False
+        print(f'info wissel_viewport {w}x{h}: beeld niet stabiel binnen 12 metingen')
+    pg.evaluate("new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))")
+    return ok
+
+
 def fault_page(s, w=1280, h=800, init=None, block=None):
     """Eigen context buiten de logregistratie van de harness: deze paden geven met opzet fouten in de console."""
     ctx = s.browser.new_context(viewport={'width': w, 'height': h})
@@ -992,9 +1028,9 @@ def check18(s):
     pp.evaluate("__model.preset('engineAll'); __model.finishAll()")
     pp.evaluate("__model.dive(__model.byName('Cilinderkop').kids.find(k => !k.asm))"); settle(pp, 250)
     sel = pp.evaluate('__model.state().selected'); lf = pp.evaluate('__model.lastFit()')
-    pp.set_viewport_size({'width': 844, 'height': 390}); pp.wait_for_timeout(500); settle(pp, 300)
+    wissel_viewport(pp, 844, 390); settle(pp, 300)
     f = pp.evaluate(f'__model.frameOf({json.dumps(sel)})')
-    pp.set_viewport_size({'width': 390, 'height': 844}); pp.wait_for_timeout(500); settle(pp, 300)
+    wissel_viewport(pp, 390, 844); settle(pp, 300)
     f2 = pp.evaluate(f'__model.frameOf({json.dumps(sel)})')
     check('18 R3 telefoon draaien na een duik kadreert op het gedoken onderdeel (lastFit), liggend en weer staand', lf and lf.get('nodes') == [sel] and f['inside'] and f['cover'] >= 0.02 and f2['inside'] and f2['cover'] >= 0.02, json.dumps([lf, f['cover'], f2['cover']]))
     # U2. "+n meer" als er meer onderdelen zijn dan labels (ux-audit U11: stil afgekapt op 10 of 24)

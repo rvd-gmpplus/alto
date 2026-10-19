@@ -247,7 +247,7 @@ function intDashboard() {
     intPart('Ontwasemroosters zijruit', merge([1, -1].map(s => intBox(0.07, 0.004, 0.02, [s * 0.48, 0.9235, 0.8]))), MAT.plastic, 'Twee kleine roosters aan de uiteinden van het dashboard die lucht langs de zijruiten blazen.', { ex: [0, 0.08, 0] }),
   ]);
   // kachelhuis (B-041, beslissing INT-12): achter het dashboard tegen het schutbord, onzichtbaar van buiten (inner). De kachelradiateur zit op x -0,17 en -0,125 (y 0,675) tegenover
-  // de twee stompen van de doorvoer in het schutbord (systems.js, `Doorvoer kachel`, stompen vanaf z 0,878); de aanvoerpijpen van de kern lopen door het schutbord naar die stompen.
+  // de twee stompen van de doorvoer in het schutbord (systems.js, `Doorvoer kachel`, stompen vanaf z 0,860, in het schutbord); de aanvoerpijpen van de kern lopen door het schutbord naar die stompen.
   const hz = { x0: -0.17, xl: -0.222, x1: 0.09, y0: 0.625, y1: 0.795, zb: 0.66, zs: 0.752, zf: 0.848, t: 0.004 };   // x0 en xl: linkerwand achter en voor de stap; zs: z van de stap
   const wall = (xa, xb, ya, yb, za, zb) => intBox(xb - xa, yb - ya, zb - za, [(xa + xb) / 2, (ya + yb) / 2, (za + zb) / 2]);
   const kachelschaal = intPart('Kachelhuisschaal', merge([
@@ -264,7 +264,7 @@ function intDashboard() {
   const lam = Array.from({ length: 9 }, (_, i) => wall(rad.x0, rad.x1, rad.y0 + 0.002 + i * 0.0135, rad.y0 + 0.006 + i * 0.0135, rad.z0, rad.z1));
   const kachelkern = intPart('Kachelradiatorkern', merge([wall(rad.x0, rad.x1, rad.y0, rad.y0 + 0.002, rad.z0, rad.z1), wall(rad.x0, rad.x1, rad.y1 - 0.002, rad.y1, rad.z0, rad.z1), ...lam]), MAT.alu, 'Kern van de kachelradiateur: dunne aluminium lamellen (ongeveer 110 x 120 x 50 mm) waar de warme koelvloeistof doorheen stroomt en de lucht van de aanjager langs gaat.', { inner: true, ex: [0, -0.06, -0.06] });
   const kachelkokers = intPart('Kachelradiatorkokers', merge([wall(rad.x0 - 0.01, rad.x0, rad.y0, rad.y1, rad.z0, rad.z1), wall(rad.x1, rad.x1 + 0.01, rad.y0, rad.y1, rad.z0, rad.z1)]), MAT.darkSteel, 'Twee kopkokers aan de uiteinden van de kern die de vloeistof verdelen over de buisjes.', { inner: true, ex: [0, -0.06, -0.06] });
-  const kachelpijpen = intPart('Kachelradiatoraansluitingen', merge([-0.17, -0.125].map(x => rodBetween([x, 0.675, rad.z1], [x, 0.675, 0.878], 0.0085, 10))), MAT.alu, 'Twee aansluitpijpen van de kachelradiateur (aanvoer en retour); ze steken door het schutbord en sluiten op de stompen van de doorvoer, waar de kachelslangen op komen. Niet inner: tussen het schutbord en de doorvoerplaat zijn ze van buiten te zien.', { ex: [0, 0, 0.05] });
+  const kachelpijpen = intPart('Kachelradiatoraansluitingen', merge([-0.17, -0.125].map(x => rodBetween([x, 0.675, rad.z1], [x, 0.675, 0.860], 0.0085, 10))), MAT.alu, 'Twee aansluitpijpen van de kachelradiateur (aanvoer en retour); ze lopen tot in het schutbord en sluiten daar op de stompen van de doorvoer, waar de kachelslangen op komen. Niet inner: in de uitgeklapte stand liggen ze vrij.', { ex: [0, 0, 0.05] });
   // aanjager: radiaal waaierrad (schoepen tussen twee ringen) met een elektromotor erachter; het wiel zuigt langs de kern in het midden van het huis
   const ab = { x: 0.03, y: 0.71, z0: 0.72, z1: 0.775, r: 0.045 };
   const schoepen = Array.from({ length: 12 }, (_, i) => { const a = i / 12 * 2 * PI; return xf(G.box(0.003, 0.016, ab.z1 - ab.z0), [ab.x + (ab.r - 0.008) * Math.sin(a), ab.y + (ab.r - 0.008) * Math.cos(a), (ab.z0 + ab.z1) / 2], [0, 0, -a]); });
