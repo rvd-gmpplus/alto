@@ -512,3 +512,37 @@ Gereedschap, punten, camera's en uitsneden: werkmap van pakket KAS (`kas/meet`, 
 
 - KAS-6, bovenkant van de kas: op dakrandhoogte is de kas op de foto's 35 tot 47 mm breder (meetfout ongeveer 25 mm; KAS-1). Met het dak vast helt de zijwand van de kas nu 0,37 (20 graden) in plaats van 0,28. Keuze van de eigenaar: zo laten in versie 7 (optie B). Een breder dak (dak, dakrand, dakrails, randen van voor- en achterruit, klep, hemel) is een kandidaat voor versie 8, bij voorkeur na een recht voor- of achteraanzicht van de eigen auto zonder kenteken in beeld.
 - SYS7-3, docshots: `docs/screenshots` blijft zoals het is (optie c); vernieuwen of opruimen kan later. Het veld `docshots` in `auto.json` blijft staan.
+
+## Golf 9, pakket DAK (dak en dakrand breder, hoekruit groter, 19 oktober 2026, tak `golf9-dak`)
+
+Aanleiding: keuze KAS-6 van de eigenaar (bovenkant van de kas in versie 8) en het open punt Hoekruit van pakket KAS. `body.js`, `bodyparts.js` en de docs zijn namens de orkestrator gewijzigd. Er is geen recht voor- of achteraanzicht van de eigen auto; gemeten is op de foto's van de modelreeks met de geijkte camera's van FLANK en KAS.
+
+**Beslissing DAK-0 (knik op het voorscherm).** De knik in de gordel onder de voet van de A-stijl (KAS-3: de gordel stijgt over 7 cm 17 mm naar de waterkast) blijft zoals hij is. Keuze van de eigenaar.
+
+**Beslissing DAK-1 (meting, vóór het bouwen).** Camera's: 2000 GL voor rechts (`gl`), Mannheim voor links (`m08`), blauw 2001 achter rechts (`r01`), geel achter rechts (`geel`), Mannheim achter links (`r08`); ijking zoals in KAS-1. Alle ijkpunten liggen onder y 1,0 (wielen, greep, repeater, slot, achterlichten, spiegel), dus op dakhoogte is de ijking een extrapolatie, en elke camera is het nauwkeurigst bij zijn eigen ijkpunten: de achterste naad van het portier (z -0,56) komt in de drie achteraanzichten 60 tot 110 mm te ver naar voren uit, in de vooraanzichten op 0 tot 5 mm. Daarom zijn alle maten relatief gemeten, tegen een vast punt in hetzelfde beeld:
+- hoogte: bovenrand van het glas tegen de gordel (onderrand van het glas, in model en foto binnen 5 beeldpunten gelijk) en de dakrand in silhouet, in foto en opname met dezelfde camera; omgerekend met de schaal van de camera op die plek (448 tot 626 beeldpunten per meter);
+- lengte (z): fotopunten teruggeprojecteerd op de huid van het model (`surfX`), daarna lineair gecorrigeerd zodat de naad achter het portier op z -0,56 en de achteras (ijkpunt) op -1,248 valt;
+- breedte bovenaan: de driehoeksmeting van KAS-1 (methode b, twee camera's van tegenover elkaar liggende kanten).
+
+| Maat | Foto's | Model (versie 7) | Verschil | Onzekerheid |
+|---|---|---|---|---|
+| bovenrand zijruit bij de B-stijl (hoogte boven de gordel) | m08 +55, r01 +59, geel +25 mm hoger dan het model; KAS-1 (b): bovenhoek van het raamframe op y 1,36 (rechts en links) | glas tot y 1,285 (`ye` 1,315 min 0,03), dakrand met straal 0,06 erboven | gemiddeld ongeveer +45 mm | per foto ongeveer 20 mm (geel het onscherpst) |
+| halve breedte op dakrandhoogte (y 1,36), midden (z ca. -0,56) | 0,593 en 0,605 (KAS-1 b) | 0,558 (in de ronding van de dakrand) | +35 en +47 mm | 25 mm |
+| inloop zijruit (gordel tot bovenrand) | 0,27 en 0,24 (KAS-1 b) | 0,365 tot 0,38 (versie 6: 0,28) | -0,10 tot -0,13 | 0,08 |
+| halve breedte dakrand voor (bovenkant A-stijl, z 0,16 tot 0,3) | m08: de A-stijl aan de kant van de camera ligt bovenaan ongeveer 30 beeldpunten buiten het model | 0,526 (`xr`), 0,574 (`xe`) | naar buiten, niet los van de ijking te scheiden | 30 mm of meer |
+| halve breedte dakrand achter (bovenkant C-stijl, z -1,1 tot -1,2) | r01, geel: hoeken van de achterruit sterk afgerond, geen scherp punt; schatting op de raaklijnen -29 mm | 0,539 tot 0,547 (`xr`) | binnen de meetfout | 30 mm of meer |
+| voorrand hoekruit (achterkant B-stijl) | r01 -0,648, geel -0,638, r08 -0,658 | -0,74 | 90 mm naar voren | 30 mm (correctie op de naad) |
+| achterrand hoekruit op de gordel | r01 -1,384, geel -1,323, r08 -1,392 (net achter de achteras, in alle drie foto's 40 beeldpunten achter het hart van het wiel) | -1,17 | 200 mm naar achteren | 40 mm |
+| achterrand hoekruit bovenaan (bovenhoek achter) | r01 -1,20, geel -1,10 (r08 niet te gebruiken: de straal gaat boven het model langs) | -1,072 (`bodKpZc`) | ongeveer 80 mm naar achteren | 50 mm |
+| lengte hoekruit langs de gordel | 0,72 m | 0,43 m | +0,29 m | 0,05 m |
+| hoogte hoekruit (r01, terugprojectie) | 0,43 m | 0,36 m | +70 mm (deels de bovenrand van de zijruit hierboven) | 30 mm |
+| breedte C-stijl (in z) | op de gordel ongeveer 0,30 m, bovenaan ongeveer 50 mm; r01: 86 beeldpunten tussen hoekruit en achterruit, model 118 | 0,50 m en 0,13 m | smaller | 40 mm |
+
+Uitkomst:
+- Breder: de zijwand helt op de foto's 0,24 tot 0,27, het model 0,37; op dakrandhoogte is de kas 35 tot 47 mm breder (fout 25). Terug naar 0,28 vanaf de gordel van KAS-2 geeft op y 1,36 een halve breedte van 0,597: midden in de twee metingen. Wordt gebouwd (DAK-2).
+- Hoger: de bovenrand van de zijruit ligt op alle foto's hoger dan in het model (25 tot 59 mm, KAS-1 60 tot 75 mm); boven het raam zit op de foto's alleen een smalle dakrand met de goot, in het model een ronding van 60 mm straal. Meer dan de meetfout; wordt gebouwd met 40 mm (DAK-3), aan de voorzichtige kant van het gemiddelde.
+- Voor en achter apart: binnen de meetfout. Niet apart gebouwd: het verloop over de lengte volgt het verloop van de gordel van KAS-2 (`bodKasD`: vol van z -1,15 tot 0,70, naar de voet van de voorruit en de achterkant glad terug).
+- Hoekruit: veel groter dan in het model, meer dan de meetfout: voorrand 90 mm naar voren, achterrand op de gordel 200 mm en bovenaan ongeveer 80 mm naar achteren, C-stijl smaller. Wordt gebouwd (DAK-4).
+- Niet gemeten: hoogte van het dak (1405 mm, `BOD_H`), lengte en gordel: die blijven.
+
+Gereedschap, punten, camera's, uitsneden en de tabel per foto: werkmap van pakket DAK (`dak/meet`, `dak/tools`, `dak/cams`), buiten de repo.

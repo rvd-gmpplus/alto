@@ -1,5 +1,12 @@
 # Wijzigingen
 
+## Versie 8 (in voorbereiding)
+
+### Carrosserie: dak en hoekruit (golf 9, pakket DAK; beslissing DAK-0 tot DAK-5)
+
+- Meting (DAK-1): op de foto's van de modelreeks helt de zijwand van de kas 0,24 tot 0,27 (model 0,37), is de kas op dakrandhoogte 35 tot 47 mm breder, ligt de bovenrand van de zijruit ongeveer 45 mm hoger en is de hoekruit veel groter (0,72 m langs de gordel tegen 0,43 m). Voor en achter apart is het verschil in breedte binnen de meetfout.
+- Knik op het voorscherm onder de voet van de A-stijl (KAS-3) blijft zoals hij is (DAK-0, keuze van de eigenaar).
+
 ## Versie 7 (19 oktober 2026)
 
 Aanleiding: keuze van de eigenaar na versie 6 voor een eigen pakket "kas breder" (optie a), plus de open punten van versie 6. Keuzes van de eigenaar: de bovenkant van de kas (dak en dakrand) blijft in deze versie gelijk; `docs/screenshots` blijft zoals het is.
