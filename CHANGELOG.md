@@ -1,5 +1,12 @@
 # Wijzigingen
 
+## Versie 7 (in voorbereiding)
+
+### Carrosserie: kas breder (golf 8, pakket KAS; beslissing KAS-1 tot KAS-5)
+
+- Meting (KAS-1): naadprofielen op vier foto's van de modelreeks, driehoeksmeting van de B-stijl uit twee cameraparen en silhouetten. De kas is op de gordel op de foto's 27 tot 44 mm (halve breedte) breder dan in versie 6.
+- Kas breder (KAS-2): de kas begint op de gordel 35 mm verder naar buiten (halve breedte 0,719, was 0,684) langs achterscherm, hoekruit en portier, naar de waterkast en de achterkant glad terug. De flank loopt bovenaan nog 14 mm in (was 49); breedste punt, dak, dakrand, dakrails, `BOD_WMAX`, `BOD_MIRW`, lengte en hoogte zijn gelijk, dus de zijruiten hellen meer (0,37, was 0,28). De zijruit zakt met helling 0,18 in het portier; geleiderails, ruitdrager, kabels en slotmotor zijn daarop aangepast. Spiegelarm 4,5 mm korter aan de binnenkant.
+
 ## Versie 6 (19 oktober 2026)
 
 Aanleiding: de kier tussen de achterzijruit en het rode paneel erboven, en de rest van de lijst om de Alto meer op de modelreeks 1993-2001 te laten lijken. Keuzes van de eigenaar: dashboard en middenpaneel in de kleuren van de foto, flanken, gordel en heup in deze versie.

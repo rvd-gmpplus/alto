@@ -1101,7 +1101,8 @@ function bodMirror(s) {
     open: { type: 'hinge', pivot: [s * 0.733, 0.99, 0.69], axis: [0, 1, 0], angle: s * 80 * PI / 180, min: 64 * PI / 180, label: `Buitenspiegel ${n}`, look: { dir: [s * 0.8, 0.3, 0.75], nodes: [`Buitenspiegel ${n}`] } } }, [
     // de spiegel hangt aan een korte arm uit een zwarte driehoekige zeilplaat in de voorhoek van het raamframe tegen de A-stijl (foto's van de modelreeks); beide blijven staan als de spiegel inklapt
     P('Spiegelzeil', bodMirSail(), MAT.bodBlack, { d: 'Zwarte driehoekige zeilplaat van kunststof in de voorhoek van het raamframe tegen de A-stijl, ongeveer 88 mm breed, 70 mm hoog en 7 mm dik (z 0,69 tot 0,778, y 0,905 tot 0,975; maat geschat op de foto\'s, hoger loopt hij over de bocht van de A-stijl); hij zit op het portier en draagt de spiegelarm. Blijft staan als de spiegel inklapt.', s: [s, 1, 1], stay: true, ex: [s * 0.01, 0, 0.03] }),
-    P('Spiegelarm', xf(G.rbox(0.064, 0.035, 0.042, 0.009), [0.696, 0.953, 0.738]), MAT.bodBlack, { d: 'Korte arm van ongeveer 64 x 35 x 42 mm uit de zeilplaat tot tegen de binnenkant van het spiegelhuis; het scharnier van de spiegel zit aan het huis. Blijft staan als de spiegel inklapt.', s: [s, 1, 1], stay: true, ex: [s * 0.04, 0, -0.03] }),
+    // KAS-2: binnenkant 4,5 mm naar buiten (0,6685, was 0,664): de bredere voet van de A-stijl kwam anders 4,5 mm dieper in de arm; buitenkant 0,728 zoals eerst
+    P('Spiegelarm', xf(G.rbox(0.0595, 0.035, 0.042, 0.009), [0.69825, 0.953, 0.738]), MAT.bodBlack, { d: 'Korte arm van ongeveer 60 x 35 x 42 mm uit de zeilplaat tot tegen de binnenkant van het spiegelhuis; het scharnier van de spiegel zit aan het huis. Blijft staan als de spiegel inklapt.', s: [s, 1, 1], stay: true, ex: [s * 0.04, 0, -0.03] }),
     P('Spiegelhuis', bodMirShell(), MAT.bodBlack, H(0, { d: 'Zwart kunststof huis, liggend: ongeveer 168 mm breed, 92 mm hoog bij de voet en 112 mm aan de buitenkant (geschat). Naar voren bol en smaller in de diepte (70 mm bij de voet, 52 mm buiten); draagt glas, verstelmotor en verwarming.', ex: [0, 0.02, 0.1] })),
     P('Spiegelglas', bodMirPlate('bodMirGlass', 0.9, 0.003), MAT.bodMirror, H(-0.004, { d: 'Spiegelglas van ongeveer 151 mm breed en 83 tot 101 mm hoog (geschat), verwarmd; in het model vlak.', ex: [0, 0, -0.12] })),
     P('Glasdrager', bodMirPlate('bodMirCarrier', 0.93, 0.006), MAT.plastic, H(0.0005, { d: 'Kunststof drager waarop het glas is geklikt.', ex: [0, 0, -0.07] })),
@@ -1124,8 +1125,14 @@ function bodDoor(s) {
   ]);
   const glass = bodGhSide(s, zg0, zg1, 40, z => [qLo(z), qHi(z)], 8, [], -0.045);
   const hz = -0.40, hy = 0.80, hp = bodAt(hz, hy, 0.0), hn = bodN(hz, sAtY(hz, hy));
-  const xin = z => s * 0.635, xAt = y => s * (0.635 + 0.28 * (YT(zm) - 0.025 - y));   // geleiders langs het glasvlak (het glas helt 0,28); het vlak volgt de gordel (was 0,88 vast, beslissing FLANK-1)
-  const winSlide = extra => ({ type: 'slide', move: [s * 0.07, -0.25, 0], ...extra });   // het glas zakt langs zijn eigen vlak (helling 0,28)
+  // Geleiders langs de baan van de onderrand van het glas; het vlak volgt de gordel (was 0,88 vast, beslissing FLANK-1) en ligt BOD_KASD verder naar buiten (KAS-2).
+  // Het glas zakt schuiner dan zijn eigen vlak (helling bodWinK, het glas helt sinds KAS-2 ongeveer 0,37): langs het vlak kwam de onderrand van de gezakte ruit door de
+  // flank, die onder de bredere gordel minder inloopt. Met 0,18 blijft de onderrand ruim 30 mm binnen de huid en het glas ruim 40 mm buiten het binnenpaneel.
+  const bodWinK = 0.18, xg0 = 0.635 + bodKasD(zm);
+  const xin = z => s * xg0, xAt = y => s * (xg0 + bodWinK * (YT(zm) - 0.025 - y));
+  // vlak van de geheel gezakte ruit (helling van het glas, kg): de kabels lopen 12 mm erbinnen; op de baan van de onderrand (xAt) sneed het glas erdoorheen
+  const gzm = bodGh(zm), kg = (gzm.xb - gzm.xe) / (gzm.ye - gzm.yb), yLow = YT(zm) + 0.013 - 0.25, xCab = y => s * (Math.abs(xAt(yLow)) - kg * (y - yLow) - 0.012);
+  const winSlide = extra => ({ type: 'slide', move: [s * 0.25 * bodWinK, -0.25, 0], ...extra });
   const hingeZ = z1 + 0.006;
   const hinge = (nm, y) => A(`Scharnier ${nm}`, { d: `${nm === 'boven' ? 'Bovenste' : 'Onderste'} portierscharnier: een blad aan het portier en een blad op de A-stijl met een scharnierpen. In dit model draait het portier om een as vlak voor de voorrand (schematisch).`, ex: [-s * 0.03, 0, 0.12] }, [
     P('Scharnierblad', G.rbox(0.03, 0.07, 0.05, 0.006), MAT.darkSteel, { d: 'Stalen scharnierblad aan het portier; draait met het portier mee.', p: [s * (surfX(z1, y) - 0.04), y, z1 - 0.02], ex: [0, 0, 0.04] }),
@@ -1151,12 +1158,12 @@ function bodDoor(s) {
       P('Geleiderail voor', rodBetween([xAt(0.64), 0.64, zm + 0.3], [xAt(0.86), 0.86, zm + 0.3], 0.008, 8), MAT.steel, { d: 'Stalen geleiderail voor de ruitdrager.', ex: [0, 0, 0.05] }),
       P('Geleiderail achter', rodBetween([xAt(0.64), 0.64, zm - 0.3], [xAt(0.86), 0.86, zm - 0.3], 0.008, 8), MAT.steel, { d: 'Stalen geleiderail voor de ruitdrager.', ex: [0, 0, -0.05] }),
       P('Ruitdrager', G.rbox(0.02, 0.03, 0.7, 0.006), MAT.darkSteel, { d: 'Drager waarop de onderrand van de zijruit is geklemd; zakt mee met de ruit.', p: [xin(zm), 0.85, zm], ex: [0, 0.08, 0], open: winSlide({ follow: `${dPath}/Zijruit` }) }),
-      P('Bedieningskabels', merge([rodBetween([xAt(0.86) - s * 0.012, 0.86, zm + 0.3], [xAt(0.64) - s * 0.012, 0.64, zm - 0.3], 0.003, 6), rodBetween([xAt(0.86) - s * 0.012, 0.86, zm - 0.3], [xAt(0.64) - s * 0.012, 0.64, zm + 0.3], 0.003, 6)]), MAT.steel, { d: 'Staalkabels die de ruitdrager langs de rails trekken.', ex: [-s * 0.03, 0, 0] }),
+      P('Bedieningskabels', merge([rodBetween([xCab(0.86), 0.86, zm + 0.3], [xCab(0.64), 0.64, zm - 0.3], 0.003, 6), rodBetween([xCab(0.86), 0.86, zm - 0.3], [xCab(0.64), 0.64, zm + 0.3], 0.003, 6)]), MAT.steel, { d: 'Staalkabels die de ruitdrager langs de rails trekken.', ex: [-s * 0.03, 0, 0] }),
       P('Raammotor', merge([G.cyl('x', 0.032, 0.032, 0.045, 20), xf(G.cyl('x', 0.022, 0.022, 0.03, 16), [-0.035, 0, 0])]), MAT.darkSteel, { d: 'Elektromotor met kabeltrommel van de elektrische ruitbediening.', p: [xAt(0.64) - s * 0.012, 0.52, zm], s: [s, 1, 1], ex: [-s * 0.06, -0.06, 0] }),
     ]),
     A('Deurslot', { d: 'Slotmechanisme in de achterrand van het portier met slotmotor voor de centrale vergrendeling (Twist).', ex: [-s * 0.08, 0, -0.16] }, [
       P('Slotkast', G.rbox(0.016, 0.1, 0.04, 0.006), MAT.darkSteel, { d: 'Slotkast met vanghaak die om de slotbeugel in de stijl grijpt; zit binnen de achterrand van het portier.', p: [s * (surfX(z0 + 0.04, 0.83) - 0.012), 0.78, z0 + 0.05], ex: [0, 0, -0.04] }),   // 16 mm dik (was 30), x naar de huid op de bovenkant (y 0,83): de flank loopt daar in en de gezakte ruit loopt erlangs (FLANK-2)
-      P('Slotmotor', G.rbox(0.03, 0.05, 0.04, 0.008), MAT.plastic, { d: 'Elektrische stelmotor van de centrale vergrendeling.', p: [s * (surfX(z0 + 0.06, 0.72) - 0.02), 0.72, z0 + 0.09], ex: [-s * 0.04, -0.03, 0] }),
+      P('Slotmotor', G.rbox(0.03, 0.05, 0.04, 0.008), MAT.plastic, { d: 'Elektrische stelmotor van de centrale vergrendeling.', p: [xCab(0.72) - s * 0.02, 0.72, z0 + 0.09], ex: [-s * 0.04, -0.03, 0] }),   // binnen het vlak van de gezakte ruit (KAS-2; op de huid min 20 mm raakte de ruit hem)
       P('Bedieningsstang', rodBetween([s * (surfX(z0 + 0.05, 0.78) - 0.02), 0.79, z0 + 0.06], [s * (hp[0] - 0.02), hy, hz + 0.04], 0.003, 6), MAT.steel, { d: 'Stang tussen buitendeurgreep en slot.', ex: [-s * 0.03, 0, 0] }),
     ]),
     A('Buitendeurgreep', { d: 'Trekgreep van zwart kunststof (Twist: in carrosseriekleur zou ook kunnen; hier zwart aangenomen) met sleutelslot aan de bestuurderszijde.', ex: [s * 0.62, 0, 0] }, [

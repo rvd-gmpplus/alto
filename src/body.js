@@ -70,6 +70,12 @@ const bodFlU = 0.45, bodFlB = 0.012;
 // overgaat zoals op de foto's (beslissing FLANK-3: de heup; met 16 mm bleef daar een ronde rand tussen C-stijl en achterscherm staan)
 const bodFlRs = z => lerp(0.016, 0.003, sstep((-0.80 - z) / 0.25));
 const bodFlankW = z => 1 - sstep((z - 1.0) / 0.4);
+// Kas breder op de gordel (golf 8, pakket KAS, beslissing KAS-2): de kas begint BOD_KASD verder naar buiten dan het profiel van FLANK-2 (xe), langs portier en hoekruit
+// volledig (z -1,15 tot 0,70), naar de waterkast (z 1,0) en naar de achterkant (z -1,50) glad terug naar 0: voorruitvoet, kap, neus, achterruit en klep blijven. De flank
+// loopt daardoor minder in (dT kleiner; schouderstraal en breedste punt blijven) en de kas blijft bovenaan gelijk: bodGh houdt de bovenrand van de zijwand (xe) en de dakrand
+// (xr) op hun plaats, de zijruit helt dus meer (0,28 plus BOD_KASD gedeeld door de hoogte van de zijwand).
+const BOD_KASD = 0.035;
+const bodKasD = z => BOD_KASD * sstep((z + 1.50) / 0.35) * sstep((1.0 - z) / 0.30);
 // inloop van de flank ten opzichte van de breedste lijn bij flankparameter t (0 onderaan, 1 bovenaan)
 const bodFlD = (t, dB, dT) => (t < bodFlU ? dB * Math.pow((bodFlU - t) / bodFlU, 2) : dT * Math.pow((t - bodFlU) / (1 - bodFlU), 2));
 function bodSecW(z, w) {
@@ -80,7 +86,9 @@ function bodSecW(z, w) {
   let xe = cx0 + rs0 * 0.3, th = 1.2;
   for (let i = 0; i < 3; i++) { th = Math.atan2(xe, c * p); xe = cx0 + rs0 * Math.cos(th); }
   if (w <= 1e-6) { const cy = yt - rs0 * Math.sin(th); return { hw, yb, yt, rb, rs: rs0, yd, c, p, cx: cx0, cy, th, xe, bul, bw: bul, dB: 0, dT: 0, a0: 0, ab: 0, cxb: hw - bul - rb, cyb: yb + rb, y0: yb + rb, y1: cy }; }
-  // nieuw profiel: zelfde xe en th (het dek sluit op dezelfde plek aan), kleinere schouder, de flank loopt in
+  // nieuw profiel: xe bodKasD verder naar buiten (KAS-2; FLANK-2 hield xe en th gelijk), th opnieuw zodat de schouder met de raaklijn van het dek aansluit,
+  // kleinere schouder, de flank loopt in
+  xe += bodKasD(z) * w; th = Math.atan2(xe, c * p);
   const rs = lerp(rs0, Math.min(bodFlRs(z), rs0), w), bw = bul * (1 - w), dB = bodFlB * w, cx = xe - rs * Math.cos(th), cy = yt - rs * Math.sin(th), cyb = yb + rb;
   let a0 = 0, ab = 0, dT = 0, y0 = cyb, y1 = cy;
   for (let i = 0; i < 6; i++) {
@@ -140,7 +148,7 @@ const bodQS = 0.54, bodQR = 0.72, bodTUMB = 0.28;
 function bodGh(z) {
   const yb = YT(z), xb = bodSec(z).xe, yc = Math.max(yb + 0.002, YR(z)), h = yc - yb;
   const cr = Math.min(CRW, h * 0.3), yre = yc - cr, rr = Math.min(0.06, (yre - yb) * 0.3), ye = yre - rr;
-  const xe = xb - bodTUMB * (ye - yb), xr = xe - rr * 0.8;
+  const xe = xb - bodKasD(z) - bodTUMB * (ye - yb), xr = xe - rr * 0.8;   // KAS-2: bovenrand van de zijwand en dakrand blijven, de zijwand helt meer
   return { yb, xb, yc, cr, yre, rr, ye, xe, xr };
 }
 function bodGhHalf(z, q, g) {
