@@ -57,6 +57,63 @@ function intSweep(sec, z0, z1, n) {
   const f = g.toNonIndexed(); f.computeVertexNormals(); return f;
 }
 
+/* ---------- vormgereedschap voor gestoffeerde en gevormde delen (golf 10, beslissing INT-13) ---------- */
+// coördinaten langs een as met halve lengte a en afronding r: n gelijke vakken over het vlakke deel en m vakken per afronding;
+// de punten op de afronding liggen op s = r tan(hoek), zodat ze na het afronden (intKussen) op gelijke hoeken komen
+function intAsLijst(a, r, n, m) {
+  const inn = a - r, uit = k => inn + r * Math.tan(k / m * PI / 4), out = [];
+  for (let k = m; k >= 1; k--) out.push(-uit(k));
+  for (let i = 0; i <= n; i++) out.push(-inn + 2 * inn * i / n);
+  for (let k = 1; k <= m; k++) out.push(uit(k));
+  return out;
+}
+// gesloten blok w x h x d (gecentreerd) met rondom afgeronde randen (straal r) uit een raster per zijvlak; de randen worden
+// gelast, dus de normalen zijn overal glad. n = [nx, ny, nz]: vakken over het vlakke deel per as, m: vakken per afronding.
+// vorm(p, u, v, t) mag elk punt daarna verplaatsen; u, v en t zijn de plaats op het blok voor het afronden (-1 tot 1 langs x, y, z).
+// Gecachet onder 'int' + key: de vorm hoort bij de sleutel, dus een andere vorm krijgt een andere sleutel.
+function intKussen(key, w, h, d, r, n, m, vorm) {
+  return cache('int' + key, () => {
+    const A = [w / 2, h / 2, d / 2], L = A.map((a, k) => intAsLijst(a, r, n[k], m)), pos = [], idx = [];
+    // zijvlak loodrecht op as k aan kant sg; de assen i en j volgen k cyclisch, zodat ei x ej = ek naar buiten wijst
+    const vlak = (k, sg) => {
+      const i = (k + 1) % 3, j = (k + 2) % 3, Li = L[i], Lj = L[j], b = pos.length / 3, nj = Lj.length;
+      for (const a of Li) for (const c of Lj) { const p = [0, 0, 0]; p[k] = sg * A[k]; p[i] = a; p[j] = c; pos.push(p[0], p[1], p[2]); }
+      for (let x = 0; x < Li.length - 1; x++) for (let y = 0; y < nj - 1; y++) {
+        const q = b + x * nj + y, q1 = q + nj;
+        if (sg > 0) idx.push(q, q1, q + 1, q1, q1 + 1, q + 1); else idx.push(q, q + 1, q1, q1, q + 1, q1 + 1);
+      }
+    };
+    for (let k = 0; k < 3; k++) { vlak(k, 1); vlak(k, -1); }
+    let g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx);
+    g = THREE.BufferGeometryUtils.mergeVertices(g, 1e-7);
+    const P = g.attributes.position, I = A.map(a => a - r);
+    for (let q = 0; q < P.count; q++) {
+      const p = [P.getX(q), P.getY(q), P.getZ(q)], c = p.map((x, k) => clamp(x, -I[k], I[k])), e = p.map((x, k) => x - c[k]), l = Math.hypot(e[0], e[1], e[2]) || 1;
+      const s = c.map((x, k) => x + e[k] / l * r), o = vorm ? vorm(s, p[0] / A[0], p[1] / A[1], p[2] / A[2]) : s;
+      P.setXYZ(q, o[0], o[1], o[2]);
+    }
+    g.computeVertexNormals();
+    return g;
+  });
+}
+// veelhoek (u, v) met afgeronde hoeken: hoek i krijgt straal r[i] (0 is scherp) met n stukjes; de straal wordt begrensd op 45 procent
+// van de kortste aangrenzende zijde. Bolle hoeken komen naar binnen, holle naar buiten.
+function intRondHoeken(poly, r, n = 6) {
+  const N = poly.length, out = [];
+  poly.forEach((P, i) => {
+    const A0 = poly[(i + N - 1) % N], B0 = poly[(i + 1) % N], la = Math.hypot(A0[0] - P[0], A0[1] - P[1]), lb = Math.hypot(B0[0] - P[0], B0[1] - P[1]);
+    const da = [(A0[0] - P[0]) / la, (A0[1] - P[1]) / la], db = [(B0[0] - P[0]) / lb, (B0[1] - P[1]) / lb], cos = clamp(da[0] * db[0] + da[1] * db[1], -1, 1), th = Math.acos(cos);
+    if (!r[i] || th > PI - 1e-3) { out.push(P); return; }
+    const t = Math.min(r[i] / Math.tan(th / 2), 0.45 * Math.min(la, lb)), a = [P[0] + da[0] * t, P[1] + da[1] * t], b = [P[0] + db[0] * t, P[1] + db[1] * t];
+    // kwadratische Bézier van a via de hoek naar b: raakt beide zijden en blijft binnen de driehoek a-P-b
+    for (let k = 0; k <= n; k++) { const s = k / n; out.push([(1 - s) * (1 - s) * a[0] + 2 * s * (1 - s) * P[0] + s * s * b[0], (1 - s) * (1 - s) * a[1] + 2 * s * (1 - s) * P[1] + s * s * b[1]]); }
+  });
+  return out;
+}
+// zijprofiel (z, y) als blok tussen twee x-waarden met gladde normalen over de afgeronde hoeken en een knik bij de zijvlakken
+const intSideBlockGlad = (poly, x0, x1) => { const g = intSideBlock(poly, x0, x1); g.deleteAttribute('normal'); g.deleteAttribute('uv'); return creasedWeld(g, 0.6); };
+
 /* ---------- maten en aansluitpunten ---------- */
 const INT_YF = 0.275;                       // bovenkant vloerbedekking (over de dwarsbalken)
 const INT_SX = 0.325, INT_SZ = -0.10;       // hartlijn van de voorstoelen (|x|) en langsplaats van het midden van de zitting
@@ -78,6 +135,21 @@ const INT_PORTS = {
 };
 
 /* ---------- voorstoelen ---------- */
+// Vormen van de voorstoel (golf 10, beslissing INT-13): zitting en rugleuning uit een stuk met ingewerkte zijwangen, in plaats van een blok met
+// twee losse rollen. De buitenmaten blijven die van versie 8: zitting 440 x 94 x 480 mm met wangen tot 31 mm boven het kussen, rugleuning
+// 440 x 560 x 90 mm met wangen tot 16 mm voor het vlak. Nieuw zijn alleen vorm en afronding (geschat): de wangen lopen glad uit, de voorrand
+// van de zitting is iets opgerold, de rugleuning heeft een lendensteun van 8 mm en loopt bovenaan 7 procent smaller toe (schouders).
+const intSchouder = yl => 1 - 0.07 * sstep((yl - 0.46) / 0.14);    // yl: hoogte in het frame van de rugleuning (0,04 tot 0,60)
+function intZitVorm(p, u, v) {
+  const wy = Math.max(0, v), wang = 0.031 * sstep((Math.abs(p[0]) - 0.13) / 0.06) * sstep((p[2] + 0.17) / 0.1), rol = 0.006 * sstep((p[2] - 0.1) / 0.12);
+  return [p[0], p[1] + wy * Math.max(wang, rol), p[2]];
+}
+function intRugVorm(p, u, v, t) {
+  const yl = p[1] + 0.32, wz = Math.max(0, t);
+  const wang = 0.016 * sstep((Math.abs(p[0]) - 0.12) / 0.07) * sstep((yl - 0.07) / 0.08) * sstep((0.6 - yl) / 0.1), lende = 0.008 * Math.exp(-(((yl - 0.22) / 0.1) ** 2)) * (1 - u * u);
+  return [p[0] * intSchouder(yl), p[1], p[2] + wz * (wang + lende)];
+}
+const intSchouderVorm = y0 => p => [p[0] * intSchouder(p[1] + y0), p[1], p[2]];
 // zitting op rails (lengteverstelling, geen hoogteverstelling: verstelling beperkt tot lengte en leuning volgens Autoweek); de rugleuning kantelt naar voren (instap achter bij een 3-deurs) en draagt de hoofdsteun
 function intFrontSeat(s) {
   const drv = s > 0, who = drv ? 'Bestuurdersstoel' : 'Passagiersstoel', ver = drv ? 'bestuurder' : 'passagier', bx = intBx, cy = intCy;
@@ -90,13 +162,13 @@ function intFrontSeat(s) {
   ]);
   const cushion = A('Zitting', { d: 'Zitkussen van schuim met stoffen bekleding en zijwangen.', ex: [0, 0.14, 0] }, [
     intPart('Zitschuim', bx(0.42, 0.085, 0.46, 0.03, [0, 0.172, 0]), MAT.intFoam, 'Gevormd polyurethaanschuim van het zitkussen.', { inner: true, ex: [0, 0.03, 0] }),
-    intPart('Zitbekleding', merge([bx(0.44, 0.094, 0.48, 0.034, [0, 0.176, 0]), bx(0.055, 0.045, 0.36, 0.02, [0.18, 0.232, 0.06]), bx(0.055, 0.045, 0.36, 0.02, [-0.18, 0.232, 0.06])]), MAT.intCloth, 'Stoffen bekleding van de zitting met verstevigde zijwangen (stof en kleur aangenomen).', { ex: [0, 0.1, 0.02] }),
+    intPart('Zitbekleding', xf(intKussen('Zitting', 0.44, 0.094, 0.48, 0.032, [14, 2, 14], 4, intZitVorm), [0, 0.176, 0]), MAT.intCloth, 'Stoffen bekleding van de zitting met ingewerkte zijwangen en een licht opgerolde voorrand (vorm geschat; stof en kleur aangenomen).', { ex: [0, 0.1, 0.02] }),
   ]);
   // bediening aan de buitenzijde (de portierzijde): hellingshendel; de lengte wordt met de beugel voor onder de zitting ontgrendeld
   // de groep Stoelbediening verviel met de hoogtehendel: een groep met één onderdeel is een waarschuwing van integrity.py
   const ctl = intPart('Hellinghendel', merge([cy('x', 0.012, 0.012, [s * 0.215, 0.19, -0.2], 10), rodBetween([s * 0.215, 0.19, -0.2], [s * 0.23, 0.15, -0.13], 0.006, 6), rodBetween([s * 0.23, 0.15, -0.13], [s * 0.23, 0.15, -0.06], 0.009, 8)]), MAT.plasticGrey, 'Hendel voor de hellingsverstelling van de rugleuning, onder de rugleuning aan de portierzijde.', { ex: [s * 0.19, 0.02, 0] });
   const head = A('Hoofdsteun', { d: 'Hoofdsteun met twee geleidestangen in de bovenkant van de rugleuning; in hoogte verstelbaar (aangenomen).', p: [0, 0.6, -0.005], ex: [0, 0.22, 0] }, [
-    intPart('Hoofdsteunkussen', bx(0.27, 0.15, 0.09, 0.04, [0, 0.105, 0]), MAT.intCloth, 'Gevoerd kussen met stoffen bekleding.', { ex: [0, 0.08, 0] }),
+    intPart('Hoofdsteunkussen', xf(intKussen('Hoofdsteun', 0.27, 0.15, 0.09, 0.04, [8, 4, 3], 4, (p, u, v) => [p[0] * (0.93 + 0.07 * sstep((v + 1) / 2)), p[1], p[2]]), [0, 0.105, 0]), MAT.intCloth, 'Gevoerd kussen met stoffen bekleding, onderaan iets smaller dan bovenaan (vorm geschat).', { ex: [0, 0.08, 0] }),
     intPart('Hoofdsteunstangen', merge([cy('y', 0.0075, 0.14, [0.07, 0.0, 0], 8), cy('y', 0.0075, 0.14, [-0.07, 0.0, 0], 8)]), MAT.chrome, 'Twee stangen die in de bussen van de rugleuning schuiven en de hoogte bepalen.', { ex: [0, -0.04, 0] }),
   ]);
   const lead = `Rugleuning ${ver}`;
@@ -104,9 +176,9 @@ function intFrontSeat(s) {
     p: [0, 0.235, -0.205], r: [-0.22, 0, 0], ex: [0, 0.1, -0.24],
     open: hinge([0, 0.235, -0.205], [1, 0, 0], 0.7, Object.assign({ min: 0.58, label: `Rugleuning ${who.toLowerCase()}`, look: { dir: [s * 1, 0.55, -0.25], nodes: [lead] } }, intNeed(`Portier ${drv ? 'links' : 'rechts'}`))) }, [
     intPart('Rugframe', merge([cy('y', 0.009, 0.46, [0.19, 0.32, -0.015]), cy('y', 0.009, 0.46, [-0.19, 0.32, -0.015]), cy('x', 0.009, 0.38, [0, 0.54, -0.015]), cy('x', 0.009, 0.38, [0, 0.1, -0.015])]), MAT.steel, 'Stalen buisframe van de rugleuning.', { inner: true, ex: [0, 0, -0.03] }),
-    intPart('Rugschuim', bx(0.42, 0.54, 0.06, 0.028, [0, 0.32, 0.005]), MAT.intFoam, 'Gevormd schuim van de rugleuning.', { inner: true, ex: [0, 0, 0.04] }),
-    intPart('Rugbekleding', merge([bx(0.44, 0.56, 0.09, 0.035, [0, 0.32, 0.005]), bx(0.055, 0.5, 0.05, 0.02, [0.19, 0.31, 0.04]), bx(0.055, 0.5, 0.05, 0.02, [-0.19, 0.31, 0.04])]), MAT.intCloth, 'Stoffen bekleding van de rugleuning met verstevigde zijwangen.', { ex: [0, 0, 0.14] }),
-    intPart('Rugachterschaal', bx(0.42, 0.54, 0.012, 0.006, [0, 0.32, -0.06]), MAT.plastic, 'Kunststof schaal aan de achterkant van de rugleuning.', { ex: [0, 0, -0.14] }),
+    intPart('Rugschuim', xf(intKussen('Rugschuim', 0.42, 0.54, 0.06, 0.028, [2, 4, 1], 2, intSchouderVorm(0.32)), [0, 0.32, 0.005]), MAT.intFoam, 'Gevormd schuim van de rugleuning.', { inner: true, ex: [0, 0, 0.04] }),
+    intPart('Rugbekleding', xf(intKussen('Rugleuning', 0.44, 0.56, 0.09, 0.03, [14, 18, 2], 4, intRugVorm), [0, 0.32, 0.005]), MAT.intCloth, 'Stoffen bekleding van de rugleuning met ingewerkte zijwangen, een lichte lendensteun en afgeronde schouders (vorm geschat).', { ex: [0, 0, 0.14] }),
+    intPart('Rugachterschaal', xf(intKussen('Rugschaal', 0.42, 0.54, 0.012, 0.005, [12, 14, 1], 2, p => [p[0] * intSchouder(p[1] + 0.32), p[1], p[2] - 0.005 * (1 - (p[0] / 0.21) ** 2)]), [0, 0.32, -0.06]), MAT.plastic, 'Kunststof schaal aan de achterkant van de rugleuning, licht gebold en met dezelfde schouders.', { ex: [0, 0, -0.14] }),
     intPart('Instaphendel', bx(0.035, 0.02, 0.05, 0.007, [s * 0.18, 0.585, -0.025]), MAT.plasticGrey, 'Hendel op de bovenzijde van de rugleuning waarmee deze naar voren wordt gekanteld om achter in te stappen.', { ex: [s * 0.04, 0.08, 0] }),
     head,
   ]);
@@ -123,14 +195,20 @@ function intFrontSeat(s) {
 const INT_RB = { y: 0.5, z: -1.05, tilt: -0.25 };
 const INT_RBP = { y: 0.548, z: -1.013, ang: 1.82 };
 const INT_RBH = 0.52;
+// Vormen van de achterbank (golf 10, beslissing INT-13): zitting met een vlakke kroon (de uiteinden 6 mm lager); de rugleuningdelen met een
+// licht gebogen voorkant (de zijranden 8 mm terug) en een afgeronde schouder aan de buitenzijde (bovenaan 5 procent smaller). Buitenmaten
+// als in versie 8; vorm geschat.
+const intZitAchterVorm = (p, u, v) => [p[0], p[1] - Math.max(0, v) * 0.006 * u ** 4, p[2]];
+const intRugAchterSchouder = (out, u, yl) => u * out > 0 ? 1 - 0.05 * sstep((yl - 0.36) / 0.16) : 1;
+const intRugAchterVorm = (out, front) => (p, u, v, t) => [p[0] * intRugAchterSchouder(out, u, p[1] + INT_RBH / 2), p[1], p[2] - (front ? Math.max(0, t) * 0.008 * Math.abs(u) ** 3 : 0)];
 function intRearBack(cx, w, name, d, label) {
   const bx = intBx, cy = intCy, hw = w / 2, out = cx > 0 ? 1 : -1;
   return A(name, { d, p: [cx, INT_RB.y, INT_RB.z], r: [INT_RB.tilt, 0, 0], ex: [out * 0.12, 0.12, -0.12],
     open: hinge([cx, INT_RBP.y, INT_RBP.z], [1, 0, 0], INT_RBP.ang, Object.assign({ min: 1.46, label, look: { dir: [0.5, 0.6, -0.65], nodes: [name, 'Zitting achterbank', 'Achterklep'] } }, intNeed('Achterklep'))) }, [
     intPart('Rugframe', merge([cy('y', 0.009, INT_RBH - 0.1, [hw - 0.04, INT_RBH / 2, -0.02]), cy('y', 0.009, INT_RBH - 0.1, [-hw + 0.04, INT_RBH / 2, -0.02]), cy('x', 0.009, w - 0.08, [0, INT_RBH - 0.06, -0.02]), cy('x', 0.009, w - 0.08, [0, 0.06, -0.02])]), MAT.steel, 'Stalen buisframe van het rugleuningdeel.', { inner: true, ex: [0, 0, -0.02] }),
-    intPart('Rugschuim', bx(w - 0.01, INT_RBH - 0.02, 0.065, 0.028, [0, INT_RBH / 2, 0.0]), MAT.intFoam, 'Schuimlaag van het rugleuningdeel.', { inner: true, ex: [0, 0, 0.04] }),
-    intPart('Rugbekleding', bx(w, INT_RBH, 0.11, 0.035, [0, INT_RBH / 2, 0.0]), MAT.intCloth, 'Stoffen bekleding van het rugleuningdeel.', { ex: [0, 0, 0.14] }),
-    intPart('Rugachterbekleding', bx(w - 0.01, INT_RBH - 0.01, 0.012, 0.005, [0, INT_RBH / 2, -0.062]), MAT.carpet, 'Bekleding aan de bagageruimtezijde van het rugleuningdeel.', { ex: [0, 0, -0.14] }),
+    intPart('Rugschuim', xf(intKussen(`RugschuimA${w}|${out}`, w - 0.01, INT_RBH - 0.02, 0.065, 0.028, [2, 4, 1], 2, intRugAchterVorm(out, false)), [0, INT_RBH / 2, 0.0]), MAT.intFoam, 'Schuimlaag van het rugleuningdeel.', { inner: true, ex: [0, 0, 0.04] }),
+    intPart('Rugbekleding', xf(intKussen(`RugA${w}|${out}`, w, INT_RBH, 0.11, 0.035, [Math.round(w / 0.045), 14, 2], 4, intRugAchterVorm(out, true)), [0, INT_RBH / 2, 0.0]), MAT.intCloth, 'Stoffen bekleding van het rugleuningdeel, met een licht gebogen voorkant en een afgeronde schouder aan de buitenzijde (vorm geschat).', { ex: [0, 0, 0.14] }),
+    intPart('Rugachterbekleding', xf(intKussen(`RugAchterA${w}|${out}`, w - 0.01, INT_RBH - 0.01, 0.012, 0.005, [Math.round(w / 0.07), 8, 1], 2, intRugAchterVorm(out, false)), [0, INT_RBH / 2, -0.062]), MAT.carpet, 'Bekleding aan de bagageruimtezijde van het rugleuningdeel.', { ex: [0, 0, -0.14] }),
     intPart('Rugvergrendeling', bx(0.04, 0.05, 0.03, 0.008, [out * (hw - 0.05), INT_RBH - 0.03, -0.04]), MAT.steel, 'Vergrendeling in de bovenrand die het rugleuningdeel aan de carrosserie vastzet; ontgrendeld met een hendel op de bank of in de bagageruimte.', { ex: [out * 0.06, 0.06, -0.04] }),
     intPart('Scharnierbeugels', merge([bx(0.05, 0.03, 0.06, 0.008, [hw - 0.045, 0.02, -0.04]), bx(0.05, 0.03, 0.06, 0.008, [-hw + 0.045, 0.02, -0.04])]), MAT.darkSteel, 'Beugels waarmee het rugleuningdeel om de onderrand scharniert.', { ex: [0, -0.06, -0.06] }),
   ]);
@@ -141,7 +219,7 @@ function intRearBench() {
   const cush = A('Zitting achterbank', { d: 'Zitkussen van de achterbank: plaat, schuim en stoffen bekleding, met de gordelsloten.', p: [0, 0, -0.81], ex: [0, 0.06, 0.14] }, [
     intPart('Zitplaat achter', intBx(0.94, 0.012, 0.4, 0.004, [0, 0.414, 0]), MAT.darkSteel, 'Stalen plaat onder het zitschuim.', { inner: true, ex: [0, 0.02, 0] }),
     intPart('Zitschuim achter', bx(0.96, 0.07, 0.42, 0.03, [0, 0.44, 0]), MAT.intFoam, 'Schuimlaag van de achterbankzitting.', { inner: true, ex: [0, 0.04, 0] }),
-    intPart('Zitbekleding achter', bx(0.98, 0.1, 0.44, 0.032, [0, 0.45, 0]), MAT.intCloth, 'Stoffen bekleding van de zitting.', { ex: [0, 0.1, 0.04] }),
+    intPart('Zitbekleding achter', xf(intKussen('ZitAchter', 0.98, 0.1, 0.44, 0.032, [24, 2, 10], 4, intZitAchterVorm), [0, 0.45, 0]), MAT.intCloth, 'Stoffen bekleding van de zitting, met een vlakke kroon en afgeronde randen (vorm geschat).', { ex: [0, 0.1, 0.04] }),
     ...[[0.33, 'links'], [-0.33, 'rechts']].map(([x, n]) => intPart(`Gordelslot achter ${n}`, merge([bx(0.03, 0.05, 0.04, 0.008, [x, 0.5, -0.2]), bx(0.014, 0.01, 0.02, 0.003, [x, 0.528, -0.2])]), MAT.plastic, 'Gordelslot van de achterbank.', { ex: [0, 0.1, 0] })),
   ]);
   // geen hoofdsteunen achter (de eigenaar bevestigt het, Beslissing INT-1); de deelbare rugleuning staat in de uitrustingslijst van de Twist bij Autowereld (aannemelijk, geen spec)
@@ -190,9 +268,11 @@ function intBelts() {
 // zijprofiel (z, y) van het dashboard; ver naar voren een lage rand onder de voorruit, achterrand en voorvlak naar de bestuurder
 const intDashPf = [[0.85, 0.905], [0.74, 0.925], [0.62, 0.925], [0.55, 0.905], [0.505, 0.84], [0.49, 0.76], [0.505, 0.68], [0.53, 0.6], [0.56, 0.52], [0.85, 0.52], [0.85, 0.6]];
 // het profiel in twee delen op y 0,70: het snijpunt ligt op het schuine voorvlak tussen (0,49; 0,76) en (0,505; 0,68)
-const intDashSplit = 0.70, intDashSplitZ = 0.49 + 0.015 * (0.76 - intDashSplit) / 0.08;
-const intDashTopPf = [[0.85, 0.905], [0.74, 0.925], [0.62, 0.925], [0.55, 0.905], [0.505, 0.84], [0.49, 0.76], [intDashSplitZ, intDashSplit], [0.85, intDashSplit]];
-const intDashLowPf = [[intDashSplitZ, intDashSplit], [0.505, 0.68], [0.53, 0.6], [0.56, 0.52], [0.85, 0.52], [0.85, intDashSplit]];
+const intDashSplit = 0.70;
+// golf 10 (beslissing INT-13): de hoeken van het profiel zijn afgerond (straal per hoek, geschat; de achterkant tegen het schutbord blijft
+// scherp), daarna wordt het op y 0,70 in de twee delen gesplitst. Met gladde normalen ogen kruin en neus rond in plaats van gefacetteerd.
+const intDashRond = intRondHoeken(intDashPf, [0, 0.3, 0.3, 0.05, 0.08, 0.1, 0.1, 0.1, 0.02, 0, 0], 8);
+const intDashTopPf = clipPoly(intDashRond, 0, -1, -intDashSplit), intDashLowPf = clipPoly(intDashRond, 0, 1, intDashSplit);
 const intDashHW = 0.52;      // tot de portierbekleding (binnenkant op 0,549); eerder 0,572 en dus door het portier
 // rooster met lamellen op het dashboard: huis en lamellen in een stuk
 function intVent(name, d, p, r, w, h, mat = MAT.plasticGrey) {
@@ -202,8 +282,8 @@ function intVent(name, d, p, r, w, h, mat = MAT.plasticGrey) {
 function intDashboard() {
   const bx = intBx, cy = intCy;
   const dashShell = A('Dashboardkap', { d: 'Dashboardkap van zwart kunststof met de kniebeschermer onder de stuurkolom en de zijkappen.', ex: [0, 0.18, 0.3] }, [
-    intPart('Dashboardbovenkant', intSideBlock(intDashTopPf, -intDashHW, intDashHW), MAT.intDashTop, 'Dashboardkap, bovenste deel in lichter grijs: zachte bovenkant en voorvlak tot y 0,70; achter de voorruit onder de waterkast.', { ex: [0, 0.1, 0.1] }),
-    intPart('Dashboardonderkant', intSideBlock(intDashLowPf, -intDashHW, intDashHW), MAT.intDashLow, 'Dashboardkap, onderste deel in donkerder grijs: voorvlak onder y 0,70 en onderrand tot het schutbord.', { ex: [0, -0.06, 0.04] }),
+    intPart('Dashboardbovenkant', intSideBlockGlad(intDashTopPf, -intDashHW, intDashHW), MAT.intDashTop, 'Dashboardkap, bovenste deel in lichter grijs: zachte bovenkant en voorvlak tot y 0,70; achter de voorruit onder de waterkast.', { ex: [0, 0.1, 0.1] }),
+    intPart('Dashboardonderkant', intSideBlockGlad(intDashLowPf, -intDashHW, intDashHW), MAT.intDashLow, 'Dashboardkap, onderste deel in donkerder grijs: voorvlak onder y 0,70 en onderrand tot het schutbord.', { ex: [0, -0.06, 0.04] }),
     intPart('Kniebeschermer', bx(0.36, 0.2, 0.05, 0.015, [0.35, 0.6, 0.5], [-0.3, 0, 0]), MAT.intDashLow, 'Gevoerde plaat onder de stuurkolom die de knieën van de bestuurder beschermt.', { ex: [0, -0.05, -0.14] }),
     ...[1, -1].map(s => intPart(`Dashboardzijkap ${sideName(s)}`, bx(0.02, 0.35, 0.36, 0.006, [s * (intDashHW + 0.01), 0.72, 0.67]), MAT.plastic, 'Zijkap die het uiteinde van het dashboard afsluit tegen de portierstijl.', { ex: [s * 0.1, 0, 0] })),
   ]);
@@ -316,12 +396,12 @@ function intSteering() {
   const dir = V3(...INT_COLDIR), bx = intBx, cy = intCy;
   return A('Stuurwiel met kolomkap', { d: 'Driespaaks stuurwiel met een groot ovaal kussen op de naaf, platte brede spaken en schakelaars, en de kunststof kap rond de stuurkolom tot het dashboard. De stuurkolom zelf hoort bij het onderstel en draagt het stuurwiel op de naaf. Geen airbag.',
     spec: [['Stuur', 'driespaaks, zonder airbag']], p: INT_WHEEL, q: intWheelQ(dir), ex: [0, 0.18, -0.35] }, [
-    intPart('Stuurwielkrans', G.torus('z', 0.17, 0.0135, 36, 8), MAT.plastic, 'Rubber kunststof stuurkrans met een doorsnede van 36 cm (maat geschat); geen stuurbekrachtiging.', { ex: [0, 0, -0.1] }),
+    intPart('Stuurwielkrans', G.torus('z', 0.17, 0.0135, 72, 16), MAT.plastic, 'Rubber kunststof stuurkrans met een doorsnede van 36 cm (maat geschat); geen stuurbekrachtiging.', { ex: [0, 0, -0.1] }),
     intPart('Stuurwielspaken', merge(INT_SPOKES.map(a => intSpoke(a))), MAT.plastic, 'Drie platte, brede spaken (ongeveer 55 mm) van de naaf naar de krans, naar 4, 6 en 8 uur (Beslissing INT-7); met leer of kunststof bekleed.', { ex: [0, 0, -0.06] }),
-    intPart('Claxonkussen', intPillow(INT_PAD[0], INT_PAD[1], INT_PAD[2]), MAT.plastic, 'Groot ovaal kussen van de naaf (ongeveer 170 x 108 mm en 40 mm diep, een afgeplatte ellips zoals op de foto) met het claxonpad; geen airbag. Het kussen is laag genoeg om de onderste helft van de kleine meters vrij te laten.', { p: [0, INT_PAD[3], 0.012], ex: [0, 0, -0.14] }),
-    intPart('Stuurwielnaaf', cy('z', 0.05, 0.04, [0, 0, 0.0], 20), MAT.plastic, 'Naaf waarop de spaken en het kussen zitten; de naaf zit met een gekartelde as op de stuurkolom.', { ex: [0, 0, -0.1] }),
+    intPart('Claxonkussen', intPillow(INT_PAD[0], INT_PAD[1], INT_PAD[2], 48, 24), MAT.plastic, 'Groot ovaal kussen van de naaf (ongeveer 170 x 108 mm en 40 mm diep, een afgeplatte ellips zoals op de foto) met het claxonpad; geen airbag. Het kussen is laag genoeg om de onderste helft van de kleine meters vrij te laten.', { p: [0, INT_PAD[3], 0.012], ex: [0, 0, -0.14] }),
+    intPart('Stuurwielnaaf', cy('z', 0.05, 0.04, [0, 0, 0.0], 40), MAT.plastic, 'Naaf waarop de spaken en het kussen zitten; de naaf zit met een gekartelde as op de stuurkolom.', { ex: [0, 0, -0.1] }),
     // taps: straal 48 mm bij het stuur, 32 mm bij het dashboard, zodat de kap onder het instrumentenglas blijft (B-031) en de kolombuis (straal 27,5 mm) omsluit
-    intPart('Kolomkap boven', xf(G.cyl('z', 0.048, 0.032, 0.14, 16), [0, 0, -0.1]), MAT.plastic, 'Bovenste helft van de kap om de stuurkolom, tot het dashboard; loopt taps toe onder het instrumentenpaneel.', { ex: [0, 0.06, 0] }),
+    intPart('Kolomkap boven', xf(G.cyl('z', 0.048, 0.032, 0.14, 32), [0, 0, -0.1]), MAT.plastic, 'Bovenste helft van de kap om de stuurkolom, tot het dashboard; loopt taps toe onder het instrumentenpaneel.', { ex: [0, 0.06, 0] }),
     intPart('Kolomkap onder', bx(0.1, 0.05, 0.14, 0.015, [0, -0.04, -0.1]), MAT.plastic, 'Onderste helft van de kap om de stuurkolom met het contactslot.', { ex: [0, -0.06, 0] }),
     intPart('Combischakelaar links', merge([rodBetween([-0.04, 0.0, -0.05], [-0.14, 0.01, -0.03], 0.007, 8), bx(0.03, 0.024, 0.024, 0.008, [-0.15, 0.012, -0.03])]), MAT.plasticGrey, 'Hendel links van de kolom voor de richtingaanwijzers en de verlichting.', { ex: [-0.08, 0, 0] }),
     intPart('Combischakelaar rechts', merge([rodBetween([0.04, 0.0, -0.05], [0.14, 0.01, -0.03], 0.007, 8), bx(0.03, 0.024, 0.024, 0.008, [0.15, 0.012, -0.03])]), MAT.plasticGrey, 'Hendel rechts van de kolom voor de voor- en achterruitwissers.', { ex: [0.08, 0, 0] }),
@@ -352,7 +432,7 @@ function intAxisX(x0, y, z, len) { return xf(G.cyl('x', 0.007, 0.007, len, 8), [
 /* ---------- middenconsole ---------- */
 function intConsole() {
   const bx = intBx, cy = intCy;
-  const tunnel = intPart('Tunnelconsole', intSideBlock([[0.54, 0.275], [0.54, 0.52], [0.5, 0.46], [0.32, 0.44], [0.12, 0.42], [-0.1, 0.4], [-0.24, 0.385], [-0.27, 0.275]], -0.1, 0.1), MAT.intDashLow, 'Console over de middentunnel van het dashboard tot achter de handrem; ze bergt de schakelmechaniek, de handremkabels en de uitlaat in de tunnel.', { ex: [0, 0.12, 0.05] });
+  const tunnel = intPart('Tunnelconsole', intSideBlockGlad(intRondHoeken([[0.54, 0.275], [0.54, 0.52], [0.5, 0.46], [0.32, 0.44], [0.12, 0.42], [-0.1, 0.4], [-0.24, 0.385], [-0.27, 0.275]], [0, 0.008, 0.05, 0.2, 0.2, 0.2, 0.03, 0], 6), -0.1, 0.1), MAT.intDashLow, 'Console over de middentunnel van het dashboard tot achter de handrem; ze bergt de schakelmechaniek, de handremkabels en de uitlaat in de tunnel.', { ex: [0, 0.12, 0.05] });
   // middenstapel van boven naar onder (foto van de eigenaar): twee roosters in een rand (y 0,815), de kachelbediening (y 0,73), een bakje (y 0,667),
   // de radio (y 0,60) en onder de radio de aansteker en de asbak (y 0,545). Alles op het voorvlak van de stapel (z 0,455); het kachelpaneel staat 6 mm
   // voor dat vlak, de rand van de roosters 12 mm, zodat de roosters 3 mm achter de rand liggen.
@@ -389,9 +469,9 @@ function intConsole() {
   // pook met hoes: de schakelstang van de bak (DRV_PORTS.shiftIn) sluit onder de tunnel aan op INT_PORTS.pookvoet
   const gx = INT_PORTS.pookvoet;
   const shifter = A('Pook met hoes', { d: 'Pook van de handgeschakelde vijfbak met rubber hoes in de console; de schakelstang naar de bak sluit onder de console aan op de voet van de pook.', p: [gx[0], gx[1], gx[2]], ex: [0, 0.2, 0] }, [
-    intPart('Pookhoes', G.lathe('y', [[0.075, 0], [0.07, 0.012], [0.05, 0.035], [0.028, 0.06], [0.016, 0.075], [0.014, 0.08]], 20, 'intPookhoes'), MAT.rubber, 'Rubber hoes rond het onderste deel van de pook, afgedicht op de console.', { ex: [0, 0.03, 0] }),
+    intPart('Pookhoes', G.lathe('y', [[0.075, 0], [0.07, 0.012], [0.05, 0.035], [0.028, 0.06], [0.016, 0.075], [0.014, 0.08]], 40, 'intPookhoes'), MAT.rubber, 'Rubber hoes rond het onderste deel van de pook, afgedicht op de console.', { ex: [0, 0.03, 0] }),
     intPart('Pookstang', cy('y', 0.0075, 0.19, [0, 0.17, 0], 10), MAT.steel, 'Stalen pookstang die door de hoes naar de schakelmechaniek loopt.', { ex: [0, 0.06, 0] }),
-    intPart('Pookknop', merge([G.sphere(0.026, 16), xf(G.box(0.002, 0.002, 0.002), [0, 0, 0])]), MAT.plastic, 'Zwarte pookknop met het schakelschema (schematisch).', { p: [0, 0.285, 0], ex: [0, 0.12, 0] }),
+    intPart('Pookknop', merge([G.sphere(0.026, 32), xf(G.box(0.002, 0.002, 0.002), [0, 0, 0])]), MAT.plastic, 'Zwarte pookknop met het schakelschema (schematisch).', { p: [0, 0.285, 0], ex: [0, 0.12, 0] }),
   ]);
   // handrem: hendel met knop en hoes naast de pook, op de console tussen de voorstoelen. De oorsprong van de groep is het scharnier
   // (INT_PORTS.handremhendel); de korte kabelarm wijst omlaag naar het aansluitpunt van de kabel (INT_PORTS.handremkabel). Trekken
@@ -440,7 +520,8 @@ function intTrim() {
   const bPillar = s => intPart(`B-stijlbekleding ${sideName(s)}`, intPanel(s, -0.585, bodKpZF, () => 0.285, z => bodGh(z).ye - 0.04, 0.035, 4, 12), MAT.intSide, 'Kunststof bekleding van de smalle B-stijl achter het portier, met de bevestiging van de voorgordel.', { ex: [s * 0.08, 0.04, -0.04] });
   // zijbekleding achter: onder de hoekruit, tussen B-stijl en C-stijl (DAK-4: van bodKpZF tot bodKpZB, -0,65 tot -1,37; was -0,74 tot -1,17); boven de wielkast met de gordelrolautomaat
   const sideRear = s => intPart(`Zijbekleding achter ${sideName(s)}`, intPanel(s, bodKpZF, bodKpZB, z => 0.3 + 0.3 * clamp((-0.93 - z) / 0.1, 0, 1), z => YT(z) - 0.03, 0.035, 28, 6), MAT.intSide, 'Kunststof zijbekleding onder de hoekruit bij de achterbank, tot de achterklep.', { ex: [s * 0.1, 0, -0.04] });
-  const sideFront = s => intPart(`Zijbekleding achterbank ${sideName(s)}`, intPanel(s, -0.585, -0.74, () => 0.285, () => 0.55, 0.036, 4, 4), MAT.intSide, 'Onderste deel van de bekleding naast de achterbank.', { ex: [s * 0.1, 0, 0] });
+  // naast de achterbank van de B-stijl tot de voorrand van de hoekruit (bodKpZF, -0,65; liep tot golf 10 tot -0,74 en lag dan over de zijbekleding achter)
+  const sideFront = s => intPart(`Zijbekleding achterbank ${sideName(s)}`, intPanel(s, -0.585, bodKpZF, () => 0.285, () => 0.55, 0.036, 4, 4), MAT.intSide, 'Onderste deel van de bekleding naast de achterbank.', { ex: [s * 0.1, 0, 0] });
   // de gasveerbevestiging (z -1,40 tot -1,36, y 0,93 tot 0,98) zit achter de bekleding: die ligt 4 cm van de huid, daar 9,5 cm (DAK-4: tot z -1,50, daar zit de geleider van de gordel achter op). Aan de tankzijde (bodTkS, links) wijkt ze
   // achter z -1,38 en onder y 0,79 uit tot |x| 0,555, voor de tankkom (bodem op 0,6695, tot y 0,78) en de vulpijp (binnenkant ongeveer 0,58); niet dieper, want de stekker
   // van de kabelboom achter (tot |x| 0,531, z -1,6) zit ervoor. Vanaf y 0,82 weer 4 cm, zodat de hoedenplank en haar steunlijst vrij blijven.

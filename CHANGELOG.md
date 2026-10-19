@@ -4,6 +4,17 @@
 
 - Driehoekenbudget Interieur 100.000 (was 52.900), totaal 447.100 (was 400.000); keuze van de eigenaar (BUD-1). Stand: `docs/cijfers.md`.
 
+### Interieur verfijnd (golf 10, pakket INT; beslissing INT-13 tot INT-15)
+
+- Keuze op meting (INT-13): schermdekking per onderdeel in de presets Interieur, Bestuurdersstoel, Dashboard, Instappen en Gemonteerd en in zeven cabinestanden, naast de driehoeken per onderdeel. Verfijnd zijn de acht delen met de meeste dekking en de grofste vorm.
+- Voorstoelen: zitting en rugleuning uit een stuk met ingewerkte zijwangen (waren een blok met twee losse rollen), lendensteun en smallere schouders; achterschaal licht gebold; hoofdsteun ronder en onderaan iets smaller. Buitenmaten gelijk, vorm geschat.
+- Achterbank: zitting met een vlakke kroon, rugleuningdelen met een licht gebogen voorkant en een afgeronde buitenschouder.
+- Stuurwiel: krans, kussen, naaf en kolomkap met twee keer zoveel segmenten (geen zichtbare facetten meer van dichtbij).
+- Dashboardkap en tunnelconsole: afgeronde hoeken in het zijprofiel met gladde normalen; pookknop en pookhoes ronder.
+- `Zijbekleding achterbank` eindigt op de voorrand van de hoekruit (z -0,65, was -0,74) en ligt niet meer over de `Zijbekleding achter` (INT-14).
+- Vloerbedekking om de tankkuip: open punt gesloten, nagemeten zonder doordringing (INT-15).
+- Driehoeken Interieur binnen het budget van BUD-1 (stand per hoofdgroep in `docs/cijfers.md`); laadtijd niet merkbaar langer.
+
 ## Versie 8 (19 oktober 2026)
 
 Aanleiding: de open punten na versie 7: de bovenkant van de kas (KAS-6), de grotere hoekruit en smallere C-stijl op de foto's van de modelreeks, het portierrubber met een vaste maat en het gaatje in het kleppendeksel. Keuze van de eigenaar: de knik op het voorscherm onder de voet van de A-stijl blijft (DAK-0).
