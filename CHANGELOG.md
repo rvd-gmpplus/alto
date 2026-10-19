@@ -7,6 +7,7 @@
 - Meting (KAS-1): naadprofielen op vier foto's van de modelreeks, driehoeksmeting van de B-stijl uit twee cameraparen en silhouetten. De kas is op de gordel op de foto's 27 tot 44 mm (halve breedte) breder dan in versie 6.
 - Kas breder (KAS-2): de kas begint op de gordel 35 mm verder naar buiten (halve breedte 0,719, was 0,684) langs achterscherm, hoekruit en portier, naar de waterkast en de achterkant glad terug. De flank loopt bovenaan nog 14 mm in (was 49); breedste punt, dak, dakrand, dakrails, `BOD_WMAX`, `BOD_MIRW`, lengte en hoogte zijn gelijk, dus de zijruiten hellen meer (0,37, was 0,28). De zijruit zakt met helling 0,18 in het portier; geleiderails, ruitdrager, kabels en slotmotor zijn daarop aangepast. Spiegelarm 4,5 mm korter aan de binnenkant.
 - Gordel aan de voorrand van het portier (KAS-3): 15 mm lager (onderrand zijruit op z 0,78 0,899, was 0,914; foto's 0,89 tot 0,90); waterkast, voorruit en motorkap blijven, de gordel stijgt onder de voet van de A-stijl naar de waterkast. Spiegelzeil volgt de gordel, bovenste portierscharnier 10 mm lager, portierrubber op de plaats van versie 6.
+- Preset Portier links (KAS-4): de buitenspiegel klapt verder omhoog en naar voren uit (uitklapvector 0,30; 0,45; 0,40) en ligt niet meer achter de labels Raambediening, Waterscherm en Buitenspiegel links.
 
 ## Versie 6 (19 oktober 2026)
 
