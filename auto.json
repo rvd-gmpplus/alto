@@ -17,6 +17,7 @@
   "pnType": "Suzuki Alto 1.0-16V Twist (G10BB), 2001",
   "pnToelichting": false,
   "hintVersie": "v1",
+  "docshots": [["gemonteerd", "assembled"], ["hoofdgroepen", "main"], ["alles-uit-elkaar", "everything"], ["motor-g10bb", "engine"], ["bak", "gearbox"], ["rontgen", "xray"], ["openen-motorruimte", "openHood"], ["openen-instappen", "openDoors"], ["openen-bagageruimte", "openTrunk"], ["openen-tankklep", "openFuel"], ["openen-alles", "openAll"]],
   "verboden": [
     "Alto",
     "G10B",
