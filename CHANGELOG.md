@@ -1,6 +1,6 @@
 # Wijzigingen
 
-## Versie 9 (in voorbereiding)
+## Versie 9 (19 oktober 2026)
 
 Aanleiding: de open punten na versie 8 (ronde hoeken van de hoekruit, de overlap van de zijbekleding naast de achterbank) en een groter driehoekenbudget voor het interieur. Keuzes van de eigenaar: budget Interieur omhoog (BUD-1), het pakket INT kiest zelf waar het aan besteed wordt, en de bovenhoek achter van de hoekruit blijft (HOEK-2, optie A).
 
