@@ -2,9 +2,9 @@
  "commit": "",
  "viewport": "1280x800",
  "totaal": {
-  "labels": 244,
-  "eigen": 214,
-  "vrij": 186
+  "labels": 246,
+  "eigen": 216,
+  "vrij": 188
  },
  "presets": {
   "assembled": {
@@ -37,7 +37,7 @@
    "achter": [
     "Elektrisch systeem achter Band",
     "Interieur achter Buitenpaneel",
-    "Aandrijflijn achter Spanbeugel"
+    "Aandrijflijn achter Luchtfilterhuis"
    ],
    "lucht": [
     "Carrosserie",
@@ -282,9 +282,9 @@
     "Portierrand achter Buitenpaneel",
     "Binnenpaneel achter Buitenpaneel",
     "Portierrubber achter Buitenpaneel",
-    "Deurbekleding achter Rubber zijruit",
+    "Deurbekleding achter Binnenpaneel",
     "Rubber zijruit achter Zijruit",
-    "Waterscherm achter Buitenpaneel",
+    "Waterscherm achter Binnenpaneel",
     "Zijdelingse botsbalk achter Buitenpaneel",
     "Raambediening achter Binnenpaneel",
     "Deurvanger achter Buitenpaneel"
@@ -293,9 +293,9 @@
   },
   "headlampL": {
    "label": "Koplamp links",
-   "labels": 9,
-   "eigen": 7,
-   "vrij": 5,
+   "labels": 10,
+   "eigen": 8,
+   "vrij": 6,
    "achter": [
     "Reflector achter Afdekglas",
     "Lampfitting achter Hoekreflector"
@@ -348,9 +348,9 @@
   },
   "dash": {
    "label": "Dashboard",
-   "labels": 7,
-   "eigen": 5,
-   "vrij": 7,
+   "labels": 8,
+   "eigen": 6,
+   "vrij": 8,
    "achter": [],
    "lucht": [
     "Dashboardkap",
