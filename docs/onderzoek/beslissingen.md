@@ -459,3 +459,29 @@ Onzekerheid per aflezing ongeveer 0,03 (perspectief, aflezen op 2 tot 3 beeldpun
 **Beslissing FLANK-4 (achterruit):** narekening met de geijkte camera's. Gele foto: de bovenrand van de achterruit valt binnen 5 beeldpunten samen met het model, de onderrand ligt op de foto 14 beeldpunten (ongeveer 20 mm) hoger. Mannheim: 27 beeldpunten (ongeveer 40 mm) hoger, maar ook het slot wijkt daar 26 beeldpunten af (fout van de ijking of van de geschatte slothoogte). Zijaanzicht (wit, camera geijkt op de wielen): de buitenrand van de C-stijl, automatisch op de rand van de lak gevolgd, helt in beeld 31 tot 36 graden; in de opname van het model over hetzelfde stuk onder de dakhoek 33 tot 36 graden (in beeld; met de schuine blik van ongeveer 24 graden is dat in werkelijkheid een paar graden meer). Gelijk binnen ongeveer 4 graden; de dakhoek van het model ligt in deze ijking 40 beeldpunten lager dan op de foto (ijkfout of verschil tussen 5- en 3-deurs). Het silhouet (`data/silhouet.json`, Zen-zijfoto) heeft 48 graden; het model staat daar al aan de steile kant. Conclusie: niet aantoonbaar te schuin; het verschil valt binnen de ijkfout. Geen wijziging: de achterkant van golf 6 (klep, ruit, scharnieren, gasveren, kiepruit) blijft zoals ze is. Wie het wil vastleggen: een recht zijaanzicht van de eigenaar.
 
 **Open:** de kas is op de gordel ongeveer 20 mm (onzekerheid 15) smaller dan de foto's aangeven; breder maken raakt portierramen, geleiderails, kiepruit, spiegels en dakrails en vraagt een eigen pakket. Een recht zij- en achteraanzicht van de eigenaar zou gordel, flank en achterruit op 1 cm vastleggen.
+
+## Golf 8, pakket KAS (kas breder op de gordel, 19 oktober 2026, tak `golf8-kas`)
+
+Aanleiding: het open punt van FLANK (de kas is op de gordel smaller dan op de foto's). De eigenaar koos een eigen pakket "kas breder". `body.js` en `bodyparts.js` zijn daarvoor namens de orkestrator gewijzigd.
+
+**Beslissing KAS-1 (meting, vóór het bouwen).** Gereedschap van FLANK (camera-ijking per foto met Gauss-Newton, opnamen met dezelfde camera), aangevuld met twee nieuwe ijkingen: de blauwe 2000 GL van voren rechts (`2000_Suzuki_Alto_GL_Auto`, 9 punten, restfout 16 beeldpunten) en de blauwe Mannheim van voren links (`Suzuki_Alto_front_20080116`, 8 punten, restfout 15), plus de bestaande van de gele (achter rechts), de blauwe 2001 (`rear2001`, achter rechts, 8 punten, restfout 19) en de blauwe Mannheim achter links (`rear2008`). Drie methoden:
+- (a) Naadprofiel. De spleet tussen voorscherm en portier (z 0,78) en tussen portier en achterscherm (z -0,56) staat van schuin voor of schuin achter bijna op de kant en tekent de doorsnede van de flank. Punten op de naad (om de 25 beeldpunten, afgelezen op 4 maal vergroot) zijn teruggeprojecteerd op het vlak z = 0,78 of -0,56. Gemeten is de inloop van het breedste punt tot het einde van de naad op de gordel (daar begint het raamframe). Die maat is relatief en dus vrijwel ongevoelig voor de verschuiving die een ijkfout geeft; de onzekerheid komt uit het aflezen (1 tot 2 beeldpunten, 2 tot 3 mm per beeldpunt) en de schaal van de ijking (ongeveer 15 procent).
+- (b) Driehoeksmeting. Onder- en bovenhoek van de achterrand van het portierraam (spleet met de B-stijl) uit twee camera's van tegenover elkaar liggende kanten: rechts 2000 GL (voor) met geel en 2001 (achter), links Mannheim voor met Mannheim achter. Afstand van het gevonden punt tot elke straal 18 tot 20 mm (rechts tot 34 mm): dat is de orde van de fout.
+- (c) Silhouet van de verre zijde (C-stijl tegen de flank) op de gele foto en de 2000 GL, foto en opname met dezelfde camera naast elkaar.
+
+| Plaats | Methode, foto | Foto | Model (versie 6) | Verschil (halve breedte) |
+|---|---|---|---|---|
+| gordel, voorrand portier (z 0,78) | (a) 2000 GL | inloop 20 mm, kas 0,728 | inloop 64 mm, kas 0,684 | +44 |
+| gordel, voorrand portier (z 0,78) | (a) Mannheim voor | inloop 29 mm, kas 0,719 | idem | +35 |
+| gordel, achterrand portier (z -0,56) | (a) blauw 2001 | inloop 25 mm, kas 0,723 | inloop 64 mm, kas 0,684 | +39 |
+| gordel, achterrand portier (z -0,56) | (a) geel | inloop 27 mm, kas 0,721 | idem | +37 |
+| gordel, achterrand portier (z ca. -0,5) | (b) rechts en links | 0,713 en 0,711 | 0,684 | +29 en +27 (fout ca. 20) |
+| gordel, C-stijl (z -1,0 tot -1,3) | (c) 2000 GL, geel | kas ongeveer 20 mm minder ver binnen het silhouet van de flank dan in het model (2000 GL); geel niet af te lezen | | ongeveer +20 (fout ca. 20) |
+| dakrandhoogte, bovenhoek achter portierraam (y 1,36) | (b) rechts en links | 0,593 en 0,605 | 0,558 (in de ronding van de dakrand) | +35 en +47 (fout ca. 25) |
+| inloop zijruit (tumblehome), gordel tot y 1,36 | (b) rechts en links | 0,27 en 0,24 (14 graden) | 0,287 (16 graden); glas 0,28 | -0,03 (fout ca. 0,08) |
+
+"Kas" is hier de buitenkant van de huid op de gordel, waar de naad eindigt: in het model `bodSec(z).xe` (0,684), daar begint de kas en eindigt het portierpaneel. Breedste punt van de flank in het model 0,7475 (`HW`); de inloop op de foto's is van hetzelfde breedste punt gemeten, dus kas = 0,7475 min inloop.
+
+Uitkomst: op de gordel is de kas op de foto's 35 tot 44 mm (methode a, vier foto's, gemiddeld 39, spreiding 4, met schaalfout en afleesfout ongeveer plus of min 10) of 27 tot 29 mm (methode b, fout ongeveer 20) breder dan in het model, voor, midden en (minder zeker) achter. Dat is meer dan de meetfout en meer dan de 20 mm die FLANK schatte (FLANK nam de flank 10 mm onder de gordel, waar het model 50 mm inloopt). Op dakrandhoogte geeft de driehoeksmeting 35 tot 47 mm breder met een fout van ongeveer 25; de inloop van de zijruit is op de foto's gelijk aan of iets kleiner dan in het model. De foto's wijzen dus eerder op een kas die als geheel breder is dan op alleen een bredere gordel; boven is de meting te grof om het vast te leggen.
+
+Gereedschap, punten, camera's en uitsneden: werkmap van pakket KAS (`kas/meet`, `kas/tools`), buiten de repo.
