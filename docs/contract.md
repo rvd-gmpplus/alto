@@ -35,12 +35,12 @@ Meter. x links (+) en rechts (-), y omhoog vanaf de grond, z naar voren (+). De 
 | `BOD_H` | 1,405 | hoogte onbeladen (brochure); de dakrails staan er 3 cm bovenop |
 | `HW(z)` | 0,7475 van z -1,20 tot +0,90; neus 0,651 bij +1,65, 0,612 bij +1,69 en 0,53 bij +1,7475 (beslissing 29: vollere hoeken); staart 0,50 bij -1,7475 | silhouet (bovenaanzicht) |
 | `YB(z)` | dorpel 0,215 tot 0,25; voorbumper 0,27 (rand 0,31); achterbumper 0,275 (rand 0,34) | geschat |
-| `YT(z)` | gordellijn: 0,894 (z 0,4), 0,913 (0,0), 0,936 (-0,4), 0,960 (-1,0); schouder voor 0,903 (z 0,85) dalend naar 0,720 (z 1,60) en 0,698 (z 1,66), dan het steile front tot 0,548 (z 1,688) en 0,500 (nok); bolling van de kap op de neus 6 mm (beslissing 29) | silhouet, belt, foto 1993-2001 |
+| `YT(z)` | gordellijn: 0,884 (z 0,4), 0,890 (0,0), 0,910 (-0,4), 0,942 (-0,8), 0,955 (-1,0 tot -1,2) (beslissing FLANK-1, golf 7: tot 25 mm lager naar de foto's; was 0,894, 0,913, 0,936, 0,955 en 0,960); schouder voor 0,903 (z 0,85) dalend naar 0,720 (z 1,60) en 0,698 (z 1,66), dan het steile front tot 0,548 (z 1,688) en 0,500 (nok); bolling van de kap op de neus 6 mm (beslissing 29) | silhouet, belt, foto 1993-2001 |
 | `YR(z)` | daklijn op de hartlijn: 0,930 (z 0,90), 1,105 (0,6), 1,285 (0,35), 1,380 (0,1), 1,405 (-0,4 tot -0,65), 1,382 (-1,15), 1,17 (-1,45), 0,90 (-1,70) | silhouet (top) |
 | `surfX(z, y)` | buitenhuid in x op hoogte y; boven de gordel de halve breedte van ruit, stijl of dak; boven dek of dak 0 | carrosserie |
 | `skin(z, y, s, out)` | punt op de huid | carrosserie |
 
-De doorsnede van de onderbak is een loft in (z, s): vlakke onderkant, bodemhoek (straal 0,045), flank met 12 mm bolling, schouder (straal 0,055), dek met kroon (3 cm voor de kap). De kas (ruiten, stijlen, dak) is een loft in (z, q) met 0,28 hellende ruitstijlen; daklijn en gordel volgen `data/silhouet.json` (alle stations binnen de tolerantie, de voorruit aan de bovengrens, de achterruit zo steil als de tolerantie toelaat).
+De doorsnede van de onderbak is een loft in (z, s): vlakke onderkant, bodemhoek (straal 0,045), flank als boog (breedst op y ca. 0,54, onderaan 12 mm en bovenaan 47 tot 61 mm ingelopen), schouder (straal 0,016 langs portier en voorscherm, 0,003 op het achterscherm), dek met kroon (3 cm voor de kap); de schouder eindigt op dezelfde plek als het oude profiel (flank met 12 mm bolling, schouder 0,055), dus de kas is ongewijzigd. Vóór z 1,0 loopt het profiel naar het oude terug (vol op z 1,4: de neus van beslissing 29). `ringX0(z, y)` geeft de halve breedte van het oude profiel, voor delen binnen de huid die op hun plaats blijven (binnenkant portier). Beslissing FLANK-2 en FLANK-3 (golf 7). De kas (ruiten, stijlen, dak) is een loft in (z, q) met 0,28 hellende ruitstijlen; daklijn en gordel volgen `data/silhouet.json` (alle stations binnen de tolerantie, de voorruit aan de bovengrens, de achterruit zo steil als de tolerantie toelaat).
 
 ## 3. Motorframe en aandrijflijn
 

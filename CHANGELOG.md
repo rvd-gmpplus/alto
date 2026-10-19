@@ -3,6 +3,13 @@
 ## Versie 6 (in voorbereiding)
 
 - Carrosserie (golf 7, pakket RUIT): de achterzijruit sluit nu rondom op de dagopening aan: het rubber volgt de bolling van de wand langs de voor- en achterrand (was een rechte lijn die in de B-stijl verdween), de onderrand van ruit en rubber ligt 3 mm in plaats van 13 mm boven het achterscherm, de C-stijl sluit op de dakrand aan (geen inkeping bij de bovenhoek achter) en B-stijl, B-stijlrubber en C-stijl sluiten zonder spleet op de dakrand en het achterscherm aan.
+### Carrosserie: flank, gordel en heup (golf 7, pakket FLANK; beslissing FLANK-1 tot FLANK-4)
+
+- Gordel (FLANK-1): tot 25 mm lager tussen z 0,6 en -1,0 naar de foto's van de modelreeks (onderrand zijruit op de foto 0,89 tot 0,92, in het model was dat 0,915 tot 0,957; nu 0,904 tot 0,934). De geleiderails van de zijruit volgen de gordel.
+- Flank (FLANK-2): geen verticale wand met een schouder van 55 mm meer, maar een boog: breedst op y ca. 0,54, naar de gordel ongeveer 50 mm ingelopen en een schouder van 16 mm. De kas (ruiten, stijlen, dak, portierramen, kiepruit, spiegelzeil) blijft op de millimeter gelijk; naar de neus loopt het profiel terug naar dat van golf 6. De binnenkant van het portier blijft staan (oude profiel); de slotkast is 16 mm dik (was 30) en de bekleding eindigt 12 mm onder de gordel.
+- Heup (FLANK-3): op het achterscherm een schouder van 3 mm, zodat de flank zonder rand in de C-stijl overloopt; de klepplaat van de tankklep ligt 1 mm onder de huid.
+- Achterruit (FLANK-4): nagerekend met geijkte camera's op de gele en de witte foto; niet aantoonbaar te schuin, geen wijziging.
+
 ### Carrosserie (golf 7, pakket BODY7)
 
 - Achterbumper (B7-1): nieuw onderdeel `Sluitwand achterbumper` in `MAT.bodBumperZwart`: een plaat 3 mm achter de voorrand van de bumperschaal die de U van de onderkant en de flanken sluit (omgezette rand). Van onderen en van voren zie je niet meer in de holle bumper, op de stalen bumperbalk (voorheen 18 en 31 van 630 prikpunten in twee onderaanzichten) en op de lak van het achterpaneel.
