@@ -39,7 +39,7 @@ function sysHoseG(name, d, pts, r, o = {}) {
 /* ============================ koeling en luchtinlaat ============================ */
 function buildCooling() {
   const tO = ENG_PORTS.thermostatOut, wI = ENG_PORTS.waterPumpIn, thr = ENG_PORTS.throttleIn;
-  const RY = 0.495, RZ = 1.545;                  // hartlijn van het koelblok; het koelpakket loopt van z 1,44 (ventilator) tot 1,575 (frontmodule)
+  const RY = 0.495, RZ = 1.515;                  // hartlijn van het koelblok; sinds golf 7 (B-033) 30 mm verder naar achteren: de frontmodule staat op z 1,55 tot 1,60 en het koelpakket (ventilator tot ophangrubbers) eindigt op z 1,546
   // ---------- radiateur ----------
   const coreGeo = cache('sysRadCore', () => merge([G.box(0.52, 0.22, 0.03), ...[-0.08, -0.04, 0, 0.04, 0.08].map(y => xf(G.box(0.52, 0.003, 0.034), [0, y, 0]))]));
   const radiateur = A('Radiateur', { d: 'Neerwaarts stromende radiateur met aluminium blok en kunststof waterkasten boven en onder, tussen de frontmodule en de koelventilator (opbouw schematisch; afmetingen geschat).', ex: [0, 0, 0.2] }, [
@@ -55,7 +55,7 @@ function buildCooling() {
     sysPart('Steunblokken', cache('sysRadBlocks', () => merge([-1, 1].map(s => xf(G.box(0.04, 0.02, 0.04), [s * 0.2, 0, 0])))), MAT.rubber, [0, 0.32, RZ], 'Twee rubber steunblokken onder de radiateur in de frontmodule.', [0, -0.14, 0.04]),
   ]);
   // ---------- koelventilator met kap ----------
-  const FY = 0.50, FZ = 1.485;
+  const FY = 0.50, FZ = 1.455;                   // 30 mm naar achteren met de radiateur mee (B-033)
   const shroudGeo = cache('sysShroud', () => {
     const s = shapeOf(rrectPts(0.52, 0.20, 0.012, 2)); s.holes.push(circlePath(0, 0, 0.092));
     return merge([xf(extrude(s, 0.01, 16), [0, 0, 0.027]), xf(G.box(0.52, 0.012, 0.07), [0, 0.094, -0.003]), xf(G.box(0.52, 0.012, 0.07), [0, -0.094, -0.003]),
@@ -113,8 +113,8 @@ function buildCooling() {
     sysPart('Sluitclips', sluitClips, MAT.steel, [AX, 0.69, AZ], 'Twee veerclips die het deksel op de onderbak klemmen.', [0, 0.14, 0.1]),
     sysPart('Luchtfilterhuis voeten', cache('sysAirFeet', () => merge([1.32, 1.45].map(z => xf(G.cyl('y', 0.01, 0.01, 0.03, 10), [0, 0, z - AZ])))), MAT.rubber, [AX, 0.615, AZ], 'Twee rubber voeten waarmee het huis op de carrosserie rust.', [0, -0.12, 0]),
     sysPart('Inlaattemperatuursensor', merge([G.cyl('y', 0.007, 0.007, 0.02, 8), xf(G.box(0.02, 0.014, 0.02), [0, 0.014, 0])]), MAT.plastic, [AX + 0.04, 0.737, AZ - 0.04], 'Meet de temperatuur van de aangezogen lucht.', [0, 0.1, 0]),
-    P('Aanzuigkanaal', sysTube([[AX, 0.655, 1.49], [AX, 0.662, 1.505], [AX, 0.676, 1.522], [AX, 0.686, 1.54], [AX, 0.686, 1.555]], 0.022, 10, 0.02), MAT.plastic, { d: 'Kunststof kanaal dat koude buitenlucht achter de bovenbalk van de frontmodule opvangt en naar het luchtfilterhuis leidt.', ex: [0, 0.06, 0.2] }),
-    sysPart('Aanzuigmond', G.lathe('z', [[0.022, 0], [0.026, 0.006], [0.0285, 0.014], [0.029, 0.02]], 20, 'sysAirMouth'), MAT.plastic, [AX, 0.686, 1.55], 'Trompetvormige aanzuigmond die lucht uit de ruimte achter de grille opvangt.', [0, 0.04, 0.24]),
+    P('Aanzuigkanaal', sysTube([[AX, 0.655, 1.49], [AX, 0.662, 1.497], [AX, 0.676, 1.506], [AX, 0.686, 1.516], [AX, 0.686, 1.525]], 0.022, 10, 0.02), MAT.plastic, { d: 'Kunststof kanaal dat koude buitenlucht achter de bovenbalk van de frontmodule opvangt en naar het luchtfilterhuis leidt.', ex: [0, 0.06, 0.2] }),
+    sysPart('Aanzuigmond', G.lathe('z', [[0.022, 0], [0.026, 0.006], [0.0285, 0.014], [0.029, 0.02]], 20, 'sysAirMouth'), MAT.plastic, [AX, 0.686, 1.525], 'Trompetvormige aanzuigmond die lucht uit de ruimte achter de grille opvangt.', [0, 0.04, 0.24]),
     hoseAir,
   ]);
   return A('Koeling en luchtinlaat', { d: 'Koelpakket (radiateur en elektrische koelventilator), expansievat, koelslangen met de kachelslangen en het luchtinlaattraject. Geen intercooler en geen airconditioning: die staan niet in de Twist-uitrusting.', spec: [['Koelvloeistof in het systeem', '4,0 l (50/50 ethyleenglycol)']], ex: [0, 0.25, 1.2] },
@@ -369,7 +369,7 @@ function buildElectrical() {
   ]);
   // ---------- kabelboom op hoofdlijnen ----------
   const trunk = [[FBx + 0.03, FBy + 0.06, FBz], [FBx + 0.03, 0.74, 0.94], [FBx + 0.03, 0.80, 0.935], [-0.2, 0.80, 0.935], [0.0, 0.80, 0.935], [0.2, 0.80, 0.935], [0.38, 0.80, 0.935], [0.40, 0.79, 0.99], [0.40, 0.775, 1.10], [0.40, 0.76, 1.22], [0.40, 0.735, 1.31], [0.395, 0.715, 1.375]];
-  const fan = [[0.205, 0.42, 1.435], [0.25, 0.425, 1.44], [0.32, 0.43, 1.45], [0.36, 0.44, 1.44], [0.385, 0.46, 1.40], [0.385, 0.50, 1.38], [0.385, 0.60, 1.38], [0.395, 0.70, 1.385]];
+  const fan = [[0.205, 0.42, 1.405], [0.25, 0.425, 1.41], [0.32, 0.43, 1.42], [0.36, 0.44, 1.425], [0.385, 0.46, 1.40], [0.385, 0.50, 1.38], [0.385, 0.60, 1.38], [0.395, 0.70, 1.385]];
   const cabin = [[FBx, 0.50, 0.915], [FBx, 0.50, 0.872], [FBx, 0.49, 0.80], [-0.40, 0.44, 0.72], [-0.30, 0.33, 0.68], [-0.1, 0.25, 0.66], [0.2, 0.24, 0.66], [0.45, 0.24, 0.66]];
   const rear = [[0.45, 0.24, 0.66], [0.48, 0.24, 0.5], [0.48, 0.24, 0.0], [0.48, 0.24, -0.6], [0.48, 0.24, -1.0], [0.48, 0.26, -1.3], [0.49, 0.40, -1.5], [0.52, 0.65, -1.60]];
   const kabelboom = A('Kabelboom', { d: 'Hoofdlijnen van de kabelboom: de motorruimte (van de zekeringkast over het schutbord naar de accu), de tak naar de koelventilator, de tak door het schutbord de cabine in en de achterste boom langs de linkerdorpel naar de achterlichten. Schematisch; geen losse draden.', ex: [0, 0.4, 0] }, [
