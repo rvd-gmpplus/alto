@@ -1488,11 +1488,12 @@ function bodAntenna() {
   ]);
 }
 /* ---------- opbouw ---------- */
-// Zijrepeater: klein oranje herhalingsknipperlicht (ca. 40 x 20 mm) op het voorscherm, net voor de portiervoorrand en boven de wielkast; de plaats is aannemelijk (foto 2001), niet bevestigd
+// Zijrepeater: klein oranje herhalingsknipperlicht (ca. 40 x 20 mm) op het voorscherm, net voor de portiervoorrand en boven de wielkast. Plaats en hoogte zijn geschat (niet bevestigd): op de foto's van de
+// witte (1997) en de blauwe auto (2001) zit het lichtje ongeveer 140 tot 200 mm boven de top van de wielboog, dus op y 0,70 tot 0,75 (perspectief, schaal uit de bandhoogte; de review gaf 0,65 tot 0,70).
 // Hij hangt in dezelfde groep als het voorscherm en schuift met dezelfde uitklapvector mee, zodat hij bij een uitgeklapte carrosserie op het scherm blijft zitten.
 function bodRepeater(s) {
-  const z = 0.84, y = 0.60, sv = sAtY(z, y), n = bodN(z, sv);
-  return P(`Zijrepeater ${bodSn(s)}`, G.rbox(0.006, 0.02, 0.04, 0.004), MAT.bodAmber, { d: 'Oranje herhalingsknipperlicht op het voorscherm (ongeveer 40 x 20 mm); de plaats is aannemelijk op foto\'s van de uitvoering, niet bevestigd.', ...bodPose(s, bodAt(z, y, 0.0005), n), ex: [s * 0.46, 0.06, 0.1] });
+  const z = 0.84, y = 0.70, sv = sAtY(z, y), n = bodN(z, sv);
+  return P(`Zijrepeater ${bodSn(s)}`, G.rbox(0.006, 0.02, 0.04, 0.004), MAT.bodAmber, { d: 'Oranje herhalingsknipperlicht op het voorscherm (ongeveer 40 x 20 mm); plaats en hoogte (y 0,70, 140 mm boven de top van de wielboog) zijn geschat op twee foto\'s van de modelreeks en niet bevestigd; een recht zijaanzicht zou de hoogte op ongeveer 30 mm nauwkeurig vastleggen.', ...bodPose(s, bodAt(z, y, 0.0005), n), ex: [s * 0.46, 0.06, 0.1] });
 }
 function buildBody() {
   const sk = bodSkinParts(), rp = bodRearPanel(), both = bodBoth, sn = bodSn;
