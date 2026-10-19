@@ -1,5 +1,10 @@
 # Wijzigingen
 
+## Versie 6 (in voorbereiding)
+
+### Interieur: stuurkussen, kleuren en kachelhuis (golf 7, pakket INT7)
+
+- Stuurkussen (`Claxonkussen`): een afgeplatte ellips van ongeveer 170 x 108 x 40 mm in plaats van een afgeronde rechthoek van 200 x 150 mm (beslissing INT-10). Vanaf de bestuurdersplaats zijn de twee kleine meters nu ook onderaan vrij (stralentest vanaf vier oogpunten, 20 van 20 punten vrij); het stuur en de stuurkolom van het onderstel zijn niet verplaatst.
 ## Versie 5 (19 oktober 2026)
 
 Aanleiding: "ik vind de Alto nog te veel op de 2002 (nieuwere variant) lijken", met foto's van de modelreeks 1993-2001, en de wens dat de achterzijruiten op kiepstand kunnen. Keuzes van de eigenaar: lamellengrille met zwart raam, zwarte ongelakte bumpers, zwarte stootstrip, neus rechtop, stuur driespaaks, geen hoofdsteunen achter, geen hoogteverstelling. Keuzes per pakket staan in `docs/onderzoek/beslissingen.md`; kerncijfers in `docs/cijfers.md`.
