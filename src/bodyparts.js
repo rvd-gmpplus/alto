@@ -73,14 +73,10 @@ function bodRim(s, z0, z1, qLo, qHi, r = 0.0045, out = 0.003, n = 26, open = fal
   return tube(pts, r, segs, rad, !open);
 }
 // rubber langs de contour van de hoekruit, ook langs de voor- en achterrand gevolgd op de huid: een rechte lijn tussen onder- en bovenhoek van de voorrand lag 12 mm
-// binnen de bolling van de wand (bodGhHalf) en verdween in de B-stijl (golf 7). Onderrand en bovenrand volgen qLo en qHi, de schuine achterrand loopt van (z0, qLo) naar (zc, qHi).
-function bodKpRim(s, z0, z1, zc, qLo, qHi, r, out, nz, nq, ns, segs, rad) {
-  const at = (z, q) => { const p = bodGhAt(z, q, out); return [s * p[0], p[1], p[2]]; }, pts = [];
-  for (let i = 0; i < nz; i++) { const z = z0 + (z1 - z0) * i / nz; pts.push(at(z, qLo(z))); }                       // onderrand, van achter naar voor
-  for (let i = 0; i < nq; i++) pts.push(at(z1, qLo(z1) + (qHi(z1) - qLo(z1)) * i / nq));                          // voorrand omhoog
-  for (let i = 0; i < nz; i++) { const z = z1 + (zc - z1) * i / nz; pts.push(at(z, qHi(z))); }                    // bovenrand, van voor naar achter
-  for (let i = 0; i < ns; i++) { const z = zc + (z0 - zc) * i / ns; pts.push(at(z, qHi(z))); }                    // schuine achterrand omlaag
-  return tube(pts, r, segs, rad, true);
+// binnen de bolling van de wand (bodGhHalf) en verdween in de B-stijl (golf 7). De punten komen uit bodKpRing: de contour met de ronde achterhoeken van HOEK-1, dezelfde
+// als die van de ruit en de uitsparing in de C-stijl.
+function bodKpRim(s, ring, r, out, segs, rad) {
+  return tube(ring.map(([z, q]) => { const p = bodGhAt(z, q, out); return [s * p[0], p[1], p[2]]; }), r, segs, rad, true);
 }
 // z waar de hartlijn van het dek op het voorvlak hoogte y heeft (z > 1,6, de neus loopt steil omlaag)
 function bodZAtYd(y) { let lo = 1.6, hi = ZF; for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (YT(m) + bodC(m) > y) lo = m; else hi = m; } return (lo + hi) / 2; }
@@ -134,6 +130,58 @@ const bodKpZc = (() => { let a = bodKpZB, b = bodKpZT + 0.05; for (let i = 0; i 
 const bodKpZF = -0.65, bodKpZE = -1.31;                  // voorrand van de ruit; plek van de kiephendel op de achterrand
 const bodKpTh = 2.5 * PI / 180, bodKpMin = 2.1 * PI / 180; // eindhoek en ondergrens (0,8 maal de eindhoek is 2,0 graden)
 const bodKpLo = z => bodQy(z, YT(z) + bodKpY0);
+// Ronde achterhoeken (golf 10, pakket HOEK, beslissing HOEK-1): op de foto's van de modelreeks zijn de onderhoek en de bovenhoek achter rond, straal ongeveer 40 mm; tot
+// versie 8 waren ze scherp. Elke hoek is een cirkelboog met straal BOD_KPR in (z, w), w = y maal bodKpK (lengte langs de zijwand, die 0,28 helt), die de onderrand (bodKpLo)
+// en de schuine achterrand (bodQSlant) raakt, en de schuine achterrand en de bovenrand (bodQGl). Ruit, rubber hoekruit, sponningrubber en de uitsparing in de C-stijl lezen
+// allemaal dezelfde contour: bodKpQLo en bodKpQHi (onder- en bovengrens in q per z, van bodKpZR tot bodKpZF) en bodKpRing (de rand als rij punten).
+const BOD_KPR = 0.04, bodKpK = Math.hypot(1, bodTUMB);
+const bodKpYLo = z => YT(z) + bodKpY0, bodKpYGl = z => Math.max(YT(z) + bodKpY0, bodGh(z).ye - 0.03);
+// boog die twee lijnen door hoek P raakt (d1, d2: eenheidsvectoren in (z, w) van de hoek af): middelpunt C, raakpunten T1 en T2 en hun hoeken a1 en a2 vanuit C
+function bodFillet(P, d1, d2, r) {
+  const th = Math.acos(clamp(d1[0] * d2[0] + d1[1] * d2[1], -1, 1)), t = r / Math.tan(th / 2), m = r / Math.sin(th / 2), b = [d1[0] + d2[0], d1[1] + d2[1]], bl = Math.hypot(b[0], b[1]);
+  const C = [P[0] + b[0] / bl * m, P[1] + b[1] / bl * m], T1 = [P[0] + d1[0] * t, P[1] + d1[1] * t], T2 = [P[0] + d2[0] * t, P[1] + d2[1] * t];
+  return { C, T1, T2, a1: Math.atan2(T1[1] - C[1], T1[0] - C[0]), a2: Math.atan2(T2[1] - C[1], T2[0] - C[0]) };
+}
+const bodKpArc = (() => {
+  const nrm = v => { const l = Math.hypot(v[0], v[1]); return [v[0] / l, v[1] / l]; }, e = 1e-3, k = bodKpK;
+  const PB = [bodKpZB, k * bodKpYLo(bodKpZB)], PT = [bodKpZc, k * bodKpYGl(bodKpZc)], sl = nrm([PT[0] - PB[0], PT[1] - PB[1]]);
+  const lo = bodFillet(PB, nrm([1, k * (bodKpYLo(bodKpZB + e) - bodKpYLo(bodKpZB)) / e]), sl, BOD_KPR);             // onderhoek achter
+  const hi = bodFillet(PT, nrm([1, k * (bodKpYGl(bodKpZc + e) - bodKpYGl(bodKpZc)) / e]), [-sl[0], -sl[1]], BOD_KPR); // bovenhoek achter
+  if (lo.a1 < 0) lo.a1 += 2 * PI;   // de onderboog loopt van a2 (schuine rand, ongeveer 160 graden) via 180 graden (achterste punt) naar a1 (onderrand, ongeveer 265 graden)
+  return { lo, hi };
+})();
+const bodKpZR = bodKpArc.lo.C[0] - BOD_KPR;                                       // achterste punt van de ruit (op de onderboog)
+const bodKpArcW = (A, z, sg) => A.C[1] + sg * Math.sqrt(Math.max(0, BOD_KPR * BOD_KPR - (z - A.C[0]) * (z - A.C[0])));
+const bodKpQLo = z => {
+  const L = bodKpArc.lo; if (z >= L.T1[0]) return bodKpLo(z);
+  return Math.max(bodKpLo(z), bodQy(z, bodKpArcW(L, z, -1) / bodKpK));
+};
+const bodKpQHi = z => {
+  const L = bodKpArc.lo, H = bodKpArc.hi; let q;
+  if (z <= L.T2[0]) q = bodQy(z, bodKpArcW(L, z, 1) / bodKpK);
+  else if (z < H.T2[0]) q = bodQSlant(z);
+  else if (z < H.T1[0]) q = Math.min(bodQGl(z), bodQy(z, bodKpArcW(H, z, 1) / bodKpK));
+  else q = bodQGl(z);
+  return Math.max(bodKpQLo(z) + 1e-4, Math.min(bodQGl(z), q));
+};
+// extra z-stappen voor de vlakken: gelijke hoekstappen over beide bogen en de schuine rand ertussen
+const bodKpBrk = (() => {
+  const L = bodKpArc.lo, H = bodKpArc.hi, out = [], n = 14;
+  for (let i = 0; i <= n; i++) out.push(L.C[0] + BOD_KPR * Math.cos(L.a2 + (L.a1 - L.a2) * i / n));
+  for (let i = 0; i <= 8; i++) out.push(H.C[0] + BOD_KPR * Math.cos(H.a2 + (H.a1 - H.a2) * i / 8));
+  return out.concat(bodDense(L.T2[0], H.T2[0], 8)).sort((a, b) => a - b);
+})();
+// de rand als rij (z, q), rondom: onderrand van achter naar voor, voorrand omhoog, bovenrand naar achter, bovenboog, schuine rand omlaag, onderboog via het achterste punt
+function bodKpRing(zF, nz, nq, ns, na) {
+  const L = bodKpArc.lo, H = bodKpArc.hi, pts = [], arc = (A, a0, a1, m) => { for (let i = 0; i < m; i++) { const a = a0 + (a1 - a0) * i / m, z = A.C[0] + BOD_KPR * Math.cos(a); pts.push([z, bodQy(z, (A.C[1] + BOD_KPR * Math.sin(a)) / bodKpK)]); } };
+  for (let i = 0; i < nz; i++) { const z = L.T1[0] + (zF - L.T1[0]) * i / nz; pts.push([z, bodKpLo(z)]); }
+  for (let i = 0; i < nq; i++) pts.push([zF, bodKpLo(zF) + (bodQGl(zF) - bodKpLo(zF)) * i / nq]);
+  for (let i = 0; i < nz; i++) { const z = zF + (H.T1[0] - zF) * i / nz; pts.push([z, bodQGl(z)]); }
+  arc(H, H.a1, H.a2, na);
+  for (let i = 0; i < ns; i++) { const z = H.T2[0] + (L.T2[0] - H.T2[0]) * i / ns; pts.push([z, bodQSlant(z)]); }
+  arc(L, L.a2, L.a1, na * 2);
+  return pts;
+}
 const bodKp = (() => {
   const zF = bodKpZF, gB = V3(...bodGhAt(zF, bodKpLo(zF), -0.003)), gT = V3(...bodGhAt(zF, bodQGl(zF), -0.003));   // onder- en bovenhoek van de voorrand op het glasvlak
   const a = gT.clone().sub(gB).normalize(), n = V3(a.y, -a.x, 0);                                                  // as langs de voorrand; n = normaal van het glasvlak, naar buiten en omhoog
@@ -314,10 +362,18 @@ function bodSkinParts() {
     { d: 'Middenstijl tussen portierruit en hoekruit in carrosseriekleur (keuze eigenaar naar foto 1993-2001); langs het portier loopt een smalle zwarte rubber strook, de sluitplaat van het portierslot zit erachter.', ex: [s * 0.1, 0.04, 0] });
   const bRubber = s => P(`Rubber B-stijl ${bodSn(s)}`, bodGhSideT(s, bodZDR - 0.034, bodZDR - 0.004, 4, z => [0, bodQGl(z)], 8, 0.003), MAT.bodSeal,
     { d: 'Zwart rubber van 30 mm breed langs het portier op de middenstijl; dicht de spleet tussen portier en stijl af (keuze eigenaar naar foto 1993-2001).', ex: [s * 0.12, 0.04, 0] });
-  const cPillar = s => P(`C-stijl ${bodSn(s)}`, bodGhSide(s, BOD_ZG0, -1.07, 48, z => [z < bodKpZB ? 0 : Math.min(bodQSlant(z) + 0.004, bodQGl(z)), bodQR], 12, bodDense(bodKpZB - 0.02, bodKpZT + 0.02, 14).concat([bodKpZB, bodKpZc])), MAT.paint,
+  // C-stijl: de uitsparing volgt de contour van de hoekruit met de ronde achterhoeken (HOEK-1), 0,004 in q buiten de rand van de ruit (het rubber dekt de naad). Vier vlakken:
+  // achter de ruit (z tot bodKpZR) onder en boven qC, boven de ruit (vanaf bodKpZR, met dezelfde 12 rijen op de naad, dus zonder scheur) en de hoek onder de onderboog,
+  // tussen de gordel en de ruit. Eén vlak met een sprong in de ondergrens bij bodKpZR gaf schuine driehoeken door de ronding van de dakrand (een naad op de C-stijl).
+  const cLo = z => Math.min(bodKpQHi(z) + 0.004, bodQGl(z)), qC = cLo(bodKpZR);
+  const cPillar = s => P(`C-stijl ${bodSn(s)}`, merge([
+    bodGhSide(s, BOD_ZG0, bodKpZR, 26, () => [0, qC], 3),
+    bodGhSide(s, BOD_ZG0, bodKpZR, 26, () => [qC, bodQR], 12),
+    bodGhSide(s, bodKpZR, -1.07, 22, z => [cLo(z), bodQR], 12, bodKpBrk),
+    bodGhSide(s, bodKpZR, bodKpArc.lo.T1[0], 2, z => [0, Math.max(0, bodKpQLo(z) - 0.004)], 3, bodKpBrk),
+  ]), MAT.paint,
     { d: 'Achterste dakstijl die de hoekruit en de achterklep omlijst; schuin hellend naar de achterkant.', ex: [s * 0.1, 0.05, -0.1] });
   // Hoekruit = achterzijruit: op de 3-deurs kiept hij aan de achterkant een paar cm naar buiten (kiepstand, zie bodKp). Rubber, scharniertjes, kiephendel en uitzetter horen erbij.
-  const qTop = z => Math.min(bodQGl(z), Math.max(bodKpLo(z) + 1e-4, bodQSlant(z)));
   const qGlass = s => {
     const n = bodSn(s), K = bodKp, M = v => [s * v.x, v.y, v.z], lean = s * K.lean, ax = [s * K.a.x, K.a.y, 0], path = `Hoekruit ${n}`;
     const bx = (w, h, d, c) => xf(G.box(w, h, d), M(c), [0, 0, lean]);                 // plaatje evenwijdig aan het glasvlak (x = normaal, y = langs de voorrand)
@@ -343,11 +399,11 @@ function bodSkinParts() {
     ]);
     return A(path, { d: 'Achterzijruit in de C-stijl (3-deurs): een vaste ruit in een kiepframe. Hij scharniert aan de voorrand, bij de B-stijl, en klapt aan de achterkant ongeveer 30 mm naar buiten; de uitzetter en het kiepslot zitten aan de achterrand. Kiephoek ongeveer 2,5 graden (geschat).', ex: [s * 0.2, 0.06, -0.08],
       open: { type: 'hinge', pivot: M(K.pv), axis: ax, angle: -s * bodKpTh, min: bodKpMin, label: `Achterzijruit ${n}`, look: { dir: [s * 0.7, 0.75, -0.55], nodes: [path] } } }, [
-      P('Ruit', bodGhSide(s, bodKpZB, bodKpZF, 34, z => [bodKpLo(z), qTop(z)], 8, bodDense(bodKpZB, bodKpZT, 12).concat([bodKpZc]), -0.003), MAT.glass,
+      P('Ruit', bodGhSide(s, bodKpZR, bodKpZF, 34, z => [bodKpQLo(z), bodKpQHi(z)], 8, bodKpBrk, -0.003), MAT.glass,
         { d: 'Veiligheidsglas, licht getint, in een kiepframe; kiept mee met het scharnier aan de voorrand.', ex: [s * 0.04, 0, 0] }),
-      P('Rubber hoekruit', bodKpRim(s, bodKpZB + 0.001, bodKpZF - 0.001, bodKpZc, bodKpLo, qTop, 0.0045, 0.003, 36, 10, 16, 320, 6), MAT.bodSeal,
+      P('Rubber hoekruit', bodKpRim(s, bodKpRing(bodKpZF - 0.001, 36, 10, 10, 8), 0.0045, 0.003, 320, 6), MAT.bodSeal,
         { d: 'Zwart rubber langs de rand van de ruit dat de ruit in het kiepframe houdt en tegen de sponning afdicht; kiept met de ruit mee.', ex: [s * 0.06, 0.03, 0] }),
-      P('Sponningrubber hoekruit', bodKpRim(s, bodKpZB + 0.001, bodKpZF - 0.001, bodKpZc, bodKpLo, qTop, 0.002, -0.0097, 18, 6, 10, 160, 4), MAT.bodSeal,
+      P('Sponningrubber hoekruit', bodKpRim(s, bodKpRing(bodKpZF - 0.001, 18, 6, 6, 6), 0.002, -0.0097, 160, 4), MAT.bodSeal,
         { d: 'Dun zwart rubber op de rand van de sponning in de carrosserie waar de gesloten ruit tegenaan valt; blijft staan als de ruit kiept.', stay: true, ex: [-s * 0.06, 0, 0] }),
       A('Scharniertjes', { d: 'Twee kleine scharniertjes aan de voorrand van de ruit, bij de B-stijl.', ex: [-s * 0.04, 0, 0.1] }, [hinge('boven', 0.78), hinge('onder', 0.22)]),
       slot,
