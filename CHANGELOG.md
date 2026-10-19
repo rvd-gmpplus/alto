@@ -1,6 +1,6 @@
 # Wijzigingen
 
-## Versie 6 (in voorbereiding)
+## Versie 6 (19 oktober 2026)
 
 Aanleiding: de kier tussen de achterzijruit en het rode paneel erboven, en de rest van de lijst om de Alto meer op de modelreeks 1993-2001 te laten lijken. Keuzes van de eigenaar: dashboard en middenpaneel in de kleuren van de foto, flanken, gordel en heup in deze versie.
 
