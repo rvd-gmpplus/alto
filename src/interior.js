@@ -174,7 +174,8 @@ function intBelts() {
     const xp = y => s * (surfX(zr, y) - 0.06), restPts = [[xg, 1.08, zr + 0.005], [xp(0.95), 0.95, zr + 0.01], [xp(0.8), 0.8, zr + 0.012]];
     out.push(A(`Gordel achter ${n}`, { d: 'Driepuntsgordel van de achterbank: oprolautomaat in de zijbekleding, geleider, band en tong; het slot zit in de zitting. De band hangt in rust langs de achterstijl.', ex: [s * 0.04, 0.1, 0] }, [
       intPart(`Gordelrolautomaat achter ${n}`, intBx(0.05, 0.1, 0.07, 0.01), MAT.plastic, 'Oprolautomaat in de zijbekleding achter, boven de wielkast.', { p: [xr, 0.85, zr], ex: [s * 0.1, 0.1, 0] }),
-      intPart(`Gordelgeleider achter ${n}`, intBx(0.05, 0.2, 0.09, 0.012, [xg, 1.1, zr - 0.02]), MAT.intSide, 'Kunststof kap op de C-stijl waarin de gordelband omhoog loopt en over de geleider naar beneden gaat.', { ex: [s * 0.1, 0.14, 0] }),
+      // de kap staat schuin met de C-stijl mee (golf 8, KAS-2: de stijl helt sinds de bredere gordel meer en de rechte kap stak bovenaan 7 mm door de stijl)
+      intPart(`Gordelgeleider achter ${n}`, intBx(0.05, 0.2, 0.09, 0.012), MAT.intSide, 'Kunststof kap op de C-stijl waarin de gordelband omhoog loopt en over de geleider naar beneden gaat.', { p: [s * (surfX(zr, 1.1) - 0.06), 1.1, zr - 0.02], r: [0, 0, s * Math.atan2(surfX(zr, 1.0) - surfX(zr, 1.2), 0.2)], ex: [s * 0.1, 0.14, 0] }),
       intPart(`Gordelband achter ${n}`, bandGeo(restPts, 0.046), MAT.intBelt, 'Gordelband van de achterbank in de rusttand: van de geleider langs de achterstijl omlaag.', { ex: [s * 0.08, 0.12, 0.05] }),
       intPart(`Gordeltong achter ${n}`, intBx(0.03, 0.05, 0.008, 0.003), MAT.steel, 'Metalen tong die in het gordelslot klikt; in de rusttand hangt hij onderaan de stijl.', { p: [xp(0.77), 0.77, zr + 0.016], ex: [0, 0.14, 0.04] }),
     ]));
