@@ -245,13 +245,38 @@ function intDashboard() {
     intPart('Ontwasemrooster voorruit', merge(Array.from({ length: 9 }, (_, i) => intBox(0.04, 0.003, 0.012, [-0.4 + i * 0.1, 0, 0]))), MAT.plastic, 'Gleuf op de bovenkant van het dashboard die lucht tegen de voorruit blaast.', { p: [0, 0.9255, 0.8], ex: [0, 0.1, 0.0] }),
     intPart('Ontwasemroosters zijruit', merge([1, -1].map(s => intBox(0.07, 0.004, 0.02, [s * 0.48, 0.9235, 0.8]))), MAT.plastic, 'Twee kleine roosters aan de uiteinden van het dashboard die lucht langs de zijruiten blazen.', { ex: [0, 0.08, 0] }),
   ]);
+  // kachelhuis (B-041, beslissing INT-12): achter het dashboard tegen het schutbord, onzichtbaar van buiten (inner). De kachelradiateur zit op x -0,17 en -0,125 (y 0,675) tegenover
+  // de twee stompen van de doorvoer in het schutbord (systems.js, `Doorvoer kachel`, stompen vanaf z 0,878); de aanvoerpijpen van de kern lopen door het schutbord naar die stompen.
+  const hz = { x0: -0.17, xl: -0.222, x1: 0.09, y0: 0.625, y1: 0.795, zb: 0.66, zs: 0.752, zf: 0.848, t: 0.004 };   // x0 en xl: linkerwand achter en voor de stap; zs: z van de stap
+  const wall = (xa, xb, ya, yb, za, zb) => intBox(xb - xa, yb - ya, zb - za, [(xa + xb) / 2, (ya + yb) / 2, (za + zb) / 2]);
+  const kachelschaal = intPart('Kachelhuisschaal', merge([
+    wall(hz.x0, hz.x1, hz.y0, hz.y1, hz.zb, hz.zb + hz.t),                                     // achterwand
+    wall(hz.x1 - hz.t, hz.x1, hz.y0, hz.y1, hz.zb, hz.zf),                                     // rechterwand (bestuurderszijde)
+    wall(hz.x0, hz.x0 + hz.t, hz.y0, hz.y1, hz.zb, hz.zs),                                     // linkerwand achter de stap
+    wall(hz.xl, hz.x0, hz.y0, hz.y1, hz.zs, hz.zs + hz.t),                                     // stap
+    wall(hz.xl, hz.xl + hz.t, hz.y0, hz.y1, hz.zs, hz.zf),                                     // linkerwand van het voorste deel
+    wall(hz.x0, hz.x1, hz.y1 - hz.t, hz.y1, hz.zb, hz.zf), wall(hz.xl, hz.x0, hz.y1 - hz.t, hz.y1, hz.zs, hz.zf),   // dak
+    wall(hz.x0, hz.x1, hz.y0, hz.y0 + hz.t, hz.zb, hz.zf), wall(hz.xl, hz.x0, hz.y0, hz.y0 + hz.t, hz.zs, hz.zf),   // bodem
+  ]), MAT.plastic, 'Holle kunststof schaal van het kachelhuis, open aan de voorkant waar hij achter het dashboardblok tegen het schutbord staat (6 mm ervoor); een stap links zorgt dat hij de bak van het handschoenenkastje niet raakt. Plaats en maten geschat (de bron noemt ze niet).', { inner: true, ex: [0, 0.05, 0] });
+  // kachelradiateur: kern met horizontale lamellen tussen twee kopkokers, en twee aansluitpijpen van de kern door het schutbord naar de stompen van de doorvoer
+  const rad = { x0: -0.205, x1: -0.095, y0: 0.635, y1: 0.755, z0: 0.795, z1: 0.843 };
+  const lam = Array.from({ length: 9 }, (_, i) => wall(rad.x0, rad.x1, rad.y0 + 0.002 + i * 0.0135, rad.y0 + 0.006 + i * 0.0135, rad.z0, rad.z1));
+  const kachelkern = intPart('Kachelradiatorkern', merge([wall(rad.x0, rad.x1, rad.y0, rad.y0 + 0.002, rad.z0, rad.z1), wall(rad.x0, rad.x1, rad.y1 - 0.002, rad.y1, rad.z0, rad.z1), ...lam]), MAT.alu, 'Kern van de kachelradiateur: dunne aluminium lamellen (ongeveer 110 x 120 x 50 mm) waar de warme koelvloeistof doorheen stroomt en de lucht van de aanjager langs gaat.', { inner: true, ex: [0, -0.06, -0.06] });
+  const kachelkokers = intPart('Kachelradiatorkokers', merge([wall(rad.x0 - 0.01, rad.x0, rad.y0, rad.y1, rad.z0, rad.z1), wall(rad.x1, rad.x1 + 0.01, rad.y0, rad.y1, rad.z0, rad.z1)]), MAT.darkSteel, 'Twee kopkokers aan de uiteinden van de kern die de vloeistof verdelen over de buisjes.', { inner: true, ex: [0, -0.06, -0.06] });
+  const kachelpijpen = intPart('Kachelradiatoraansluitingen', merge([-0.17, -0.125].map(x => rodBetween([x, 0.675, rad.z1], [x, 0.675, 0.878], 0.0085, 10))), MAT.alu, 'Twee aansluitpijpen van de kachelradiateur (aanvoer en retour); ze steken door het schutbord en sluiten op de stompen van de doorvoer, waar de kachelslangen op komen. Niet inner: tussen het schutbord en de doorvoerplaat zijn ze van buiten te zien.', { ex: [0, 0, 0.05] });
+  // aanjager: radiaal waaierrad (schoepen tussen twee ringen) met een elektromotor erachter; het wiel zuigt langs de kern in het midden van het huis
+  const ab = { x: 0.03, y: 0.71, z0: 0.72, z1: 0.775, r: 0.045 };
+  const schoepen = Array.from({ length: 12 }, (_, i) => { const a = i / 12 * 2 * PI; return xf(G.box(0.003, 0.016, ab.z1 - ab.z0), [ab.x + (ab.r - 0.008) * Math.sin(a), ab.y + (ab.r - 0.008) * Math.cos(a), (ab.z0 + ab.z1) / 2], [0, 0, -a]); });
+  const aanjagerwiel = intPart('Aanjagerwiel', merge([xf(G.cyl('z', ab.r, ab.r, 0.003, 16), [ab.x, ab.y, ab.z0 + 0.0015]), xf(G.torus('z', ab.r - 0.008, 0.004, 16, 3), [ab.x, ab.y, ab.z1 - 0.004]), ...schoepen]), MAT.plasticGrey, 'Radiaal waaierrad van de kachelaanjager: 12 schoepen tussen een achterplaat en een ring; perst de lucht door de kern.', { inner: true, ex: [0.04, -0.04, -0.06] });
+  const aanjagermotor = intPart('Aanjagermotor', merge([intCy('z', 0.024, ab.z0 - hz.zb - 0.01, [ab.x, ab.y, (hz.zb + 0.01 + ab.z0) / 2], 12), intBx(0.07, 0.012, 0.008, 0.003, [ab.x, ab.y, hz.zb + 0.006])]), MAT.darkSteel, 'Elektromotor van de aanjager, met een bevestigingsplaat tegen de achterwand van het kachelhuis; de ventilatorstand van de kachelbediening schakelt hem.', { inner: true, ex: [0.04, -0.04, -0.12] });
+  const kachelhuis = A('Kachelhuis', { d: 'Kachelhuis met kachelradiateur en aanjager, achter het dashboard tegen het schutbord. De kachelslangen van de motor lopen naar de stompen van de doorvoer; daarachter geven de pijpen de warme vloeistof aan de kern. De aanjager blaast lucht langs de kern naar de roosters en de ontwasemroosters. Plaats en maten geschat (de bron noemt ze niet).', ex: [0, -0.16, -0.18] }, [kachelschaal, kachelkern, kachelkokers, kachelpijpen, aanjagerwiel, aanjagermotor]);
   const spk = intPart('Luidsprekerroosters', merge([1, -1].map(s => bx(0.1, 0.004, 0.06, 0.002, [s * 0.46, 0.9255, 0.7]))), MAT.plastic, 'Twee roosters boven de luidsprekers, links en rechts in de bovenkant van het dashboard (luidsprekers en plaats aangenomen).', { ex: [0, 0.14, 0.1] });
   const rel = A('Dashboardbediening', { d: 'Schakelaars en ontgrendelingen onder het dashboard bij de bestuurder: zekeringkast, kapontgrendeling.', ex: [0.1, -0.1, -0.2] }, [
     // op het voorvlak van de kniebeschermer (lokaal 105 mm naar buiten, 30 mm omhoog, 0,5 mm voor het vlak); lag 25 mm diep in de kniebeschermer (B-043)
     intPart('Zekeringkastklep', bx(0.1, 0.07, 0.01, 0.004, [0.455, 0.6197, 0.462], [-0.3, 0, 0]), MAT.plasticGrey, 'Klepje in de kniebeschermer onder het dashboard waarachter de zekeringen zitten (plaats aangenomen).', { ex: [0.04, -0.04, -0.06] }),
     intPart('Motorkapontgrendeling', merge([bx(0.035, 0.012, 0.05, 0.004, [0.5, 0.58, 0.51]), rodBetween([0.5, 0.58, 0.535], [0.5, 0.58, 0.8], 0.002, 4)]), MAT.plasticGrey, 'Trekgreep onder het dashboard die de motorkap via een kabel ontgrendelt.', { ex: [0.04, -0.04, -0.06] }),
   ]);
-  return A('Dashboard', { d: 'Dashboard met instrumentenpaneel, luchtroosters, handschoenenkastje en luidsprekerroosters (aangenomen); kappen en bedieningspanelen rond de stuurkolom.', spec: [['Instrumenten', 'snelheidsmeter met kilometer- en dagteller, brandstofmeter, temperatuurmeter, waarschuwingslampjes; geen toerenteller']], ex: [0, 0.2, 0.55] }, [dashShell, cluster, hood, gk, vents, spk, rel]);
+  return A('Dashboard', { d: 'Dashboard met instrumentenpaneel, luchtroosters, handschoenenkastje, kachelhuis (verborgen achter het dashboard) en luidsprekerroosters (aangenomen); kappen en bedieningspanelen rond de stuurkolom.', spec: [['Instrumenten', 'snelheidsmeter met kilometer- en dagteller, brandstofmeter, temperatuurmeter, waarschuwingslampjes; geen toerenteller']], ex: [0, 0.2, 0.55] }, [dashShell, cluster, hood, gk, vents, spk, rel, kachelhuis]);
 }
 
 /* ---------- stuurwiel met kolomkap ---------- */
@@ -270,7 +295,7 @@ function intSpoke(uur) {
 }
 // Ovaal kussen: afgeplatte ellips (breedte w, hoogte h, voordiepte df) met een vlakke bolling voor en een ondiepe achterkant (8 mm); de pool van de bol ligt op de stuuras.
 // De normalen volgen uit de afgeleide van de afbeelding (n ~ J^-T s), zodat de naad van de bol glad blijft.
-function intPillow(w, h, df, seg = 24, ring = 12, db = 0.008, e = 0.6) {
+function intPillow(w, h, df, seg = 20, ring = 10, db = 0.008, e = 0.6) {
   const g = new THREE.SphereGeometry(1, seg, ring), pos = g.attributes.position, nor = g.attributes.normal;
   for (let i = 0; i < pos.count; i++) {
     const sx = pos.getX(i), sy = pos.getY(i), sz = pos.getZ(i), a = Math.abs(sy), dd = sy >= 0 ? df : db;
