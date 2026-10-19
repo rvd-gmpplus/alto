@@ -6,6 +6,7 @@
 
 - Meting (DAK-1): op de foto's van de modelreeks helt de zijwand van de kas 0,24 tot 0,27 (model 0,37), is de kas op dakrandhoogte 35 tot 47 mm breder, ligt de bovenrand van de zijruit ongeveer 45 mm hoger en is de hoekruit veel groter (0,72 m langs de gordel tegen 0,43 m). Voor en achter apart is het verschil in breedte binnen de meetfout.
 - Knik op het voorscherm onder de voet van de A-stijl (KAS-3) blijft zoals hij is (DAK-0, keuze van de eigenaar).
+- Dak en dakrand breder (DAK-2): de zijwand van de kas helt weer 0,28 (was 0,37) vanaf de gordel van versie 7; bovenrand van de zijwand, dakrand en dak liggen 35 mm verder naar buiten (van de B-stijl tot de A-stijl en de C-stijl vol, naar de voet van de voorruit en de achterkant glad terug). Op dakrandhoogte is de halve breedte 0,592 (was 0,558; foto's 0,593 en 0,605). Voorruit, achterruit, rubbers, dakrails, antenne en klep volgen; gordel, flank, lengte, hoogte en breedte over de spiegels blijven. Spiegelarm 2,5 mm korter aan de binnenkant.
 
 ## Versie 7 (19 oktober 2026)
 

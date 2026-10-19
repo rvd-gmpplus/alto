@@ -74,8 +74,9 @@ const bodFlRs = z => lerp(0.016, 0.003, sstep((-0.80 - z) / 0.25));
 const bodFlankW = z => 1 - sstep((z - 1.0) / 0.4);
 // Kas breder op de gordel (golf 8, pakket KAS, beslissing KAS-2): de kas begint BOD_KASD verder naar buiten dan het profiel van FLANK-2 (xe), langs portier en hoekruit
 // volledig (z -1,15 tot 0,70), naar de waterkast (z 1,0) en naar de achterkant (z -1,50) glad terug naar 0: voorruitvoet, kap, neus, achterruit en klep blijven. De flank
-// loopt daardoor minder in (dT kleiner; schouderstraal en breedste punt blijven) en de kas blijft bovenaan gelijk: bodGh houdt de bovenrand van de zijwand (xe) en de dakrand
-// (xr) op hun plaats, de zijruit helt dus meer (0,28 plus BOD_KASD gedeeld door de hoogte van de zijwand).
+// loopt daardoor minder in (dT kleiner; schouderstraal en breedste punt blijven). In KAS-2 bleef de bovenkant van de kas gelijk en helde de zijruit 0,37; sinds golf 9
+// (pakket DAK, beslissing DAK-2) gaat de bovenkant mee: de zijwand helt weer bodTUMB (0,28) vanaf de bredere gordel, dus bovenrand van de zijwand, dakrand en dak liggen
+// bodKasD(z) verder naar buiten (de foto's: 0,24 tot 0,27, op dakrandhoogte 35 tot 47 mm breder).
 const BOD_KASD = 0.035;
 const bodKasD = z => BOD_KASD * sstep((z + 1.50) / 0.35) * sstep((1.0 - z) / 0.30);
 // inloop van de flank ten opzichte van de breedste lijn bij flankparameter t (0 onderaan, 1 bovenaan)
@@ -150,7 +151,7 @@ const bodQS = 0.54, bodQR = 0.72, bodTUMB = 0.28;
 function bodGh(z) {
   const yb = YT(z), xb = bodSec(z).xe, yc = Math.max(yb + 0.002, YR(z)), h = yc - yb;
   const cr = Math.min(CRW, h * 0.3), yre = yc - cr, rr = Math.min(0.06, (yre - yb) * 0.3), ye = yre - rr;
-  const xe = xb - bodKasD(z) - bodTUMB * (ye - yb), xr = xe - rr * 0.8;   // KAS-2: bovenrand van de zijwand en dakrand blijven, de zijwand helt meer
+  const xe = xb - bodTUMB * (ye - yb), xr = xe - rr * 0.8;   // DAK-2: de zijwand helt 0,28 vanaf de gordel van KAS-2 (in KAS-2 stond hier xb - bodKasD(z) - ...: dak vast, helling 0,37)
   return { yb, xb, yc, cr, yre, rr, ye, xe, xr };
 }
 function bodGhHalf(z, q, g) {

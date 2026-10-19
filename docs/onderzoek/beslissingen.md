@@ -546,3 +546,9 @@ Uitkomst:
 - Niet gemeten: hoogte van het dak (1405 mm, `BOD_H`), lengte en gordel: die blijven.
 
 Gereedschap, punten, camera's, uitsneden en de tabel per foto: werkmap van pakket DAK (`dak/meet`, `dak/tools`, `dak/cams`), buiten de repo.
+
+**Beslissing DAK-2 (dak en dakrand breder).** In `bodGh` (`body.js`) valt de aftrek van `bodKasD(z)` weg: de zijwand helt weer `bodTUMB` (0,28) vanaf de bredere gordel van KAS-2, dus bovenrand van de zijwand (`xe`), dakrand (`xr`) en dak liggen `bodKasD(z)` verder naar buiten: 35 mm van z -1,15 tot 0,70, naar de voet van de voorruit (z 1,0) en de achterkant (z -1,50) glad terug. Gordel, flank, `BOD_WMAX`, `BOD_MIRW`, lengte en hoogte (1405 mm) blijven.
+- Maten (halve breedte, voor en na): `xe` op z 0 0,569 en 0,604, op z -0,56 0,574 en 0,609, op z -1,1 0,587 en 0,622; `xr` op z -0,56 0,526 en 0,561; op de bovenhoek van de voorruit (z 0,16) `xe` 0,574 en 0,609; op de voet van de voorruit (z 0,875) 0,682 en 0,695. Op dakrandhoogte (y 1,36, z -0,56) 0,558 en 0,592 (foto's 0,593 en 0,605). Helling van de zijwand 0,365 tot 0,38 wordt 0,28 over de hele lengte.
+- Mee zonder eigen getal (alles hangt aan `bodGh`): dak, dakrand, A-, B- en C-stijl, zijruiten en rubbers, portierraam, hoekruit met kiepruit en rubbers (de as en de normaal van `bodKp` volgen de nieuwe voorrand), voorruit en achterruit met rubber (rand 40 en 50 mm binnen `xr`), achterklep (kasdeel), dakrails (60 mm binnen `xr`), antenne (20 mm binnen `xr`), gasveer (klepkant). Klepscharnieren staan op x 0,42 op het dak en blijven.
+- `Spiegelarm`: binnenkant 2,5 mm naar buiten (0,671, was 0,6685): de A-stijlbekleding van het interieur volgt de schuinere wand naar buiten en raakte de arm 0,6 mm (clash.py).
+- Botsingen interieur tegen de carrosserie (`clash.py Interieur --tegen Carrosserie`, tegen d4337a3): na de arm geen nieuwe; het interieur volgt `ghPt`, `surfX` en `bodGh` en schuift mee.
