@@ -265,7 +265,7 @@
    "vrij": 12,
    "achter": [
     "Portier rechts achter Buitenpaneel motorkap",
-    "Achterklep achter C-stijl links",
+    "Achterklep achter Ruit",
     "Voorruit achter Buitenpaneel motorkap",
     "Achterbumper achter Zijruit",
     "Kentekenvlak achter achter Zijruit",
@@ -317,7 +317,7 @@
     "Klepscharnier rechts achter Achterruit",
     "Klepscharnierblad links achter Achterruit",
     "Klepscharnierblad rechts achter Achterruit",
-    "Gasveerbeugel rechts achter Achterruit"
+    "Gasveerbeugel rechts achter Buitenpaneel achterklep"
    ],
    "lucht": []
   },
