@@ -140,7 +140,7 @@ Functies, materialen en cachesleutels krijgen het voorvoegsel van de eigenaar. A
 
 ## 8. Budgetten
 
-In `tools/anchors.json` (`triangle_budgets`): de driehoeken per hoofdgroep en in totaal, bij het begin verdeeld naar verhouding van laguna3 (190.000 van 719.000 voor de carrosserie, enzovoort; op honderdtallen afgerond); tekenopdrachten gemonteerd met bundelen onder 1.500. `tools/tri.py --gate` bewaakt de driehoeken. Budget en stand per hoofdgroep, en het aantal onderdelen, staan in [cijfers.md](cijfers.md).
+In `tools/anchors.json` (`triangle_budgets`): de driehoeken per hoofdgroep en in totaal, bij het begin verdeeld naar verhouding van laguna3 (190.000 van 719.000 voor de carrosserie, enzovoort; op honderdtallen afgerond); Interieur is sinds beslissing BUD-1 (na versie 8) opgehoogd naar 100.000 en het totaal evenveel; tekenopdrachten gemonteerd met bundelen onder 1.500. `tools/tri.py --gate` bewaakt de driehoeken. Budget en stand per hoofdgroep, en het aantal onderdelen, staan in [cijfers.md](cijfers.md).
 
 ## 9. Openers (modus Openen)
 

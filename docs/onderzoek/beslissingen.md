@@ -589,3 +589,7 @@ Gereedschap, punten, camera's, uitsneden en de tabel per foto: werkmap van pakke
 - Niet gedaan: de motorkap-achterrand tijdelijk 5 mm lager zetten als extra proef. In plaats daarvan zijn 17 rasters van opentest gedraaid (de kap verschuift ten opzichte van het raster op dezelfde manier) en is de doorgang direct gemeten; beide laten zien dat de straal naar `Tuimelaar inlaat 2a` niet meer doorkomt.
 - Driehoeken: Aandrijflijn 110 304 (was 109 248; ringen en doppen van 28 zijden), budget 133 500; totaal 366 115 van 400 000. `docs/cijfers.md` volgt bij de volgende run van de orkestrator (`tools/orkestratie/cijfers.py`).
 - Poorten (macOS, los gedraaid): `build.py --lint`, `framework.py check`, `tri.py --gate`, `opentest.py --strikt-min` (0 fouten; de bekende meldingen over `open.min` van volgers), `ui_inner.py --open --strict`, `integrity.py` (0 fouten) en `framework.py extra meet` (alles groen) zijn groen. Volledige set op macOS en Linux en visdiff zijn aan de orkestrator.
+
+## Na versie 8, budget interieur (19 oktober 2026)
+
+**Beslissing BUD-1 (keuze van de eigenaar).** Het driehoekenbudget van Interieur gaat van 52.900 naar 100.000 ("mag naar ongeveer 100K"); Interieur zat na versie 8 op 52.508 (99,3 %). Het totaal in `tools/anchors.json` gaat evenveel omhoog, van 400.000 naar 447.100, zodat de totaalpoort van `tri.py --gate` de ruimte voor het interieur niet wegneemt. De andere hoofdgroepen blijven gelijk. Stand per hoofdgroep: `docs/cijfers.md`.

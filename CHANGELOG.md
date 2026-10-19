@@ -1,5 +1,9 @@
 # Wijzigingen
 
+## Versie 9 (in voorbereiding)
+
+- Driehoekenbudget Interieur 100.000 (was 52.900), totaal 447.100 (was 400.000); keuze van de eigenaar (BUD-1). Stand: `docs/cijfers.md`.
+
 ## Versie 8 (19 oktober 2026)
 
 Aanleiding: de open punten na versie 7: de bovenkant van de kas (KAS-6), de grotere hoekruit en smallere C-stijl op de foto's van de modelreeks, het portierrubber met een vaste maat en het gaatje in het kleppendeksel. Keuze van de eigenaar: de knik op het voorscherm onder de voet van de A-stijl blijft (DAK-0).

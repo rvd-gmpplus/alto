@@ -1,6 +1,6 @@
 # Kerncijfers
 
-Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-19, bron `28f48bd 2026-10-19`. Niet met de hand bewerken; andere documenten verwijzen hiernaar in plaats van getallen te herhalen.
+Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-19, bron `7722f21 2026-10-19`. Niet met de hand bewerken; andere documenten verwijzen hiernaar in plaats van getallen te herhalen.
 
 ## Boom
 
@@ -21,12 +21,12 @@ Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-19, 
 | Carrosserie | 301 | 121.191 | 160.000 |
 | Aandrijflijn | 550 | 110.304 | 133.500 |
 | Onderstel | 264 | 62.484 | 69.500 |
-| Interieur | 187 | 52.508 | 52.900 |
+| Interieur | 187 | 52.508 | 100.000 |
 | Koeling en luchtinlaat | 41 | 6.436 | 13.900 |
 | Uitlaatsysteem | 35 | 5.826 | 11.100 |
 | Elektrisch systeem | 37 | 5.688 | 6.700 |
 | Brandstofsysteem | 30 | 5.518 | 6.700 |
-| Totaal | 1.445 | 369.955 | 400.000 |
+| Totaal | 1.445 | 369.955 | 447.100 |
 
 ## Tekenopdrachten (gemonteerd)
 
