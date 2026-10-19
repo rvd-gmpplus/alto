@@ -4,7 +4,7 @@
  "totaal": {
   "labels": 246,
   "eigen": 216,
-  "vrij": 188
+  "vrij": 189
  },
  "presets": {
   "assembled": {
@@ -324,26 +324,24 @@
   "interior": {
    "label": "Interieur",
    "labels": 7,
-   "eigen": 6,
-   "vrij": 6,
-   "achter": [
-    "Middenconsole achter A-stijlbekleding links"
-   ],
+   "eigen": 5,
+   "vrij": 7,
+   "achter": [],
    "lucht": [
-    "Dashboard"
+    "Dashboard",
+    "Middenconsole"
    ]
   },
   "driverSeat": {
    "label": "Bestuurdersstoel",
    "labels": 5,
-   "eigen": 3,
+   "eigen": 4,
    "vrij": 4,
    "achter": [
     "Gordelslot voor achter Zitbekleding"
    ],
    "lucht": [
-    "Rugleuning bestuurder",
-    "Zitting"
+    "Rugleuning bestuurder"
    ]
   },
   "dash": {
