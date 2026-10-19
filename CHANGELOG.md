@@ -2,7 +2,12 @@
 
 ## Versie 6 (in voorbereiding)
 
-- Carrosserie (golf 7, pakket RUIT): de achterzijruit sluit nu rondom op de dagopening aan: het rubber volgt de bolling van de wand langs de voor- en achterrand (was een rechte lijn die in de B-stijl verdween), de onderrand van ruit en rubber ligt 3 mm in plaats van 13 mm boven het achterscherm, de C-stijl sluit op de dakrand aan (geen inkeping bij de bovenhoek achter) en B-stijl, B-stijlrubber en C-stijl sluiten zonder spleet op de dakrand en het achterscherm aan.
+Aanleiding: de kier tussen de achterzijruit en het rode paneel erboven, en de rest van de lijst om de Alto meer op de modelreeks 1993-2001 te laten lijken. Keuzes van de eigenaar: dashboard en middenpaneel in de kleuren van de foto, flanken, gordel en heup in deze versie.
+
+### Carrosserie: hoekruit (golf 7, pakket RUIT)
+
+- de achterzijruit sluit nu rondom op de dagopening aan: het rubber volgt de bolling van de wand langs de voor- en achterrand (was een rechte lijn die in de B-stijl verdween), de onderrand van ruit en rubber ligt 3 mm in plaats van 13 mm boven het achterscherm, de C-stijl sluit op de dakrand aan (geen inkeping bij de bovenhoek achter) en B-stijl, B-stijlrubber en C-stijl sluiten zonder spleet op de dakrand en het achterscherm aan.
+
 ### Carrosserie: flank, gordel en heup (golf 7, pakket FLANK; beslissing FLANK-1 tot FLANK-4)
 
 - Gordel (FLANK-1): tot 25 mm lager tussen z 0,6 en -1,0 naar de foto's van de modelreeks (onderrand zijruit op de foto 0,89 tot 0,92, in het model was dat 0,915 tot 0,957; nu 0,904 tot 0,934). De geleiderails van de zijruit volgen de gordel.
@@ -31,6 +36,7 @@
 - Stuurkussen (`Claxonkussen`): een afgeplatte ellips van ongeveer 170 x 108 x 40 mm in plaats van een afgeronde rechthoek van 200 x 150 mm (beslissing INT-10). Vanaf de bestuurdersplaats zijn de twee kleine meters nu ook onderaan vrij (stralentest vanaf vier oogpunten, 20 van 20 punten vrij); het stuur en de stuurkolom van het onderstel zijn niet verplaatst.
 - Kleuren naar de dashboardfoto (keuze eigenaar, beslissing INT-11): het middenpaneel (`Middenstapel`, `Roosterrand`, `Kachelpaneel`, `Bakjerand`, `Asbak`) is donker antraciet in het bestaande `MAT.dash` (#2a2c30); het dashboard heeft twee grijstinten: bovenste deel `MAT.intDashTop` (#545e68; `Dashboardbovenkant`) en onderste deel `MAT.intDashLow` (#3c444a; nieuw onderdeel `Dashboardonderkant`, `Kniebeschermer`, `Handschoenenkastklep`, `Tunnelconsole`). `Dashboardbovenkant` is daarvoor in twee blokken gesplitst op y 0,70 (zelfde buitenvorm).
 - Kachelhuis (B-041, beslissing INT-12): nieuw `Kachelhuis` in het dashboard, inner, tegen het schutbord op x -0,222 tot 0,09, y 0,625 tot 0,795 en z 0,66 tot 0,848 (geschat): holle schaal, `Kachelradiatorkern` met lamellen en `Kachelradiatorkokers` (op x -0,205 tot -0,095), `Aanjagerwiel` en `Aanjagermotor`, en twee `Kachelradiatoraansluitingen` die door het schutbord lopen naar de stompen van `Doorvoer kachel` (x -0,17 en -0,125, y 0,675, systems.js) waar de kachelslangen op eindigen. De aansluitingen zijn niet inner: tussen schutbord en doorvoerplaat zijn ze van buiten te zien. Het Interieur-budget staat na deze golf op 52.684 van 52.900 driehoeken (stuurkussen, tweede dashboardblok en kachelhuis samen +1.064; tellingen in `docs/cijfers.md` volgen via de orkestrator).
+
 ## Versie 5 (19 oktober 2026)
 
 Aanleiding: "ik vind de Alto nog te veel op de 2002 (nieuwere variant) lijken", met foto's van de modelreeks 1993-2001, en de wens dat de achterzijruiten op kiepstand kunnen. Keuzes van de eigenaar: lamellengrille met zwart raam, zwarte ongelakte bumpers, zwarte stootstrip, neus rechtop, stuur driespaaks, geen hoofdsteunen achter, geen hoogteverstelling. Keuzes per pakket staan in `docs/onderzoek/beslissingen.md`; kerncijfers in `docs/cijfers.md`.
