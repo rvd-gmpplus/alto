@@ -1,5 +1,13 @@
 # Wijzigingen
 
+## Versie 8 (in voorbereiding)
+
+### Motor: kleppendeksel dicht rond de bougieputten (golf 9, pakket MOTOR; beslissing MOTOR-1)
+
+- Gat uit KAS-3 gedicht: de rubber ringen `Bougieputafdichtingen` in het kleppendeksel sluiten nu om de `Bougiedop` (binnenstraal 9,5 mm, was 12,5 mm) in plaats van 3 mm lucht eromheen te laten. Die ring gaf schuine stralen toegang tot de ruimte onder het deksel, tot `Tuimelaar inlaat 2a`. Meting: 8 963 van 1 949 300 stralen raakten een ingesloten onderdeel, nu 0; het opentest-raster 256 x 160 (Motorkap) was rood en is groen, evenals 16 andere rasters. Het deksel zelf en zijn maten zijn gelijk.
+- `Peilstok`: de meetstok steekt niet meer 2 mm uit de peilstokbuis (opentest, raster 220 x 140, raakte de punt van de `inner` stok eerst).
+- Driehoeken Aandrijflijn: 110 304 (was 109 248; 28 in plaats van 16 en 14 zijden), budget 133 500.
+
 ## Versie 7 (19 oktober 2026)
 
 Aanleiding: keuze van de eigenaar na versie 6 voor een eigen pakket "kas breder" (optie a), plus de open punten van versie 6. Keuzes van de eigenaar: de bovenkant van de kas (dak en dakrand) blijft in deze versie gelijk; `docs/screenshots` blijft zoals het is.
