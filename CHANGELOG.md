@@ -2,9 +2,27 @@
 
 ## Versie 9 (in voorbereiding)
 
+Aanleiding: de open punten na versie 8 (ronde hoeken van de hoekruit, de overlap van de zijbekleding naast de achterbank) en een groter driehoekenbudget voor het interieur. Keuzes van de eigenaar: budget Interieur omhoog (BUD-1), het pakket INT kiest zelf waar het aan besteed wordt, en de bovenhoek achter van de hoekruit blijft (HOEK-2, optie A).
+
+### Budget (orkestrator)
+
 - Driehoekenbudget Interieur 100.000 (was 52.900), totaal 447.100 (was 400.000); keuze van de eigenaar (BUD-1). Stand: `docs/cijfers.md`.
+
+### Carrosserie: hoekruit (golf 10, pakket HOEK; beslissing HOEK-1 en HOEK-2)
+
 - Hoekruit: de onderhoek en de bovenhoek achter zijn rond, straal 40 mm, zoals op de foto's van de modelreeks (waren scherp). Ruit, rubber, sponningrubber en de uitsparing in de C-stijl volgen dezelfde ronde contour, dicht en in de kiepstand; het achterste punt van de ruit ligt 23 mm verder naar voren (golf 10, pakket HOEK; beslissing HOEK-1).
 - Bovenhoek achter van de hoekruit: gemeten 60 tot 100 mm lager dan op de foto's; omhoog kan alleen met een hogere daklijn achteraan. Niet gebouwd: de eigenaar koos optie A, zo laten tot er een recht zijaanzicht van de eigen auto is (HOEK-2).
+
+### Interieur verfijnd (golf 10, pakket INT; beslissing INT-13 tot INT-15)
+
+- Keuze op meting (INT-13): schermdekking per onderdeel in de presets Interieur, Bestuurdersstoel, Dashboard, Instappen en Gemonteerd en in zeven cabinestanden, naast de driehoeken per onderdeel. Verfijnd zijn de acht delen met de meeste dekking en de grofste vorm.
+- Voorstoelen: zitting en rugleuning uit een stuk met ingewerkte zijwangen (waren een blok met twee losse rollen), lendensteun en smallere schouders; achterschaal licht gebold; hoofdsteun ronder en onderaan iets smaller. Buitenmaten gelijk, vorm geschat.
+- Achterbank: zitting met een vlakke kroon, rugleuningdelen met een licht gebogen voorkant en een afgeronde buitenschouder.
+- Stuurwiel: krans, kussen, naaf en kolomkap met twee keer zoveel segmenten (geen zichtbare facetten meer van dichtbij).
+- Dashboardkap en tunnelconsole: afgeronde hoeken in het zijprofiel met gladde normalen; pookknop en pookhoes ronder.
+- `Zijbekleding achterbank` eindigt op de voorrand van de hoekruit (z -0,65, was -0,74) en ligt niet meer over de `Zijbekleding achter` (INT-14).
+- Vloerbedekking om de tankkuip: open punt gesloten, nagemeten zonder doordringing (INT-15).
+- Driehoeken Interieur binnen het budget van BUD-1 (stand per hoofdgroep in `docs/cijfers.md`); laadtijd niet merkbaar langer.
 
 ## Versie 8 (19 oktober 2026)
 
