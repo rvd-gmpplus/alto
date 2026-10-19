@@ -1,6 +1,6 @@
 # Wijzigingen
 
-## Versie 7 (in voorbereiding)
+## Versie 7 (19 oktober 2026)
 
 Aanleiding: keuze van de eigenaar na versie 6 voor een eigen pakket "kas breder" (optie a), plus de open punten van versie 6. Keuzes van de eigenaar: de bovenkant van de kas (dak en dakrand) blijft in deze versie gelijk; `docs/screenshots` blijft zoals het is.
 
