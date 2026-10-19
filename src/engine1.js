@@ -18,6 +18,7 @@ const ENG_CAMY = 0.282, ENG_CAMZ = 0;                    // hartlijn van de ene 
 const ENG_RSY = 0.297, ENG_RSZ = 0.036;                  // tuimelaarsassen: hoogte en afstand tot het midden (inlaat +z, uitlaat -z)
 const ENG_PLZ = 0.024;                                   // bougies naast de nokkenas, naar de inlaatzijde verschoven
 const ENG_COVER_TOP = ENG_CAMY + 0.0345;                 // bovenkant kleppendeksel (contract: hoogstens 0,40 boven de krukas)
+const ENG_BOOT_R = 0.0095;                               // straal van de rubber bougiedop (engine3.js) waar hij door het kleppendeksel gaat; de afdichtring sluit daar omheen
 const ENG_XT = -0.2075, ENG_XA = -0.245;                 // vlak van de distributieriem en van de multiriem (poeliezijde)
 const ENG_PORT_Y = 0.188;                                // hoogte van de inlaat- en uitlaatpoorten in de kop
 const ENG_PLEN = [0, 0.262, 0.165];                      // hart van de inlaatkast
