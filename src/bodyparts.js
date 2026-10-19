@@ -1084,7 +1084,8 @@ function bodKasPt(z, y, out = 0) {
   return [x + out, yy, z];
 }
 // zeilplaat van de spiegel (linkerhelft, [z, y] van de hoekpunten): driehoek met de basis langs de gordel, de voorrand tegen de A-stijl en de top bovenin, 7 mm dik
-const bodMirSailV = [[0.778, 0.905], [0.690, 0.905], [0.752, 0.975]], bodMirSailT = 0.007;
+// basis 4 mm boven de gordel (KAS-3: de gordel zakte daar 15 mm; was vast 0,905)
+const bodMirSailV = [[0.778, YT(0.778) + 0.004], [0.690, YT(0.690) + 0.004], [0.752, 0.975]], bodMirSailT = 0.007;
 function bodMirSail() {
   const V = bodMirSailV, T = bodMirSailT;
   const pt = (u, v, o) => bodKasPt(lerp(lerp(V[0][0], V[1][0], u), V[2][0], v), lerp(lerp(V[0][1], V[1][1], u), V[2][1], v), o);
@@ -1176,9 +1177,12 @@ function bodDoor(s) {
       P('Raamschakelaar', G.rbox(0.05, 0.02, 0.07, 0.006), MAT.plastic, { d: 'Schakelaar van de elektrische ruit.', p: [s * (ringX0(zm, 0.67) - 0.15), 0.673, zm + 0.1], ex: [-s * 0.04, 0.04, 0] }),
       P('Binnendeurgreep', G.rbox(0.02, 0.03, 0.12, 0.008), MAT.satin, { d: 'Binnengreep met kabel naar het slot.', p: [s * (ringX0(z0 + 0.22, 0.8) - 0.115), 0.8, z0 + 0.22], ex: [-s * 0.06, 0, 0] }),
     ]),
-    P('Portierrubber', tube([[z0 + 0.03, 0.80], [z0 + 0.03, 0.34], [zm, 0.34], [z1 - 0.03, 0.34], [z1 - 0.03, 0.80]].map(([z, y]) => { const p = bodAt(z, y, -0.05); return [s * p[0], p[1], p[2]]; }), 0.008, 72, 6), MAT.rubber, { d: 'Rubber afdichting langs de voorrand, onderrand en achterrand van het portier.', ex: [-s * 0.26, -0.1, -0.46] }),
+    // het rubber zit op de binnenrand van het portier en blijft waar het in versie 6 lag: met de bredere kas (KAS-2) staat de huid op y 0,80 minder schuin en schoof het
+    // bovenste punt 16 mm naar buiten (x 0,689 in plaats van 0,673); de rechte buis kwam dan 4 tot 5 mm in de scharnierbladen. De bovenste punten 16,4 mm terug.
+    P('Portierrubber', tube([[z0 + 0.03, 0.80], [z0 + 0.03, 0.34], [zm, 0.34], [z1 - 0.03, 0.34], [z1 - 0.03, 0.80]].map(([z, y]) => { const p = bodAt(z, y, -0.05), dx = y > 0.5 ? 0.0164 : 0; return [s * (p[0] - dx), p[1], p[2]]; }), 0.008, 72, 6), MAT.rubber, { d: 'Rubber afdichting langs de voorrand, onderrand en achterrand van het portier.', ex: [-s * 0.26, -0.1, -0.46] }),
     P('Deurvanger', G.rbox(0.012, 0.03, 0.2, 0.004), MAT.darkSteel, { d: 'Vanger die het portier in twee standen openhoudt.', p: [s * (surfX(z1 - 0.1, 0.62) - 0.016), 0.62, z1 - 0.1], ex: [-s * 0.05, 0, 0.06] }),
-    A('Scharnieren', { d: 'Twee portierscharnieren aan de voorrand met elk twee bouten.', ex: [-s * 0.04, 0, 0.1] }, [hinge('boven', 0.62), hinge('onder', 0.53)]),
+    // bovenste scharnier op y 0,61 (was 0,62): met de lagere gordel aan de voorrand (KAS-3) kwam de voorste onderhoek van de gezakte ruit 7 tot 10 mm in het bovenste blad
+    A('Scharnieren', { d: 'Twee portierscharnieren aan de voorrand met elk twee bouten.', ex: [-s * 0.04, 0, 0.1] }, [hinge('boven', 0.61), hinge('onder', 0.53)]),
     bodMirror(s),
   ];
   const piv = [s * (surfX(z1, 0.62) + 0.012), 0.62, z1 + 0.012];
