@@ -65,7 +65,10 @@ const sstep = t => { const u = clamp(t, 0, 1); return u * u * (3 - 2 * u); };
 // in een boog naar binnen: onderaan bodFlB, bovenaan dT, gekozen zodat de schouder (straal bodFlRs) op dezelfde xe eindigt als het oude profiel. De kas (ruiten,
 // stijlen, dak, portieren boven de gordel, kiepruit) blijft dus op de millimeter gelijk. Naar de neus (beslissing 29) loopt het profiel tussen z 1,0 en 1,4 terug
 // naar het oude (bodFlankW), zodat kap, koplamp, grille en bumper niet veranderen.
-const bodFlU = 0.45, bodFlB = 0.012, bodFlRs = 0.016;
+const bodFlU = 0.45, bodFlB = 0.012;
+// schouderstraal: 16 mm langs portier en voorscherm; op het achterscherm (achter z -0,8, vol vanaf -1,05) 3 mm, zodat de flank vrijwel zonder knik in de C-stijl
+// overgaat zoals op de foto's (beslissing FLANK-3: de heup; met 16 mm bleef daar een ronde rand tussen C-stijl en achterscherm staan)
+const bodFlRs = z => lerp(0.016, 0.003, sstep((-0.80 - z) / 0.25));
 const bodFlankW = z => 1 - sstep((z - 1.0) / 0.4);
 // inloop van de flank ten opzichte van de breedste lijn bij flankparameter t (0 onderaan, 1 bovenaan)
 const bodFlD = (t, dB, dT) => (t < bodFlU ? dB * Math.pow((bodFlU - t) / bodFlU, 2) : dT * Math.pow((t - bodFlU) / (1 - bodFlU), 2));
@@ -78,7 +81,7 @@ function bodSecW(z, w) {
   for (let i = 0; i < 3; i++) { th = Math.atan2(xe, c * p); xe = cx0 + rs0 * Math.cos(th); }
   if (w <= 1e-6) { const cy = yt - rs0 * Math.sin(th); return { hw, yb, yt, rb, rs: rs0, yd, c, p, cx: cx0, cy, th, xe, bul, bw: bul, dB: 0, dT: 0, a0: 0, ab: 0, cxb: hw - bul - rb, cyb: yb + rb, y0: yb + rb, y1: cy }; }
   // nieuw profiel: zelfde xe en th (het dek sluit op dezelfde plek aan), kleinere schouder, de flank loopt in
-  const rs = lerp(rs0, Math.min(bodFlRs, rs0), w), bw = bul * (1 - w), dB = bodFlB * w, cx = xe - rs * Math.cos(th), cy = yt - rs * Math.sin(th), cyb = yb + rb;
+  const rs = lerp(rs0, Math.min(bodFlRs(z), rs0), w), bw = bul * (1 - w), dB = bodFlB * w, cx = xe - rs * Math.cos(th), cy = yt - rs * Math.sin(th), cyb = yb + rb;
   let a0 = 0, ab = 0, dT = 0, y0 = cyb, y1 = cy;
   for (let i = 0; i < 6; i++) {
     dT = hw - bw - cx - rs * Math.cos(a0);

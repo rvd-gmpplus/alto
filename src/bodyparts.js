@@ -1433,7 +1433,8 @@ function bodTkRing(s) {
 function bodFuelFlap() {
   const s = bodTkS, [k0, k1] = bodTkZ, [y0, y1] = bodTkY, [az, ay] = bodTkA, zc = (k0 + k1) / 2, ym = (y0 + y1) / 2, zr = zc + az, xs = surfX(zr, ym);
   // ovale plaat 3 mm kleiner dan de opening (r = 1 aan de rand), op de huid
-  const plaat = patch((a, t) => bodTkPt(s, zc + (az - 0.003) * t * Math.cos(a), ym + (ay - 0.003) * t * Math.sin(a)), 0, 2 * PI, 48, () => [0, 1], 6);
+  // 1 mm onder de huid: met de inlopende flank (FLANK-3) is het scherm hier sterker gebogen en lag de plaat tussen de koorden van het scherm 2 mm erbuiten
+  const plaat = patch((a, t) => { const z = zc + (az - 0.003) * t * Math.cos(a), y = ym + (ay - 0.003) * t * Math.sin(a); return bodLow(z, bodPp(s, sAtY(z, y)), 0.001); }, 0, 2 * PI, 48, () => [0, 1], 6);
   return A('Tankvulopening', { d: 'Ovale opening van ongeveer 100 x 130 mm in het linker achterscherm met de klep en de tankkom; de vulhals en dop zitten in het brandstofsysteem.', ex: [s * 0.2, 0.05, 0] }, [
     A('Tankklep', { d: 'Kleine ovale klep in carrosseriekleur voor de brandstofvulling, links achter, ongeveer 100 mm breed en 130 mm hoog (geschat op de foto\'s van de modelreeks, waar de klep rond tot ovaal is); scharniert aan de voorrand (z -1,40) en klapt naar voren open (openingshoek geschat).', ex: [s * 0.12, 0, 0.1],
       open: { type: 'hinge', pivot: [s * (xs + 0.004), ym, zr - 0.003], axis: [0, 1, 0], angle: -s * 140 * PI / 180, min: 115 * PI / 180, label: 'Tankklep', look: { dir: [s * 1, 0.3, -0.5], nodes: ['Tankklep'] } } }, [
