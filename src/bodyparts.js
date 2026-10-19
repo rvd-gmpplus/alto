@@ -598,7 +598,7 @@ function bodHoodParts() {
     P('Slotbeugel motorkap', tube([[-0.02, 0, 0], [-0.02, 1, 0], [0.02, 1, 0], [0.02, 0, 0]].map(([x, t]) => [x, lerp(bodSec(1.55).yd - bodFrameOff(1.55), bodSlotY + 0.028, t), 1.55]), 0.004, 12, 6), MAT.steel, { d: 'Beugel aan het binnenframe die in het motorkapslot op de voorkopplaat grijpt.', ex: [0, -0.08, 0.04] }),
     P('Motorkapsteun', rodBetween([0, 0, 0], bodStRot.r0.clone().multiplyScalar(bodStL).toArray(), 0.007, 10), MAT.darkSteel, { d: 'Steunstang (lengte geschat) die de geopende kap ondersteunt. In rust ligt hij langs de rechter binnenscherm; open draait hij om zijn voet omhoog naar de opvanger in het binnenframe.', p: bodStF, stay: true, ex: [-0.04, 0.06, 0],
       open: { type: 'hinge', pivot: bodStF, axis: bodStRot.ax, angle: bodStRot.ang, follow: 'Motorkap', label: 'Motorkapsteun' } }),
-    P('Steunopvanger', merge([G.rbox(0.03, 0.016, 0.03, 0.005), xf(G.rbox(0.03, 0.012, 0.03, 0.005), [0, -0.012, 0])]), MAT.plastic, { d: 'Kunststof opvanger in het binnenframe waarin de bovenkant van de steunstang valt.', p: [bodStG[0], bodStG[1] + 0.012, bodStG[2]], ex: [0, -0.06, 0] }),
+    P('Steunopvanger', merge([G.box(0.03, 0.016, 0.03), xf(G.box(0.03, 0.012, 0.03), [0, -0.012, 0])]), MAT.plastic, { d: 'Kunststof opvanger in het binnenframe waarin de bovenkant van de steunstang valt.', p: [bodStG[0], bodStG[1] + 0.012, bodStG[2]], ex: [0, -0.06, 0] }),
     P('Kapafdichting', tube([-0.55, -0.3, 0, 0.3, 0.55].map(x => [x, bodSec(0.96).yd - 0.035 - 0.1 * x * x, 0.96]), 0.007, 20, 6), MAT.rubber, { d: 'Rubber afdichting tussen kap en waterkast.', stay: true, ex: [0, -0.05, -0.04] }),
     // de slang is niet ingesloten (inner): bij een open kap zie je hem van voren over het voorpaneel, maar zijn groep (Ruitensproeier) opent zelf niet, dus de app hield hem
     // verborgen (ui_inner --open: 1 treffer met alle openers open)
@@ -971,7 +971,7 @@ function bodBumperSeam() {
     const [p, n] = bodSkinXY(x, y, 0.0006), e = Math.min(k, N - k), sink = e < TAIL ? 0.004 * (1 - e / TAIL) : 0;
     pts.push(sink ? [p[0] - n[0] * sink, p[1] - n[1] * sink, p[2] - n[2] * sink] : p);
   }
-  return tube(pts, 0.0026, 128, 6);
+  return tube(pts, 0.0026, 64, 4);   // 64 x 4 (was 128 x 6, 1.536 driehoeken): de buis loopt door de 65 punten, een segment per punt; B-062
 }
 function bodFrontBumper() {
   const both = bodBoth, sn = bodSn;
