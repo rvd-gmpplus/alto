@@ -1226,6 +1226,7 @@ function bodRearBumper() {
     // de schaal begint op z -1,550 (was -1,556): de kier met het boogeinde van het achterscherm (z -1,548) is 2 mm in plaats van 8, zoals de dorpel voor de boog;
     // de onderkant tussen de langsliggers begint op z -1,568 (bodRearBumperGeo)
     P('Bumperschaal achter', bodRearBumperGeo(), MAT.bodBumperZwart, { d: 'Bumperschaal in ongelakt zwart kunststof (keuze eigenaar naar foto 1993-2001) met afgeronde hoeken die om de achterwielboog lopen, een vlakke bovenkant van 40 mm die onder de klep uitsteekt, een omgezette bovenrand en een verdiept vlak voor de kentekenplaat.', ex: [0, -0.02, -0.12] }),
+    P('Sluitwand achterbumper', bodRearBumperCap(), MAT.bodBumperZwart, { d: 'Zwarte wand van ongelakt kunststof (3 mm achter de voorrand van de schaal) die de schaal aan de voorkant sluit, van de onderkant tot de bovenrichel: de omgezette rand van de echte bumper. Daardoor kijk je van onderen en van voren niet in de holle bumper, op de lak van het achterpaneel en de stalen bumperbalk.', ex: [0, -0.02, -0.12] }),
     // zwarte strook 4 mm binnen de huid achter de naad van 3 mm tussen bumperschaal (tot y 0,575) en achterscherm en achterpaneel (vanaf 0,578): door de naad zag je de bagagebekleding
     ...both(s => P(`Naadstrook achterbumper ${bodSn(s)}`, lowSide(s, BOD_ZE + 0.001, -1.535, 30, z => [sAtY(z, 0.562), sAtY(z, 0.592)], 2, [], 0.004), MAT.bodLiner,
       { d: 'Zwarte strook achter de naad tussen de bovenrand van de bumperschaal en het achterscherm; de naad leest als een donkere lijn en je kijkt er niet in de bagageruimte.', ex: [s * 0.05, -0.02, -0.12] })),
@@ -1278,6 +1279,18 @@ function bodRearBumperGeo() {
   const richel = new THREE.BufferGeometry();
   richel.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); richel.setIndex(idx); richel.computeVertexNormals();
   return merge([...schil, richel, wand((u, t) => [lerp(-bodTLx, bodTLx, u), bodYBR - 0.0005, BOD_ZE + 0.042 * t], 8)]);
+}
+// Sluitwand van de achterbumper: vlakke plaat in de doorsnede van de voorrand van de schaal (de U van de onderkant en de flanken, dicht met de bovenrichel op y bodYBR),
+// 3 mm achter die rand zodat hij binnen de schaal ligt. De voorrand ligt op z -1,568 onder de langsliggers (|x| < 0,54) en op -1,550 daarbuiten (zie bodRearBumperGeo);
+// de wand volgt dat met dezelfde stap in |x|.
+function bodRearBumperCap() {
+  const z0 = -1.550, zB = -1.568, zv = p => lerp(zB, z0, sstep((Math.abs(p) - 0.100) / 0.010)), sb = sAtY(z0, bodYBR), N = 72, V = (a, b) => new THREE.Vector2(a, b);
+  const rand = [];
+  for (let i = 0; i <= N; i++) { const p = lerp(-sb, sb, i / N), q = bodLow(zv(p), p, 0); rand.push(q); }
+  const g = new THREE.ShapeGeometry(new THREE.Shape(rand.map(q => V(q[0], q[1]))), 1);
+  const pos = g.attributes.position;
+  for (let i = 0; i < pos.count; i++) { const ax = Math.abs(pos.getX(i)); pos.setZ(i, lerp(zB, z0, sstep((ax - 0.5405) / 0.0045)) - 0.003); }
+  pos.needsUpdate = true; g.computeVertexNormals(); return g;
 }
 function bodRearPlate() {
   const yc = (bodPlY0 + bodPlY1) / 2, zh = BOD_ZE - bodBpD + bodPlD - 0.003, zp = zh - 0.003 - 0.0015;

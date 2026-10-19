@@ -3,6 +3,10 @@
 ## Versie 6 (in voorbereiding)
 
 - Carrosserie (golf 7, pakket RUIT): de achterzijruit sluit nu rondom op de dagopening aan: het rubber volgt de bolling van de wand langs de voor- en achterrand (was een rechte lijn die in de B-stijl verdween), de onderrand van ruit en rubber ligt 3 mm in plaats van 13 mm boven het achterscherm, de C-stijl sluit op de dakrand aan (geen inkeping bij de bovenhoek achter) en B-stijl, B-stijlrubber en C-stijl sluiten zonder spleet op de dakrand en het achterscherm aan.
+### Carrosserie (golf 7, pakket BODY7)
+
+- Achterbumper (B7-1): nieuw onderdeel `Sluitwand achterbumper` in `MAT.bodBumperZwart`: een plaat 3 mm achter de voorrand van de bumperschaal die de U van de onderkant en de flanken sluit (omgezette rand). Van onderen en van voren zie je niet meer in de holle bumper, op de stalen bumperbalk (voorheen 18 en 31 van 630 prikpunten in twee onderaanzichten) en op de lak van het achterpaneel.
+
 ### Systemen (golf 7, pakket SYS7)
 
 - Koeling (B-033, beslissing 6 bijgewerkt): radiateur met ventilator, kap, steunen en slangaansluitingen 30 mm naar achteren (hartlijn z 1,515); geen doordringing meer met de frontmodule (waterkasten en steunblokken waren 20 en 15 mm, koelblok 12 mm). Aanzuigmond en kanaal van het luchtfilter 25 mm mee naar achteren (mond stak 12,5 mm in de frontmodule); kabeltak naar de ventilatorstekker 30 mm mee.
