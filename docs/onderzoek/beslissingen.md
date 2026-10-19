@@ -499,3 +499,11 @@ Gereedschap, punten, camera's en uitsneden: werkmap van pakket KAS (`kas/meet`, 
 - Botsingen tegen versie 6: geen nieuwe. Een bestaande overlap is 0,5 mm dieper: `Greepdrager` en `Slotkast` (-10,0 mm, was -9,5; de slotkast volgt de huid op y 0,83, die met KAS-2 naar buiten ging).
 
 **Beslissing KAS-4 (preset Portier links: spiegel achter labels).** Opgelost in de uitklapvector van `Buitenspiegel links/rechts` (`bodyparts.js`), zonder `presetdata.js`: `ex` 0,30 naar buiten, 0,45 omhoog en 0,40 naar voren (was 0,30; 0,10; 0,08). In de preset hangt de spiegel nu boven de voorhoek van het portier, links van de labels Waterscherm en Raambediening, met zijn eigen label ernaast; spiegelhuis, arm en zeil zijn geheel te zien (1280 x 800). In de presets Carrosserie en Alles uitgeklapt verschuift alleen de spiegel (de rechterspiegel hangt in Alles uitgeklapt iets hoger naast de kas); verder geen verschil.
+
+**Beslissing KAS-5 (beschrijvingen koplamp).** `Hoekkap` zei "positielicht, schematisch", `Knipperlichtje` "positie- en knipperlicht, aannemelijk; niet bevestigd". Nu zeggen beide het tweede: de hoekkap noemt het oranje lampje erachter als positie- en knipperlicht (aannemelijk; niet bevestigd), en de `d` van `Koplamp links/rechts` noemt het lampje achter de hoekkap ook.
+
+**Open (pakket KAS):**
+- Bovenkant van de kas: de driehoeksmeting zegt dat de kas ook op dakrandhoogte 35 tot 47 mm (fout ca. 25) breder is en dat de zijruit 0,24 tot 0,27 helt; met het dak vast (eis van de opdracht) helt de zijruit nu 0,37. Beslissing eigenaar: dak en dakrand mee verbreden (de zijruit helt dan weer ongeveer 0,28; raakt dak, dakrails, voorruit- en achterruitrand, klep en hemel) of zo laten. Een recht vooraanzicht of achteraanzicht van de eigenaar legt het op 1 cm vast.
+- Hoekruit: op de foto's (geel, blauw 2001) is de achterzijruit veel groter dan in het model (hij loopt verder naar achteren, de C-stijl is smaller). Niet in deze opdracht.
+- Interieur: patch voor `Gordelgeleider achter links/rechts` (KAS-2) moet door de eigenaar van het interieur worden toegepast; tot dan geeft integrity.py 1 fout.
+- Motor: in het kleppendeksel zit een gaatje waardoor een straal `Tuimelaar inlaat 2a` raakt (punt (-0,190; 0,659; 1,225)); de huidige opentest-raster mist het, een kleine verschuiving van de motorkap niet (KAS-3).
