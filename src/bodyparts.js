@@ -140,7 +140,9 @@ const bodZH0 = -1.20, bodZH1 = bodTwi(-1.64);              // achterruit: bovenr
 const bodZGR = -1.17;
 // opening van de tankklep in het linker achterscherm (bevinding B-005: op de foto's van de 2001 GL staat de klep links, de rechterflank is leeg); bodTkS is de zijde (+1 links).
 // systems.js leest dezelfde constanten voor de vulhals.
-const bodTkZ = [-1.52, -1.38], bodTkY = [0.66, 0.78], bodTkS = 1;
+// De klep is ovaal (foto's van de uitvoering: ongeveer 100 mm breed en 130 mm hoog, geschat); bodTkZ en bodTkY blijven de rechthoek om de opening (hart z -1,45, y 0,72, daar zit de vulhals),
+// de halve assen van de ovaal staan in bodTkA.
+const bodTkZ = [-1.52, -1.38], bodTkY = [0.65, 0.79], bodTkS = 1, bodTkA = [0.05, 0.065];
 
 /* ---------- wielkast: binnenscherm en bekleding ---------- */
 const WH_AE = 0.34;   // hoek (radialen, ongeveer 19 graden) waarover de koker onder de boog doorloopt (0,26 liet bij de bumperhoek nog het sproeierreservoir zien)
@@ -276,7 +278,7 @@ function bodSkinParts() {
     // beide kanten met dezelfde kolommen (de dichte kolommen achter de tankklep houden de huid boven de achterboog strak: de strook achter de kier van de
     // wielkast rechts lag met 46 kolommen 2,1 mm buiten de koorde, zijstraal); aan zijde bodTkS (links) is het middenstuk de opening voor de tankklep
     const [k0, k1] = bodTkZ, [y0, y1] = bodTkY;
-    const midden = s === bodTkS ? [lowSide(s, k0, k1, 6, z => [quarterLo(z), sAtY(z, y0)], 6), lowSide(s, k0, k1, 6, z => [sAtY(z, y1), S4], 4)] : [lowSide(s, k0, k1, 6, z => [quarterLo(z), S4], 12)];
+    const midden = s === bodTkS ? [lowSide(s, k0, k1, 6, z => [quarterLo(z), sAtY(z, y0)], 6), lowSide(s, k0, k1, 6, z => [sAtY(z, y1), S4], 4), bodTkRing(s)] : [lowSide(s, k0, k1, 6, z => [quarterLo(z), S4], 12)];
     return merge([lowSide(s, bodZT0, k0, 16, z => [quarterLo(z), S4], 12, QB), lowSide(s, k1, bodZDR - 0.004, 30, z => [quarterLo(z), S4], 14, QB), ...midden]);
   };
   const quarter = s => P(`Achterscherm ${bodSn(s)}`, quarterGeo(s), MAT.paint,
@@ -1376,30 +1378,41 @@ function bodTailgate() {
 const bodGsMount = s => P(`Gasveerbevestiging ${bodSn(s)}`, merge([G.sphere(0.012, 10), xf(G.cyl('x', 0.004, 0.004, 0.012, 8), [s * 0.009, 0, 0]), xf(G.rbox(0.008, 0.05, 0.04, 0.003), [s * 0.018, 0, 0])]), MAT.darkSteel,
   { d: 'Kogelpen op een plaatje tegen de binnenkant van de C-stijl, waarop de gasveer van de achterklep draait (plaats geschat).', p: bodGsPts(s).a, ex: [s * 0.04, 0, 0] });
 /* ---------- tankklep (links achter) ---------- */
+// punt op de buitenhuid (aan zijde s) bij z en y; de ovaal van de klep en de ring tussen ovaal en rechthoek lopen over de huid van het achterscherm
+const bodTkPt = (s, z, y) => bodLow(z, bodPp(s, sAtY(z, y)), 0);
+// ring van huid tussen de rechthoek van de opening (bodTkZ, bodTkY) en de ovaal: per hoek theta een straal van de ovaal naar de rand van de rechthoek
+function bodTkRing(s) {
+  const [k0, k1] = bodTkZ, [y0, y1] = bodTkY, [az, ay] = bodTkA, zc = (k0 + k1) / 2, yc = (y0 + y1) / 2, hz = (k1 - k0) / 2, hy = (y1 - y0) / 2;
+  const th = Math.atan((az * hy) / (ay * hz)), breaks = [th, PI - th, PI + th, 2 * PI - th];   // th: hoek waar de straal door een hoek van de rechthoek gaat
+  return patch((a, t) => {
+    const ex = az * Math.cos(a), ey = ay * Math.sin(a), f = 1 / Math.max(Math.abs(ex) / hz, Math.abs(ey) / hy);
+    return bodTkPt(s, zc + lerp(ex, ex * f, t), yc + lerp(ey, ey * f, t));
+  }, 0, 2 * PI, 48, () => [0, 1], 3, breaks);
+}
 // Gespiegeld naar links (B-005): klep, kom en opener aan zijde bodTkS; dezelfde y en z. De klep scharniert aan de voorrand en klapt naar voren open;
 // min 115 van 140 graden (0,82; op 112 lag hij precies op de grens van 0,8, B-025).
 function bodFuelFlap() {
-  const s = bodTkS, [k0, k1] = bodTkZ, [y0, y1] = bodTkY, ym = (y0 + y1) / 2, xs = surfX(k1, ym);
-  return A('Tankvulopening', { d: 'Opening in het linker achterscherm met de klep en de tankkom; de vulhals en dop zitten in het brandstofsysteem.', ex: [s * 0.2, 0.05, 0] }, [
-    A('Tankklep', { d: 'Kleine klep in carrosseriekleur voor de brandstofvulling, links achter; scharniert aan de voorrand (z -1,38) en klapt naar voren open (openingshoek geschat).', ex: [s * 0.12, 0, 0.1],
-      open: { type: 'hinge', pivot: [s * (xs + 0.004), ym, k1 - 0.003], axis: [0, 1, 0], angle: -s * 140 * PI / 180, min: 115 * PI / 180, label: 'Tankklep', look: { dir: [s * 1, 0.3, -0.5], nodes: ['Tankklep'] } } }, [
-      P('Klepplaat tankklep', lowSide(s, k0 + 0.003, k1 - 0.003, 6, z => [sAtY(z, y0 + 0.003), sAtY(z, y1 - 0.003)], 4, [], 0.0), MAT.paint, { d: 'Het paneel van de tankklep in het rood.', ex: [s * 0.04, 0, 0.04] }),
-      P('Klepveer tankklep', G.rbox(0.012, 0.03, 0.012, 0.003), MAT.darkSteel, { d: 'Veerscharnier waarmee de klep dicht blijft; blijft aan de carrosserie zitten, in de voorhoek van de tankkom.', p: [s * (xs - 0.012), ym, k1 - 0.008], stay: true, ex: [s * 0.03, 0, 0.03] }),
+  const s = bodTkS, [k0, k1] = bodTkZ, [y0, y1] = bodTkY, [az, ay] = bodTkA, zc = (k0 + k1) / 2, ym = (y0 + y1) / 2, zr = zc + az, xs = surfX(zr, ym);
+  // ovale plaat 3 mm kleiner dan de opening (r = 1 aan de rand), op de huid
+  const plaat = patch((a, t) => bodTkPt(s, zc + (az - 0.003) * t * Math.cos(a), ym + (ay - 0.003) * t * Math.sin(a)), 0, 2 * PI, 48, () => [0, 1], 6);
+  return A('Tankvulopening', { d: 'Ovale opening van ongeveer 100 x 130 mm in het linker achterscherm met de klep en de tankkom; de vulhals en dop zitten in het brandstofsysteem.', ex: [s * 0.2, 0.05, 0] }, [
+    A('Tankklep', { d: 'Kleine ovale klep in carrosseriekleur voor de brandstofvulling, links achter, ongeveer 100 mm breed en 130 mm hoog (geschat op de foto\'s van de modelreeks, waar de klep rond tot ovaal is); scharniert aan de voorrand (z -1,40) en klapt naar voren open (openingshoek geschat).', ex: [s * 0.12, 0, 0.1],
+      open: { type: 'hinge', pivot: [s * (xs + 0.004), ym, zr - 0.003], axis: [0, 1, 0], angle: -s * 140 * PI / 180, min: 115 * PI / 180, label: 'Tankklep', look: { dir: [s * 1, 0.3, -0.5], nodes: ['Tankklep'] } } }, [
+      P('Klepplaat tankklep', plaat, MAT.paint, { d: 'Het ovale paneel van de tankklep in het rood.', ex: [s * 0.04, 0, 0.04] }),
+      P('Klepveer tankklep', G.rbox(0.012, 0.03, 0.012, 0.003), MAT.darkSteel, { d: 'Veerscharnier waarmee de klep dicht blijft; blijft aan de carrosserie zitten, in de voorhoek van de tankkom.', p: [s * (xs - 0.012), ym, zr - 0.008], stay: true, ex: [s * 0.03, 0, 0.03] }),
     ]),
-    P('Tankkom', bodTankKom(s), MAT.plastic, { d: 'Zwarte kom achter de klep: vier wanden van de opening in het scherm naar binnen en een bodem op x 0,6695 met een gat waar de vulhals doorheen komt; de dop zit in de kom.', ex: [s * 0.04, 0, 0] }),
+    P('Tankkom', bodTankKom(s), MAT.plastic, { d: 'Zwarte kom achter de klep: een ovale wand van de opening in het scherm naar binnen en een bodem op x 0,6695 met een gat waar de vulhals doorheen komt; de dop zit in de kom.', ex: [s * 0.04, 0, 0] }),
   ]);
 }
 // Tankkom als kuip (was een blok van 30 mm waar de vulhals 14 mm in stak): de vulhals van systems.js eindigt op x 0,669 (hart y 0,72, z -1,45, straal 30 mm) en de dop
-// zit op x 0,671 tot 0,694. Bodem op xb met een gat van 32 mm straal, wanden langs de rand van de opening (bodTkZ, bodTkY) tot 1 mm binnen de huid.
+// zit op x 0,671 tot 0,694. Bodem op xb met een gat van 32 mm straal, een ovale wand langs de rand van de opening (bodTkA) tot 1 mm binnen de huid.
 function bodTankKom(s) {
-  const [k0, k1] = bodTkZ, [y0, y1] = bodTkY, xb = 0.6695, V = (a, b) => new THREE.Vector2(a, b);
-  const sh = new THREE.Shape([V(k0, y0), V(k1, y0), V(k1, y1), V(k0, y1)]);
-  sh.holes.push(new THREE.Path().absarc((k0 + k1) / 2, (y0 + y1) / 2, 0.032, 0, 2 * PI, true));
-  const bodem = new THREE.ShapeGeometry(sh, 16); bodem.rotateY(-HALF); bodem.translate(s * xb, 0, 0);
-  const xh = (z, y) => surfX(z, y) - 0.001;
-  const wandY = y => patch((z, t) => [s * lerp(xb, xh(z, y), t), y, z], k0, k1, 8, () => [0, 1], 1);
-  const wandZ = z => patch((y, t) => [s * lerp(xb, xh(z, y), t), y, z], y0, y1, 4, () => [0, 1], 1);
-  return merge([bodem, wandY(y0), wandY(y1), wandZ(k0), wandZ(k1)]);
+  const [k0, k1] = bodTkZ, [y0, y1] = bodTkY, [az, ay] = bodTkA, zc = (k0 + k1) / 2, yc = (y0 + y1) / 2, xb = 0.6695;
+  const sh = new THREE.Shape(); sh.absellipse(zc, yc, az, ay, 0, 2 * PI, false);
+  sh.holes.push(new THREE.Path().absarc(zc, yc, 0.032, 0, 2 * PI, true));
+  const bodem = new THREE.ShapeGeometry(sh, 32); bodem.rotateY(-HALF); bodem.translate(s * xb, 0, 0);
+  const wand = patch((a, t) => { const z = zc + az * Math.cos(a), y = yc + ay * Math.sin(a), x = surfX(z, y) - 0.001; return [s * lerp(xb, x, t), y, z]; }, 0, 2 * PI, 48, () => [0, 1], 1);
+  return merge([bodem, wand]);
 }
 /* ---------- voorruitwissers en dakrails ---------- */
 function bodWipers() {
