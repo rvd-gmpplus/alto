@@ -1,6 +1,6 @@
 # Kerncijfers
 
-Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-19, bron `7722f21 2026-10-19`. Niet met de hand bewerken; andere documenten verwijzen hiernaar in plaats van getallen te herhalen.
+Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-19, bron `5c98d05 2026-10-19`. Niet met de hand bewerken; andere documenten verwijzen hiernaar in plaats van getallen te herhalen.
 
 ## Boom
 
@@ -18,38 +18,38 @@ Gegenereerd door `tools/orkestratie/cijfers.py` uit `stats.json` op 2026-10-19, 
 
 | Hoofdgroep | Onderdelen | Driehoeken | Budget |
 |---|---|---|---|
-| Carrosserie | 301 | 121.191 | 160.000 |
+| Carrosserie | 301 | 123.015 | 160.000 |
 | Aandrijflijn | 550 | 110.304 | 133.500 |
+| Interieur | 187 | 88.492 | 100.000 |
 | Onderstel | 264 | 62.484 | 69.500 |
-| Interieur | 187 | 52.508 | 100.000 |
 | Koeling en luchtinlaat | 41 | 6.436 | 13.900 |
 | Uitlaatsysteem | 35 | 5.826 | 11.100 |
 | Elektrisch systeem | 37 | 5.688 | 6.700 |
 | Brandstofsysteem | 30 | 5.518 | 6.700 |
-| Totaal | 1.445 | 369.955 | 447.100 |
+| Totaal | 1.445 | 407.763 | 447.100 |
 
 ## Tekenopdrachten (gemonteerd)
 
 | Stand | Waarde |
 |---|---|
-| Met gebundeld renderen | 268 |
+| Met gebundeld renderen | 291 |
 | Zonder bundelen | 1.129 |
-| Batches | 28 groepen, 213 batchmeshes, 1.074 losse meshes vervangen, 20,5 MB van 30,9 MB |
+| Batches | 34 groepen, 236 batchmeshes, 1.074 losse meshes vervangen, 20,9 MB van 31,8 MB |
 
 ## Opstarttijdlijn (software-rendering van Chromium op de Mac die de cijfers meet, niet in de container; ms sinds het begin van de navigatie)
 
 | Moment | ms |
 |---|---|
-| script | 65 |
-| buildStart | 215 |
-| buildCar | 386 |
-| startUp | 641 |
-| render0 | 2.370 |
-| firstFrame | 2.971 |
-| interactive | 2.978 |
-| ready | 5.419 |
-| batches | 5.496 |
-| duur buildCar() | 171 |
+| script | 76 |
+| buildStart | 275 |
+| buildCar | 474 |
+| startUp | 801 |
+| render0 | 2.299 |
+| firstFrame | 2.873 |
+| interactive | 2.882 |
+| ready | 5.222 |
+| batches | 5.245 |
+| duur buildCar() | 199 |
 
 Deze tijden zeggen niets over een echt apparaat; zie `docs/telefoontest.md`.
 
