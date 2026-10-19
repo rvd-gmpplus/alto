@@ -1118,7 +1118,7 @@ function bodDoor(s) {
   const sLo = z => sAtY(z, bodYSill), sHi = S4 - 0.0008, eIn = 0.13, pp = sv => bodPp(s, sv);
   const bodEdgePt = (z, p, t) => { const a = bodLowX(z, p, 0), b = bodLowX0(z, p, eIn); return [lerp(a[0], b[0], t), a[1], z]; };   // van de buitenhuid naar het binnenpaneel
   const qLo = z => bodQy(z, YT(z) + 0.013), qHi = z => Math.max(qLo(z) + 1e-4, bodQy(z, bodGh(z).ye - 0.042));
-  const zg0 = z0 + 0.03, zg1 = z1 - 0.005;
+  const zg0 = z0 + 0.03, zg1 = z1 - 0.016;   // voorrand van het glas 12 mm achter de naad (was 5 mm): met de hogere ruit (DAK-3) heeft het glas ook vooraan hoogte en zakte de voorste onderhoek door de Schermflens (z 0,768 tot 0,796)
   const outer = lowSide(s, z0, z1, 44, z => [sLo(z), sHi], 18);
   const inner = bodSideX0(s, z0 + 0.012, z1 - 0.012, 22, z => [sAtY(z, bodYSill + 0.016), S4 - 0.012], 10, eIn);
   const trimP = bodSideX0(s, z0 + 0.016, z1 - 0.016, 22, z => [sAtY(z, 0.33), sAtY(z, YT(z) - 0.012)], 10, eIn + 0.008);   // 1,2 cm minder diep dan eerst: dashboard en stoelen botsten (golf 2); bovenrand 12 mm onder de gordel: met de lagere gordel (FLANK-1) rolde de rand anders tegen de stuurkrans
@@ -1133,8 +1133,10 @@ function bodDoor(s) {
   // flank, die onder de bredere gordel minder inloopt. Met 0,18 blijft de onderrand ruim 30 mm binnen de huid en het glas ruim 40 mm buiten het binnenpaneel.
   const bodWinK = 0.18, xg0 = 0.635 + bodKasD(zm);
   const xin = z => s * xg0, xAt = y => s * (xg0 + bodWinK * (YT(zm) - 0.025 - y));
-  // vlak van de geheel gezakte ruit (helling van het glas, kg): de kabels lopen 12 mm erbinnen; op de baan van de onderrand (xAt) sneed het glas erdoorheen
-  const gzm = bodGh(zm), kg = (gzm.xb - gzm.xe) / (gzm.ye - gzm.yb), yLow = YT(zm) + 0.013 - 0.25, xCab = y => s * (Math.abs(xAt(yLow)) - kg * (y - yLow) - 0.012);
+  // vlak van de geheel gezakte ruit (helling van het glas, kg): de kabels lopen erbinnen (KAS-2: 12 mm; op de baan van de onderrand, xAt, sneed het glas erdoorheen).
+  // DAK-3: kabels en geleiderails 18 mm binnen dat vlak (rails waren op de baan van de onderrand): met de ruit die weer 0,28 helt (DAK-2) en hoger is (DAK-3) veegde het glas
+  // boven de onderrand door de bovenkant van de rails (opentest, 7 tot 11 mm); het vlak van de geheel gezakte ruit is aan elke hoogte de binnenste stand van het glas
+  const gzm = bodGh(zm), kg = (gzm.xb - gzm.xe) / (gzm.ye - gzm.yb), yLow = YT(zm) + 0.013 - 0.25, xCab = y => s * (Math.abs(xAt(yLow)) - kg * (y - yLow) - 0.018);
   const winSlide = extra => ({ type: 'slide', move: [s * 0.25 * bodWinK, -0.25, 0], ...extra });
   const hingeZ = z1 + 0.006;
   const hinge = (nm, y) => A(`Scharnier ${nm}`, { d: `${nm === 'boven' ? 'Bovenste' : 'Onderste'} portierscharnier: een blad aan het portier en een blad op de A-stijl met een scharnierpen. In dit model draait het portier om een as vlak voor de voorrand (schematisch).`, ex: [-s * 0.03, 0, 0.12] }, [
@@ -1158,8 +1160,8 @@ function bodDoor(s) {
       P('Gordelrubber', bodGhSide(s, zg0, zg1, 30, z => [0, qLo(z)], 2, [], 0.002), MAT.bodSeal, { d: 'Zwarte afstrijkrubbers op de gordellijn onder de zijruit.', ex: [s * 0.06, 0.03, 0] }),
     ]),
     A('Raambediening', { d: 'Elektrische raambediening (Twist) met kabeltrommel: twee geleiderails, een ruitdrager en een motor.', ex: [-s * 0.3, -0.02, 0] }, [
-      P('Geleiderail voor', rodBetween([xAt(0.64), 0.64, zm + 0.3], [xAt(0.86), 0.86, zm + 0.3], 0.008, 8), MAT.steel, { d: 'Stalen geleiderail voor de ruitdrager.', ex: [0, 0, 0.05] }),
-      P('Geleiderail achter', rodBetween([xAt(0.64), 0.64, zm - 0.3], [xAt(0.86), 0.86, zm - 0.3], 0.008, 8), MAT.steel, { d: 'Stalen geleiderail voor de ruitdrager.', ex: [0, 0, -0.05] }),
+      P('Geleiderail voor', rodBetween([xCab(0.64), 0.64, zm + 0.3], [xCab(0.86), 0.86, zm + 0.3], 0.008, 8), MAT.steel, { d: 'Stalen geleiderail voor de ruitdrager.', ex: [0, 0, 0.05] }),
+      P('Geleiderail achter', rodBetween([xCab(0.64), 0.64, zm - 0.3], [xCab(0.86), 0.86, zm - 0.3], 0.008, 8), MAT.steel, { d: 'Stalen geleiderail voor de ruitdrager.', ex: [0, 0, -0.05] }),
       P('Ruitdrager', G.rbox(0.02, 0.03, 0.7, 0.006), MAT.darkSteel, { d: 'Drager waarop de onderrand van de zijruit is geklemd; zakt mee met de ruit.', p: [xin(zm), 0.85, zm], ex: [0, 0.08, 0], open: winSlide({ follow: `${dPath}/Zijruit` }) }),
       P('Bedieningskabels', merge([rodBetween([xCab(0.86), 0.86, zm + 0.3], [xCab(0.64), 0.64, zm - 0.3], 0.003, 6), rodBetween([xCab(0.86), 0.86, zm - 0.3], [xCab(0.64), 0.64, zm + 0.3], 0.003, 6)]), MAT.steel, { d: 'Staalkabels die de ruitdrager langs de rails trekken.', ex: [-s * 0.03, 0, 0] }),
       P('Raammotor', merge([G.cyl('x', 0.032, 0.032, 0.045, 20), xf(G.cyl('x', 0.022, 0.022, 0.03, 16), [-0.035, 0, 0])]), MAT.darkSteel, { d: 'Elektromotor met kabeltrommel van de elektrische ruitbediening.', p: [xAt(0.64) - s * 0.012, 0.52, zm], s: [s, 1, 1], ex: [-s * 0.06, -0.06, 0] }),
@@ -1189,7 +1191,7 @@ function bodDoor(s) {
   ];
   const piv = [s * (surfX(z1, 0.62) + 0.012), 0.62, z1 + 0.012];
   return A(dName, { d: `Compleet portier aan de ${n}kant (3-deurs): plaatwerk, elektrisch bediende ruit, slot, greep, bekleding, scharnieren en buitenspiegel.`, ex: [s * 0.78, 0.02, 0.16],
-    open: { type: 'hinge', pivot: piv, axis: [0, 1, 0], angle: -s * 62 * PI / 180, min: 52 * PI / 180, label: dName, look: { dir: [s * 1, 0.4, 0.12], nodes: [dName] } } }, kids);
+    open: { type: 'hinge', pivot: piv, axis: [0, 1, 0], angle: -s * 62 * PI / 180, min: 52 * PI / 180, label: dName, look: { dir: [s * 1, 0.5, 0.12], nodes: [dName] } } }, kids);
 }
 /* ---------- achterzijde: bumper, achterlichten, achterpaneel ---------- */
 // Achterlichten liggend (ca. 1,3 : 1, hoogte 210 mm; keuze eigenaar naar foto 1993-2001): bodTLy1 0,80 (was 0,845).
