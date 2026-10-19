@@ -1056,6 +1056,21 @@ const bodMirShell = () => cache('bodMirShell', () => {
 });
 // vlakke plaat met de omtrek van het huis, geschaald met k, dikte t (gecentreerd op z 0)
 const bodMirPlate = (key, k, t) => cache(key, () => extrude(shapeOf(bodMirRing.map(([x, y]) => [x * k, y * k])), t, 4));
+// punt op de buitenhuid van de kas (linkerhelft) bij z en y, met out in x naar buiten; boven de gordel loopt het over de A-stijl (boog van het dakrandprofiel)
+function bodKasPt(z, y, out = 0) {
+  const g = bodGh(z), q = y <= g.ye ? clamp((y - g.yb) / (g.ye - g.yb), 0, 1) * bodQS : bodQS + Math.asin(clamp((y - g.ye) / (g.yre - g.ye), 0, 1)) / HALF * (bodQR - bodQS);
+  const [x, yy] = bodGhHalf(z, q, g);
+  return [x + out, yy, z];
+}
+// zeilplaat van de spiegel (linkerhelft, [z, y] van de hoekpunten): driehoek met de basis langs de gordel, de voorrand tegen de A-stijl en de top bovenin, 7 mm dik
+const bodMirSailV = [[0.778, 0.905], [0.690, 0.905], [0.752, 0.975]], bodMirSailT = 0.007;
+function bodMirSail() {
+  const V = bodMirSailV, T = bodMirSailT;
+  const pt = (u, v, o) => bodKasPt(lerp(lerp(V[0][0], V[1][0], u), V[2][0], v), lerp(lerp(V[0][1], V[1][1], u), V[2][1], v), o);
+  const wall = fn => patch(fn, 0, 1, 8, () => [0, 1], 1);
+  return merge([patch((u, v) => pt(u, v, T), 0, 1, 8, () => [0, 1], 6), patch((u, v) => pt(u, v, 0), 0, 1, 8, () => [0, 1], 6),
+    wall((u, t) => pt(u, 0, T * t)), wall((v, t) => pt(1, v, T * t)), wall((v, t) => pt(0, v, T * t))]);
+}
 function bodMirror(s) {
   const n = bodSn(s), M = (x, y, z) => [s * x, y, z];
   const hx = 0.73 + bodMirW / 2, hy = 0.975, hz = 0.697;             // middelpunt van de achterrand; binnenrand op x 0,730, omgezette rand achter op z 0,690 (scharnierlijn)
@@ -1063,7 +1078,9 @@ function bodMirror(s) {
   // de scharnierlijn ligt aan de binnenachterkant van het huis (x 0,733); het huis klapt naar achteren langs het portier en blijft daarbij buiten x 0,729, de voet binnen 0,728
   return A(`Buitenspiegel ${n}`, { d: 'Elektrisch verstelbare en verwarmde buitenspiegel in zwart kunststof (Twist), liggend: breder dan hoog. Klapt met de hand ongeveer 80 graden naar achteren (hoek geschat).', ex: [s * 0.3, 0.1, 0.08],
     open: { type: 'hinge', pivot: [s * 0.733, 0.99, 0.69], axis: [0, 1, 0], angle: s * 80 * PI / 180, min: 64 * PI / 180, label: `Buitenspiegel ${n}`, look: { dir: [s * 0.8, 0.3, 0.75], nodes: [`Buitenspiegel ${n}`] } } }, [
-    P('Spiegelvoet', merge([G.rbox(0.048, 0.035, 0.08, 0.01), xf(G.rbox(0.04, 0.05, 0.05, 0.01), [s * 0.004, 0.03, -0.005])]), MAT.bodBlack, { d: 'Voet met bevestigingsplaat in de voorhoek van het portier en een korte arm die tot tegen de binnenkant van het spiegelhuis loopt; blijft staan als de spiegel inklapt.', p: M(0.704, 0.93, 0.725), stay: true, ex: [-s * 0.05, -0.05, 0] }),
+    // de spiegel hangt aan een korte arm uit een zwarte driehoekige zeilplaat in de voorhoek van het raamframe tegen de A-stijl (foto's van de modelreeks); beide blijven staan als de spiegel inklapt
+    P('Spiegelzeil', bodMirSail(), MAT.bodBlack, { d: 'Zwarte driehoekige zeilplaat van kunststof in de voorhoek van het raamframe tegen de A-stijl, ongeveer 88 mm breed, 70 mm hoog en 7 mm dik (z 0,69 tot 0,778, y 0,905 tot 0,975; maat geschat op de foto\'s, hoger loopt hij over de bocht van de A-stijl); hij zit op het portier en draagt de spiegelarm. Blijft staan als de spiegel inklapt.', s: [s, 1, 1], stay: true, ex: [s * 0.01, 0, 0.03] }),
+    P('Spiegelarm', xf(G.rbox(0.064, 0.035, 0.042, 0.009), [0.696, 0.953, 0.738]), MAT.bodBlack, { d: 'Korte arm van ongeveer 64 x 35 x 42 mm uit de zeilplaat tot tegen de binnenkant van het spiegelhuis; het scharnier van de spiegel zit aan het huis. Blijft staan als de spiegel inklapt.', s: [s, 1, 1], stay: true, ex: [s * 0.04, 0, -0.03] }),
     P('Spiegelhuis', bodMirShell(), MAT.bodBlack, H(0, { d: 'Zwart kunststof huis, liggend: ongeveer 168 mm breed, 92 mm hoog bij de voet en 112 mm aan de buitenkant (geschat). Naar voren bol en smaller in de diepte (70 mm bij de voet, 52 mm buiten); draagt glas, verstelmotor en verwarming.', ex: [0, 0.02, 0.1] })),
     P('Spiegelglas', bodMirPlate('bodMirGlass', 0.9, 0.003), MAT.bodMirror, H(-0.004, { d: 'Spiegelglas van ongeveer 151 mm breed en 83 tot 101 mm hoog (geschat), verwarmd; in het model vlak.', ex: [0, 0, -0.12] })),
     P('Glasdrager', bodMirPlate('bodMirCarrier', 0.93, 0.006), MAT.plastic, H(0.0005, { d: 'Kunststof drager waarop het glas is geklikt.', ex: [0, 0, -0.07] })),

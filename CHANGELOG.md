@@ -7,6 +7,7 @@
 
 - Achterbumper (B7-1): nieuw onderdeel `Sluitwand achterbumper` in `MAT.bodBumperZwart`: een plaat 3 mm achter de voorrand van de bumperschaal die de U van de onderkant en de flanken sluit (omgezette rand). Van onderen en van voren zie je niet meer in de holle bumper, op de stalen bumperbalk (voorheen 18 en 31 van 630 prikpunten in twee onderaanzichten) en op de lak van het achterpaneel.
 - Tankklep (B7-2): klep, opening en kom zijn ovaal (100 mm breed, 130 mm hoog, geschat op de foto's van de modelreeks; was een rechthoek van 140 x 120 mm met rechte hoeken). Het achterscherm krijgt een ring van huid tussen de rechthoek van de opening en de ovaal (`bodTkRing`); de rechthoek zelf is y 0,65 tot 0,79 (was 0,66 tot 0,78), het hart blijft z -1,45 en y 0,72 (daar zit de vulhals). De opener `Tankklep` draait nu om de voorrand van de ovaal op z -1,40 (was -1,38); hoek, `min` en de kom met het gat van 32 mm voor de vulhals zijn niet veranderd.
+- Buitenspiegels (B7-3): de `Spiegelvoet` (twee blokken op het portier) is vervangen door een `Spiegelzeil` (zwarte driehoekige zeilplaat van 88 x 70 mm, 7 mm dik, in de voorhoek van het raamframe tegen de A-stijl, z 0,69 tot 0,778, y 0,905 tot 0,975, volgt de huid van de kas) en een `Spiegelarm` (64 x 35 x 42 mm tot x 0,728, zoals de oude voet) die de spiegel draagt. Beide blijven staan als de spiegel inklapt (`stay`); scharnier (0,733; 0,99; 0,69), liggende spiegelkop en `BOD_MIRW` 0,904 zijn niet veranderd. Opentest Buitenspiegel en Portier links en rechts: 0 fouten.
 
 ### Systemen (golf 7, pakket SYS7)
 
