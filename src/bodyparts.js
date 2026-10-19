@@ -39,6 +39,14 @@ const bodDense = (a, b, n) => { const out = []; for (let i = 1; i < n; i++) out.
 const bodQy = (z, y) => { const g = bodGh(z); return clamp((y - g.yb) / Math.max(1e-6, g.ye - g.yb), 0, 1) * bodQS; };   // q op de zijwand bij hoogte y
 // punt op de onderbak (linkerhelft) op hoogte y met verschuiving langs de normaal (out > 0 = naar buiten)
 function bodAt(z, y, out = 0) { const sv = sAtY(z, y), [x, yy] = halfPt(z, sv), n = bodN(z, sv); return [x + n[0] * out, yy + n[1] * out, z + n[2] * out]; }
+// zelfde punt op de huid met de kas kd verder naar buiten op de gordel (bodSecW; kd 0 geeft de flank van FLANK-2 zonder de bredere kas van KAS-2, dus de huid van versie 6)
+function bodAtK(z, y, out, kd) {
+  const sec = zz => bodSecW(zz, bodFlankW(zz), kd), c = sec(z), sv = bodSAtYc(c, y), e = 1e-3, h = (zz, ss) => bodHalf(zz, ss, sec(zz));
+  const [x, yy] = h(z, sv), a = h(z, sv - e), b = h(z, sv + e), f = h(z + e, sv), k = h(z - e, sv);
+  const ds = [b[0] - a[0], b[1] - a[1], 0], dz = [f[0] - k[0], f[1] - k[1], 2 * e];
+  const n = [ds[1] * dz[2] - ds[2] * dz[1], ds[2] * dz[0] - ds[0] * dz[2], ds[0] * dz[1] - ds[1] * dz[0]], l = Math.hypot(...n) || 1;
+  return [x + n[0] / l * out, yy + n[1] / l * out, z + n[2] / l * out];
+}
 // kaspunt (linkerhelft) bij (z, q) met verschuiving naar buiten
 function bodGhAt(z, q, out = 0) { const [x, y] = bodGhHalf(z, q); return [x + out, y + (q > bodQS ? out * 0.6 : 0), z]; }
 // lijst op de huid van de onderbak tussen y0 en y1 en z zA..zB; hgt = hoogte van het profiel boven de huid; de uiteinden lopen in de huid weg
@@ -1188,8 +1196,9 @@ function bodDoor(s) {
       P('Binnendeurgreep', G.rbox(0.02, 0.03, 0.12, 0.008), MAT.satin, { d: 'Binnengreep met kabel naar het slot.', p: [s * (ringX0(z0 + 0.22, 0.8) - 0.115), 0.8, z0 + 0.22], ex: [-s * 0.06, 0, 0] }),
     ]),
     // het rubber zit op de binnenrand van het portier en blijft waar het in versie 6 lag: met de bredere kas (KAS-2) staat de huid op y 0,80 minder schuin en schoof het
-    // bovenste punt 16 mm naar buiten (x 0,689 in plaats van 0,673); de rechte buis kwam dan 4 tot 5 mm in de scharnierbladen. De bovenste punten 16,4 mm terug.
-    P('Portierrubber', tube([[z0 + 0.03, 0.80], [z0 + 0.03, 0.34], [zm, 0.34], [z1 - 0.03, 0.34], [z1 - 0.03, 0.80]].map(([z, y]) => { const p = bodAt(z, y, -0.05), dx = y > 0.5 ? 0.0164 : 0; return [s * (p[0] - dx), p[1], p[2]]; }), 0.008, 72, 6), MAT.rubber, { d: 'Rubber afdichting langs de voorrand, onderrand en achterrand van het portier.', ex: [-s * 0.26, -0.1, -0.46] }),
+    // bovenste punt 16 mm naar buiten (x 0,689 in plaats van 0,673); de rechte buis kwam dan 4 tot 5 mm in de scharnierbladen. De bovenste punten liggen daarom op x van
+    // de huid zonder de bredere kas (bodAtK met kd 0; golf 9, DAK-5: was een vaste 16,4 mm terug, achter 16,4 en voor 19,0 mm uit de huid)
+    P('Portierrubber', tube([[z0 + 0.03, 0.80], [z0 + 0.03, 0.34], [zm, 0.34], [z1 - 0.03, 0.34], [z1 - 0.03, 0.80]].map(([z, y]) => { const p = bodAt(z, y, -0.05), x = y > 0.5 ? bodAtK(z, y, -0.05, 0)[0] : p[0]; return [s * x, p[1], p[2]]; }), 0.008, 72, 6), MAT.rubber, { d: 'Rubber afdichting langs de voorrand, onderrand en achterrand van het portier.', ex: [-s * 0.26, -0.1, -0.46] }),
     P('Deurvanger', G.rbox(0.012, 0.03, 0.2, 0.004), MAT.darkSteel, { d: 'Vanger die het portier in twee standen openhoudt.', p: [s * (surfX(z1 - 0.1, 0.62) - 0.016), 0.62, z1 - 0.1], ex: [-s * 0.05, 0, 0.06] }),
     // bovenste scharnier op y 0,61 (was 0,62): met de lagere gordel aan de voorrand (KAS-3) kwam de voorste onderhoek van de gezakte ruit 7 tot 10 mm in het bovenste blad
     A('Scharnieren', { d: 'Twee portierscharnieren aan de voorrand met elk twee bouten.', ex: [-s * 0.04, 0, 0.1] }, [hinge('boven', 0.61), hinge('onder', 0.53)]),

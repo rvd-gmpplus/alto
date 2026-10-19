@@ -81,7 +81,7 @@ const BOD_KASD = 0.035;
 const bodKasD = z => BOD_KASD * sstep((z + 1.50) / 0.35) * sstep((1.0 - z) / 0.30);
 // inloop van de flank ten opzichte van de breedste lijn bij flankparameter t (0 onderaan, 1 bovenaan)
 const bodFlD = (t, dB, dT) => (t < bodFlU ? dB * Math.pow((bodFlU - t) / bodFlU, 2) : dT * Math.pow((t - bodFlU) / (1 - bodFlU), 2));
-function bodSecW(z, w) {
+function bodSecW(z, w, kd) {   // kd: verschuiving van de kas op de gordel (standaard bodKasD(z); 0 geeft het profiel van FLANK-2, versie 6)
   const hw = HW(z), yb = YB(z), yt = YT(z), d = yt - yb, bul = Math.min(BUL, hw * 0.15);
   const rb = Math.min(0.045, d * 0.28, (hw - bul) * 0.45), rs0 = Math.min(0.055 - 0.040 * sstep((z - 1.58) / 0.06), d * 0.3, (hw - bul) * 0.45);   // schouder op de neus 15 mm (beslissing 29)
   const yd = Math.max(yt + 0.004, yt + bodC(z)), c = yd - yt, p = bodDP(z);
@@ -91,7 +91,7 @@ function bodSecW(z, w) {
   if (w <= 1e-6) { const cy = yt - rs0 * Math.sin(th); return { hw, yb, yt, rb, rs: rs0, yd, c, p, cx: cx0, cy, th, xe, bul, bw: bul, dB: 0, dT: 0, a0: 0, ab: 0, cxb: hw - bul - rb, cyb: yb + rb, y0: yb + rb, y1: cy }; }
   // nieuw profiel: xe bodKasD verder naar buiten (KAS-2; FLANK-2 hield xe en th gelijk), th opnieuw zodat de schouder met de raaklijn van het dek aansluit,
   // kleinere schouder, de flank loopt in
-  xe += bodKasD(z) * w; th = Math.atan2(xe, c * p);
+  xe += (kd === undefined ? bodKasD(z) : kd) * w; th = Math.atan2(xe, c * p);
   const rs = lerp(rs0, Math.min(bodFlRs(z), rs0), w), bw = bul * (1 - w), dB = bodFlB * w, cx = xe - rs * Math.cos(th), cy = yt - rs * Math.sin(th), cyb = yb + rb;
   let a0 = 0, ab = 0, dT = 0, y0 = cyb, y1 = cy;
   for (let i = 0; i < 6; i++) {
