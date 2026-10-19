@@ -22,7 +22,7 @@ Aanleiding: de open punten na versie 8 (ronde hoeken van de hoekruit, de overlap
 - Dashboardkap en tunnelconsole: afgeronde hoeken in het zijprofiel met gladde normalen; pookknop en pookhoes ronder.
 - `Zijbekleding achterbank` eindigt op de voorrand van de hoekruit (z -0,65, was -0,74) en ligt niet meer over de `Zijbekleding achter` (INT-14).
 - Vloerbedekking om de tankkuip: open punt gesloten, nagemeten zonder doordringing (INT-15).
-- Driehoeken Interieur binnen het budget van BUD-1 (stand per hoofdgroep in `docs/cijfers.md`); laadtijd niet merkbaar langer.
+- Driehoeken Interieur binnen het budget van BUD-1 (stand per hoofdgroep in `docs/cijfers.md`); het opbouwen van het model duurt iets langer (Mac 160 naar ongeveer 170 ms, Linux-container 386 naar 463 ms); eerste beeld gelijk.
 
 ## Versie 8 (19 oktober 2026)
 
