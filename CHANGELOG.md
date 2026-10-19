@@ -2,6 +2,8 @@
 
 ## Versie 8 (in voorbereiding)
 
+Aanleiding: de open punten na versie 7: de bovenkant van de kas (KAS-6), de grotere hoekruit en smallere C-stijl op de foto's van de modelreeks, het portierrubber met een vaste maat en het gaatje in het kleppendeksel. Keuze van de eigenaar: de knik op het voorscherm onder de voet van de A-stijl blijft (DAK-0).
+
 ### Carrosserie: dak en hoekruit (golf 9, pakket DAK; beslissing DAK-0 tot DAK-5)
 
 - Meting (DAK-1): op de foto's van de modelreeks helt de zijwand van de kas 0,24 tot 0,27 (model 0,37), is de kas op dakrandhoogte 35 tot 47 mm breder, ligt de bovenrand van de zijruit ongeveer 45 mm hoger en is de hoekruit veel groter (0,72 m langs de gordel tegen 0,43 m). Voor en achter apart is het verschil in breedte binnen de meetfout.
@@ -10,6 +12,17 @@
 - Ruiten hoger (DAK-3): de dakrand heeft een straal van 20 mm (was 60), zodat de zijwand 40 mm hoger doorloopt: de bovenrand van zijruit en hoekruit ligt op 1,325 (was 1,285; foto's 25 tot 75 mm hoger dan het model). Dakhoogte en daklijn blijven; achter de hoekruit blijft de dakrand zoals hij was. In het portier ligt de voorrand van het glas 16 mm achter de naad en lopen geleiderails en kabels 18 mm binnen het vlak van de gezakte ruit; de camera bij het openen van een portier kijkt iets steiler de cabine in.
 - Hoekruit groter, C-stijl smaller (DAK-4): de achterzijruit is 0,72 m lang op de gordel (was 0,43): voorrand 90 mm naar voren (B-stijl 86 mm breed, was 176), onderhoek achter 200 mm naar achteren (net achter de achteras) en bovenhoek achter 170 mm, zoals op de foto's. De kiepruit kiept 2,5 graden (ongeveer 30 mm bij de onderhoek achter), de kiephendel zit halverwege de schuine achterrand; rubber, sponningrubber en C-stijl sluiten zonder kier aan.
 - Portierrubber (DAK-5): de bovenste punten volgen nu de huid zonder de bredere kas in plaats van een vaste 16,4 mm; geen zichtbare verandering (voorste bovenpunt 2,5 mm naar binnen).
+- Interieur (orkestrator): bekleding en gordels volgen de grotere hoekruit en de hogere zijruit; het rubber van de zijruit raakt de bekleding van de A-stijl niet meer (was 2,5 mm).
+
+### Motor: kleppendeksel dicht rond de bougieputten (golf 9, pakket MOTOR; beslissing MOTOR-1)
+
+- Gat uit KAS-3 gedicht: de rubber ringen `Bougieputafdichtingen` in het kleppendeksel sluiten nu om de `Bougiedop` (binnenstraal 9,5 mm, was 12,5 mm) in plaats van 3 mm lucht eromheen te laten. Die ring gaf schuine stralen toegang tot de ruimte onder het deksel, tot `Tuimelaar inlaat 2a`. Meting: 8 963 van 1 949 300 stralen raakten een ingesloten onderdeel, nu 0; het opentest-raster 256 x 160 (Motorkap) was rood en is groen, evenals 16 andere rasters. Het deksel zelf en zijn maten zijn gelijk.
+- `Peilstok`: de meetstok steekt niet meer 2 mm uit de peilstokbuis (opentest, raster 220 x 140, raakte de punt van de `inner` stok eerst).
+- Driehoeken Aandrijflijn: 110 304 (was 109 248; 28 in plaats van 16 en 14 zijden), budget 133 500.
+
+### Test: Linux-container (orkestrator)
+
+- `~/alto-linux/run.sh` en `run-fonts.sh` starten de tijdelijke container met 8 CPU's en 10 GB in plaats van 15 en 16 GB (instelbaar met `ALTO_CPUS` en `ALTO_MEM`) en wachten tot de load average onder 15 ligt (`ALTO_MAXLOAD`), zoals de werkwijze in laguna3. Proef op d4337a3: 34 van 34 presetbeelden binnen de drempel van de basislijn.
 
 ## Versie 7 (19 oktober 2026)
 

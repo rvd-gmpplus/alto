@@ -103,7 +103,9 @@ function engBuildCover() {
     P('Kleppendeksel', cover, MAT.engCover, { d: 'Zwart gelakt aluminium deksel met gaten voor de bougies, een opstaande rand voor de oliedop en een ontluchtingsnippel aan de voorzijde.', ex: [0, 0, 0] }),
     P('Pakking kleppendeksel', plan(engRing(out, inn), 0.002), MAT.rubber, { d: 'Rubber pakking tussen kop en kleppendeksel.', p: [0, ENG_CAMY + 0.001, 0], ex: [0, -0.04, 0] }),
     P('Olievuldop', G.lathe('y', [[0, 0], [0.016, 0], [0.0165, 0.004], [0.013, 0.012], [0, 0.012]], 16, 'engFillCap'), MAT.plastic, { d: 'Kunststof dop op de vulopening voor motorolie.', p: [0.098, yTop + 0.007, -0.035], ex: [0, 0.08, 0] }),
-    P('Bougieputafdichtingen', merge(ENG_XC.map(x => xf(annulus(0.0125, 0.0155, 0.004, 'y', 16), [x, yTop - 0.003, ENG_PLZ]))), MAT.rubber, { d: 'Vier rubber ringen die de bougieputten in het kleppendeksel afdichten.', ex: [0, 0.05, 0] }),
+    // de ring sluit om de bougiedop (engine3.js): zelfde straal (ENG_BOOT_R) en zelfde aantal zijden (28), dus geen spleet en geen doordringing.
+    // Met binnenstraal 0,0125 bleef een ring van 3 mm tussen dop en deksel open naar de ruimte onder het deksel (MOTOR-1)
+    P('Bougieputafdichtingen', merge(ENG_XC.map(x => xf(annulus(ENG_BOOT_R, 0.0155, 0.004, 'y', 28), [x, yTop - 0.003, ENG_PLZ]))), MAT.rubber, { d: 'Vier rubber ringen die de bougieputten in het kleppendeksel afdichten: de binnenrand sluit om de rubber bougiedop, zodat er geen spleet naar de ruimte onder het deksel overblijft.', ex: [0, 0.05, 0] }),
     A('Dekselbouten', { d: 'Acht bouten van het kleppendeksel (aantal geschat).', ex: [0, 0.14, 0] }, coverBolts.map(([x, z], k) => P(`Dekselbout ${k + 1}`, hexBolt(0.016, 0.007), MAT.darkSteel, { d: 'Bout van het kleppendeksel.', p: [x, yTop, z], r: [PI, 0, 0], ex: [0, 0.03, 0] }))),
   ]);
 }

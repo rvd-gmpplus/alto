@@ -37,7 +37,9 @@ function engBuildLube() {
     ]),
     A('Peilstok', { d: 'Oliepeilstok met buis aan de voorzijde van het blok.', ex: [0.06, 0.08, 0.1] }, [
       P('Peilstokbuis', G.cyl('y', 0.0065, 0.0065, 0.225, 10), MAT.steel, { d: 'Dunwandige buis van het carter omhoog langs het blok.', p: [0.152, 0.0525, 0.0975], ex: [0, 0, 0] }),
-      P('Peilstok', G.cyl('y', 0.0022, 0.0022, 0.227, 8), MAT.steel, { d: 'Stalen meetstok met merken voor minimaal en maximaal peil.', p: [0.152, 0.0535, 0.0975], ex: [0, 0.12, 0], inner: true }),
+      // de meetstok eindigt 2 mm onder de bovenkant van de buis (was 2 mm erboven): de punt stak uit de buis, was dus van buiten te zien
+      // terwijl de stok `inner` is, en een straal van opentest.py (Motorkap, rasters vanaf 220 x 140) raakte hem eerst (MOTOR-1)
+      P('Peilstok', G.cyl('y', 0.0022, 0.0022, 0.223, 8), MAT.steel, { d: 'Stalen meetstok met merken voor minimaal en maximaal peil; zit in de buis, alleen de greep steekt erboven uit.', p: [0.152, 0.0515, 0.0975], ex: [0, 0.12, 0], inner: true }),
       P('Peilstokgreep', G.torus('z', 0.008, 0.0018, 16, 5), MAT.handle, { d: 'Gele greep van de peilstok.', p: [0.152, 0.1745, 0.0975], ex: [0, 0.2, 0] }),
       P('Peilstokbus', G.cyl('y', 0.009, 0.009, 0.012, 10), MAT.aluCast, { d: 'Bus in het blok waarin de peilstokbuis geperst zit.', p: [0.152, -0.02, 0.0925], ex: [0, -0.04, 0.03] }),
     ]),
@@ -132,7 +134,7 @@ function engBuildIgnition() {
   const PSY = 0.18, yTop = ENG_COVER_TOP;
   const plug = G.lathe('y', [[0.0012, -0.003], [0.0035, -0.003], [0.0035, 0], [0.007, 0], [0.007, 0.02], [0.0092, 0.02], [0.0092, 0.028], [0.007, 0.028], [0.007, 0.03], [0, 0.03]], 12, 'engPlug');
   const ins = G.lathe('y', [[0, 0.03], [0.0062, 0.03], [0.0062, 0.07], [0.0042, 0.075], [0, 0.075]], 12, 'engPlugIns');
-  const boot = G.lathe('y', [[0.0042, 0.07], [0.0085, 0.07], [0.0095, 0.074], [0.0095, 0.145], [0.0075, 0.15], [0.0045, 0.15], [0.0042, 0.07]], 14, 'engBoot');
+  const boot = G.lathe('y', [[0.0042, 0.07], [0.0085, 0.07], [ENG_BOOT_R, 0.074], [ENG_BOOT_R, 0.145], [0.0075, 0.15], [0.0045, 0.15], [0.0042, 0.07]], 28, 'engBoot');   // 28 zijden: hetzelfde als de afdichtring in het kleppendeksel (engine2.js), zodat ring en dop zonder spleet en zonder doordringing sluiten
   const bougies = ENG_XC.map((x, i) => A(`Bougie ${i + 1}`, { d: `Bougie van cilinder ${i + 1} met isolator en rubber dop; zit in een diepe bougieput naast de nokkenas. Type en maten zijn niet bevestigd.`, p: [x, PSY, ENG_PLZ], ex: [0, 0.18, 0] }, [
     P('Bougie', plug, MAT.steel, { d: 'Bougie met zeskant en elektrode.', ex: [0, -0.04, 0] }),
     P('Isolator bougie', ins, MAT.ceramic, { d: 'Keramische isolator van de bougie.', ex: [0, 0.04, 0] }),

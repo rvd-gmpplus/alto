@@ -24,7 +24,7 @@ in tekst. Feiten over de auto: `docs/contract.md` en `docs/specificaties-en-bron
   eigen basis B0 van dezelfde machine en een groene startstand (`docs/testen.md`, alinea over `VISDIFF_BASIS`). Op de
   Mac is visdiff informatief.
 - Linux: `~/alto-linux/run-fonts.sh REPO REF 'bash tools/orkestratie/finaltests.sh /uit'`. Draait in de Apple
-  container `explosie-test:1` met 15 cores en 16 GB op een `git archive`-kopie van REF (dus alleen gecommit werk), met
+  container `explosie-test:1` (tijdelijk, `--rm`) met standaard 8 cores en 10 GB (`ALTO_CPUS`, `ALTO_MEM`; de run wacht tot de load onder `ALTO_MAXLOAD` 15 ligt, zie `~/alto-linux/lib.sh`) op een `git archive`-kopie van REF (dus alleen gecommit werk), met
   de lettertypencache voor Linux; de uitvoer staat in `~/alto-linux/run-XXXX/uit`. Uitleg: `docs/testen.md`, sectie
   "Linux-container".
 - Groen betekent: `finaltests.sh` geeft exitcode 0, dus elke vaste en extra test exit 0. Bij `meet` en `meet-achter`
