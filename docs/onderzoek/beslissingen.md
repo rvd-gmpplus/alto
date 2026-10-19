@@ -622,6 +622,6 @@ Waarom het niet zonder de daklijn kan: de bovenrand van het glas ligt in het mod
 - E. Bovenhoek naar voren schuiven (`bodKpZT` van -1,24 naar ongeveer -1,15, waar het dak hoger is): glas op de hoek ongeveer 1,30 (+45 mm) zonder de daklijn, maar de schuine achterrand helt dan meer, terwijl hij op de foto's bijna verticaal staat, en de hoek ligt 90 mm voor de meting van DAK-4 (-1,22 tot -1,25). Niet aanbevolen.
 
 **Open (pakket HOEK):**
-- HOEK-2: keuze van de eigenaar tussen A tot en met E; aanbeveling A tot er een recht zijaanzicht is, daarna D.
+- HOEK-2: de eigenaar koos op 19 oktober 2026 optie A (zo laten). Daarna D (daklijn en `data/silhouet.json`) zodra er een recht zijaanzicht van de eigen auto is.
 - Straal: gebouwd 40 mm voor beide hoeken; de foto's laten voor de bovenhoek ook een grotere straal toe (45 tot 80 mm). Bij optie D ook de bovenhoek opnieuw meten.
 - Basislijn: presetbeelden met de hoekruit veranderen (ronde hoeken); vernieuwen op Linux door de orkestrator. Driehoeken Carrosserie 123.015 voor `docs/cijfers.md`.
