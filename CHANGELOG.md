@@ -3,6 +3,8 @@
 ## Versie 9 (in voorbereiding)
 
 - Driehoekenbudget Interieur 100.000 (was 52.900), totaal 447.100 (was 400.000); keuze van de eigenaar (BUD-1). Stand: `docs/cijfers.md`.
+- Hoekruit: de onderhoek en de bovenhoek achter zijn rond, straal 40 mm, zoals op de foto's van de modelreeks (waren scherp). Ruit, rubber, sponningrubber en de uitsparing in de C-stijl volgen dezelfde ronde contour, dicht en in de kiepstand; het achterste punt van de ruit ligt 23 mm verder naar voren (golf 10, pakket HOEK; beslissing HOEK-1).
+- Bovenhoek achter van de hoekruit: gemeten 60 tot 100 mm lager dan op de foto's; omhoog kan alleen met een hogere daklijn achteraan. Niet gebouwd; beslispunt voor de eigenaar met opties (HOEK-2).
 
 ## Versie 8 (19 oktober 2026)
 
