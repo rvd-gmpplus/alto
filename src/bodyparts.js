@@ -1120,7 +1120,7 @@ function bodDoor(s) {
   ]);
   const glass = bodGhSide(s, zg0, zg1, 40, z => [qLo(z), qHi(z)], 8, [], -0.045);
   const hz = -0.40, hy = 0.80, hp = bodAt(hz, hy, 0.0), hn = bodN(hz, sAtY(hz, hy));
-  const xin = z => s * 0.635, xAt = y => s * (0.635 + 0.28 * (0.88 - y));   // geleiders langs het glasvlak (het glas helt 0,28)
+  const xin = z => s * 0.635, xAt = y => s * (0.635 + 0.28 * (YT(zm) - 0.025 - y));   // geleiders langs het glasvlak (het glas helt 0,28); het vlak volgt de gordel (was 0,88 vast, beslissing FLANK-1)
   const winSlide = extra => ({ type: 'slide', move: [s * 0.07, -0.25, 0], ...extra });   // het glas zakt langs zijn eigen vlak (helling 0,28)
   const hingeZ = z1 + 0.006;
   const hinge = (nm, y) => A(`Scharnier ${nm}`, { d: `${nm === 'boven' ? 'Bovenste' : 'Onderste'} portierscharnier: een blad aan het portier en een blad op de A-stijl met een scharnierpen. In dit model draait het portier om een as vlak voor de voorrand (schematisch).`, ex: [-s * 0.03, 0, 0.12] }, [
