@@ -150,10 +150,10 @@ const ARCH_BREAKS = [AXF - ARCH - 0.001, AXF - ARCH, AXF + ARCH, AXF + ARCH + 0.
 const bodQS = 0.54, bodQR = 0.72, bodTUMB = 0.28;
 // straal van de dakrand (ronding van de bovenrand van de zijwand naar het dak). Golf 9 (pakket DAK, beslissing DAK-3): 0,02, was 0,06. Op de foto's van de modelreeks
 // ligt de bovenrand van de zijruiten ongeveer 45 mm hoger (25 tot 75 mm) en zit boven het raam alleen een smalle dakrand met de goot; de kroon (CRW) en de daklijn YR blijven,
-// dus de zijwand loopt 40 mm hoger door en de ruiten, het portierraam en de stijlen worden zoveel hoger. Achter de hoekruit (C-stijl en achterruit) gaat de straal glad
-// terug naar 0,06 (vol vanaf z -1,37): daar zeggen de foto's binnen de meetfout niets anders dan het model (DAK-1), dus de achterruit houdt zijn breedte.
+// dus de zijwand loopt 40 mm hoger door en de ruiten, het portierraam en de stijlen worden zoveel hoger. Achter de bovenhoek van de hoekruit (z -1,24, DAK-4) gaat de straal
+// glad terug naar 0,06 (vol vanaf z -1,44): daar zeggen de foto's binnen de meetfout niets anders dan het model (DAK-1), dus de achterruit houdt vrijwel zijn breedte.
 const BOD_DAKRR = 0.02;
-const bodDakRr = z => lerp(BOD_DAKRR, 0.06, sstep((-1.17 - z) / 0.20));
+const bodDakRr = z => lerp(BOD_DAKRR, 0.06, sstep((-1.24 - z) / 0.20));
 function bodGh(z) {
   const yb = YT(z), xb = bodSec(z).xe, yc = Math.max(yb + 0.002, YR(z)), h = yc - yb;
   const cr = Math.min(CRW, h * 0.3), yre = yc - cr, rr = Math.min(bodDakRr(z), (yre - yb) * 0.3), ye = yre - rr;
