@@ -11,6 +11,7 @@ Aanleiding: keuze van de eigenaar na versie 6 voor een eigen pakket "kas breder"
 - Gordel aan de voorrand van het portier (KAS-3): 15 mm lager (onderrand zijruit op z 0,78 0,899, was 0,914; foto's 0,89 tot 0,90); waterkast, voorruit en motorkap blijven, de gordel stijgt onder de voet van de A-stijl naar de waterkast. Spiegelzeil volgt de gordel, bovenste portierscharnier 10 mm lager, portierrubber op de plaats van versie 6.
 - Preset Portier links (KAS-4): de buitenspiegel klapt verder omhoog en naar voren uit (uitklapvector 0,30; 0,45; 0,40) en ligt niet meer achter de labels Raambediening, Waterscherm en Buitenspiegel links.
 - Koplamp (KAS-5): `Hoekkap`, `Knipperlichtje` en `Koplamp links/rechts` noemen het oranje lampje achter de hoekkap op dezelfde manier: positie- en knipperlicht (aannemelijk; niet bevestigd).
+- Deurslot (orkestrator): klapt verder naar achteren uit (`ex` z -0,26, was -0,16); het labelanker in preset Portier links lag in de bredere kas achter het buitenpaneel (anchorcheck).
 - Interieur (orkestrator): de kap `Gordelgeleider achter` helt mee met de C-stijl; in de bredere kas stak hij 7 mm door de stijl.
 
 ### Systemen: doorvoer van de kachel (golf 8, pakket KLEIN; beslissing INT-12)
