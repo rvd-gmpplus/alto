@@ -576,6 +576,7 @@ Gereedschap, punten, camera's, uitsneden en de tabel per foto: werkmap van pakke
 - Bovenkant van de kas voor en achter apart, en de hoogte van de ruiten (gebouwd 40 mm, gemeten 25 tot 75): een recht zij-, voor- of achteraanzicht van de eigen auto (zonder kenteken in beeld) legt ze op 1 cm vast.
 - `Spiegelarm`: de arm steekt door zeilplaat en voet van de A-stijl (zo ontworpen); met de schuinere zijwand ligt de voet van de A-stijl op de arm 5 mm verder naar buiten (overlap volgens clash.py -17,0 mm, versie 7 -11,4), dus van de arm steekt 5 mm minder buiten de huid uit.
 - Basislijn: presetbeelden en ankercontrole van de carrosserie veranderen (kas, ruiten, hoekruit); vernieuwen op Linux door de orkestrator. Driehoeken Carrosserie 121.191 (was 117.175) voor `docs/cijfers.md`.
+- `Zijbekleding achterbank` (`interior.js`, `sideFront`) loopt nog tot de oude rand van de B-stijl (z -0,74) en overlapt daardoor de `Zijbekleding achter` van z -0,65 tot -0,74 (1 mm tussenruimte); niet zichtbaar (advisor golf 9). Open voor een volgende versie: laten eindigen op `bodKpZF` en nameten met `clash.py`.
 
 ## Golf 9, pakket MOTOR (kleppendeksel dicht rond de bougieputten, 19 oktober 2026, tak `golf9-motor`)
 

@@ -158,7 +158,7 @@ function intBelts() {
   const bandGeo = (pts, w) => merge(pts.slice(1).map((p, i) => intStrip(pts[i], p, w, 0.0015)));
   for (const s of [1, -1]) {
     // zB: oprolautomaat onder de gordel (blijft); zG: geleider, hoogteversteller en band op de smallere B-stijl (DAK-4: -0,65 tot -0,564; was zB, -0,66, op de stijl van -0,74)
-    const n = sideName(s), zB = -0.66, zG = -0.63,xr = s * (surfX(zB, 0.55) - 0.07), xg = s * (surfX(zG, 1.06) - 0.05), xpil = y => s * (surfX(zG, y) - 0.05);
+    const n = sideName(s), zB = -0.66, zG = -0.63, xr = s * (surfX(zB, 0.55) - 0.07), xg = s * (surfX(zG, 1.06) - 0.05), xpil = y => s * (surfX(zG, y) - 0.05);
     // rusttand: de band hangt van de bovenste geleider langs de B-stijl omlaag; de tong zit onderaan
     const restPts = [[xg, 1.06, zG + 0.012], [xpil(0.86), 0.86, zG + 0.016], [xpil(0.66), 0.66, zG + 0.018]], tong = [xpil(0.62), 0.62, zG + 0.02];
     out.push(A(`Gordel voor ${n}`, { d: 'Driepuntsgordel van de voorstoel: oprolautomaat in de B-stijl, hoogteversteller, geleider, band, tong en onderste verankering.', ex: [s * 0.05, 0.12, 0] }, [
@@ -432,12 +432,12 @@ function intTrim() {
   const lp = roofLamp(-0.3);
   const pil = (s, z, q, dy) => { const h = bodGhHalf(z, q); return [s * (h[0] - 0.036), h[1] - 0.028 + dy, z]; };
   // A-stijl: de buis ligt boven de bovenrand van de zijruit, 45 mm binnen de bovenrand van de zijwand (xe) en 12 mm onder die rand (ye). Tot golf 9 hing hij op een vaste q in
-  // de dakrand (0,6 tot 0,62); met de kleinere dakrand van pakket DAK (straal 0,02, DAK-3) kwam die q 20 mm lager en raakte de buis het rubber van de zijruit (3,5 mm).
+  // de dakrand (0,6 tot 0,62); met de kleinere dakrand van pakket DAK (straal 0,02, DAK-3) kwam die q 20 mm lager en raakte de buis het rubber van de zijruit (2,5 mm).
   const pilA = (s, z) => { const g = bodGh(z); return [s * (g.xe - 0.045), g.ye - 0.012, z]; };
   const aPillar = s => intPart(`A-stijlbekleding ${sideName(s)}`, tube([0.82, 0.68, 0.54, 0.40].map(z => pilA(s, z)), 0.016, 30, 6), MAT.intSide, 'Smalle stijlbekleding langs de A-stijl.', { ex: [s * 0.1, 0.06, 0.04] });
   // B-stijl: tussen de portierruit en de hoekruit (z -0.585 tot bodKpZF, -0,65; was -0,74 tot golf 9, pakket DAK-4: de hoekruit begint verder naar voren), van de dorpel tot de dakrand; achter de portierrand
   const topAt = z => bodGh(z).ye - 0.05;
-  const bPillar = s => intPart(`B-stijlbekleding ${sideName(s)}`, intPanel(s, -0.585, bodKpZF, () => 0.285, z => bodGh(z).ye - 0.04, 0.035, 4, 12), MAT.intSide, 'Kunststof bekleding van de brede B-stijl achter het portier, met de bevestiging van de voorgordel.', { ex: [s * 0.08, 0.04, -0.04] });
+  const bPillar = s => intPart(`B-stijlbekleding ${sideName(s)}`, intPanel(s, -0.585, bodKpZF, () => 0.285, z => bodGh(z).ye - 0.04, 0.035, 4, 12), MAT.intSide, 'Kunststof bekleding van de smalle B-stijl achter het portier, met de bevestiging van de voorgordel.', { ex: [s * 0.08, 0.04, -0.04] });
   // zijbekleding achter: onder de hoekruit, tussen B-stijl en C-stijl (DAK-4: van bodKpZF tot bodKpZB, -0,65 tot -1,37; was -0,74 tot -1,17); boven de wielkast met de gordelrolautomaat
   const sideRear = s => intPart(`Zijbekleding achter ${sideName(s)}`, intPanel(s, bodKpZF, bodKpZB, z => 0.3 + 0.3 * clamp((-0.93 - z) / 0.1, 0, 1), z => YT(z) - 0.03, 0.035, 28, 6), MAT.intSide, 'Kunststof zijbekleding onder de hoekruit bij de achterbank, tot de achterklep.', { ex: [s * 0.1, 0, -0.04] });
   const sideFront = s => intPart(`Zijbekleding achterbank ${sideName(s)}`, intPanel(s, -0.585, -0.74, () => 0.285, () => 0.55, 0.036, 4, 4), MAT.intSide, 'Onderste deel van de bekleding naast de achterbank.', { ex: [s * 0.1, 0, 0] });

@@ -1132,7 +1132,7 @@ function bodDoor(s) {
   const sLo = z => sAtY(z, bodYSill), sHi = S4 - 0.0008, eIn = 0.13, pp = sv => bodPp(s, sv);
   const bodEdgePt = (z, p, t) => { const a = bodLowX(z, p, 0), b = bodLowX0(z, p, eIn); return [lerp(a[0], b[0], t), a[1], z]; };   // van de buitenhuid naar het binnenpaneel
   const qLo = z => bodQy(z, YT(z) + 0.013), qHi = z => Math.max(qLo(z) + 1e-4, bodQy(z, bodGh(z).ye - 0.042));
-  const zg0 = z0 + 0.03, zg1 = z1 - 0.016;   // voorrand van het glas 12 mm achter de naad (was 5 mm): met de hogere ruit (DAK-3) heeft het glas ook vooraan hoogte en zakte de voorste onderhoek door de Schermflens (z 0,768 tot 0,796)
+  const zg0 = z0 + 0.03, zg1 = z1 - 0.016;   // voorrand van het glas 16 mm achter de naad (was 5 mm): met de hogere ruit (DAK-3) heeft het glas ook vooraan hoogte en zakte de voorste onderhoek door de Schermflens (z 0,768 tot 0,796)
   const outer = lowSide(s, z0, z1, 44, z => [sLo(z), sHi], 18);
   const inner = bodSideX0(s, z0 + 0.012, z1 - 0.012, 22, z => [sAtY(z, bodYSill + 0.016), S4 - 0.012], 10, eIn);
   const trimP = bodSideX0(s, z0 + 0.016, z1 - 0.016, 22, z => [sAtY(z, 0.33), sAtY(z, YT(z) - 0.012)], 10, eIn + 0.008);   // 1,2 cm minder diep dan eerst: dashboard en stoelen botsten (golf 2); bovenrand 12 mm onder de gordel: met de lagere gordel (FLANK-1) rolde de rand anders tegen de stuurkrans
