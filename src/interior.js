@@ -246,7 +246,7 @@ function intDashboard() {
     intPart('Ontwasemroosters zijruit', merge([1, -1].map(s => intBox(0.07, 0.004, 0.02, [s * 0.48, 0.9235, 0.8]))), MAT.plastic, 'Twee kleine roosters aan de uiteinden van het dashboard die lucht langs de zijruiten blazen.', { ex: [0, 0.08, 0] }),
   ]);
   // kachelhuis (B-041, beslissing INT-12): achter het dashboard tegen het schutbord, onzichtbaar van buiten (inner). De kachelradiateur zit op x -0,17 en -0,125 (y 0,675) tegenover
-  // de twee stompen van de doorvoer in het schutbord (systems.js, `Doorvoer kachel`, stompen vanaf z 0,878); de aanvoerpijpen van de kern lopen door het schutbord naar die stompen.
+  // de twee stompen van de doorvoer in het schutbord (systems.js, `Doorvoer kachel`, stompen vanaf z 0,860, in het schutbord); de aanvoerpijpen van de kern lopen door het schutbord naar die stompen.
   const hz = { x0: -0.17, xl: -0.222, x1: 0.09, y0: 0.625, y1: 0.795, zb: 0.66, zs: 0.752, zf: 0.848, t: 0.004 };   // x0 en xl: linkerwand achter en voor de stap; zs: z van de stap
   const wall = (xa, xb, ya, yb, za, zb) => intBox(xb - xa, yb - ya, zb - za, [(xa + xb) / 2, (ya + yb) / 2, (za + zb) / 2]);
   const kachelschaal = intPart('Kachelhuisschaal', merge([

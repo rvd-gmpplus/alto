@@ -1,5 +1,11 @@
 # Wijzigingen
 
+## Versie 7 (in voorbereiding)
+
+### Systemen: doorvoer van de kachel (golf 8, pakket KLEIN; beslissing INT-12)
+
+- `Doorvoer kachel` stond 12 mm voor het schutbord in plaats van erin. De rubber doorvoerplaat ligt nu tegen het voorvlak van het schutbord (z 0,866 tot 0,874, was 0,878 tot 0,886) en de twee aluminium stompen steken door het schutbord: z 0,860 tot 0,938 (was 0,878 tot 0,938), straal en einde bij de slangen ongewijzigd. Open punt uit INT-12 gesloten; commentaar in `interior.js` en `docs/contract.md` bijgewerkt.
+
 ## Versie 6 (19 oktober 2026)
 
 Aanleiding: de kier tussen de achterzijruit en het rode paneel erboven, en de rest van de lijst om de Alto meer op de modelreeks 1993-2001 te laten lijken. Keuzes van de eigenaar: dashboard en middenpaneel in de kleuren van de foto, flanken, gordel en heup in deze versie.
