@@ -60,23 +60,47 @@ const YR = bodTw(pchip([[-1.7475, 0.862], [-1.70, 0.900], [-1.60, 1.010], [-1.45
 const S1 = 0.14, S2 = 0.22, S3 = 0.60, S4 = 0.72, BUL = 0.012, CRW = 0.03;
 const sstep = t => { const u = clamp(t, 0, 1); return u * u * (3 - 2 * u); };
 // doorsnede van de onderbak op z
-function bodSec(z) {
+// Flank (golf 7, pakket FLANK, beslissing FLANK-2): tot golf 6 een verticale flank met 12 mm bolling en een schouder van 55 mm straal, die op de gordel een vlakke
+// richel van ruim 50 mm onder de kas legde (op de achterzijde las die als heup). Nu loopt de flank vanaf het breedste punt (op bodFlU van de flankhoogte, y ca. 0,54)
+// in een boog naar binnen: onderaan bodFlB, bovenaan dT, gekozen zodat de schouder (straal bodFlRs) op dezelfde xe eindigt als het oude profiel. De kas (ruiten,
+// stijlen, dak, portieren boven de gordel, kiepruit) blijft dus op de millimeter gelijk. Naar de neus (beslissing 29) loopt het profiel tussen z 1,0 en 1,4 terug
+// naar het oude (bodFlankW), zodat kap, koplamp, grille en bumper niet veranderen.
+const bodFlU = 0.45, bodFlB = 0.012, bodFlRs = 0.016;
+const bodFlankW = z => 1 - sstep((z - 1.0) / 0.4);
+// inloop van de flank ten opzichte van de breedste lijn bij flankparameter t (0 onderaan, 1 bovenaan)
+const bodFlD = (t, dB, dT) => (t < bodFlU ? dB * Math.pow((bodFlU - t) / bodFlU, 2) : dT * Math.pow((t - bodFlU) / (1 - bodFlU), 2));
+function bodSecW(z, w) {
   const hw = HW(z), yb = YB(z), yt = YT(z), d = yt - yb, bul = Math.min(BUL, hw * 0.15);
-  const rb = Math.min(0.045, d * 0.28, (hw - bul) * 0.45), rs = Math.min(0.055 - 0.040 * sstep((z - 1.58) / 0.06), d * 0.3, (hw - bul) * 0.45);   // schouder op de neus 15 mm (beslissing 29)
+  const rb = Math.min(0.045, d * 0.28, (hw - bul) * 0.45), rs0 = Math.min(0.055 - 0.040 * sstep((z - 1.58) / 0.06), d * 0.3, (hw - bul) * 0.45);   // schouder op de neus 15 mm (beslissing 29)
   const yd = Math.max(yt + 0.004, yt + bodC(z)), c = yd - yt, p = bodDP(z);
-  const cx = hw - bul - rs;                       // middelpunt van de schouderboog
-  let xe = cx + rs * 0.3, th = 1.2;
-  for (let i = 0; i < 3; i++) { th = Math.atan2(xe, c * p); xe = cx + rs * Math.cos(th); }
-  const cy = yt - rs * Math.sin(th);
-  return { hw, yb, yt, rb, rs, yd, c, p, cx, cy, th, xe, bul };
+  const cx0 = hw - bul - rs0;                     // middelpunt van de oude schouderboog
+  let xe = cx0 + rs0 * 0.3, th = 1.2;
+  for (let i = 0; i < 3; i++) { th = Math.atan2(xe, c * p); xe = cx0 + rs0 * Math.cos(th); }
+  if (w <= 1e-6) { const cy = yt - rs0 * Math.sin(th); return { hw, yb, yt, rb, rs: rs0, yd, c, p, cx: cx0, cy, th, xe, bul, bw: bul, dB: 0, dT: 0, a0: 0, ab: 0, cxb: hw - bul - rb, cyb: yb + rb, y0: yb + rb, y1: cy }; }
+  // nieuw profiel: zelfde xe en th (het dek sluit op dezelfde plek aan), kleinere schouder, de flank loopt in
+  const rs = lerp(rs0, Math.min(bodFlRs, rs0), w), bw = bul * (1 - w), dB = bodFlB * w, cx = xe - rs * Math.cos(th), cy = yt - rs * Math.sin(th), cyb = yb + rb;
+  let a0 = 0, ab = 0, dT = 0, y0 = cyb, y1 = cy;
+  for (let i = 0; i < 6; i++) {
+    dT = hw - bw - cx - rs * Math.cos(a0);
+    y1 = cy + rs * Math.sin(a0); y0 = cyb + rb * Math.sin(ab);
+    const hf = Math.max(0.05, y1 - y0);
+    a0 = Math.atan(2 * dT / ((1 - bodFlU) * hf)); ab = -Math.atan(2 * dB / (bodFlU * hf));   // raaklijn van flank en schouder, flank en bodemhoek gelijk
+  }
+  return { hw, yb, yt, rb, rs, yd, c, p, cx, cy, th, xe, bul, bw, dB, dT, a0, ab, cxb: hw - bw - dB - rb * Math.cos(ab), cyb, y0, y1 };
+}
+const bodSecMem = new Map();
+function bodSec(z) {
+  let c = bodSecMem.get(z); if (c) return c;
+  if (bodSecMem.size > 60000) bodSecMem.clear();
+  c = bodSecW(z, bodFlankW(z)); bodSecMem.set(z, c); return c;
 }
 // halve doorsnede (linkerhelft), s van 0 (onderkant midden) tot 1 (dek midden)
 function bodHalf(z, s, c) {
-  const { hw, yb, yt, rb, rs, cx, cy, th, xe, c: cr, p, bul } = c;
-  if (s <= S1) return [s / S1 * (hw - bul - rb), yb];
-  if (s <= S2) { const a = -HALF + (s - S1) / (S2 - S1) * HALF; return [hw - bul - rb + rb * Math.cos(a), yb + rb + rb * Math.sin(a)]; }
-  if (s <= S3) { const t = (s - S2) / (S3 - S2); return [hw - bul + bul * Math.sin(PI * t), yb + rb + t * (cy - yb - rb)]; }
-  if (s <= S4) { const a = (s - S3) / (S4 - S3) * th; return [cx + rs * Math.cos(a), cy + rs * Math.sin(a)]; }
+  const { rb, rs, cx, cy, th, xe, c: cr, p, hw, yt, bw, dB, dT, a0, ab, cxb, cyb, y0, y1 } = c;
+  if (s <= S1) return [s / S1 * cxb, c.yb];
+  if (s <= S2) { const a = -HALF + (s - S1) / (S2 - S1) * (ab + HALF); return [cxb + rb * Math.cos(a), cyb + rb * Math.sin(a)]; }
+  if (s <= S3) { const t = (s - S2) / (S3 - S2); return [hw - bw + bw * Math.sin(PI * t) - bodFlD(t, dB, dT), y0 + t * (y1 - y0)]; }
+  if (s <= S4) { const a = a0 + (s - S3) / (S4 - S3) * (th - a0); return [cx + rs * Math.cos(a), cy + rs * Math.sin(a)]; }
   const t = (s - S4) / (1 - S4);
   return [xe * (1 - t), yt + cr * (1 - Math.pow(1 - t, p))];
 }
@@ -86,15 +110,17 @@ function lowPt(z, p) {
   if (q <= 1) { const [x, y] = halfPt(z, q); return [x, y, z]; }
   const [x, y] = halfPt(z, 2 - q); return [-x, y, z];
 }
-// parameter s van de doorsnede bij hoogte y (flank, schouder en dek)
-function sAtY(z, y) {
-  const c = bodSec(z), y0 = c.yb + c.rb, y1 = c.cy;
-  if (y <= y0) { const a = Math.asin(clamp((y - y0) / c.rb, -1, 0)); return S1 + (a + HALF) / HALF * (S2 - S1); }
-  if (y <= y1) return S2 + (y - y0) / Math.max(1e-6, y1 - y0) * (S3 - S2);
-  if (y <= c.yt) { const a = Math.asin(clamp((y - c.cy) / c.rs, 0, 1)); return S3 + Math.min(1, a / c.th) * (S4 - S3); }
+// parameter s van de doorsnede c bij hoogte y (flank, schouder en dek)
+function bodSAtYc(c, y) {
+  if (y <= c.y0) { const a = Math.asin(clamp((y - c.cyb) / c.rb, -1, Math.sin(c.ab))); return S1 + (a + HALF) / (c.ab + HALF) * (S2 - S1); }
+  if (y <= c.y1) return S2 + (y - c.y0) / Math.max(1e-6, c.y1 - c.y0) * (S3 - S2);
+  if (y <= c.yt) { const a = Math.asin(clamp((y - c.cy) / c.rs, Math.sin(c.a0), 1)); return S3 + Math.min(1, (a - c.a0) / Math.max(1e-6, c.th - c.a0)) * (S4 - S3); }
   const u = clamp((y - c.yt) / Math.max(1e-6, c.c), 0, 1), t = 1 - Math.pow(1 - u, 1 / c.p);
   return S4 + t * (1 - S4);
 }
+function sAtY(z, y) { return bodSAtYc(bodSec(z), y); }
+// halve breedte van het oude profiel (tot golf 6) op hoogte y: voor delen binnen de huid die op hun plaats blijven (portierbinnenkant, bekleding)
+function ringX0(z, y) { const c = bodSecW(z, 0); if (y > c.yd) return 0; return Math.max(0, bodHalf(z, bodSAtYc(c, y), c)[0]); }
 // parameter s op het dek bij |x|
 function bodSAtX(z, x) { const c = bodSec(z); return S4 + (1 - S4) * clamp(1 - Math.abs(x) / c.xe, 0, 1); }
 // halve breedte van de onderbak op hoogte y (0 boven het dek)
