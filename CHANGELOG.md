@@ -6,6 +6,10 @@
 
 - `Doorvoer kachel` stond 12 mm voor het schutbord in plaats van erin. De rubber doorvoerplaat ligt nu tegen het voorvlak van het schutbord (z 0,866 tot 0,874, was 0,878 tot 0,886) en de twee aluminium stompen steken door het schutbord: z 0,860 tot 0,938 (was 0,878 tot 0,938), straal en einde bij de slangen ongewijzigd. Open punt uit INT-12 gesloten; commentaar in `interior.js` en `docs/contract.md` bijgewerkt.
 
+### Test: itest en de draai van de telefoon (golf 8, pakket KLEIN)
+
+- `tools/itest.py`: test 18 R3 en U2 maten na `set_viewport_size` met een vaste wachttijd van 500 ms, terwijl het resize-event in software-rendering 1 tot 2,5 s later komt (in een Linux-run: vrij beeld `[0, 117, 844, 181.84]` na het terugdraaien naar 390 x 844, alle labels pasten en "+n meer" ontbrak). Nieuwe hulpfunctie `wissel_viewport` wacht op het resize-event, daarna tot het vrije beeld in het venster past en venstermaat, vrij beeld en paneel stabiel zijn, plus twee animatieframes. Alleen de wacht is veranderd; de controles en hun aantal (222) zijn gelijk. Uitleg in `docs/testen.md`.
+
 ## Versie 6 (19 oktober 2026)
 
 Aanleiding: de kier tussen de achterzijruit en het rode paneel erboven, en de rest van de lijst om de Alto meer op de modelreeks 1993-2001 te laten lijken. Keuzes van de eigenaar: dashboard en middenpaneel in de kleuren van de foto, flanken, gordel en heup in deze versie.
