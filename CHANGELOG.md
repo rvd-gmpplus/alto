@@ -5,6 +5,7 @@
 ### Systemen (golf 7, pakket SYS7)
 
 - Koeling (B-033, beslissing 6 bijgewerkt): radiateur met ventilator, kap, steunen en slangaansluitingen 30 mm naar achteren (hartlijn z 1,515); geen doordringing meer met de frontmodule (waterkasten en steunblokken waren 20 en 15 mm, koelblok 12 mm). Aanzuigmond en kanaal van het luchtfilter 25 mm mee naar achteren (mond stak 12,5 mm in de frontmodule); kabeltak naar de ventilatorstekker 30 mm mee.
+- Labelanker Uitlaatsysteem in 'Alles uit elkaar': onderzocht (beslissing SYS7-2); op deze tak ligt het anker op de eigen pijp met vrije zichtlijn, dus geen wijziging.
 
 ## Versie 5 (19 oktober 2026)
 
